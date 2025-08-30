@@ -1,0 +1,375 @@
+Marca: Abarth
+Modelos: 124 Spider, 500, 500C, 500e, 500e C, 595, 595C, 600e, 695, 695C, Grande Punto, Punto Evo
+-
+Marca: AC
+Modelos: Buckland
+-
+Marca: Acura
+Modelos: Legend, NSX, RSX
+-
+Marca: Aiways
+Modelos: U5, U6
+-
+Marca: Aixam
+Modelos: 400, 500.4, A540, A721, A741, City, Coupe, Crossline, Crossover, Mac, Minauto, Pickup, Roadline, Scouty, Sensation
+-
+Marca: Alfa Romeo
+Modelos: 145, 146, 147, 155, 156, 156 Sportwagon, 159, 159 Sportwagon, 164, 166, 2000, 2600, 33, 33 Sportwagon, 4C, 4C Spider, 75, 8C, 8C Spider, 90, Alfa 6, Alfasud, Alfetta, Arna, Brera, Crosswagon, Giulia, Giulietta, GT, GTA, GTV, Junior, MiTo, Montreal, RZ, Spider, Sprint Veloce, Stelvio, SZ Coupé, Tonale
+-
+Marca: Alpina
+Modelos: B10, B11, B12, B3, B4, B5, B6, B7, B8, B9, C1, C2, D10, D3, D4, D5, Roadster, XB7, XD3, XD4
+-
+Marca: Alpine
+Modelos: Selecionar tudo, A110, A290
+-
+Marca: Amphicar
+Modelos: 770
+-
+Marca: Aston Martin
+Modelos: Selecionar tudo, Cygnet, DB11 Coupé, DB11 Volante, DB12 Coupé, DB12 Volante, DB6 Coupé, DB7 Vantage Coupé, DB7 Vantage Volante, DB9 Coupe, DB9 Volante, DBS Coupe, DBS Volante, DBX, Lagonda, One-77, Rapide, V12 Zagato, Valhalla, Valkyrie, Valour, Vanquish, Vanquish Volante, Vantage Coupe, Vantage Roadster, Virage Coupe, Virage Volante, Volante
+-
+Marca: Audi
+Modelos: 100, 100 Avant, 200, 4000s, 50, 80, 80 Avant, 90, A1, A1 Allstreet, A1 Citycarver, A1 Sportback, A2, A3, A3 Allstreet, A3 Cabrio, A3 Limousine, A3 Sportback, A4, A4 Allroad, A4 Avant, A4 Cabrio, A5, A5 Avant, A5 Cabrio, A5 Limousine, A5 Sportback, A6, A6 Allroad, A6 Avant, A6 Avant e-tron, A6 Sportback e-tron, A7 Sportback, A8, Cabriolet, Coupé, e-tron, e-tron GT, e-tron Sportback, Munga, Q2, Q3, Q3 Sportback, Q4 e-tron, Q4 Sportback e-tron, Q5, Q5 Sportback, Q6 e-tron, Q6 Sportback e-tron, Q7, Q8, Q8 e-Tron, Q8 e-Tron Sportback, Quattro, R8 Coupé, R8 Spyder, RS e-tron GT, RS Q3, RS Q3 Sportback, RS Q8, RS2, RS3 Limousine, RS3 Sportback, RS4, RS4 Avant, RS5, RS5 Sportback, RS6, RS6 Avant, RS7 Sportback, S1, S1 Sportback, S2, S3, S3 Limousine, S3 Sportback, S4, S4 Avant, S5, S5 Limousine, S5 Sportback, S6, S6 Avant, S6 Avant e-tron, S6 Sportback e-tron, S7 Sportback, S8, SQ2, SQ5, SQ5 Sportback, SQ6 e-tron, SQ6 Sportback e-tron, SQ7, SQ8, SQ8 e-tron, SQ8 Sportback e-tron, TT Coupé, TT Roadster, TT RS Coupé, TT RS Roadster, TTS Coupé, TTS Roadster, V8
+-
+Marca: Austin
+Modelos: A30, A35, A40, A60, A70, Allegro, Cambridge, Gipsy, Maestro, Metro, Mini, Mini-Moke, Montego, Seven, Ten
+-
+Marca: Austin Healey
+Modelos: 100/4, 3000, Sprite, Sprite Mk I, Sprite Mk II, Sprite Mk III, Sprite Mk IV
+-
+Marca: Autobianchi
+Modelos: A112, Bianchina, Y10
+-
+Marca: Bedford
+Modelos: Selecionar tudo, CF 250, J3, Rascal
+-
+Marca: Bellier
+Modelos: B8, Divane, Docker, GT Edition, Jade, Opale, Vario
+-
+Marca: Bentley
+Modelos: Arnage, Azure, Bentayga, Brooklands, Continental, Continental Cabrio, Continental Flying Spur, Eight, Flying Spur, Mark VI, Mulsanne, S1, S2, S3, T1, T2, Turbo R, Turbo RT, Turbo S
+-
+Marca: BMW
+Modelos: 1502, 1600, 1602, 1802, 2000, 2002, 2800, 3.0 CS, 3.0 CSi, 3.0 Si, 502, 700, Isetta, M1, Série 1, Série 2, Série 3, Série 4, Série 5, Série 6, Série 7, Série 8, Série i, Série X, Série Z
+-
+Marca: Brabus
+Modelos: 1000, 550, 600, 650, 700, 730, 750, 800, 820, 850, 900, 930, G500, G700, G900, GLE 63S AMG, Rocket 1000, Rocket GTS, Smart #1, Smart #3, XLP 800, XLP 900
+-
+Marca: Bugatti
+Modelos: Selecionar tudo, Centodieci, Chiron, Divo, Type 35, Veyron
+-
+Marca: Buick
+Modelos: Electra, Model 29-44, Park Avenue, Riviera, Skylark, Super
+-
+Marca: BYD
+Modelos: Atto 2, Atto 3, Dolphin, Dolphin Surf, Han, Seal, Seal U, Sealion 7, Tang
+-
+Marca: Cadillac
+Modelos: Allante, ATS, BLS, CT6, CTS, DeVille, Eldorado, Escalade, Fleetwood, Series 62, Seville, SRX, STS, XLR, XT5
+-
+Marca: Casalini
+Modelos: M20, M20 Gransport, M20 Superleggera
+-
+Marca: Caterham
+Modelos: Seven 170, Seven 270, Seven 310, Seven 360, Seven 420, Seven 420R Race Package 2000, Seven 485, Seven 485 CSR, Seven 620, Seven Academy Race Package, Super Seven 1600
+-
+Marca: Chevrolet
+Modelos: 2500, 3100, Astro, Avalanche, Aveo, Bel Air, Beretta, Biscayne, Blazer, Camaro, Caprice, Captiva, Cavalier, Celebrity, Chevy II, Chevy Van, Citation, Cobalt, Corsica, Corvair, Corvette, Crew Cab, Cruze, Cruze SW, Dixie Van, El Camino, Epica, Evanda, G, HHR, Impala, International, K1500, K30, Kalos, Lacetti, Lumina, Malibu, Matiz, Monte Carlo, Nubira, Nubira SW, Orlando, Rezzo, S-10, Series AB National, Silverado, Spark, SSR, Suburban, T-Blazer, Tacuma, Tahoe, Trailblazer, Trax, Truck, Volt
+-
+Marca: Chrysler
+Modelos: 300 C, 300 M, 66 Tourer, Avenger, Crossfire, Daytona, ES, Grand Voyager, GS, GTS, Horizon, Le Baron, Neon, New Yorker, Pacifica, Plymouth, Prowler, PT Cruiser, Saratoga, Sebring, Simca, Stratus, Valiant, Viper, Vision, Voyager, Windsor Cabriolet
+-
+Marca: Cupra
+Modelos: Selecionar tudo, Ateca, Born, Formentor, Leon, Leon ST, Tavascan, Terramar
+-
+Marca: Dacia
+Modelos: Bigster, Dokker, Duster, Jogger, Lodgy, Logan, Logan MCV, Sandero, Spring
+-
+Marca: Daewoo
+Modelos: Espero, Kalos, Lacetti, Lanos, Leganza, Matiz, Nexia, Nubira, Nubira SW, Rezzo, Spazio, Tacuma, Truck Plus
+-
+Marca: Daihatsu
+Modelos: Applause, Charade, Compagno Spider, Copen, Cuore, F50, Feroza, Freeclimber, Gran Move, Materia, Move, Rocky, Sirion, Terios, YRV
+-
+Marca: Daimler
+Modelos: DK400, Double Six, DS420, Majestic, Regency, Sovereign, SP250
+-
+Marca: Datsun
+Modelos: 1000, 100A Cherry, 120 Y, 120 Y Estate, 1200, 120A Coupé, 1300, 1600, 1800, 2000, 240 Z, 260 Z, 280 C, 280 Z, 280 ZX, 280C Estate, 510, 620, B210, Bluebird, Fairlady, Laurel, PL 510, Pulsar, Sado, Skyline, Sports, Urvan, Violet
+-
+Marca: Devinci
+Modelos: Selecionar tudo, Adele, Brigitte, Eugenie, Marianne
+-
+Marca: Dodge
+Modelos: Avenger, Brothers, Caliber, Caravan, Challenger, Charger, Conquest, Coronet, Dakota, Dart, Durango, Grand Caravan, Journey, Magnum, Nitro, RAM, Stealth, Van, Viper
+-
+Marca: Dongfeng
+Modelos: Box
+-
+Marca: DS
+Modelos: DS3, DS3 Crossback, DS4, DS4 Crossback, DS5, DS7, DS7 Crossback, DS9, Nº4, Nº8
+-
+Marca: Elaris
+Modelos: Beo
+-
+Marca: Eli
+Modelos: ZERO
+-
+Marca: Ferrari
+Modelos: 12 Cilindri, 195, 206, 208, 246, 250, 275, 288, 296 GTB, 308, 328, 330, 348, 355, 360, 365, 400, 412, 456, 458, 488, 512, 550, 575, 599, 612, 750, 812 GTS, 812 Superfast, California, Daytona, Dino, Enzo, F12 Berlinetta, F40, F430, F50, F8 Tributo, FF, GT4, GTC4 Lusso, LaFerrari, Mondial, Monza, Portofino, Purosangue, Roma, SA Aperta, SF90, Testarossa
+-
+Marca: Fiat
+Modelos: 1100, 124, 124 Coupe, 124 Spider, 125, 126, 127, 128, 130, 1300, 131, 132, 1400, 1500, 242, 500, 500C, 500e, 500e 3 + 1, 500e C, 500L, 500X, 501, 508, 514, 520, 600, 600e, 850, Argenta, Barchetta, Brava, Bravo, Campagnola, Cinquecento, Coupe, Croma, Dino, Doblo, Ducato, Duna, e-Dobló, e-Ducato, e-Scudo, e-Ulysse, Fiorino, Freemont, Fullback, Grande Panda, Grande Punto, Idea, Linea, Marea, Marea Weekend, Multipla, Neckar Jagst, Palio Weekend, Panda, Punto, Punto Cabrio, Punto Evo, Qubo, Regata, Regata Weekend, Ritmo, Ritmo Cabrio, Scudo, Sedici, Seicento, Stilo, Stilo Multiwagon, Strada, Talento, Tempra, Tempra SW, Tipo, Tipo Cross, Tipo Sedan, Tipo Station Wagon, Tipo Station Wagon Cross, Ulysse, Uno, X1/9
+-
+Marca: Fisker
+Modelos: Selecionar tudo, Karma, Ocean
+-
+Marca: Ford
+Modelos: A, Anglia, B-Max, Bronco, C-Max, Capri, Cortina, Cougar, Courier, Crestline, Customline, Del Rey, e-Tourneo Custom, e-Transit, e-Transit Custom, EcoSport, Edge, Escape, Escort, Escort Cabrio, Escort SW, Expedition, Explorer, F-100, F-150, F-350, Fiesta, Focus, Focus C-Max, Focus CC, Focus SW, Fusion, Galaxy, Granada, Granada SW, Grand C-Max, GT40, KA, KA+, Kuga, Landau, Maverick, Model A, Mondeo, Mondeo SW, Mustang, Mustang Mach-E, Orion, P100, Pinto, Prefect, Probe, Puma, Ranger, S-Max, Scorpio, Scorpio SW, Sierra, Sierra SW, StreetKA, Stylemaster, Super De Luxe, T, Taunus, Taunus SW, Taurus, Thunderbird, Tourneo Connect, Tourneo Courier, Tourneo Custom, Transit, Transit Connect, Transit Custom, V8 Berline, Windstar, XR2, XR3, Y
+-
+Marca: Forthing
+Modelos: Friday EV, Friday HEV, S7 EV, U-Tour
+-
+Marca: Foton
+Modelos: eTunland, Tunland
+-
+Marca: Genesis
+Modelos: G70, G80, G90, GV60, GV70, GV80
+-
+Marca: GMC
+Modelos: Envoy, Safari, Savana, Sierra, Sonoma, Syclone, Typhoon, Vandura, Yukon
+-
+Marca: Hillman
+Modelos: Arrow, Avenger, Gazelle, Hawk, Hunter, Husky, Hustler, Imp, Minx, Super Minx, Vortic, Wizard
+-
+Marca: Honda
+Modelos: Accord, Accord Tourer, Beat, Civic, Civic Aerodeck, Civic Tourer, Concerto, CR-V, CR-Z, CRX, e, e-Ny1, FR-V, HR-V, Insight, Integra, Jazz, Jazz Crosstar Hybrid, Legend, Logo, N360, N600, NSX, Odyssey, Prelude, S2000, S800, Shuttle, Stream, ZR-V
+-
+Marca: Hummer
+Modelos: H1, H2, H3
+-
+Marca: Hyundai
+Modelos: Selecionar tudo, Accent, Atos, Bayon, Coupe, Elantra, Galloper, Genesis Coupe, Getz, H-1, H-1 Starex, H100, H200, H300, H350, i10, i20, i20 Active, i20 N, i30, i30 CW, i30 Fastback, i30 Fastback N, i30 N, i30 SW, i40, i40 SW, Inster, Ioniq, Ioniq 5, Ioniq 5 N, Ioniq 6, ix20, ix35, ix55, Kauai, Kauai N, Lantra, Lantra SW, Matrix, Palisade, Pony, S-Coupe, Santa Fe, Santamo, Sonata, Sonica, Staria, Terracan, Trajet, Tucson, Veloster, XG
+-
+Marca: Infiniti
+Modelos: FX30, FX35, FX45, FX50, G35, Q30, Q50, Q60, Q70, QX30, QX70
+-
+Marca: Isuzu
+Modelos: Selecionar tudo, Campo, D-Max, DLX, Gemini, Midi, Piazza, PickUp, Rodeo, Trooper, WFR
+-
+Marca: Iveco
+Modelos: Daily, eDaily, Massif
+-
+Marca: Jaguar
+Modelos: 420G, D-Type, Daimler, E-Pace, E-Type, F-Pace, F-Type, I-Pace, MK I, MK II, MK IV, MK IX, MK VII, MK VIII, MK X, S-Type, Sovereign, X-Type, XE, XF, XF Sportbrake, XJ, XJR, XJS, XK, XK140, XK150
+-
+Marca: JaguarSport
+Modelos: XJ220, XJR, XJR-15, XJR-S
+-
+Marca: JDM
+Modelos: Abaca, Albizia, Aloes, Orane, Roxsy, Titane, X5, Xheos
+-
+Marca: Jeep
+Modelos: Selecionar tudo, Avenger, Cherokee, CJ-3, CJ-5, CJ-6, CJ-7, CJ-8, Commander, Compass, Gladiator, Grand Cherokee, Patriot, Renegade, Willys, Wrangler, Wrangler Unlimited
+-
+Marca: Jiayuan
+Modelos: City Spirits
+-
+Marca: Kaiser
+Modelos: Henry J, Special
+-
+Marca: KGM
+Modelos: Korando, Musso, Rexton, Tivoli, Torres, Torres EVX
+-
+Marca: Kia
+Modelos: Besta, Carens, Carnival, Ceed, Ceed SW, Cerato, Clarus, e-Niro, e-Soul, Elan, EV3, EV6, EV9, Joice, Leo, Magentis, Niro, Niro EV, Opirus, Optima, Optima SW, Picanto, Pregio, Pride, ProCeed, Retona, Rio, Rio SW, Roadster, Rocsta, Sephia, Shuma, Sorento, Soul, Sportage, Stinger, Stonic, Venga, XCeed
+-
+Marca: Lada
+Modelos: 110, 111, 112, 2104, 2105, 2107, Forma, Kalina, Natacha, Niva, Nova, Samara
+-
+Marca: Lamborghini
+Modelos: Aventador, Countach, Diablo, Espada, Gallardo, Huracán, Huracán Spyder, Jalpa, LM, Miura, Murcielago, Revuelto, Urraco, Urus
+-
+Marca: Lancia
+Modelos: Selecionar tudo, Appia, Aprilia, Aurelia, Beta, Dedra, Dedra SW, Delta, Flaminia, Flavia, Fulvia, Gamma, Kappa, Kappa SW, Lybra, Lybra SW, Musa, Phedra, Prisma, Stratos, Thema, Thema SW, Thesis, Voyager, Y, Ypsilon, Zeta
+-
+Marca: Land Rover
+Modelos: 90, Defender, Discovery, Discovery Sport, Freelander, Range Rover, Range Rover Evoque, Range Rover Evoque Cabrio, Range Rover Sport, Range Rover Velar, Serie I, Serie II, Serie III
+-
+Marca: Lexus
+Modelos: Selecionar tudo, CT, ES, GS, GX, HS Hybrid, IS, LBX, LC, LFA, LM, LS, LX, NX, RC, RX, RZ, SC, UX
+-
+Marca: Ligier
+Modelos: Ambra, ixo, JS 22, JS 50, JS 60, JS RC, Myli, X-Too
+-
+Marca: Lincoln
+Modelos: Andere, Aviator, Continental, LS, Mark, Navigator, Town Car
+-
+Marca: Lotus
+Modelos: Selecionar tudo, 2-Eleven, 340 R, Cortina, Elan, Eletre, Elise, Elite, Emira, Esprit, Europa, Evora, Excel, Exige, Omega, Super Seven, V8, Venturi
+-
+Marca: LTI
+Modelos: TX1
+-
+Marca: Man
+Modelos: TGE
+-
+Marca: Maserati
+Modelos: 222, 224, 228, 318, 3200, 3500 GT, 420, 4200, 422, 424, 430, Biturbo, Coupe, Ghibli, Grancabrio, Gransport, Granturismo, Grecale, Indy, Karif, Levante, MC20, Merak, Mexico, Mistral, Quattroporte, Racing, Sebring, Shamal, Spyder
+-
+Marca: Matra
+Modelos: 530, Bagheera, Djet, Murena, Rancho
+-
+Marca: Maxus
+Modelos: T90
+-
+Marca: Maybach
+Modelos: 57, 62, Pullman
+-
+Marca: Mazda
+Modelos: 121, 1300, 2, 3, 323, 5, 6, 626, 6e, 818, 929, B 2200, B 2500, BT-50, CX-3, CX-30, CX-5, CX-60, CX-7, CX-80, Demio, E 2200, Millenia, MPV, MX-3, MX-30, MX-5, MX-6, Premacy, RX-7, RX-8, Tribute, Xedos
+-
+Marca: McLaren
+Modelos: 540, 570, 600, 650, 675, 720, 765LT, F1, GT, MP4-12C, P1, Senna
+-
+Marca: Mercedes-Benz
+Modelos: 100, 170, 180, 190, 200, 220, 230, 240, 250, 260, 270, 280, 300, 320, 350, 380, 400, 420, 450, 500, 560, 600, AMG GT, Citan, Classe A, Classe B, Classe C, Classe CL, Classe CLA, Classe CLC, Classe CLE, Classe CLK, Classe CLS, Classe E, Classe G, Classe GL, Classe GLA, Classe GLB, Classe GLC, Classe GLE, Classe GLK, Classe GLS, Classe M, Classe R, Classe S, Classe SL, Classe SLC, Classe SLK, Classe T, Classe V, Classe X, eCitan Tourer, EQA, EQB, EQC, EQE, EQS, EQT, EQV, eSprinter, eVito Tourer, MB180, SLR McLaren, SLS 63 AMG, SLS AMG Electric Drive, Sprinter, Vaneo, Vario, Viano, Vito, Vito Tourer
+-
+Marca: MG
+Modelos: 1100, Arnolt, Cyberster, EHS, HS, Maestro, Marvel R, Metro, MG3, MG4, MG5, MG6 GT, MG6 Magnette, MGA, MGB, MGC, MGF, MGS5 EV, Midget, RV8, S5, TA, TB, TC, TD, TF, VA, X-Power, Y-Type, ZR, ZS, ZT
+-
+Marca: Microcar
+Modelos: Selecionar tudo, Dué, F8c, Flex, M-8, M.GO, MC, Virgo
+-
+Marca: Microlino
+Modelos: 2.0
+-
+Marca: MINI
+Modelos: Selecionar tudo, 1000, 1275, 1300, 3 Portas, 5 Portas, 850, Aceman, Cabrio, Clubman, Countryman, Coupé, IMA, Minor, Moke, Paceman, Pickup, Roadster
+-
+Marca: Mitsubishi
+Modelos: 3000 GT, 500, ASX, Carisma, Colt, Colt Cabrio, Cordia, Eclipse, Eclipse Cross, FTO, Galant, Galant SW, Galloper, Grandis, i-MiEV, L200, L300, L400, Lancer, Lancer Sportback, Lancer SW, Outlander, Pajero, Pajero Pinin, Pajero Sport, Santamo, Sapporo, Space Gear, Space Runner, Space Star, Space Wagon, Starion, Tredia
+-
+Marca: Morgan
+Modelos: 3-Wheeler, 4/4, Aero 8, Aero Coupe, Aero Plus 8, Aero SuperSports, AeroMax, Anniversary 4/4, EV3, EVA GT, LIFEcar, Plus 4, Plus 4 Supersports, Plus 6, Plus 8, Plus E, Plus Four, Roadster 3.7, Super 3, V6 Roadster
+-
+Marca: Nash
+Modelos: Eight Sedan, Rambler
+-
+Marca: Nissan
+Modelos: 100 NX, 120, 1200, 1600, 200 NX, 200SX, 240SX, 280 ZX, 300 ZX, 350 Z, 370 Z, Almera, Almera Tino, Ariya, Bluebird, Cabstar, Cherry, Cube, e-NV200 Combi, e-NV200 Evalia, e-Townstar, Figaro, GT-R, Interstar, Juke, Leaf, Maxima, Micra, Micra CC, Murano, Navara, Note, NV200 Combi, NV200 Evalia, NV250, NV300, PAO, Pathfinder, Patrol, Pick Up, Pixo, Prairie, Primastar, Primera, Primera Wagon, Pulsar, Qashqai, Qashqai +2, Quest, Serena, Silvia, Skyline, Stanza, Sunny, Terrano, Tiida, Townstar, Trade, Urvan, Vanette, Versa, X-Trail
+-
+Marca: NSU
+Modelos: Prinz, Ro 80, TT, Typ 110
+-
+Marca: Off-Road Armoury
+Modelos: Dominator
+-
+Marca: Opel
+Modelos: 1204, 1604, 1904, Adam, Agila, Ampera, Ampera-e, Antara, Ascona, Astra, Astra Cabrio, Astra Caravan, Astra Coupe, Astra GTC, Astra Sports Tourer, Calibra, Campo, Cascada, Combo, Combo-e, Commodore, Corsa, Corsa Spider Irmscher, Corsa-e, Crossland, Crossland X, Diplomat, Frontera, Grandland, Grandland X, GT, Insignia, Insignia Country Tourer, Insignia Grand Sport, Insignia Sports Tourer, Kadett, Kadett Cabrio, Kadett Caravan, Kapitan, Karl, Manta, Meriva, Mokka, Mokka X, Mokka-e, Monterey, Monza, Movano, Movano-e, Olympia, Omega, Omega Caravan, Pick Up Sportscab, Rekord, Rekord Caravan, Senator, Signum, Sintra, Speedster, Tigra, Tigra TwinTop, Vectra, Vectra Caravan, Vivaro, Vivaro-e, Zafira, Zafira Life, Zafira-e Life
+-
+Marca: Peugeot
+Modelos: 1007, 104, 106, 107, 108, 2008, 201, 202, 202 Cabriolet, 203, 203 Cabriolet, 204, 204 Cabriolet, 205, 205 Cabrio, 206, 206 CC, 206 SW, 206+, 207, 207 CC, 207 SW, 208, 3008, 304, 304 Cabriolet, 305, 306, 306 Break, 306 Cabriolet, 307, 307 Break, 307 CC, 307 SW, 308, 308 CC, 308 SW, 309, 4007, 4008, 403, 403 Cabriolet, 404, 404 Break, 404 Cabriolet, 405, 405 Break, 406, 406 Break, 407, 407 SW, 408, 5008, 504, 504 Break, 505, 505 Break, 508, 508 RXH, 508 SW, 604, 605, 607, 806, 807, Bipper Tepee, Boxer, Camper, e-2008, e-208, E-3008, e-308, e-308 SW, E-408, E-5008, e-Boxer, e-Expert, e-Partner, e-Rifter, e-Traveller, Expert, iOn, J5, Partner, RCZ, Rifter, Traveller
+-
+Marca: Plymouth
+Modelos: Selecionar tudo, Belvedere, Savoy
+-
+Marca: Polestar
+Modelos: 1, 2, 3, 4
+-
+Marca: Pontiac
+Modelos: Selecionar tudo, Fiero, Fire Bird, Grand-Am, Grand-Prix, GTO, Sunfire, Trans-Sport, Ventura
+-
+Marca: Porsche
+Modelos: 356, 550, 718, 718 Boxster, 718 Cayman, 718 Spyder, 911, 912, 914, 918 Spyder, 924, 928, 944, 962, 968, Boxster, Carrera GT, Cayenne, Cayenne Coupé, Cayman, Macan, Panamera, Panamera Sport Turismo, Taycan, Taycan Cross Turismo, Taycan Sport Turismo
+-
+Marca: Renault
+Modelos: 10, 11, 12, 14, 16, 17, 18, 19, 19 Cabriolet, 20, 21, 21 Nevada, 25, 30, 4, 4 E-Tech, 5, 5 E-Tech, 6, 8, 9, Alaskan, Alpine, Alpine A310, Alpine A610, Alpine V6, Arkana, Austral, Avantime, Captur, Caravelle, Celtaquatre, Clio, Clio Break, Clio Sport Tourer, Dauphine, Espace, Estafette, Express, Floride, Fluence, Fuego, Grand Espace, Grand Modus, Grand Scénic, Juvaquattre, Kadjar, Kangoo, Kangoo E-Tech, Koleos, Laguna, Laguna Break, Laguna Coupe, Latitude, Master, Master E-Tech, Mégane, Mégane Break, Mégane Cabrio, Mégane CC, Mégane Coupe, Mégane E-Tech, Mégane Grand Coupe, Mégane Scénic, Mégane Sport Tourer, Modus, Rafale, Rodeo, Safrane, Scénic, Scénic E-Tech, Spider, Super5, Symbioz, Talisman, Talisman Sport Tourer, Trafic, Trafic E-Tech, Twingo, Twizy, Vel Satis, Viva Grand Sport, Wind, Zoe
+-
+Marca: Riley
+Modelos: Selecionar tudo, Elf, RMA
+-
+Marca: Rolls Royce
+Modelos: Selecionar tudo, 20/25, 25/30, Corniche, Cullinan, Dawn, Flying Spur, Ghost, Park Ward, Phantom, Silver Cloud, Silver Dawn, Silver Seraph, Silver Shadow, Silver Spirit, Silver Spur, Silver Wraith, Twenty, Wraith
+-
+Marca: Rover
+Modelos: Selecionar tudo, 100, 111, 111 Cabrio, 114, 115, 12, 200, 2000, 211, 213, 214, 214 Cabriolet, 216, 216 Cabriolet, 218, 220, 220 Cabriolet, 2200, 25, 2600, 3500, 400, 414, 416, 418, 420, 45, 618, 620, 623, 75, 75 Tourer, 820, 825, 827, Metro, Montego, P2, P4, P5, P6, SD, Streetwise
+-
+Marca: Saab
+Modelos: 9-3, 9-3 Cabriolet, 9-3 Sport Hatch, 9-3 X, 9-5, 9-5 SportWagon, 90, 900, 900 Cabrio, 9000, 96, 99, Sonett
+-
+Marca: ScooterCar
+Modelos: Buzz
+-
+Marca: SEAT
+Modelos: 127, 550, 600 D, Alhambra, Altea, Arona, Arosa, Ateca, Cordoba, Cordoba Vario, Exeo, Fura, Ibiza, Ibiza ST, Inca, Leon, Leon ST, Leon X-Perience, Malaga, Marbella, Mii, Mii Electric, Panda, Tarraco, Terra, Toledo
+-
+Marca: Seres
+Modelos: 3, 5, 7
+-
+Marca: Shelby
+Modelos: Cobra 260, Cobra 427, Daytona Coupe, GT350, GT500
+-
+Marca: Silence
+Modelos: Selecionar tudo, S04
+-
+Marca: Simca
+Modelos: 1000, 1100, 1300, 1307, 1500, 5, Alvorada, Ariane, Aronde, Esplanada, Profissional, Vedette
+-
+Marca: Skoda
+Modelos: 120, 125, Citigo, Citigo-e, Elroq, Enyaq, Enyaq Coupé, Fabia, Fabia Break, Favorit, Felicia, Felicia Break, Forman, Forman Break, Kamiq, Karoq, Kodiaq, Octavia, Octavia Break, Outros, Pick-Up, Rapid, Rapid Spaceback, Roomster, Scala, Superb, Superb Break, Yeti
+-
+Marca: Skywell
+Modelos: ET5
+-
+Marca: Smart
+Modelos: Selecionar tudo, #1, #3, #5, City Cabrio, City Coupé, Crossblade, ForFour, Fortwo Cabrio, ForTwo Coupé, Roadster
+-
+Marca: SsangYong
+Modelos: Actyon, Actyon Sports, Kalista, Korando, Kyron, Musso, Panther, Rexton, Rodius, Tivoli
+-
+Marca: Subaru
+Modelos: 1200, 1800, 700, BRZ, Forester, Impreza, Impreza Sports Wagon, Justy, Legacy, Legacy Outback, Legacy Wagon, Leone, M70, M80, Maruti, Mini, Outback, R-2, Solterra, SVX, Trezia, Tribeca, Vivio, XT
+-
+Marca: Suzuki
+Modelos: Across, Alto, Baleno, Baleno Wagon, Cappucino, Carry, Celerio, Grand Vitara, Ignis, Jimny, Kizashi, Liana, LJ 80, Maruti, S-Cross, SA 310, Samurai, Santana, SC 100, Splash, Swace, Swift, Swift Cabrio, SX4, Vitara, Wagon R+, X-90, XL7
+-
+Marca: Tata
+Modelos: Indica, Indica Vista, Indigo, Manza, Safari, Sumo, Telcoline
+-
+Marca: Tesla
+Modelos: Model 3, Model S, Model X, Model Y, Roadster
+-
+Marca: Toyota
+Modelos: 4-Runner, Auris, Auris Touring Sports, Avensis, Avensis SW, Avensis Touring Sports, Avensis Verso, Aygo, Aygo X, BJ 40, BJ 73, bZ4X, C-HR, Camry, Carina, Celica, Celica Cabrio, Corolla, Corolla Cross, Corolla SW, Corolla Touring Sports, Corolla Verso, Corona, Cressida, Crown, FJ Cruiser, GR Supra, GR Yaris, GR86, GT86, HDJ, HiAce, Highlander, Hilux, iQ, Land Cruiser, Land Cruiser Prado, Lite-Ace, Mirai, MR2, Paseo, Picnic, Previa, Prius, Prius+, Proace, Proace City Verso, Proace Verso, Proace Verso Electric, RAV4, Sera, Sienna, Sports 800, Starlet, Supra, Tercel, Tundra, Urban Cruiser, Verso, Verso-S, Yaris, Yaris Cross, Yaris Verso
+-
+Marca: Triumph
+Modelos: 2000, Acclaim, Andere, Dolomite, GT6, Herald, Moss, Spitfire, Stag, TR2, TR3, TR4, TR5, TR6, TR7, TR8, TRA 2000
+-
+Marca: UMM
+Modelos: Alter, Alter II, Alter Trofeu, Alter Turbo, Cournil
+-
+Marca: Vanderhall
+Modelos: Selecionar tudo, Carmel, Venice
+-
+Marca: Vauxhall
+Modelos: Chevette, Cresta, Super, Viva, Wyvern
+-
+Marca: Volvo
+Modelos: 121, 122, 123, 142, 144, 145, 164, 240, 242 DL, 242 GT, 244, 245, 262, 264, 340, 343, 345, 360, 44, 440, 444, 46, 460, 480, 55, 56, 66, 740, 760, 780, 850, 940, 960, C30, C40, C70, EC40, ES90, EX30, EX30 Cross Country, EX40, EX90, P1800, PV, S40, S60, S60 Cross Country, S70, S80, S90, V40, V40 Cross Country, V50, V60, V60 Cross Country, V70, V90, V90 Cross Country, XC 40, XC 60, XC 70, XC 90
+-
+Marca: Voyah
+Modelos: Dream, Free
+-
+Marca: VW
+Modelos: Amarok, Arteon, Arteon Shooting Brake, Bora, Brasilia, Buggy, Caddy, Caravelle, Carocha, Carocha Cabrio, CC, Corrado, Crafter, Cross Up!, CrossCaddy, CrossGolf, CrossPolo, CrossTouran, Derby, e-Golf, e-Up!, EOS, Fox, Golf, Golf Alltrack, Golf Cabriolet, Golf Country, Golf Plus, Golf Sportsvan, Golf Variant, ID.3, ID.4, ID.5, ID.7, ID.7 Tourer, ID.Buzz, Jetta, Karmann, Karmann Ghia, Kübelwagen, LT, Lupo, Multivan, New Beetle, New Beetle Cabriolet, Passat, Passat Alltrack, Passat CC, Passat Variant, Phaeton, Polo, Polo Variant, Routan, Santana, Scirocco, Sharan, SP, T-Cross, T-Roc, T-Roc Cabrio, Taigo, Taro, Tayron, Tiguan, Tiguan Allspace, Touareg, Touran, Transporter, Type 181, Type 2, Type 3, Type 4, Up!, Vento
+-
+Marca: Wiesmann
+Modelos: MF3, MF4, MF5
+-
+Marca: XEV
+Modelos: Kitty, Yoyo
+-
+Marca: Xpeng
+Modelos: G6, G9, P7i
+-

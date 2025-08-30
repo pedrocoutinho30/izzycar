@@ -11,28 +11,29 @@ class CreateProposalsTable extends Migration
     {
         Schema::create('proposals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
-            $table->string('brand');
-            $table->string('model');
-            $table->year('year');
-            $table->integer('mileage');
-            $table->float('engine_capacity');
-            $table->float('co2');
+            $table->foreignId('client_id')->constrained('clients')->onDelete('cascade')->nullable();
+            $table->string('brand')->nullable();
+            $table->string('model')->nullable();
+            $table->string('version')->nullable();
+            $table->year('year')->nullable();
+            $table->integer('mileage')->nullable();
+            $table->float('engine_capacity')->nullable();
+            $table->float('co2')->nullable();
             // $table->string('fuel');
             $table->enum('fuel', ['', 'Gasolina', 'Diesel', 'Híbrido Plug-in/Gasolina', 'Híbrido Plug-in/Diesel', 'Elétrico'])->nullable();
             $table->text('notes')->nullable();
-            $table->float('value');
+            $table->float('value')->nullable();
             $table->float('transport_cost');
             $table->float('ipo_cost')->nullable();
-            $table->float('imt_cost');
-            $table->float('registration_cost');
-            $table->float('isv_cost');
-            $table->float('license_plate_cost');
-            $table->float('inspection_commission_cost');
-            $table->float('commission_cost');
-            $table->integer('proposed_car_mileage');
-            $table->string('proposed_car_year_month');
-            $table->float('proposed_car_value');
+            $table->float('imt_cost')->nullable();
+            $table->float('registration_cost')->nullable();
+            $table->float('isv_cost')->nullable();
+            $table->float('license_plate_cost')->nullable();
+            $table->float('inspection_commission_cost')->nullable();
+            $table->float('commission_cost')->nullable();
+            $table->integer('proposed_car_mileage')->nullable();
+            $table->string('proposed_car_year_month')->nullable();
+            $table->float('proposed_car_value')->nullable();
             $table->text('proposed_car_notes')->nullable();
             $table->text('proposed_car_features')->nullable();
             $table->json('images')->nullable(); // To store multiple images

@@ -32,4 +32,13 @@ class Client extends Model
         'birth_date' => 'date',
         'validate_identification_number' => 'date',
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
+    public function sale()
+    {
+        return $this->hasMany(Sale::class, 'client_id');
+    }
 }

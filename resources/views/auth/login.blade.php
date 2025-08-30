@@ -7,7 +7,9 @@
             <div class="card o-hidden border-0 shadow-lg my-5">
                 <div class="card-body p-0">
                     <div class="row">
-                        <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                        <div class="col-lg-6 d-none d-lg-block">
+                            <img src="{{ asset('img/logo-transparente.jpeg') }}" alt="Login Background" class="img-fluid h-100 w-100" style="object-fit: cover;">
+                        </div>
                         <div class="col-lg-6">
                             <div class="p-5">
                                 <div class="text-center">
@@ -28,7 +30,7 @@
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                                     <div class="form-group">
-                                        <input type="email" class="form-control form-control-user" name="email" placeholder="{{ __('E-Mail Address') }}" value="{{ old('email') }}" required autofocus>
+                                        <input type="email" class="form-control form-control-user" name="email" placeholder="{{ __('E-Mail Address') }}" value="{{ old('email') }}" placeholder="geral@izzycr.pt" required autofocus>
                                     </div>
 
                                     <div class="form-group">
@@ -48,25 +50,7 @@
                                         </button>
                                     </div>
 
-                                    <hr>
-
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-github btn-user btn-block">
-                                            <i class="fab fa-github fa-fw"></i> {{ __('Login with GitHub') }}
-                                        </button>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-twitter btn-user btn-block">
-                                            <i class="fab fa-twitter fa-fw"></i> {{ __('Login with Twitter') }}
-                                        </button>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-facebook btn-user btn-block">
-                                            <i class="fab fa-facebook-f fa-fw"></i> {{ __('Login with Facebook') }}
-                                        </button>
-                                    </div>
+                                    
                                 </form>
 
                                 <hr>

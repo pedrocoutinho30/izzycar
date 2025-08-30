@@ -1,0 +1,17 @@
+source venv/bin/activate
+cd scripts
+python3 get_images_autoscout.py
+pip3 install selenium
+pip install webdriver-manager
+python3 autoscout.py
+
+
+
+depois de correr o scrupt de ir ao standvirtual
+php artisan ads:import
+
+
+
+https://www.standvirtual.com/carros?search%5Bfilter_float_price%3Ato%5D=1000&search%5Border%5D=relevance_web&search%5Badvanced_search_expanded%5D=true
+
+https://www.autoscout24.com/offers/mercedes-benz-c-300-t-e-panorama-ahk-kamera-led-sound-leder-electric-gasoline-black-1937821b-0122-4c8d-9e2a-ac26460d2dd5?search_id=vzouwvhbuh&source_otp=nfm&ap_tier=t50&source=listpage_search-results&applied_boost_level=t50&boost_level=t50&topspot_algorithm=nfm-default&topspot_dealer_id=26294&relevance_adjustment=sponsored&boosting_product=mia#vzouwvhbuh

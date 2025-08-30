@@ -18,6 +18,7 @@ class Proposal extends Model
         'client_id',
         'brand',
         'model',
+        'version',
         'year',
         'mileage',
         'engine_capacity',
@@ -50,5 +51,10 @@ class Proposal extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+        public function attributeValues()
+    {
+        return $this->hasMany(ProposalAttributeValue::class);
     }
 }

@@ -17,3 +17,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+use App\Models\Brand;
+use App\Models\ModelCar;
+
+Route::get('/models/{brand}', function ($brandId) {
+    return Brand::findOrFail($brandId)->modelCars()->select('id', 'name')->get();
+});
+
+Route::get('/years/{model}', function ($modelId) {
+    return ModelCar::findOrFail($modelId)->modelYears()->pluck('year')->unique()->sort()->values();
+});
+
+

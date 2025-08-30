@@ -1,0 +1,6 @@
+Marca: BMW
+Modelos: 1502, 1600, 1602, 1802, 2000, 2002, 2800, 3.0 CS, 3.0 CSi, 3.0 Si, 502, 700, Isetta, M1, Série 1, Série 2, Série 3, Série 4, Série 5, Série 6, Série 7, Série 8, Série i, Série X, Série Z
+-
+Marca: Mercedes-Benz
+Modelos: 100, 170, 180, 190, 200, 220, 230, 240, 250, 260, 270, 280, 300, 320, 350, 380, 400, 420, 450, 500, 560, 600, AMG GT, Citan, Classe A, Classe B, Classe C, Classe CL, Classe CLA, Classe CLC, Classe CLE, Classe CLK, Classe CLS, Classe E, Classe G, Classe GL, Classe GLA, Classe GLB, Classe GLC, Classe GLE, Classe GLK, Classe GLS, Classe M, Classe R, Classe S, Classe SL, Classe SLC, Classe SLK, Classe T, Classe V, Classe X, eCitan Tourer, EQA, EQB, EQC, EQE, EQS, EQT, EQV, eSprinter, eVito Tourer, MB180, SLR McLaren, SLS 63 AMG, SLS AMG Electric Drive, Sprinter, Vaneo, Vario, Viano, Vito, Vito Tourer
+-

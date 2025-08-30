@@ -1,307 +1,259 @@
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.5;
-        }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>@yield('title', 'Izzycar')</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('img/logo-arredondado.png') }}">
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    <!-- CSS FILES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans&display=swap" rel="stylesheet">
 
-        .header img {
-            max-width: 200px;
-        }
+    <link href=" {{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href=" {{ asset('css/bootstrap-icons.css') }}" rel="stylesheet">
+    <link href=" {{ asset('css/layout.css') }}" rel="stylesheet">
 
-        .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 12px;
-            padding: 10px;
-            border-top: 1px solid #000;
-        }
 
-        .footer a {
-            text-decoration: none;
-            color: #000;
-            font-weight: bold;
-        }
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 
-        .social-icons img {
-            width: 15px;
-            vertical-align: middle;
-            margin-left: 5px;
-        }
-
-        .proposal-details {
-            margin-top: 20px;
-        }
-
-        .proposal-details th,
-        .proposal-details td {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        .proposal-details th {
-            background-color: #f2f2f2;
-        }
-
-        .information-table {
-            margin-top: 30px;
-            border-collapse: collapse;
-        }
-
-        .information-table th,
-        .information-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        .information-table th {
-            background-color: #f2f2f2;
-        }
-
-        .logo {
-            width: 10%;
-            height: auto;
-        }
-    </style>
+    @stack('styles')
 </head>
 
-<body>
-    <div class="header" style="display: flex; width: 100%; align-items: center;">
-        <!-- Logo à esquerda -->
-        <div style="flex-shrink: 0;">
-            <img src="{{ public_path('img/logo-transparente.jpeg') }}" alt="Logo" style="max-height: 50px;">
+<body id="top">
+
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color: var(--primary-color);">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a class="navbar-brand" href="#top">
+                <img src=" {{ asset('img/logo-transparente.png') }}" alt="Logo" class="navbar-logo" style="height:auto; width:120px;">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+
+
+    <main>
+        <section class="hero-section d-flex justify-content-center align-items-center" id="section_home_import">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-lg-8 col-12 mx-auto">
+                        <h1 class="text-white text-center"> Proposta Izzycar</h1>
+                        <p class="lead text-center">Aqui acompanhamos todo o processo de importação do seu automóvel com transparência e atenção a cada detalhe.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <div class="container my-5">
+            <!-- Dados do Veículo -->
+            <div class="card shadow-sm mb-4 bg-black text-white">
+                <div class="card-body">
+                    <h3 class="fw-bold mb-3  text-accent">{{ $proposal->brand }} {{ $proposal->model }} {{ $proposal->version }}</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ul class="list-unstyled">
+
+                                <li class="text-white mb-2"><strong>@include('components.icons.calendar')</strong> {{$proposal->proposed_car_year_month}}</li>
+                                <li class="text-white mb-2"><strong>@include('components.icons.fuel')</strong> {{$proposal->fuel}}</li>
+                                <li class="text-white mb-2"><strong>@include('components.icons.road')</strong> {{$proposal->proposed_car_mileage}} KM</li>
+                                <li class="text-white mb-2"><strong>@include('components.icons.gearbox')</strong> Automático</li>
+                                @if($proposal->fuel !== 'Elétrico')
+                                <li class="text-white mb-2"><strong>@include('components.icons.motor')</strong> {{$proposal->engine_capacity}} CC</li>
+                                @endif
+
+                            </ul>
+                        </div>
+                        <?php
+                        $totalCostWithoutIva = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost + ($proposal->proposed_car_value / 1.19);
+                        $totalCost = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->isv_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost + $proposal->proposed_car_value;
+                        $serviceCost = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost;
+                        ?>
+
+                        <div class="col-md-8">
+                            <div class="text-center mb-4">
+
+                                {{-- Foto grande do carro --}}
+                                <?php
+                                if ($proposal->images) {
+
+                                    $image = json_decode($proposal->images, true)[0] ?? null;
+                                }
+                                ?>
+                                @if($proposal->images)
+                                <img src=" {{ asset('storage/' . $image) }}" alt="Carro" class="img-fluid rounded shadow" style="max-height: 400px; object-fit: cover;">
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row text-center justify-content-center align-items-stretch">
+                            <!-- Preço -->
+                            <div class="col-sm-12 col-md-2 mb-3 d-flex">
+                                <div class="p-3 bg-dark rounded shadow-sm flex-fill d-flex flex-column">
+                                    <h5 class="fw-bold text-accent">{{ $proposal->proposed_car_value }} €</h5>
+                                    <small class="text-white">Preço do carro</small>
+                                </div>
+                            </div>
+
+                            <!-- ISV -->
+                            <div class="col-sm-12 col-md-2 mb-3 d-flex">
+                                <div class="p-3 bg-dark rounded shadow-sm flex-fill d-flex flex-column">
+                                    <h5 class="fw-bold text-accent">{{ $proposal->isv_cost }} €</h5>
+                                    <small class="text-white">ISV</small>
+                                </div>
+                            </div>
+
+                            <!-- Serviço -->
+                            <div class="col-sm-12 col-md-2 mb-3 d-flex">
+                                <div class="p-3 bg-dark rounded shadow-sm flex-fill d-flex flex-column">
+                                    <h5 class="fw-bold text-accent">{{ round($serviceCost, 0) }} €</h5>
+                                    <small class="text-white">Serviço <sup>*</sup></small>
+                                </div>
+                            </div>
+
+                            <!-- Preço Chave na Mão -->
+                            <div class="col-sm-12 col-md-2 mb-3 d-flex">
+                                <div class="p-3 bg-dark rounded shadow-sm flex-fill d-flex flex-column">
+                                    <h5 class="fw-bold text-accent">{{ round($totalCost, 0) }} €</h5>
+                                    <small class="text-white">Preço chave na mão</small>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 col-md-2 mb-3 d-flex">
+                                <div class="p-3 bg-dark rounded shadow-sm flex-fill d-flex flex-column">
+                                    <h5 class="fw-bold text-accent">{{ round($totalCostWithoutIva, 0) }} €</h5>
+                                    <small class="text-white">Preço chave na mão sem iva (empresas)</small>
+                                </div>
+                            </div>
+
+                            <!-- Ver Anúncio -->
+                            <div class="col-sm-12 col-md-2 mb-3 d-flex">
+                                <a href="{{ $proposal->url }}" target="_blank" class="flex-fill d-flex">
+                                    <div class="p-3 bg-dark rounded shadow-sm flex-fill d-flex flex-column justify-content-center">
+                                        <h5 class="fw-bold text-accent">Ver anúncio</h5>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <!-- Título centralizado -->
-        <div style="flex-grow: 1; text-align: center;">
-            <h2 style="margin: 0;">Proposta de Importação</h2>
+        <!-- Equipamento -->
+        <div class="container my-5">
+            <div class="row ml-1 mt-5 g-4">
+                @foreach ($attributes as $group => $attrs)
+                <div class="col-12">
+                    <div class="card shadow-sm mb-4 bg-black text-white">
+                        <div class="card-body">
+                            <h5 class="card-title text-accent fw-semibold mb-4">{{ $group }}</h5>
+
+                            <div class="row">
+                                @foreach ($attrs as $attr => $value)
+                                @if(!in_array($attr, ['Potência', 'Cilindrada', 'Transmissão']))
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-check-circle-fill me-2" style="color: var(--accent-color);"></i>
+                                        <span class="text-white">{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
+                                    </div>
+                                </div>
+                                @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
         </div>
-    </div>
-    <div class="content">
-
-
-        <!-- Tabela com a Informação do Esperado -->
-        <h4>Informação Esperada</h4>
-        <div class="information-table">
-            <table width="100%">
-                <tr>
-                    <th>Marca</th>
-                    <td>{{ $proposal->brand }}</td>
-                </tr>
-                <tr>
-                    <th>Modelo</th>
-                    <td>{{ $proposal->model }}</td>
-                </tr>
-                <tr>
-                    <th>Ano</th>
-                    <td>{{ $proposal->year }}</td>
-                </tr>
-                <tr>
-                    <th>Kms</th>
-                    <td>{{ $proposal->mileage }} km</td>
-                </tr>
-                <tr>
-                    <th>Cilindrada</th>
-                    <td>{{ $proposal->engine_capacity }} cc</td>
-                </tr>
-                <tr>
-                    <th>CO2</th>
-                    <td>{{ $proposal->co2 }} g/km</td>
-                </tr>
-                <tr>
-                    <th>Combustível</th>
-                    <td>{{ $proposal->fuel }}</td>
-                </tr>
-                <tr>
-                    <th>Valor Máximo</th>
-                    <td>{{ $proposal->value }} €</td>
-                </tr>
-                <tr>
-                    <th>Observações</th>
-                    <td>{!!$proposal->notes !!}</td>
-                </tr>
-
-            </table>
-        </div>
-        <div style="page-break-before: always;"></div>
-
-
-
-        <h4>Carro proposto</h4>
-        <div class="information-table">
-            <table width="100%">
-                <tr>
-                    <th>Kms</th>
-                    <td>{{$proposal->proposed_car_mileage}}</td>
-                </tr>
-                <tr>
-                    <th>Mês/Ano</th>
-                    <td>{{$proposal->proposed_car_year_month}}</td>
-                </tr>
-                <tr>
-                    <th>Valor</th>
-                    <td>{{$proposal->proposed_car_value}} €</td>
-                </tr>
-                <tr>
-                    <th>Observações</th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Valor do carro</th>
-                    <td>{{$proposal->proposed_car_value }} €</td>
-                </tr>
-            </table>
-        </div>
-        <div>
-            <h2>Características</h2>
-            {!!$proposal->proposed_car_features!!}
-        </div>
-        <div style="page-break-before: always;"></div>
-
-        <?php
-        if ($proposal->images) {
-
-            $images = json_decode($proposal->images, true);
-        }
-        ?>
-        @if (!empty($images))
-        <div class="images-gallery">
-            @foreach($images as $index => $image)
-            <div class="image-row" style="margin-top: 10px; text-align: center;">
-                <div class="image-item" style="margin-bottom: 10px;">
-                    <img src="{{ public_path('storage/' . $image) }}" style="width: 90%; height: auto;">
+        <!-- Processo -->
+        <div class="container my-5">
+            <div class="card shadow-sm mb-4 bg-black text-white">
+                <div class="card-body">
+                    <h4 class="fw-bold mb-3 text-accent">Da escolha à entrega: o nosso processo</h4>
+                    <div class="row text-center">
+                        <div class="col">Aprovação: <br><strong class="text-accent">3 dias</strong></div>
+                        <div class="col">Pagamento: <br><strong class="text-accent">4 dias</strong></div>
+                        <div class="col">Transporte: <br><strong class="text-accent">12 dias</strong></div>
+                        <div class="col">ISV: <br><strong class="text-accent">3 dias</strong></div>
+                        <div class="col">Entrega: <br><strong class="text-accent">22 dias</strong></div>
+                    </div>
+                    <p class="mt-3 text-white">
+                        * Os prazos indicados são aproximados e podem sofrer alterações por motivos logísticos ou administrativos.
+                    </p>
                 </div>
             </div>
-            @if (($index + 1) % 2 == 0 && !$loop->last)
-            <div style="page-break-before: always;"></div>
-            @endif
-            @endforeach
         </div>
-        @endif
 
-
-        <div style="page-break-before: always;"></div>
-
-        <?php
-        $totalCost = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->isv_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost + $proposal->proposed_car_value;
-        ?>
-        <h4>Custos</h4>
-        <div class="information-table">
-            <table width="100%">
-                <tr>
-                    <th>*Transporte</th>
-                    <td>{{$proposal->transport_cost}} €</td>
-                </tr>
-                <tr>
-                    <th>Custo inspeção</th>
-                    <td>{{$proposal->ipo_cost}} €</td>
-                </tr>
-                <tr>
-                    <th>Custos IMT</th>
-                    <td>{{$proposal->imt_cost}} €</td>
-                </tr>
-                <tr>
-                    <th>Custos Registo Automóvel</th>
-                    <td>{{$proposal->registration_cost}} €</td>
-                </tr>
-                <tr>
-                    <th>*ISV</th>
-                    <td>{{$proposal->isv_cost}} €</td>
-                </tr>
-                <tr>
-                    <th>Matriculas</th>
-                    <td>{{$proposal->license_plate_cost}} €</td>
-                </tr>
-                <tr>
-                    <th>Valor do carro</th>
-                    <td>{{$proposal->proposed_car_value}} €</td>
-                </tr>
-
-                <?php
-                $insp_commision = 2;
-                $myCommission = 4;
-                if ($proposal->proposed_car_value < 10000) {
-                    $myCommission = 7;
-                    $insp_commision = 5;   
-                }else if ($proposal->proposed_car_value < 20000) {
-                    $myCommission = 5;
-                    $insp_commision = 3;
-                }
-                ?>
-                <tr>
-                    <th>*Comissão vistoria ({{$insp_commision}}%)</th>
-                    <td>{{$proposal->inspection_commission_cost}} €</td>
-                </tr>
-                <tr>
-                    <th>*Comissão vendedor ({{$myCommission}}%)</th>
-                    <td>{{$proposal->commission_cost}} €</td>
-                </tr>
-                <tr>
-                    <th>Total</th>
-                    <td>{{ $totalCost }} €</td>
-                </tr>
-            </table>
-            <p> * Estes valores são demonstrativos, embora bastante aproximados dos valores finais, podendo
-                alterar conforme o valor e características do carro.</p>
+        <!-- Formalização -->
+        <div class="container my-5">
+            <div class="card shadow-sm mb-4 bg-black text-white">
+                <div class="card-body">
+                    <h4 class="fw-bold mb-3 text-accent">Formalização do Processo</h4>
+                    <p>O processo é oficializado com a assinatura de dois contratos:</p>
+                    <ul>
+                        <li><strong>Prestação de Serviços:</strong> Define o nosso serviço de forma clara e estruturada.</li>
+                        <li><strong>Compra e Venda com o Stand:</strong> Formaliza a aquisição do veículo e legalização em Portugal.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div style="page-break-before: always;"></div>
-        <h2>Notas</h2>
 
-        <p>Para iniciar o processo de importação e legalização do veículo é recomendável seguir os seguintes passos:</p>
+        <!-- Pagamentos -->
+        <div class="container my-5">
+            <div class="card shadow-sm mb-4 bg-black text-white">
+                <div class="card-body">
+                    <div class="card-body">
+                        <h4 class="fw-bold mb-3 text-accent">Pagamentos</h4>
+                        <p><strong>Serviço da Izzycar:</strong></p>
+                        <ul>
+                            <li>50% na adjudicação do serviço (após assinatura do contrato).</li>
+                            <li>50% na entrega do automóvel em Portugal.</li>
+                        </ul>
+                        <p><strong>Aquisição do Automóvel:</strong> O pagamento é feito diretamente ao stand, por transferência bancária.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <h3>Vistoria Prévia na Origem:</h3>
-        <p>Embora opcional, é altamente recomendada uma inspeção do veículo ainda na Alemanha. Este procedimento deve ser pago no momento da solicitação.</p>
 
-        <h3>Pagamento ao Vendedor:</h3>
-        <p>O valor do veículo será pago diretamente ao stand ou concessionário alemão.</p>
+        <!-- Contactos -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4 class="fw-bold mb-3">Contactos</h4>
+                <p><strong>Telefone:</strong> +351 914 250 947</p>
+                <p><strong>Email:</strong> geral@izzycr.pt</p>
+            </div>
+        </div>
 
-        <h3>Organização do Transporte e Inspeção:</h3>
-        <p>Para agendar o transporte do veículo para Portugal, é necessário efetuar previamente o pagamento dos serviços de transporte e inspeção.</p>
+    </main>
 
-        <h3>Legalização em Portugal:</h3>
-        <p>Após a chegada do veículo a Portugal, inicia-se o processo de legalização, que inclui:</p>
-        <ul>
-            <li><strong>Inspeção Técnica:</strong> Realização de uma inspeção para verificar a conformidade do veículo com as normas portuguesas.</li>
-            <li><strong>Pagamento do ISV:</strong> Liquidação do Imposto Sobre Veículos (ISV) diretamente às autoridades fiscais portuguesas.</li>
-            <li><strong>Emissão da Matrícula:</strong> Após o pagamento do ISV, é atribuída a matrícula portuguesa ao veículo.</li>
-        </ul>
-        <div style="page-break-before: always;"></div>
-        <h3>Seguro Automóvel:</h3>
-        <p>Antes da entrega do veículo, o proprietário deve contratar um seguro automóvel válido em Portugal.</p>
+    <!-- JAVASCRIPT FILES -->
+    <script src=" {{ asset('js/jquery.min.js') }}"></script>
+    <script src=" {{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src=" {{ asset('js/jquery.sticky.js') }}"></script>
+    <script src=" {{ asset('js/click-scroll.js') }}"></script>
+    <script src=" {{ asset('js/custom.js') }}"></script>
 
-        <h3>Pagamento Final:</h3>
-        <p>No ato da entrega, é efetuado o pagamento do valor remanescente acordado.</p>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-        <p>Este processo assegura que todas as etapas legais e fiscais são cumpridas, garantindo a conformidade do veículo com as exigências portuguesas.</p>
-
-    </div>
-    <div class="footer">
-        <p>
-            Pedro Coutinho |
-            <a href="mailto:izzycarpt@gmail.com">izzycarpt@gmail.com</a> |
-            <a href="tel:+351914250947">914250947</a>
-        </p>
-        <p class="social-icons">
-            <a href="https://www.facebook.com/profile.php?id=61572831810539" target="_blank">
-                Facebook
-            </a>
-            <a href="https://www.instagram.com/izzycarpt" target="_blank">
-                Instagram
-            </a>
-        </p>
-    </div>
+    @stack('scripts')
 </body>
 
 </html>

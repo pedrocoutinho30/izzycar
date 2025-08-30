@@ -1,20 +1,26 @@
 @extends('layouts.admin')
 
 @section('main-content')
-<h1 class="h3 mb-2 text-gray-800">Clientes</h1>
-<a href="{{ route('clients.create') }}" class="btn btn-primary mb-3">Novo Cliente</a>
-<div class="card shadow mb-4">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
+<div class="container-fluid px-4 py-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 text-primary mb-0">Clientes</h1>
+                <a href="{{ route('clients.create') }}" class="btn btn-outline-primary shadow-sm">
+                    <i class="fas fa-plus me-1"></i> Adicionar Cliente
+                </a>
+            </div>
+
+
+            <table class="table table-striped table-hover align-middle" id="dataTable" width="100%" cellspacing="0">
+                <thead class="table-dark">
                     <tr>
-                        <th>Name</th>
+                        <th>Nome</th>
                         <th>Email</th>
                         <th>Telefone</th>
                         <th>Origem</th>
                         <th>Cidade</th>
-                        <th>Actions</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,20 +32,33 @@
                         <td>{{ $client->origin }}</td>
                         <td>{{ $client->city }}</td>
                         <td>
-                            <!-- <a href="{{ route('clients.show', $client->id) }}" class="btn btn-info btn-sm">Ver</a> -->
-                            <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a
-                                <form action="{{ route('clients.destroy', $client->id) }}" method="POST" style="display:inline;">
-                            <form action="{{ route('clients.destroy', $client->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
+                            <div class="btn-group" role="group" aria-label="Ações">
+                                <!-- Editar -->
+                                <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
 
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem a certeza que deseja excluir este cliente?')"><i class="fas fa-trash"></i></button>
-                            </form>
+                                <!-- Eliminar -->
+                                <form action="{{ route('clients.destroy', $client->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem a certeza que deseja excluir este cliente?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+
+                                <a class=" btn btn-sm btn-secondary " href="{{ route('clients.contractService', $client->id) }}" target="_blank">
+                                    <i class="fas fa-file-alt"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
+            <div class="d-flex justify-content-center mt-4">
+                {{ $clients->links() }}
+            </div>
         </div>
     </div>
 </div>

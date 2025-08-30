@@ -14,7 +14,7 @@ class CreateClientsTable extends Migration
             $table->date('birth_date')->nullable();
             $table->enum('gender', ['', 'Homem', 'Mulher', 'Outro'])->nullable();
             $table->string('phone')->nullable();
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->string('identification_number')->nullable();
             $table->date('validate_identification_number')->nullable();
             $table->text('address')->nullable();

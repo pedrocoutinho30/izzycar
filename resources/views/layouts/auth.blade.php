@@ -18,12 +18,17 @@
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
 
     <!-- Favicon -->
-    <link href="{{ asset('img/favicon.png') }}" rel="icon" type="image/png">
+    <link href="{{ asset('img/logo-simples.png') }}" class="img-fluid rounded-circle" rel="icon" type="image/png">
 </head>
-<body class="bg-gradient-primary min-vh-100 d-flex justify-content-center align-items-center">
+<body class="bg-gradient-dark min-vh-100 d-flex justify-content-center align-items-center">
 
 @yield('main-content')
-
+<style>
+.bg-gradient-dark {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+  color: #fff;
+}
+</style>
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>

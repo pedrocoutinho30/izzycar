@@ -11,7 +11,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Izzycar BO') }}</title>
 
     <!-- Fonts -->
     <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
@@ -21,7 +21,126 @@
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
 
     <!-- Favicon -->
-    <link href="{{ asset('img/favicon.png') }}" rel="icon" type="image/png">
+    <link href="{{ asset('img/logo-simples.png') }}" class="img-fluid rounded-circle" rel="icon" type="image/png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        .nav-link {
+            width: 12rem !important;
+        }
+
+        #accordionSidebar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border: none;
+            box-shadow: 4px 0 12px rgb(20 40 70 / 0.2);
+            border-radius: 0 16px 16px 0;
+            transition: width 0.3s ease;
+        }
+
+        #accordionSidebar .sidebar-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #e0e6f0;
+            letter-spacing: 2px;
+            padding: 1.25rem 1rem;
+        }
+
+        #accordionSidebar .sidebar-brand-icon i {
+            color: #a3c4f3;
+            font-size: 2.2rem;
+            transform: rotate(-12deg);
+        }
+
+        #accordionSidebar .nav-link {
+            color: rgba(255 255 255 / 0.85);
+            font-weight: 500;
+            padding: 0.85rem 1.5rem;
+            border-radius: 12px;
+            margin: 0.25rem 1rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #accordionSidebar .nav-link:hover,
+        #accordionSidebar .nav-item.active .nav-link {
+            background-color: rgba(255 255 255 / 0.15);
+            color: #fff;
+            box-shadow: 0 4px 12px rgb(163 196 243 / 0.4);
+            font-weight: 600;
+        }
+
+        #accordionSidebar .nav-link i {
+            color: rgba(255 255 255 / 0.75);
+            margin-right: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        #accordionSidebar .nav-link:hover i,
+        #accordionSidebar .nav-item.active .nav-link i {
+            color: #a3c4f3;
+        }
+
+        #accordionSidebar hr.sidebar-divider {
+            border-color: rgba(255 255 255 / 0.15);
+            margin: 1.25rem 1rem;
+        }
+
+        #accordionSidebar .sidebar-heading {
+            color: rgba(255 255 255 / 0.7);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 0 1.5rem;
+            margin-top: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        #sidebarToggle {
+            background-color: transparent;
+            border: none;
+            color: rgba(255 255 255 / 0.6);
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        #sidebarToggle:hover {
+            color: #a3c4f3;
+            cursor: pointer;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 0.85rem 1.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-footer a {
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+            display: block;
+            text-align: left;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-footer a:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .menu-label {
+            display: block;
+            text-align: center;
+            white-space: normal;
+            /* Permite quebrar linha */
+            word-break: break-word;
+            /* Quebra palavras longas se necessário */
+            line-height: 1.2;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -29,94 +148,118 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
         <!-- Sidebar -->
+        <!-- Sidebar - Accordion Wrapper -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url('/home') }}">
                 <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
+                    <img src="{{ asset('img/logo-simples.png') }}" alt="Logo Izzycar" class="img-fluid rounded-circle" style="width: 50px; height: auto;">
                 </div>
-                <div class="sidebar-brand-text mx-3"></div>
             </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item {{ Nav::isRoute('home') }}">
-                <a class="nav-link" href="{{ route('home') }}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>{{ __('Dashboard') }}</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                {{ __('Gestão') }}
-            </div>
-
-            <li class="nav-item {{ Nav::isRoute('clients') }}">
-                <a class="nav-link" href="{{ route('clients.index') }}">
-                    <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>{{ __('Clientes') }}</span>
+            @hasanyrole('admin|gestor')
+            <!-- Accordion Item: Gestão Stand -->
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseGestao" aria-expanded="true">
+                    <i class="fas fa-fw fa-cogs"></i>
+                    <span>Gestão Stand</span>
                 </a>
+                @php
+                $menuItemsGestao = [
+                ['route' => 'clients.index', 'icon' => 'fa-users', 'label' => __('Clientes'), 'permission' => 'gerir clientes'],
+                ['route' => 'proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas'), 'permission' => 'gerir propostas'],
+                ['route' => 'vehicles.index', 'icon' => 'fa-car-side', 'label' => __('Veículos'), 'permission' => 'gerir veiculos'],
+                ['route' => 'expenses.index', 'icon' => 'fa-file-invoice-dollar','label' => __('Despesas'), 'permission' => 'gerir despesas'],
+                ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'label' => __('Vendas'), 'permission' => 'gerir vendas'],
+                ['route' => 'suppliers.index', 'icon' => 'fa-truck-loading', 'label' => __('Fornecedores'), 'permission' => 'gerir fornecedores'],
+                ['route' => 'partners.index', 'icon' => 'fa-handshake', 'label' => __('Parceiros'), 'permission' => 'gerir parceiros'],
+                ['route' => 'ad-searches.index', 'icon' => 'fa-chart-line', 'label' => __('Análise de Mercado'), 'permission' => 'analisar mercado'],
+                ];
+                @endphp
+                <div id="collapseGestao" class="collapse "> <!-- show = aberto por padrão -->
+                    <div class=" py-2 collapse-inner rounded">
+                        @foreach ($menuItemsGestao as $item)
+                        @can($item['permission'])
+                        <div class="nav-item {{ Nav::isRoute($item['route']) }}">
+                            <a href="{{ route($item['route']) }}" class="nav-link" style="width: 12rem !important;">
+                                <i class="fas fa-fw {{ $item['icon'] }}"></i>
+                                <span class="menu-label">{{ $item['label'] }}</span>
+                            </a>
+                        </div>
+                        @endcan
+                        @endforeach
+                    </div>
+                </div>
             </li>
+            @endhasanyrole
+            <!-- Accordion Item: CMS -->
+            @hasanyrole('admin|cms')
 
-            <li class="nav-item {{ Nav::isRoute('brands') }}">
-                <a class="nav-link" href="{{ route('brands.index') }}">
-                    <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>{{ __('Marcas') }}</span>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseCMS" aria-expanded="true">
+                    <i class="fas fa-fw fa-file"></i>
+                    <span>CMS</span>
                 </a>
+                @php
+                $menuItemsCMS = [
+                ['route' => 'pages.imports', 'icon' => 'fa-file', 'label' => __('Importações'), 'permission' => 'gerir importacoes'],
+                ['route' => 'pages.legalizations', 'icon' => 'fa-file', 'label' => __('Legalizações'), 'permission' => 'gerir legalizacoes'],
+                ['route' => 'pages.categories', 'icon' => 'fa-file', 'label' => __('Categorias de Notícias'), 'permission' => 'gerir categoria de noticias'],
+                ['route' => 'pages.news', 'icon' => 'fa-file', 'label' => __('Notícias'), 'permission' => 'gerir noticias'],
+                ['route' => 'pages.selling', 'icon' => 'fa-file', 'label' => __('Venda Automóvel'), 'permission' => 'gerir pagina de venda'],
+                ];
+                @endphp
+                <div id="collapseCMS" class="collapse "> <!-- show = aberto por padrão -->
+                    <div class=" py-2 collapse-inner rounded">
+                        @foreach ($menuItemsCMS as $item)
+                        @can($item['permission'])
+                        <div class="nav-item {{ Nav::isRoute($item['route']) }}">
+                            <a href="{{ route($item['route']) }}" class="nav-link" style="width: 12rem !important;">
+                                <i class="fas fa-fw {{ $item['icon'] }}"></i>
+                                <span class="menu-label">{{ $item['label'] }}</span>
+                            </a>
+                        </div>
+                        @endcan
+                        @endforeach
+                    </div>
+                </div>
             </li>
-            <li class="nav-item {{ Nav::isRoute('vehicles') }}">
-                <a class="nav-link" href="{{ route('vehicles.index') }}">
-                    <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>{{ __('Veículos') }}</span>
+            @endhasanyrole
+            @hasanyrole('admin|cms|gestor')
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseAdmin" aria-expanded="true">
+                    <i class="fas fa-fw fa-file"></i>
+                    <span>ADMIN</span>
                 </a>
+                @php
+                $menuItemsAdmin = [
+                ['route' => 'brands.index', 'icon' => 'fa-tags', 'label' => __('Marcas'), 'permission' => 'gerir marcas'],
+                ['route' => 'vehicle-attributes.index', 'icon' => 'fa-cog', 'label' => __('Atributos de Veículo'), 'permission' => 'gerir atributos de veiculo'],
+                ['route' => 'page-types.index', 'icon' => 'fa-file', 'label' => __('Tipos de Página'), 'permission' => 'gerir tipos de pagina'],
+                ['route' => 'pages.index', 'icon' => 'fa-file', 'label' => __('Páginas'), 'permission' => 'gerir paginas'],
+                ['route' => 'menus.index', 'icon' => 'fa-file', 'label' => __('Menus'), 'permission' => 'gerir menus'],
+                ['route' => 'users.index', 'icon' => 'fa-person', 'label' => __('Utilizadores'), 'permission' => 'gerir utilizadores'],
+                ];
+                @endphp
+                <div id="collapseAdmin" class="collapse "> 
+                    <div class=" py-2 collapse-inner rounded">
+                        @foreach ($menuItemsAdmin as $item)
+                        @can($item['permission'])
+                        <div class="nav-item {{ Nav::isRoute($item['route']) }}">
+                            <a href="{{ route($item['route']) }}" class="nav-link" style="width: 12rem !important;">
+                                <i class="fas fa-fw {{ $item['icon'] }}"></i>
+                                <span class="menu-label">{{ $item['label'] }}</span>
+                            </a>
+                        </div>
+                        @endcan
+                        @endforeach
+                    </div>
+                </div>
             </li>
-
-            <li class="nav-item {{ Nav::isRoute('suppliers') }}">
-                <a class="nav-link" href="{{ route('suppliers.index') }}">
-                    <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>{{ __('Fornecedores') }}</span>
-                </a>
-            </li>
-            <li class="nav-item {{ Nav::isRoute('partners') }}">
-                <a class="nav-link" href="{{ route('partners.index') }}">
-                    <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>{{ __('Parceiros') }}</span>
-                </a>
-            </li>
-            <li class="nav-item {{ Nav::isRoute('expenses') }}">
-                <a class="nav-link" href="{{ route('expenses.index') }}">
-                    <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>{{ __('Despesas') }}</span>
-                </a>
-            </li>
-            <li class="nav-item {{ Nav::isRoute('sales') }}">
-                <a class="nav-link" href="{{ route('sales.index') }}">
-                    <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>{{ __('Vendas') }}</span>
-                </a>
-            </li>
-            <li class="nav-item {{ Nav::isRoute('proposals') }}">
-                <a class="nav-link" href="{{ route('proposals.index') }}">
-                    <i class="fas fa-fw fa-hands-helping"></i>
-                    <span>{{ __('Propostas') }}</span>
-                </a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
+            @endhasanyrole
         </ul>
+
+
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
@@ -125,67 +268,11 @@
             <!-- Main Content -->
             <div id="content">
 
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-
-                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                        <li class="nav-item dropdown no-arrow d-sm-none">
-                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-search fa-fw"></i>
-                            </a>
-                            <!-- Dropdown - Messages -->
-                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto w-100 navbar-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button">
-                                                <i class="fas fa-search fa-sm"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
-                                <figure class="img-profile rounded-circle avatar font-weight-bold" data-initial="{{ Auth::user()->name[0] }}"></figure>
-                            </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="{{ route('profile') }}">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    {{ __('Profile') }}
-                                </a>
-
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    {{ __('Logout') }}
-                                </a>
-                            </div>
-                        </li>
-
-                    </ul>
-
-                </nav>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid mt-4">
 
                     @yield('main-content')
 
@@ -199,7 +286,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Maintained by <a href="https://github.com/aleckrh" target="_blank">AleckRH</a>. {{ now()->year }}</span>
+                        <span>By <a href="https://izzycar.pt" target="_blank">Izzycar</a>. {{ now()->year }}</span>
                     </div>
                 </div>
             </footer>
@@ -236,7 +323,7 @@
             </div>
         </div>
     </div>
-
+    @stack('scripts')
     <!-- Scripts -->
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>

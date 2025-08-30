@@ -2,21 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Vehicle;
 use App\Models\Supplier;
-use App\Models\VehicleBrand;
-use App\Models\VehicleModel;
 use Illuminate\Http\Request;
+use App\Models\VehicleAttribute;
+use App\Models\VehicleAttributeValue;
+use App\Models\Partner;
 
 class VehicleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the vehicles.
      */
     public function index()
     {
         // Recuperar todos os veículos
-        $vehicles = Vehicle::all();
+        $vehicles = Vehicle::paginate(10);
 
         return view('vehicles.index', compact('vehicles'));
     }
@@ -26,12 +32,38 @@ class VehicleController extends Controller
      */
     public function create()
     {
+
+        // aqui quero criar logo um registo veiculo apenas com referência e enviar para a pagina de edição
+        $reference = $this->generateUniqueCode();
+        $vehicle = Vehicle::create(['reference' => $reference, 'brand' => '', 'model' => '']);
+
+        // Redirecionar para a página de edição do veículo recém-criado
+        return redirect()->route('vehicles.edit', $vehicle->id)->with('success', 'Veículo criado com sucesso! Agora, por favor, preencha os detalhes.');
         // Recuperar todos os fornecedores
         $suppliers = Supplier::all();
 
-        return view('vehicles.form', compact('suppliers'));
-    }
+        $attributes = VehicleAttribute::all()->groupBy('attribute_group');
+        $brands = Brand::with(['models' => function ($query) {
+            $query->orderBy('name');
+        }])->get();
 
+
+
+        return view('vehicles.form', compact('suppliers', 'attributes', 'brands'));
+    }
+    function generateUniqueCode()
+    {
+        do {
+            // Gerar código aleatório 3 letras + 3 números
+            $letters = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 3);
+            $numbers = substr(str_shuffle('0123456789'), 0, 3);
+            $code = $letters . $numbers;
+            // Verifica se já existe no banco
+            $exists = Vehicle::where('reference', $code)->exists();
+        } while ($exists);
+
+        return $code;
+    }
     /**
      * Store a newly created vehicle in storage.
      */
@@ -49,17 +81,43 @@ class VehicleController extends Controller
             'color' => 'nullable|string|max:255',
             'purchase_date' => 'nullable|date',
             'business_type' => 'nullable|in:novo,usado,seminovo',
+            'kilometers' => 'nullable|integer',
+            'power' => 'nullable|integer',
+            'cylinder_capacity' => 'nullable|integer',
+            'consigned_vehicle' => 'nullable|boolean',
+            'fuel' => 'nullable|in:Diesel,Gasolina,Elétrico,Hibrido-plug-in/Gasolina,Hibrido-plug-in/Diesel,Outro',
+            'vin' => 'nullable|string|max:255', // VIN não é obrigatório
+            'manufacture_date' => 'nullable|date',
+            'register_date' => 'nullable|date',
+            'available_to_sell_date' => 'nullable|date',
+            'registration' => 'nullable|string|max:255',
+            'purchase_type' => 'nullable|in:Margem,Geral,Sem Iva',
+            'show_online' => 'nullable|boolean',
+            // 'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // Validação para imagens
         ]);
 
-        $brandRef = VehicleBrand::where('name', $validatedData['brand'])->first();
-        $modelRef = VehicleModel::where('name', $validatedData['model'])->first();
-
-        $validatedData['reference'] =  $brandRef->reference . $modelRef->reference . strtoupper(substr(uniqid(), -3));
-
+        $validatedData['reference'] =   strtoupper(substr(uniqid(), -3));
 
 
         // Criar o veículo com os dados validados
-        Vehicle::create($validatedData);
+        $vehicle =  Vehicle::create($validatedData);
+
+        foreach ($request->input('attributes', []) as $attributeId => $value) {
+            VehicleAttributeValue::create([
+                'vehicle_id' => $vehicle->id,
+                'attribute_id' => $attributeId,
+                'value' => is_array($value) ? json_encode($value) : $value,
+            ]);
+        }
+
+        // Salvar imagens
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('vehicles', 'public');
+                $vehicle->images()->create(['image_path' => $path]);
+            }
+        }
+
 
         return redirect()->route('vehicles.index')->with('success', 'Veículo criado com sucesso!');
     }
@@ -79,8 +137,17 @@ class VehicleController extends Controller
     {
         // Recuperar todos os fornecedores
         $suppliers = Supplier::all();
+        $attributes = VehicleAttribute::orderByRaw("FIELD(type, 'text', 'number', 'select', 'checkbox')")->get()->groupBy('attribute_group');
 
-        return view('vehicles.form', compact('vehicle', 'suppliers'));
+        $attributeValues = $vehicle->attributeValues->keyBy('attribute_id');
+
+        $brands = Brand::with(['models' => function ($query) {
+            $query->orderBy('name');
+        }])->get();
+
+        $expenses = $vehicle->expenses()->get();
+        $partners = Partner::all();
+        return view('vehicles.form', compact('vehicle', 'suppliers', 'attributes', 'attributeValues', 'brands', 'expenses', 'partners'));
     }
 
     /**
@@ -90,21 +157,53 @@ class VehicleController extends Controller
     {
         // Validar dados do formulário
         $validatedData = $request->validate([
+            'show_online' => 'nullable|boolean',
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
             'version' => 'nullable|string|max:255',
             'year' => 'nullable|integer',
-            'purchase_price' => 'required',
-            'sell_price' => 'nullable',
+            'purchase_price' => 'required|numeric',
+            'sell_price' => 'nullable|numeric',
             'supplier_id' => 'nullable|exists:suppliers,id',
             'color' => 'nullable|string|max:255',
             'purchase_date' => 'nullable|date',
             'business_type' => 'nullable|in:novo,usado,seminovo',
+            'kilometers' => 'nullable|integer',
+            'power' => 'nullable|integer',
+            'cylinder_capacity' => 'nullable|integer',
+            'consigned_vehicle' => 'nullable|boolean',
+            'fuel' => 'nullable|in:Diesel,Gasolina,Elétrico,Hibrido-plug-in/Gasolina,Hibrido-plug-in/Diesel,Outro',
+            'vin' => 'nullable|string|max:255', // VIN não é obrigatório
+            'manufacture_date' => 'nullable|date',
+            'register_date' => 'nullable|date',
+            'available_to_sell_date' => 'nullable|date',
+            'registration' => 'nullable|string|max:255',
+            'purchase_type' => 'nullable|in:Margem,Geral,Sem Iva',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // Validação para imagens
         ]);
 
         // Atualizar o veículo com os dados validados
         $vehicle->update($validatedData);
 
+        // Remove os antigos
+        $vehicle->attributeValues()->delete();
+        foreach ($request->input('attributes', []) as $attributeId => $value) {
+            if ($value === null) {
+                continue; // Ignorar valores nulos
+            }
+            VehicleAttributeValue::create([
+                'vehicle_id' => $vehicle->id,
+                'attribute_id' => $attributeId,
+                'value' => is_array($value) ? json_encode($value) : $value,
+            ]);
+        }
+        // Salvar novas imagens
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('vehicles', 'public');
+                $vehicle->images()->create(['image_path' => $path]);
+            }
+        }
         return redirect()->route('vehicles.index')->with('success', 'Veículo atualizado com sucesso!');
     }
 

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Sale;
+use App\Models\Vehicle;
+
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -24,13 +26,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $users = User::count();
-
-        $widget = [
-            'users' => $users,
-            //...
-        ];
-
-        return view('home', compact('widget'));
+       
+        return view('home');
     }
 }

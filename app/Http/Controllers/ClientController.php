@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ClientController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function index()
     {
-        $clients = Client::all();
+        $clients = Client::orderBy('created_at', 'desc')->paginate(10);
         return view('clients.index', compact('clients'));
     }
 
@@ -49,7 +54,8 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
-        return view('clients.form', compact('client'));
+        $sales = $client->sale()->get();
+        return view('clients.form', compact('client', 'sales'));
     }
 
     public function update(Request $request, Client $client)
@@ -80,5 +86,28 @@ class ClientController extends Controller
     {
         $client->delete();
         return redirect()->route('clients.index');
+    }
+
+    public function contractService($clientId)
+    {
+        $client = Client::findOrFail($clientId);
+
+        $pdf = Pdf::loadView('clients.contract_service', [
+            'cliente' => [
+                'nome' => $client->name,
+                'morada' => $client->address,
+                'nif' => $client->vat_number,
+            ],
+            'prestador' => [
+                'nome' => 'Pedro Coutinho – Izzycar',
+                'nif' => '242414958',
+                'morada' => 'Rua da Imprensa Portuguesa, 1 drt 10, Praia do Furadouro, Ovar'
+            ],
+            'iban' => 'PT50 0000 0000 0000 0000 0000 0',
+            'mbway' => '912345678'
+        ]);
+
+        return $pdf->download('Contrato_Izzycar.pdf');
+        // return view('clients.contract_service', compact('client'));
     }
 }

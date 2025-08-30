@@ -9,9 +9,13 @@ use Illuminate\Http\Request;
 
 class PartnerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function index()
     {
-        $partners = Partner::all();
+        $partners = Partner::paginate(10);
         return view('partners.index', compact('partners'));
     }
 

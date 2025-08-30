@@ -1,0 +1,44 @@
+Marca: BMW
+Modelo: Série 1
+Submodelos: 114, 116, 118, 120, 123, 125, 130, 135, 150, 1M Coupe, M135i, M140i
+-
+Marca: BMW
+Modelo: Série 2
+Submodelos: 214 Active Tourer, 214 Gran Tourer, 216 Active Tourer, 216 Gran Coupé, 216 Gran Tourer, 218, 218 Active Tourer, 218 Gran Coupé, 218 Gran Tourer, 220, 220 Active Tourer, 220 Gran Coupé, 220 Gran Tourer, 223 Active Tourer, 223 Gran Coupé, 225, 225i Active Tourer, 225xe Active Tourer, 228, 230, 230xe Active Tourer, M2, M235i, M235i Gran Coupé, M240i
+-
+Marca: BMW
+Modelo: Série 3
+Submodelos: 315, 316, 318, 318 Gran Turismo, 320, 320 Gran Turismo, 323, 324, 325, 325 Gran Turismo, 328, 328 Gran Turismo, 330, 330 Gran Turismo, 335, 335 Gran Turismo, 340, 340 Gran Turismo, ActiveHybrid 3, Compact, M3, M340
+-
+Marca: BMW
+Modelo: Série 4
+Submodelos: 418, 418 Gran Coupé, 420, 420 Gran Coupé, 425, 425 Gran Coupé, 428, 428 Gran Coupé, 430, 430 Gran Coupé, 435, 435 Gran Coupé, 440, 440 Gran Coupé, M4, M440, M440 Gran Coupé
+-
+Marca: BMW
+Modelo: Série 5
+Submodelos: 518, 520, 520 Gran Turismo, 523, 524, 525, 528, 530, 530 Gran Turismo, 535, 535 Gran Turismo, 540, 545, 550, 550 Gran Turismo, ActiveHybrid 5, M5, M535i, M550d
+-
+Marca: BMW
+Modelo: Série 6
+Submodelos: 620 Gran Turismo, 628, 630, 630 Gran Turismo, 633, 635, 640, 640 Gran Coupé, 640 Gran Turismo, 645, 650, 650 Gran Coupé, M6
+-
+Marca: BMW
+Modelo: Série 7
+Submodelos: 725, 728, 730, 732, 733, 735, 740, 745, 750, 760, ActiveHybrid 7
+-
+Marca: BMW
+Modelo: Série 8
+Submodelos: 840, 840 Gran Coupé, 850, M8, M850i, M850i Gran Coupé
+-
+Marca: BMW
+Modelo: Série i
+Submodelos: i3, i4, i5, i7, i8
+-
+Marca: BMW
+Modelo: Série X
+Submodelos: iX, iX1, iX2, iX3, X1, X2, X2 M35i, X3, X3 M, X4, X4 M, X5, X5 M, X6, X6 ActiveHybrid, X6 M, X7, X7 M, XM
+-
+Marca: BMW
+Modelo: Série Z
+Submodelos: Z1, Z3, Z4, Z8
+-

@@ -7,20 +7,53 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Mpdf;
-
+use App\Models\Brand;
+use App\Models\VehicleAttribute;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\Browsershot\Browsershot;
+use App\Models\ProposalAttributeValue;
 
 class ProposalController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        $proposals = Proposal::all();
-        return view('proposals.index', compact('proposals'));
+        $this->middleware('auth');
+    }
+    public function index(Request $request)
+    {
+        // Obter os valores dos filtros
+        $status = $request->input('status');
+        $clientId = $request->input('client_id');
+
+        // Consultar as propostas com base nos filtros
+        $query = Proposal::query();
+
+        if ($status) {
+            $query->where('status', $status);
+        } else {
+            $query->where('status', '!=', 'Sem resposta');
+        }
+
+        if ($clientId) {
+            $query->where('client_id', $clientId);
+        }
+
+        $proposals = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        // Obter a lista de clientes para o filtro
+        $clients = Client::all();
+
+        return view('proposals.index', compact('proposals', 'clients', 'status', 'clientId'));
     }
 
     public function create()
     {
         $clients = Client::all(); // To select a client
-        return view('proposals.form', compact('clients'));
+        $attributes = VehicleAttribute::all()->groupBy('attribute_group');
+        $brands = Brand::with(['models' => function ($query) {
+            $query->orderBy('name');
+        }])->get();
+        return view('proposals.form', compact('clients', 'brands', 'attributes'));
     }
 
     public function store(Request $request)
@@ -45,7 +78,7 @@ class ProposalController extends Controller
             'proposed_car_year_month' => 'required',
             'proposed_car_value' => 'required|numeric',
             'images' => 'nullable|array',
-            'images.*' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg|max:2048',
+            'images.*' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg,avif|max:2048',
             'fuel' => 'nullable|in:Gasolina,Diesel,Híbrido Plug-in/Gasolina,Híbrido Plug-in/Diesel,Elétrico',
             'value' => 'nullable|numeric',
             'notes' => 'nullable|string',
@@ -60,6 +93,7 @@ class ProposalController extends Controller
             'client_id' => $request->client_id,
             'brand' => $request->brand,
             'model' => $request->model,
+            'version' => $request->version,
             'year' => $request->year,
             'mileage' => $request->mileage,
             'engine_capacity' => $request->engine_capacity,
@@ -81,6 +115,15 @@ class ProposalController extends Controller
             'proposed_car_notes' => $request->proposed_car_notes,
             'proposed_car_features' => $request->proposed_car_features
         ]);
+
+
+        foreach ($request->input('attributes', []) as $attributeId => $value) {
+            ProposalAttributeValue::create([
+                'proposal_id' => $proposal->id,
+                'attribute_id' => $attributeId,
+                'value' => is_array($value) ? json_encode($value) : $value,
+            ]);
+        }
 
         // Salvar as imagens
         if ($request->hasFile('images')) {
@@ -110,11 +153,25 @@ class ProposalController extends Controller
             $images = json_decode($proposal->images);
         }
 
+        $attributes = VehicleAttribute::orderByRaw("FIELD(type, 'text', 'number', 'select', 'checkbox')")->get()->groupBy('attribute_group');
 
-
-        return view('proposals.form', compact('proposal', 'clients', 'images'));
+        $attributeValues = $proposal->attributeValues->keyBy('attribute_id');
+        $brands = Brand::with(['models' => function ($query) {
+            $query->orderBy('name');
+        }])->get();
+        return view('proposals.form', compact('proposal', 'clients', 'images', 'brands', 'attributes', 'attributeValues'));
     }
 
+    public function updateStatus(Request $request, Proposal $proposal)
+    {
+        $request->validate([
+            'status' => 'required|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta',
+        ]);
+
+        $proposal->update(['status' => $request->status]);
+
+        return response()->json(['success' => 'Estado atualizado com sucesso.']);
+    }
     public function update(Request $request, Proposal $proposal)
     {
         $request->validate([
@@ -139,7 +196,7 @@ class ProposalController extends Controller
             'proposed_car_year_month' => 'required',
             'proposed_car_value' => 'required|numeric',
             'images' => 'nullable|array',
-            'images.*' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg|max:6000',
+            'images.*' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg,avif|max:16000',
             'fuel' => 'nullable|in:Gasolina,Diesel,Híbrido Plug-in/Gasolina,Híbrido Plug-in/Diesel,Elétrico',
             'value' => 'nullable|numeric',
             'notes' => 'nullable|string',
@@ -153,6 +210,7 @@ class ProposalController extends Controller
             'client_id' => $request->client_id,
             'brand' => $request->brand,
             'model' => $request->model,
+            'version' => $request->version,
             'year' => $request->year,
             'mileage' => $request->mileage,
             'engine_capacity' => $request->engine_capacity,
@@ -174,6 +232,20 @@ class ProposalController extends Controller
             'proposed_car_notes' => $request->proposed_car_notes,
             'proposed_car_features' => $request->proposed_car_features
         ]);
+
+
+        // Remove os antigos
+        $proposal->attributeValues()->delete();
+        foreach ($request->input('attributes', []) as $attributeId => $value) {
+            if ($value === null) {
+                continue; // Ignorar valores nulos
+            }
+            ProposalAttributeValue::create([
+                'proposal_id' => $proposal->id,
+                'attribute_id' => $attributeId,
+                'value' => is_array($value) ? json_encode($value) : $value,
+            ]);
+        }
 
         // Excluir as imagens selecionadas para remoção
         if ($request->has('delete_images')) {
@@ -208,20 +280,211 @@ class ProposalController extends Controller
         return redirect()->route('proposals.index')->with('success', 'Proposal deleted successfully.');
     }
 
-    public function downloadPdf($id)
+    public function generatePdf($id)
     {
+
+
         $proposal = Proposal::findOrFail($id);
+
+        $attributes = [];
+
+        $potencia = "";
+        $caixa = "";
+        $cilindrada = "";
+        foreach ($proposal->attributeValues as $attributeValue) {
+
+
+            $attribute = VehicleAttribute::find($attributeValue->attribute_id);
+            if (!$attribute) continue;
+
+            $group = $attribute->attribute_group ?? 'Outros'; // fallback caso esteja vazio
+            $name = $attribute->name;
+            if ($attribute->key == 'potencia') {
+                $potencia = $attributeValue->value;
+            }
+
+            if ($attribute->key  == 'tipo_caixa') {
+                $caixa = $attributeValue->value;
+            }
+            if ($attribute->key == 'cilindrada') {
+                $cilindrada = $attributeValue->value;
+            }
+            // Inicializa o grupo se não existir
+            if (!isset($attributes[$group])) {
+                $attributes[$group] = [];
+            }
+            if ($attribute->type == 'select') {
+                $attributes[$group][$name] = $attributeValue->value;
+                continue;
+            } elseif ($attribute->type == 'boolean') {
+                $attributes[$group][$name] = $name;
+                continue;
+            } else if ($attribute->type == 'text' || $attribute->type == 'number') {
+                $attributes[$group][$name] = $attributeValue->value;
+                continue;
+            }
+            // Adiciona o nome do atributo e o valor no grupo correto
+            $attributes[$group][$name] = $attributeValue->value;
+        }
+
+        $order = [
+            'Dados do Veículo',
+            'Características Técnicas',
+            'Segurança & Desempenho',
+            'Conforto & Multimédia',
+            'Equipamento Interior',
+            'Equipamento Exterior',
+            'Outros Extras'
+        ];
+
+        // Função para ordenar o array associativo $attributes
+        uksort($attributes, function ($a, $b) use ($order) {
+            $posA = array_search($a, $order);
+            $posB = array_search($b, $order);
+
+            // Se algum grupo não estiver na lista, joga ele para o fim
+            if ($posA === false) $posA = count($order);
+            if ($posB === false) $posB = count($order);
+
+            return $posA <=> $posB;
+        });
+
+
+
+        return view('proposals.pdf', compact('proposal', 'attributes', 'potencia', 'caixa', 'cilindrada'));
+
         $html = view('proposals.pdf', compact('proposal'))->render();
 
-        // Instanciar o mpdf
-        $mpdf = new \Mpdf\Mpdf();
 
-        // Escrever o conteúdo HTML no PDF
+        // Salvar como PDF
+        return view('proposals.pdf', compact('proposal'));
+
+
+        $pdf = Pdf::loadView('proposals.pdf', compact('proposal'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('Proposta' . ' Izzycar ' . $proposal->brand . '_' . $proposal->model  . '.pdf');
+
+        // $html = view('proposals.pdf', compact('proposal'))->render();
+        // // Instanciar o mpdf
+        $mpdf = new \Mpdf\Mpdf();
+        // // Escrever o conteúdo HTML no PDF
         $mpdf->WriteHTML($html);
 
-        // Gerar o PDF e mostrar no navegador
-        return $mpdf->Output('Proposta' . '_' . $proposal->id . '_' . $proposal->client->name . '_ ' . $proposal->brand . '_' . $proposal->model  . '.pdf', 'I'); // 'I' mostra no navegador
+        // // Gerar o PDF e mostrar no navegador
+        return $mpdf->Output('Proposta' . ' Izzycar ' . $proposal->brand . '_' . $proposal->model  . '.pdf', 'I'); // 'I' mostra no navegador
     }
+
+      public function show($brand, $model, $version, $id)
+    {
+
+        $proposal = Proposal::where('id', $id)
+            ->firstOrFail();
+
+        $attributes = [];
+
+        $potencia = "";
+        $caixa = "";
+        $cilindrada = "";
+        foreach ($proposal->attributeValues as $attributeValue) {
+
+
+            $attribute = VehicleAttribute::find($attributeValue->attribute_id);
+            if (!$attribute) continue;
+
+            $group = $attribute->attribute_group ?? 'Outros'; // fallback caso esteja vazio
+            $name = $attribute->name;
+            if ($attribute->key == 'potencia') {
+                $potencia = $attributeValue->value;
+            }
+
+            if ($attribute->key  == 'tipo_caixa') {
+                $caixa = $attributeValue->value;
+            }
+            if ($attribute->key == 'cilindrada') {
+                $cilindrada = $attributeValue->value;
+            }
+            // Inicializa o grupo se não existir
+            if (!isset($attributes[$group])) {
+                $attributes[$group] = [];
+            }
+            if ($attribute->type == 'select') {
+                $attributes[$group][$name] = $attributeValue->value;
+                continue;
+            } elseif ($attribute->type == 'boolean') {
+                $attributes[$group][$name] = $name;
+                continue;
+            } else if ($attribute->type == 'text' || $attribute->type == 'number') {
+                $attributes[$group][$name] = $attributeValue->value;
+                continue;
+            }
+            // Adiciona o nome do atributo e o valor no grupo correto
+            $attributes[$group][$name] = $attributeValue->value;
+        }
+
+        $order = [
+            'Dados do Veículo',
+            'Características Técnicas',
+            'Segurança & Desempenho',
+            'Conforto & Multimédia',
+            'Equipamento Interior',
+            'Equipamento Exterior',
+            'Outros Extras'
+        ];
+
+        // Função para ordenar o array associativo $attributes
+        uksort($attributes, function ($a, $b) use ($order) {
+            $posA = array_search($a, $order);
+            $posB = array_search($b, $order);
+
+            // Se algum grupo não estiver na lista, joga ele para o fim
+            if ($posA === false) $posA = count($order);
+            if ($posB === false) $posB = count($order);
+
+            return $posA <=> $posB;
+        });
+
+
+
+        return view('proposals.pdf', compact('proposal', 'attributes', 'potencia', 'caixa', 'cilindrada'));
+
+        $html = view('proposals.pdf', compact('proposal'))->render();
+
+
+        // Salvar como PDF
+        return view('proposals.pdf', compact('proposal'));
+
+
+        $pdf = Pdf::loadView('proposals.pdf', compact('proposal'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('Proposta' . ' Izzycar ' . $proposal->brand . '_' . $proposal->model  . '.pdf');
+
+        // $html = view('proposals.pdf', compact('proposal'))->render();
+        // // Instanciar o mpdf
+        $mpdf = new \Mpdf\Mpdf();
+        // // Escrever o conteúdo HTML no PDF
+        $mpdf->WriteHTML($html);
+
+        // // Gerar o PDF e mostrar no navegador
+        return $mpdf->Output('Proposta' . ' Izzycar ' . $proposal->brand . '_' . $proposal->model  . '.pdf', 'I'); // 'I' mostra no navegador
+    }
+
+
+    public function downloadPdf()
+    {
+        $pdfPath = storage_path("app/proposal-te.pdf");
+        // Gerar o PDF usando Browsershot
+        // Certifique-se de que a URL corresponde à rota que gera o PDF
+        // Ajuste a URL conforme necessário para corresponder à sua rota
+        // Exemplo: http://127.0.0.1:8000/admin/proposals/70/download-pdf
+        Browsershot::url('http://127.0.0.1:8000/proposals/70/download-pdf') // URL da rota que retorna HTML
+            ->waitUntilNetworkIdle()
+            ->save($pdfPath);
+
+        return response()->download($pdfPath);
+    }
+
 
     public function duplicate($id)
     {
@@ -261,5 +524,11 @@ class ProposalController extends Controller
 
         // Redirecionar para a página de edição da nova proposta (ou onde preferir)
         return redirect()->route('proposals.edit', $newProposal->id)->with('success', 'Proposta duplicada com sucesso!');
+    }
+
+    public function sentWhatsapp($id)
+    {
+
+        DD($id);
     }
 }
