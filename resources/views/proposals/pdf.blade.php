@@ -110,7 +110,7 @@
                                 {{-- Foto grande do carro --}}
                                
                                 @if($proposal->images)
-                                <img src=" {{ asset('storage/' . $image) }}" alt="Carro" class="img-fluid rounded shadow" style="max-height: 400px; object-fit: cover;">
+                                <img src=" {{ $image }}" alt="Carro" class="img-fluid rounded shadow" style="max-height: 400px; object-fit: cover;">
                                 @endif
                             </div>
                         </div>
