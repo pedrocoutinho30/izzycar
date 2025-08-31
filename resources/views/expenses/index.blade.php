@@ -48,7 +48,7 @@
                 </div>
             </form>
 
-
+            <div class="table-responsive">
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-dark">
                     <tr>
@@ -105,6 +105,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
             <div class="d-flex justify-content-center">
                 {{ $expenses->withQueryString()->links() }}
             </div>

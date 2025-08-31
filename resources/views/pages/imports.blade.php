@@ -13,7 +13,7 @@
             @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
-
+            <div class="table-responsive">
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-dark">
                     <tr>
@@ -87,7 +87,7 @@
                     @endforelse
                 </tbody>
             </table>
-
+            </div>
 
         </div>
 

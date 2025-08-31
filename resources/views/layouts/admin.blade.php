@@ -147,9 +147,111 @@
 
     <!-- Page Wrapper -->
     <div id="wrapper">
+
+        <!-- Navbar Mobile -->
+        <nav class="navbar navbar-dark bg-primary d-md-none fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ url('/home') }}">
+                    <img src="{{ asset('img/logo-simples.png') }}" alt="Logo Izzycar" class="img-fluid rounded-circle" style="width: 40px; height: auto;">
+                </a>
+                <!-- Botão Hamburger -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobileMenu"
+                    aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+        @php
+        $menuItemsGestao = [
+        ['route' => 'clients.index', 'icon' => 'fa-users', 'label' => __('Clientes'), 'permission' => 'gerir clientes'],
+        ['route' => 'proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas'), 'permission' => 'gerir propostas'],
+        ['route' => 'vehicles.index', 'icon' => 'fa-car-side', 'label' => __('Veículos'), 'permission' => 'gerir veiculos'],
+        ['route' => 'expenses.index', 'icon' => 'fa-file-invoice-dollar','label' => __('Despesas'), 'permission' => 'gerir despesas'],
+        ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'label' => __('Vendas'), 'permission' => 'gerir vendas'],
+        ['route' => 'suppliers.index', 'icon' => 'fa-truck-loading', 'label' => __('Fornecedores'), 'permission' => 'gerir fornecedores'],
+        ['route' => 'partners.index', 'icon' => 'fa-handshake', 'label' => __('Parceiros'), 'permission' => 'gerir parceiros'],
+        ['route' => 'ad-searches.index', 'icon' => 'fa-chart-line', 'label' => __('Análise de Mercado'), 'permission' => 'analisar mercado'],
+        ];
+
+        $menuItemsCMS = [
+        ['route' => 'pages.imports', 'icon' => 'fa-file', 'label' => __('Importações'), 'permission' => 'gerir importacoes'],
+        ['route' => 'pages.legalizations', 'icon' => 'fa-file', 'label' => __('Legalizações'), 'permission' => 'gerir legalizacoes'],
+        ['route' => 'pages.categories', 'icon' => 'fa-file', 'label' => __('Categorias de Notícias'), 'permission' => 'gerir categoria de noticias'],
+        ['route' => 'pages.news', 'icon' => 'fa-file', 'label' => __('Notícias'), 'permission' => 'gerir noticias'],
+        ['route' => 'pages.selling', 'icon' => 'fa-file', 'label' => __('Venda Automóvel'), 'permission' => 'gerir pagina de venda'],
+        ];
+
+        $menuItemsAdmin = [
+                ['route' => 'brands.index', 'icon' => 'fa-tags', 'label' => __('Marcas'), 'permission' => 'gerir marcas'],
+                ['route' => 'vehicle-attributes.index', 'icon' => 'fa-cog', 'label' => __('Atributos de Veículo'), 'permission' => 'gerir atributos veiculos'],
+                ['route' => 'page-types.index', 'icon' => 'fa-file', 'label' => __('Tipos de Página'), 'permission' => 'gerir tipos de pagina'],
+                ['route' => 'pages.index', 'icon' => 'fa-file', 'label' => __('Páginas'), 'permission' => 'gerir paginas'],
+                ['route' => 'menus.index', 'icon' => 'fa-file', 'label' => __('Menus'), 'permission' => 'gerir menus'],
+                ['route' => 'users.index', 'icon' => 'fa-person', 'label' => __('Utilizadores'), 'permission' => 'gerir utilizadores'],
+                ];
+        @endphp
+        <!-- Menu Dropdown Mobile -->
+        <div class="collapse bg-dark text-white w-100 position-absolute" id="mobileMenu" style="top:56px; left:0; z-index:1050;">
+            <ul class="list-unstyled m-0 p-2">
+
+                @hasanyrole('admin|gestor')
+                <li class="mb-2">
+                    <strong>Gestão Stand</strong>
+                    <ul class="list-unstyled pl-3">
+                        @foreach ($menuItemsGestao as $item)
+                        @can($item['permission'])
+                        <li>
+                            <a href="{{ route($item['route']) }}" class="text-white d-block py-1">
+                                <i class="fas {{ $item['icon'] }}"></i> {{ $item['label'] }}
+                            </a>
+                        </li>
+                        @endcan
+                        @endforeach
+                    </ul>
+                </li>
+                @endhasanyrole
+
+                @hasanyrole('admin|cms')
+                <li class="mb-2">
+                    <strong>CMS</strong>
+                    <ul class="list-unstyled pl-3">
+                        @foreach ($menuItemsCMS as $item)
+                        @can($item['permission'])
+                        <li>
+                            <a href="{{ route($item['route']) }}" class="text-white d-block py-1">
+                                <i class="fas {{ $item['icon'] }}"></i> {{ $item['label'] }}
+                            </a>
+                        </li>
+                        @endcan
+                        @endforeach
+                    </ul>
+                </li>
+                @endhasanyrole
+
+                @hasanyrole('admin|cms|gestor')
+                <li class="mb-2">
+                    <strong>ADMIN</strong>
+                    <ul class="list-unstyled pl-3">
+                        @foreach ($menuItemsAdmin as $item)
+                        @can($item['permission'])
+                        <li>
+                            <a href="{{ route($item['route']) }}" class="text-white d-block py-1">
+                                <i class="fas {{ $item['icon'] }}"></i> {{ $item['label'] }}
+                            </a>
+                        </li>
+                        @endcan
+                        @endforeach
+                    </ul>
+                </li>
+                @endhasanyrole
+            </ul>
+        </div>
         <!-- Sidebar -->
+
+
+
         <!-- Sidebar - Accordion Wrapper -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion d-none d-md-block" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url('/home') }}">
@@ -164,18 +266,7 @@
                     <i class="fas fa-fw fa-cogs"></i>
                     <span>Gestão Stand</span>
                 </a>
-                @php
-                $menuItemsGestao = [
-                ['route' => 'clients.index', 'icon' => 'fa-users', 'label' => __('Clientes'), 'permission' => 'gerir clientes'],
-                ['route' => 'proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas'), 'permission' => 'gerir propostas'],
-                ['route' => 'vehicles.index', 'icon' => 'fa-car-side', 'label' => __('Veículos'), 'permission' => 'gerir veiculos'],
-                ['route' => 'expenses.index', 'icon' => 'fa-file-invoice-dollar','label' => __('Despesas'), 'permission' => 'gerir despesas'],
-                ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'label' => __('Vendas'), 'permission' => 'gerir vendas'],
-                ['route' => 'suppliers.index', 'icon' => 'fa-truck-loading', 'label' => __('Fornecedores'), 'permission' => 'gerir fornecedores'],
-                ['route' => 'partners.index', 'icon' => 'fa-handshake', 'label' => __('Parceiros'), 'permission' => 'gerir parceiros'],
-                ['route' => 'ad-searches.index', 'icon' => 'fa-chart-line', 'label' => __('Análise de Mercado'), 'permission' => 'analisar mercado'],
-                ];
-                @endphp
+
                 <div id="collapseGestao" class="collapse "> <!-- show = aberto por padrão -->
                     <div class=" py-2 collapse-inner rounded">
                         @foreach ($menuItemsGestao as $item)
@@ -200,15 +291,7 @@
                     <i class="fas fa-fw fa-file"></i>
                     <span>CMS</span>
                 </a>
-                @php
-                $menuItemsCMS = [
-                ['route' => 'pages.imports', 'icon' => 'fa-file', 'label' => __('Importações'), 'permission' => 'gerir importacoes'],
-                ['route' => 'pages.legalizations', 'icon' => 'fa-file', 'label' => __('Legalizações'), 'permission' => 'gerir legalizacoes'],
-                ['route' => 'pages.categories', 'icon' => 'fa-file', 'label' => __('Categorias de Notícias'), 'permission' => 'gerir categoria de noticias'],
-                ['route' => 'pages.news', 'icon' => 'fa-file', 'label' => __('Notícias'), 'permission' => 'gerir noticias'],
-                ['route' => 'pages.selling', 'icon' => 'fa-file', 'label' => __('Venda Automóvel'), 'permission' => 'gerir pagina de venda'],
-                ];
-                @endphp
+
                 <div id="collapseCMS" class="collapse "> <!-- show = aberto por padrão -->
                     <div class=" py-2 collapse-inner rounded">
                         @foreach ($menuItemsCMS as $item)
@@ -231,17 +314,8 @@
                     <i class="fas fa-fw fa-file"></i>
                     <span>ADMIN</span>
                 </a>
-                @php
-                $menuItemsAdmin = [
-                ['route' => 'brands.index', 'icon' => 'fa-tags', 'label' => __('Marcas'), 'permission' => 'gerir marcas'],
-                ['route' => 'vehicle-attributes.index', 'icon' => 'fa-cog', 'label' => __('Atributos de Veículo'), 'permission' => 'gerir atributos veiculos'],
-                ['route' => 'page-types.index', 'icon' => 'fa-file', 'label' => __('Tipos de Página'), 'permission' => 'gerir tipos de pagina'],
-                ['route' => 'pages.index', 'icon' => 'fa-file', 'label' => __('Páginas'), 'permission' => 'gerir paginas'],
-                ['route' => 'menus.index', 'icon' => 'fa-file', 'label' => __('Menus'), 'permission' => 'gerir menus'],
-                ['route' => 'users.index', 'icon' => 'fa-person', 'label' => __('Utilizadores'), 'permission' => 'gerir utilizadores'],
-                ];
-                @endphp
-                <div id="collapseAdmin" class="collapse "> 
+                
+                <div id="collapseAdmin" class="collapse ">
                     <div class=" py-2 collapse-inner rounded">
                         @foreach ($menuItemsAdmin as $item)
                         @can($item['permission'])
@@ -258,6 +332,9 @@
             </li>
             @endhasanyrole
         </ul>
+
+
+
 
 
         <!-- End of Sidebar -->

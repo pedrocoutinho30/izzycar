@@ -12,12 +12,13 @@
             </div>
 
             @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+            <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
             @if($menus->isEmpty())
-                <p>Nenhum menu encontrado.</p>
+            <p>Nenhum menu encontrado.</p>
             @else
+            <div class="table-responsive">
                 <table class="table table-striped table-hover align-middle">
                     <thead class="table-dark">
                         <tr>
@@ -30,53 +31,54 @@
                     </thead>
                     <tbody>
                         @foreach($menus as $menu)
-                            <tr>
-                                <td><strong>{{ $menu->title }}</strong></td>
-                                <td>{{ $menu->url ?? '—' }}</td>
-                                <td>{{ $menu->order }}</td>
-                                <td>{{ $menu->parent?->title ?? 'Principal' }}</td>
-                                <td>
-                                    <div class="btn-group" role="group" aria-label="Ações">
-                                        <a href="{{ route('menus.edit', $menu) }}" class="btn btn-sm btn-warning" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('menus.destroy', $menu) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td><strong>{{ $menu->title }}</strong></td>
+                            <td>{{ $menu->url ?? '—' }}</td>
+                            <td>{{ $menu->order }}</td>
+                            <td>{{ $menu->parent?->title ?? 'Principal' }}</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Ações">
+                                    <a href="{{ route('menus.edit', $menu) }}" class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('menus.destroy', $menu) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
 
-                            {{-- Submenus (um nível) --}}
-                            @foreach($menu->children as $child)
-                                <tr class="table-light">
-                                    <td>— {{ $child->title }}</td>
-                                    <td>{{ $child->url ?? '—' }}</td>
-                                    <td>{{ $child->order }}</td>
-                                    <td>{{ $menu->title }}</td>
-                                    <td>
-                                        <div class="btn-group" role="group" aria-label="Ações">
-                                            <a href="{{ route('menus.edit', $child) }}" class="btn btn-sm btn-warning" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('menus.destroy', $child) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
+                        {{-- Submenus (um nível) --}}
+                        @foreach($menu->children as $child)
+                        <tr class="table-light">
+                            <td>— {{ $child->title }}</td>
+                            <td>{{ $child->url ?? '—' }}</td>
+                            <td>{{ $child->order }}</td>
+                            <td>{{ $menu->title }}</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Ações">
+                                    <a href="{{ route('menus.edit', $child) }}" class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('menus.destroy', $child) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
                         @endforeach
                     </tbody>
                 </table>
+            </div>
             @endif
         </div>
     </div>

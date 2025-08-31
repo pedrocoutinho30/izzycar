@@ -375,7 +375,7 @@ class ProposalController extends Controller
         return $mpdf->Output('Proposta' . ' Izzycar ' . $proposal->brand . '_' . $proposal->model  . '.pdf', 'I'); // 'I' mostra no navegador
     }
 
-      public function show($brand, $model, $version, $id)
+      public function detail($brand, $model, $version, $id)
     {
 
         $proposal = Proposal::where('id', $id)

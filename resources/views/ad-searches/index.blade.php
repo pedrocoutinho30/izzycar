@@ -16,7 +16,7 @@
                     </a>
                 </div>
             </div>
-
+            <div class="table-responsive">
             <table class="table table-striped table-hover align-middle" id="dataTable" width="100%" cellspacing="0">
                 <thead class="table-dark">
                     <tr>
@@ -61,6 +61,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
             <div class="d-flex justify-content-center">
                 {{ $searches->links() }}
             </div>

@@ -17,7 +17,7 @@
             @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
-
+            <div class="table-responsive">
             <table class="table table-striped">
                 <thead class="table-dark">
                     <tr>
@@ -61,7 +61,7 @@
                     @endforelse
                 </tbody>
             </table>
-
+            </div>
             <div class="mt-3">
                 {{ $users->links('pagination::bootstrap-5') }}
             </div>

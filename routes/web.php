@@ -39,7 +39,7 @@ use App\Http\Controllers\UserController;
 // });
 
 
-Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'show'])->name('proposals.show');
+Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');
 
 Auth::routes();
 
@@ -113,7 +113,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     // Tipos de Página
     Route::resource('page-types', PageTypeController::class)->names('page-types');
-        Route::post('/page-types/{pageType}/duplicate', [PageTypeController::class, 'duplicate'])->name('page-types.duplicate');
+    Route::post('/page-types/{pageType}/duplicate', [PageTypeController::class, 'duplicate'])->name('page-types.duplicate');
 
     // Páginas
     Route::resource('pages', PageController::class)->names('pages');

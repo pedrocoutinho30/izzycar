@@ -11,7 +11,7 @@
                 </a>
             </div>
 
-
+            <div class="table-responsive">
             <table class="table table-striped table-hover align-middle mt-3">
                 <thead class="table-dark">
                     <tr>
@@ -51,6 +51,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
             <div class="d-flex justify-content-center">
                 {{ $suppliers->links() }}
             </div>

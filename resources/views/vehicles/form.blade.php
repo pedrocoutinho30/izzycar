@@ -306,32 +306,34 @@
         </div>
 
         @if(isset($vehicle) && $vehicle->expenses->count() > 0)
-        <table class="table table-striped table-hover align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Título</th>
-                    <th scope="col">Valor</th>
-                    <th scope="col">Taxa de IVA</th>
-                    <th scope="col">Data da Despesa</th>
-                    <th scope="col">Parceiro</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($expenses as $expense)
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Título</th>
+                        <th scope="col">Valor</th>
+                        <th scope="col">Taxa de IVA</th>
+                        <th scope="col">Data da Despesa</th>
+                        <th scope="col">Parceiro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($expenses as $expense)
 
-                <tr>
-                    <th scope="row">{{ $expense->id }}</th>
-                    <td>{{ $expense->title }}</td>
-                    <td>{{ number_format($expense->amount, 2, ',', '.') }}€</td>
-                    <td>{{ $expense->vat_rate }}</td>
-                    <td>{{ \Carbon\Carbon::parse($expense->expense_date)->format('d/m/Y') }}</td>
-                    <td>{{ $expense->partner ? $expense->partner->name : 'N/A' }}</td>
+                    <tr>
+                        <th scope="row">{{ $expense->id }}</th>
+                        <td>{{ $expense->title }}</td>
+                        <td>{{ number_format($expense->amount, 2, ',', '.') }}€</td>
+                        <td>{{ $expense->vat_rate }}</td>
+                        <td>{{ \Carbon\Carbon::parse($expense->expense_date)->format('d/m/Y') }}</td>
+                        <td>{{ $expense->partner ? $expense->partner->name : 'N/A' }}</td>
 
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
         @else
         <p class="text-muted">Nenhuma despesa registrada para este veículo.</p>
         @endif

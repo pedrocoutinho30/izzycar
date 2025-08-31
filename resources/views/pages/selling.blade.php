@@ -13,78 +13,79 @@
             @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
-          
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Título</th>
-                        <th>Slug</th>
-                        <th>Tipo</th>
-                        <th>Criada em</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($pages as $page)
-                    @if ($page->parent_id == null)
-                    <tr>
-                        <td>{{ $page->id }}</td>
-                        <td>{{ $page->title }}</td>
-                        <td>{{ $page->slug }}</td>
-                        <td>{{ $page->pageType->name ?? '-' }}</td>
-                        <td>{{ $page->created_at->format('d/m/Y H:i') }}</td>
-                        <td>
-                            <div class="btn-group" role="group" aria-label="Ações">
-                                <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-warning" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('pages.destroy', $page->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
-                                    @csrf
-                                    @method('DELETE')
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Slug</th>
+                            <th>Tipo</th>
+                            <th>Criada em</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($pages as $page)
+                        @if ($page->parent_id == null)
+                        <tr>
+                            <td>{{ $page->id }}</td>
+                            <td>{{ $page->title }}</td>
+                            <td>{{ $page->slug }}</td>
+                            <td>{{ $page->pageType->name ?? '-' }}</td>
+                            <td>{{ $page->created_at->format('d/m/Y H:i') }}</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Ações">
+                                    <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('pages.destroy', $page->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
+                                        @csrf
+                                        @method('DELETE')
 
-                                    
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @foreach ($page->children as $child)
-                    <tr>
-                        <td>{{ $child->id }}</td>
-                        <td>{{ $child->title }}</td>
-                        <td>{{ $child->slug }}</td>
-                        <td>{{ $child->pageType->name ?? '-' }}</td>
-                        <td>{{ $child->created_at->format('d/m/Y H:i') }}</td>
-                        <td>
-                            <div class="btn-group" role="group" aria-label="Ações">
-                                <a href="{{ route('pages.edit', $child->id) }}" class="btn btn-sm btn-warning" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('pages.destroy', $child->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
-                                    @csrf
-                                    @method('DELETE')
 
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                    @else
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @foreach ($page->children as $child)
+                        <tr>
+                            <td>{{ $child->id }}</td>
+                            <td>{{ $child->title }}</td>
+                            <td>{{ $child->slug }}</td>
+                            <td>{{ $child->pageType->name ?? '-' }}</td>
+                            <td>{{ $child->created_at->format('d/m/Y H:i') }}</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Ações">
+                                    <a href="{{ route('pages.edit', $child->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('pages.destroy', $child->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
+                                        @csrf
+                                        @method('DELETE')
 
-                    @endif
-                    @empty
-                    <tr>
-                        <td colspan="6">Nenhuma página encontrada.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                        @else
+
+                        @endif
+                        @empty
+                        <tr>
+                            <td colspan="6">Nenhuma página encontrada.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

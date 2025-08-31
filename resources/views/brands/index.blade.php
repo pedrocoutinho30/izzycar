@@ -43,35 +43,36 @@
 
         </div>
     </form>
-
-    <table class="table table-striped table-hover align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th width="15%">Marca</th>
-                <th>Modelo</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($brands as $brand)
-            <tr>
-                <td>{{ $brand->name }}</td>
-                <td>
-                    @if($brand->models && $brand->models->count() > 0)
-                    <div class="row g-3">
-                        @foreach($brand->models as $model)
-                        <div class="col-4 mb-2">
-                            {{ $model->name }}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th width="15%">Marca</th>
+                    <th>Modelo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($brands as $brand)
+                <tr>
+                    <td>{{ $brand->name }}</td>
+                    <td>
+                        @if($brand->models && $brand->models->count() > 0)
+                        <div class="row g-3">
+                            @foreach($brand->models as $model)
+                            <div class="col-4 mb-2">
+                                {{ $model->name }}
+                            </div>
+                            @endforeach
                         </div>
-                        @endforeach
-                    </div>
-                    @else
-                    <p>Nenhum modelo disponível</p>
-                    @endif
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                        @else
+                        <p>Nenhum modelo disponível</p>
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
 @endsection
 

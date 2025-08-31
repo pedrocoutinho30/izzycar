@@ -229,54 +229,55 @@
                 <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
-
-                <table class="table table-striped table-hover align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Veículo</th>
-                            <th>Compra</th>
-                            <th>Cliente</th>
-                            <th>Data de compra</th>
-                            <th>Data de venda</th>
-                            <th>Rentabilidade (€)</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($sales as $sale)
-                        <tr>
-                            <td>{{ $sale->id }}</td>
-                            <td>{{ ($sale->vehicle->brand ?? 'N/A') . ' ' . ($sale->vehicle->model ?? '') }}</td>
-                            <td>{{ $sale->vehicle->purchase_type ?? 'N/A' }}</td>
-                            <td>{{ $sale->client->name ?? 'N/A' }}</td>
-                            <td>{{ $sale->vehicle->purchase_date ?? 'N/A' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($sale->sale_date)->format('d/m/Y') }}</td>
-                            <td>
-                                {{ number_format($sale->net_margin, 2, ',', '.') }}€
-                                ({{ number_format($sale->net_profitability, 2, ',', '.') }}%)
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group" aria-label="Ações">
-                                    <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-sm btn-info" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-sm btn-warning" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" onsubmit="return confirm('Tem certeza?')" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Veículo</th>
+                                <th>Compra</th>
+                                <th>Cliente</th>
+                                <th>Data de compra</th>
+                                <th>Data de venda</th>
+                                <th>Rentabilidade (€)</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($sales as $sale)
+                            <tr>
+                                <td>{{ $sale->id }}</td>
+                                <td>{{ ($sale->vehicle->brand ?? 'N/A') . ' ' . ($sale->vehicle->model ?? '') }}</td>
+                                <td>{{ $sale->vehicle->purchase_type ?? 'N/A' }}</td>
+                                <td>{{ $sale->client->name ?? 'N/A' }}</td>
+                                <td>{{ $sale->vehicle->purchase_date ?? 'N/A' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($sale->sale_date)->format('d/m/Y') }}</td>
+                                <td>
+                                    {{ number_format($sale->net_margin, 2, ',', '.') }}€
+                                    ({{ number_format($sale->net_profitability, 2, ',', '.') }}%)
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group" aria-label="Ações">
+                                        <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-sm btn-info" title="Ver">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" onsubmit="return confirm('Tem certeza?')" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
                 <div class="d-flex justify-content-center">
                     {{ $sales->links() }}
                 </div>

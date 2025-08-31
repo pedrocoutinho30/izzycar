@@ -47,31 +47,15 @@
                 </div>
             </form>
 
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Cliente</th>
-                        <th>Marca</th>
-                        <th>Modelo</th>
-                        <th>Versão</th>
-                        <th>Estado</th>
-                        <th>Combustível</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($proposals as $proposal)
-                    <tr>
-                        <td>{{ $proposal->client->name }}</td>
-                        <td><a href="{{ route('proposals.show', [
-    'brand' => Str::slug($proposal->brand),
-    'model' => Str::slug($proposal->model),
-    'version' => Str::slug($proposal->version),
-    'id' => $proposal->id
-]) }}" class="btn btn-sm btn-primary" title="Ver Proposta">{{ $proposal->brand }}</a></td>
-                        <td>{{ $proposal->model }}</td>
-                        <td>{{ $proposal->version }}</td>
-                        <td>
+
+            <div class="d-block d-md-none">
+                @foreach($proposals as $proposal)
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $proposal->brand }} {{ $proposal->model }}</h5>
+                        <p class="card-text mb-1"><strong>Cliente:</strong> {{ $proposal->client->name }}</p>
+                        <p class="card-text mb-1"><strong>Versão:</strong> {{ $proposal->version }}</p>
+                        <p class="card-text mb-1"><strong>Estado:</strong> 
                             <select class="form-select form-select-sm status-dropdown" data-id="{{ $proposal->id }}">
                                 <option value="Pendente" {{ $proposal->status == 'Pendente' ? 'selected' : '' }}>Pendente</option>
                                 <option value="Aprovada" {{ $proposal->status == 'Aprovada' ? 'selected' : '' }}>Aprovada</option>
@@ -79,48 +63,108 @@
                                 <option value="Enviado" {{ $proposal->status == 'Enviado' ? 'selected' : '' }}>Enviado</option>
                                 <option value="Sem resposta" {{ $proposal->status == 'Sem resposta' ? 'selected' : '' }}>Sem resposta</option>
                             </select>
-                        </td>
-                        <td>{{ $proposal->fuel }}</td>
-                        <td>
-                            <div class="btn-group" role="group" aria-label="Ações">
-                                <a href="{{ route('proposals.edit', $proposal) }}" class="btn btn-sm btn-warning" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('proposals.destroy', $proposal) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta proposta?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                                <a href="{{ route('proposals.downloadPdf', $proposal->id) }}" class="btn btn-sm btn-primary" title="Download PDF">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                                <a href="{{ route('proposals.show', [
+                        </p>
+                        <p class="card-text mb-2"><strong>Combustível:</strong> {{ $proposal->fuel }}</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="{{ route('proposals.edit', $proposal) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                            <form action="{{ route('proposals.destroy', $proposal) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta proposta?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </form>
+                            <a href="{{ route('proposals.downloadPdf', $proposal->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-download"></i></a>
+                            <a href="{{ route('proposals.detail', [
+                                'brand' => Str::slug($proposal->brand),
+                                'model' => Str::slug($proposal->model),
+                                'version' => Str::slug($proposal->version),
+                                'id' => $proposal->id
+                            ]) }}" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
+                            <form action="{{ route('proposals.duplicate', $proposal->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-secondary"><i class="fas fa-copy"></i></button>
+                            </form>
+                            <form action="{{ route('proposals.sent-whatsapp', $proposal->id) }}" method="GET">
+                                <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-whatsapp"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            <div class="table-responsive  d-none d-md-block">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Versão</th>
+                            <th>Estado</th>
+                            <th>Combustível</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($proposals as $proposal)
+                        @if($proposal)
+                        <tr>
+                            <td>{{ $proposal->client->name }}</td>
+                            <td>{{ $proposal->brand }} </td>
+                            <td>{{ $proposal->model }}</td>
+                            <td>{{ $proposal->version }}</td>
+                            <td>
+                                <select class="form-select form-select-sm status-dropdown" data-id="{{ $proposal->id }}">
+                                    <option value="Pendente" {{ $proposal->status == 'Pendente' ? 'selected' : '' }}>Pendente</option>
+                                    <option value="Aprovada" {{ $proposal->status == 'Aprovada' ? 'selected' : '' }}>Aprovada</option>
+                                    <option value="Reprovada" {{ $proposal->status == 'Reprovada' ? 'selected' : '' }}>Reprovada</option>
+                                    <option value="Enviado" {{ $proposal->status == 'Enviado' ? 'selected' : '' }}>Enviado</option>
+                                    <option value="Sem resposta" {{ $proposal->status == 'Sem resposta' ? 'selected' : '' }}>Sem resposta</option>
+                                </select>
+                            </td>
+                            <td>{{ $proposal->fuel }}</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Ações">
+                                    <a href="{{ route('proposals.edit', $proposal) }}" class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('proposals.destroy', $proposal) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta proposta?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                    <a href="{{ route('proposals.downloadPdf', $proposal->id) }}" class="btn btn-sm btn-primary" title="Download PDF">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    <a href="{{ route('proposals.detail', [
     'brand' => Str::slug($proposal->brand),
     'model' => Str::slug($proposal->model),
     'version' => Str::slug($proposal->version),
     'id' => $proposal->id
 ]) }}" class="btn btn-sm btn-primary" title="Ver Proposta">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <form action="{{ route('proposals.duplicate', $proposal->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-secondary" title="Duplicar">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </form>
-                                <form action="{{ route('proposals.sent-whatsapp', $proposal->id) }}" method="GET" style="display:inline;">
-                                    <button type="submit" class="btn btn-sm btn-success" title="Enviar WhatsApp">
-                                        <i class="bi bi-whatsapp"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <form action="{{ route('proposals.duplicate', $proposal->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-secondary" title="Duplicar">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('proposals.sent-whatsapp', $proposal->id) }}" method="GET" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-success" title="Enviar WhatsApp">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             <div class="d-flex justify-content-center">
                 {{ $proposals->withQueryString()->links() }}
             </div>
