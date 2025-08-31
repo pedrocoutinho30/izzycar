@@ -236,8 +236,8 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h4 class="fw-bold mb-3">Contactos</h4>
-                <p><strong>Telefone:</strong> +351 914 250 947</p>
-                <p><strong>Email:</strong> geral@izzycr.pt</p>
+                <p><strong>Telefone:</strong>+351 914 250 947</p>
+                <p><strong>Email:</strong> geral@izzycar.pt</p>
             </div>
         </div>
 
