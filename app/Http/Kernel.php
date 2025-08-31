@@ -43,9 +43,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
-        'frontend' => [
-            \App\Http\Middleware\BlockInProduction::class,
-        ],
+       
     ];
 
     /**

@@ -9,6 +9,7 @@ use App\Http\Controllers\Frontend\ImportController;
 use App\Http\Controllers\Frontend\SellingController;
 use App\Http\Controllers\Frontend\VehiclesController;
 use App\Http\Controllers\Frontend\NewsController;
+use App\Http\Controllers\ProposalController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -22,6 +23,8 @@ use App\Http\Controllers\Frontend\NewsController;
 
 
 // quero redirecionar todas estas rotas para uma rota
+
+Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'show'])->name('proposals.show');
 
 
 Route::middleware(['blockInProd'])->group(function () {
