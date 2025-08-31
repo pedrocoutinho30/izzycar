@@ -139,9 +139,9 @@
 
                             <!-- Ver Anúncio -->
                             <div class="col-sm-12 col-md-2 mb-3 d-flex">
-                                <a href="{{ $proposal->url }}" target="_blank" class="flex-fill d-flex">
-                                    <div class="p-3 bg-dark rounded shadow-sm flex-fill d-flex flex-column justify-content-center">
-                                        <h5 class="fw-bold text-accent">Ver anúncio</h5>
+                                <a href="{{ $proposal->url }}" target="_blank" class="flex-fill d-flex ">
+                                    <div class="p-3 rounded shadow-sm flex-fill d-flex flex-column justify-content-center bg-finance">
+                                        <h5 class="fw-bold text-accent  text-warning">Ver anúncio</h5>
                                     </div>
                                 </a>
                             </div>
