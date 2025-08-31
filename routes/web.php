@@ -133,4 +133,4 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('selling', [PageController::class, 'getSelling'])->name('pages.selling');
 });
 
-    Route::get('proposals/{brand}/{model}/{version}/{id}', [ProposalController::class, 'show'])->name('proposals.show');
+    Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'show'])->name('proposals.show');
