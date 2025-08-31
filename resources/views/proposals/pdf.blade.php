@@ -23,6 +23,29 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 
     @stack('styles')
+
+    <title>{{ $proposal->brand }} {{ $proposal->model }} - Proposta</title>
+
+    {{-- Meta OG para redes sociais --}}
+    <meta property="og:title" content="{{ $proposal->brand }} {{ $proposal->model }} {{ $proposal->version }}" />
+    <meta property="og:description" content="Veja a proposta para o {{ $proposal->brand }} {{ $proposal->model }}." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+
+    @php
+        $image = null;
+        if ($proposal->images) {
+            $image = asset('storage/' . (json_decode($proposal->images, true)[0] ?? ''));
+        }
+    @endphp
+
+    @if($image)
+        <meta property="og:image" content="{{ $image }}" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+    @endif
+
+
 </head>
 
 <body id="top">
@@ -85,12 +108,7 @@
                             <div class="text-center mb-4">
 
                                 {{-- Foto grande do carro --}}
-                                <?php
-                                if ($proposal->images) {
-
-                                    $image = json_decode($proposal->images, true)[0] ?? null;
-                                }
-                                ?>
+                               
                                 @if($proposal->images)
                                 <img src=" {{ asset('storage/' . $image) }}" alt="Carro" class="img-fluid rounded shadow" style="max-height: 400px; object-fit: cover;">
                                 @endif
