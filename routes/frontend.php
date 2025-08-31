@@ -20,53 +20,67 @@ use App\Http\Controllers\Frontend\NewsController;
 |
 */
 
-Route::get('/', [VehiclesController::class, 'index'])->name('frontend.home');
-Route::get('/viaturas', [VehiclesController::class, 'vehicles'])->name('vehicles.list');
-Route::get('/viaturas-filtradas', [VehiclesController::class, 'filteredVehicles']);
-Route::get('/viaturas/{brand}/{model}/{id}', [VehiclesController::class, 'vehicleDetails'])->name('vehicles.details');
-Route::post('/contact/vehicle', [ContactController::class, 'send'])->name('contact.vehicle');
 
-Route::get('teste', function () {
-    return view('frontend.teste');
-});
-
-Route::get('/legalizacao', [LegalizationController::class, 'getLegalizationPage'])->name('frontend.legalization');
-Route::get('/importacao', [ImportController::class, 'getImportPage'])->name('frontend.import');
-Route::post('/formulario-importacao', [ImportController::class, 'submitFormImport'])->name('frontend.import-submit');
-Route::get('/venda', [SellingController::class, 'getSellingPage'])->name('frontend.selling');
-
-Route::get('/noticias', [NewsController::class, 'getNewsPage'])->name('frontend.news');
-
-Route::get('/noticias/{slug}', [NewsController::class, 'getNewsPageBySlug'])->name('frontend.news-details');
+// quero redirecionar todas estas rotas para uma rota
 
 
+Route::middleware(['blockInProd'])->group(function () {
+    Route::get('/sobre-nos', [PageController::class, 'aboutUs'])->name('frontend.about-us');
+    Route::get('/servicos', [PageController::class, 'services'])->name('frontend.services');
+    Route::get('/parceiros', [PageController::class, 'partners'])->name('frontend.partners');
+    Route::get('/contactos', [PageController::class, 'contact'])->name('frontend.contact');
+    Route::get('/politica-privacidade', [PageController::class, 'privacyPolicy'])->name('frontend.privacy-policy');
+    Route::get('/termos-condicoes', [PageController::class, 'termsConditions'])->name('frontend.terms-conditions');
+    Route::get('/cookies', [PageController::class, 'cookies'])->name('frontend.cookies');
+    Route::get('/brevemente', [PageController::class, 'comingSoon'])->name('frontend.coming-soon');
 
-Route::get('/load-service-cards/{id}', function ($id) {
-    $serviceActive = \App\Models\Page::find($id)?->contents ?? collect();
+    Route::get('/', [VehiclesController::class, 'index'])->name('frontend.home');
+    Route::get('/viaturas', [VehiclesController::class, 'vehicles'])->name('vehicles.list');
+    Route::get('/viaturas-filtradas', [VehiclesController::class, 'filteredVehicles']);
+    Route::get('/viaturas/{brand}/{model}/{id}', [VehiclesController::class, 'vehicleDetails'])->name('vehicles.details');
+    Route::post('/contact/vehicle', [ContactController::class, 'send'])->name('contact.vehicle');
 
-    $subPages = $serviceActive->firstWhere('field_name', 'page_repeater')?->field_value ?? '[]';
-    $subPages = json_decode($subPages, true);
-
-    if (empty($subPages)) return response()->json([]);
-
-    $pages = \App\Models\Page::whereIn('id', array_values($subPages))->get();
-
-    $cards = $pages->map(function ($page) {
-        $title = $page->contents->firstWhere('field_name', 'title')?->field_value ?? 'Sem título';
-        $description = $page->contents->firstWhere('field_name', 'description')?->field_value ?? '';
-        $image = $page->contents->firstWhere('field_name', 'image')?->field_value ?? 'img/logo-simples.png';
-        return [
-            'title' => $title,
-            'description' => $description,
-            'image' => $image
-        ];
+    Route::get('teste', function () {
+        return view('frontend.teste');
     });
 
-    return response()->json($cards);
+    Route::get('/legalizacao', [LegalizationController::class, 'getLegalizationPage'])->name('frontend.legalization');
+    Route::get('/importacao', [ImportController::class, 'getImportPage'])->name('frontend.import');
+    Route::post('/formulario-importacao', [ImportController::class, 'submitFormImport'])->name('frontend.import-submit');
+    Route::get('/venda', [SellingController::class, 'getSellingPage'])->name('frontend.selling');
+
+    Route::get('/noticias', [NewsController::class, 'getNewsPage'])->name('frontend.news');
+
+    Route::get('/noticias/{slug}', [NewsController::class, 'getNewsPageBySlug'])->name('frontend.news-details');
+
+
+
+    Route::get('/load-service-cards/{id}', function ($id) {
+        $serviceActive = \App\Models\Page::find($id)?->contents ?? collect();
+
+        $subPages = $serviceActive->firstWhere('field_name', 'page_repeater')?->field_value ?? '[]';
+        $subPages = json_decode($subPages, true);
+
+        if (empty($subPages)) return response()->json([]);
+
+        $pages = \App\Models\Page::whereIn('id', array_values($subPages))->get();
+
+        $cards = $pages->map(function ($page) {
+            $title = $page->contents->firstWhere('field_name', 'title')?->field_value ?? 'Sem título';
+            $description = $page->contents->firstWhere('field_name', 'description')?->field_value ?? '';
+            $image = $page->contents->firstWhere('field_name', 'image')?->field_value ?? 'img/logo-simples.png';
+            return [
+                'title' => $title,
+                'description' => $description,
+                'image' => $image
+            ];
+        });
+
+        return response()->json($cards);
+    });
+
+    Route::get('/modelos-por-marca', [VehiclesController::class, 'modelsByBrand']);
+    Route::get('/anos-por-marca', [VehiclesController::class, 'yearsByBrand']);
+    Route::get('/anos-por-marca-modelo', [VehiclesController::class, 'yearsByBrandModel']);
+    Route::get('/combustiveis-por-marca-modelo-ano', [VehiclesController::class, 'fuelsByBrandModelYear']);
 });
-
-Route::get('/modelos-por-marca', [VehiclesController::class, 'modelsByBrand']);
-Route::get('/anos-por-marca', [VehiclesController::class, 'yearsByBrand']);
-Route::get('/anos-por-marca-modelo', [VehiclesController::class, 'yearsByBrandModel']);
-Route::get('/combustiveis-por-marca-modelo-ano', [VehiclesController::class, 'fuelsByBrandModelYear']);
-

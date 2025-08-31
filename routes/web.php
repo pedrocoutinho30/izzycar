@@ -22,7 +22,7 @@ use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\MenuItemController;
 use Spatie\Browsershot\Browsershot;
-
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
