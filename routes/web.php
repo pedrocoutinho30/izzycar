@@ -39,6 +39,7 @@ use App\Http\Controllers\UserController;
 // });
 
 
+Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'show'])->name('proposals.show');
 
 Auth::routes();
 
