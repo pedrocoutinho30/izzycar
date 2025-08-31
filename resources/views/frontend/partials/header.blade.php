@@ -49,10 +49,10 @@
             <ul class="navbar-nav ms-lg-5 me-lg-auto">
                 @foreach($menus->where('parent_id', null) as $menu)
                 @php
-                $hasChildren = $menu->children->count() > 0;
+                $hasChildren = $menu->children_active->count() > 0;
                 $active = $menu->route_name && Route::currentRouteName() == $menu->route_name;
 
-                foreach($menu->children as $child) {
+                foreach($menu->children_active as $child) {
                 if($child->route_name && Route::currentRouteName() == $child->route_name) {
                 $active = true;
                 break;
@@ -78,7 +78,7 @@
                         {{ $menu->title }}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown{{ $menu->id }}">
-                        @foreach($menu->children as $child)
+                        @foreach($menu->children_active as $child)
                         <li>
                             <a class="dropdown-item {{ $child->route_name && Route::currentRouteName() == $child->route_name ? 'active' : '' }}"
                                 href="{{ route($child->route_name) }}">

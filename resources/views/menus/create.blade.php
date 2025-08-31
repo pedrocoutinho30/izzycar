@@ -41,6 +41,13 @@
         <label>Ordem</label>
         <input type="number" name="order" class="form-control" value="0">
     </div>
+     <div class="mb-3">
+            <label>Mostrar Online</label>
+            <select name="show_online" class="form-control">
+                <option value="1" >Sim</option>
+                <option value="0" >Não</option>
+            </select>
+        </div>
     
     <button type="submit" class="btn btn-success">Guardar</button>
 </form>

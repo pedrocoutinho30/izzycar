@@ -24,7 +24,11 @@ class AppServiceProvider extends ServiceProvider
     {
 
         View::composer('*', function ($view) {
-            $menus = Menu::with('children')->main()->get();
+            $menus = Menu::orderBy('order')
+                ->where('show_online', 1)
+                ->with('children_active')
+                ->main()
+                ->get();
             $view->with('menus', $menus);
         });
 

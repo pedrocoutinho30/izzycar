@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Menu extends Model
 {
-    protected $fillable = ['title', 'url', 'parent_id', 'order', 'route_name'];
+    protected $fillable = ['title', 'url', 'parent_id', 'order', 'route_name', 'show_online'];
 
     // Relação com submenus
     public function children()
@@ -15,6 +15,14 @@ class Menu extends Model
         return $this->hasMany(Menu::class, 'parent_id')->orderBy('order');
     }
 
+    public function children_active()
+    {
+ 
+        return $this->hasMany(Menu::class, 'parent_id')
+                    ->where('show_online', 1)
+                    ->orderBy('order');
+                    
+    }
     // Relação com menu pai
     public function parent()
     {

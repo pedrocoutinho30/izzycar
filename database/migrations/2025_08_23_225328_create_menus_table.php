@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('url')->nullable(); // url do menu
             $table->unsignedBigInteger('parent_id')->nullable(); // FK para menus.id (submenu)
             $table->integer('order')->default(0); // ordem de exibição
+            $table->boolean('show_online')->default(true); // se o menu está ativo
             $table->timestamps();
 
             // chave estrangeira para submenu

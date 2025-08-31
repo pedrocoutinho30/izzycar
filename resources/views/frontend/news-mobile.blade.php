@@ -1,9 +1,8 @@
-<section class="section-padding mb-2">
-    <div class="container">
+      <div class="sticky-top mx-4" style="top: 110px; z-index: 1;">
         <div class="row">
             @foreach ($news as $new)
             <div class="col-12">
-                <div class="custom-block-topics-listing card-listing shadow-lg mb-5">
+                <div class="custom-block-topics-listing card-listing shadow-lg mb-5 ml-2">
                     <a href="{{ route('frontend.news-details', $new->slug) }}" class="d-block text-decoration-none p-3">
                         <div class="row align-items-center">
 
@@ -29,7 +28,7 @@
                             {{-- Imagem (à direita no mobile e à esquerda no desktop) --}}
                             <div class="col-5 col-md-4 order-2 order-md-1">
                                 <img src="{{ $new->image_path ? asset('storage/' . $new->image_path) : asset('images/default-car.jpg') }}"
-                                    class="custom-block-image img-fluid w-100"
+                                    class="custom-block-image img-fluid w-100 rounded"
                                     alt="Imagem da notícia: {{ $new->title }}">
                             </div>
 
@@ -44,4 +43,4 @@
             @include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles])
         </div>
     </div>
-</section>
+

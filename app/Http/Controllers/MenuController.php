@@ -14,6 +14,13 @@ class MenuController extends Controller
         return view('menus.index', compact('menus'));
     }
 
+    /*************  ✨ Windsurf Command ⭐  *************/
+    /**
+     * Mostra o formul rio de cria o de menu.
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    /*******  9880a523-9560-4c88-afde-df814901d255  *******/
     public function create()
     {
         $parents = Menu::whereNull('parent_id')->get(); // só menus principais podem ter submenus
@@ -27,6 +34,7 @@ class MenuController extends Controller
             'url'   => 'nullable|string|max:255',
             'parent_id' => 'nullable|exists:menus,id',
             'order' => 'nullable|integer',
+            'show_online' => 'required|boolean'
         ]);
 
         Menu::create($data);
@@ -47,6 +55,7 @@ class MenuController extends Controller
             'url'   => 'nullable|string|max:255',
             'parent_id' => 'nullable|exists:menus,id',
             'order' => 'nullable|integer',
+            'show_online' => 'required|boolean',
         ]);
 
         $menu->update($data);

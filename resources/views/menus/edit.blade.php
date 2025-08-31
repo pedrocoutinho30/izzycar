@@ -44,6 +44,19 @@
             <input type="number" name="order" value="{{ old('order', $menu->order) }}" class="form-control">
         </div>
 
+          <div class="mb-3">
+            <label>Ordem</label>
+            <input type="number" name="order" value="{{ old('order', $menu->order) }}" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label>Mostrar Online</label>
+            <select name="show_online" class="form-control">
+                <option value="1" {{ $menu->show_online ? 'selected' : '' }}>Sim</option>
+                <option value="0" {{ !$menu->show_online ? 'selected' : '' }}>Não</option>
+            </select>
+        </div>
+
         <button type="submit" class="btn btn-success">Guardar Alterações</button>
         <a href="{{ route('menus.index') }}" class="btn btn-secondary">Cancelar</a>
     </form>

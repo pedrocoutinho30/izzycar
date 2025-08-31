@@ -72,7 +72,6 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
 
     Route::resource('proposals', ProposalController::class);
-    Route::get('proposals/{brand}/{model}/{version}/{id}', [ProposalController::class, 'show'])->name('proposals.show');
     Route::get('proposals/{id}/download-pdf', [ProposalController::class, 'generatePdf'])->name('proposals.downloadPdf');
     Route::get('proposals/{id}/sent-whatsapp', [ProposalController::class, 'sentWhatsapp'])->name('proposals.sent-whatsapp');
 
@@ -133,3 +132,5 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('imports', [PageController::class, 'getImports'])->name('pages.imports');
     Route::get('selling', [PageController::class, 'getSelling'])->name('pages.selling');
 });
+
+    Route::get('proposals/{brand}/{model}/{version}/{id}', [ProposalController::class, 'show'])->name('proposals.show');

@@ -1,5 +1,4 @@
-<section class="section-padding mb-2">
-    <div class="container">
+
         <div class="row ">
             @foreach ($news as $new)
             <div class="col-md-12">
@@ -50,5 +49,4 @@
         <div class="row g-5">
             @include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles])
         </div>
-    </div>
-</section>
+ 
