@@ -241,7 +241,7 @@
     <div class="footer">
         <p>
             Pedro Coutinho |
-            <a href="mailto:geral@izzycr.pt">geral@izzycr.pt</a> |
+            <a href="mailto:geral@izzycar.pt">geral@izzycar.pt</a> |
             <a href="tel:+351914250947">914250947</a>
         </p>
         <p class="social-icons">

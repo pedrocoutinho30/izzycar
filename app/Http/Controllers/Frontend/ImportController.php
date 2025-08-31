@@ -68,7 +68,7 @@ class ImportController extends Controller
 
         // Enviar email
         Mail::raw($body, function ($message) {
-            $message->to('geral@izzycr.pt')
+            $message->to('geral@izzycar.pt')
                 ->subject('Novo Pedido de Importação');
         });
 

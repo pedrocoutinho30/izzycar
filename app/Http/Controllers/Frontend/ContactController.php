@@ -30,7 +30,7 @@ class ContactController extends Controller
                 "Mensagem: {$validated['message']}\n" .
                 "Anúncio: {$validated['url']}",
             function ($mail) {
-                $mail->to('geral@izzycr.pt')
+                $mail->to('geral@izzycar.pt')
                     ->subject('Pedido de contacto - Izzycar');
             }
         );

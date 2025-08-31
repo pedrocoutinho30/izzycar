@@ -37,8 +37,8 @@
                         </p>
 
                         <p class="text-white d-flex">
-                            <a href="mailto:geral@izzycr.pt" class="site-footer-link">
-                                geral@izzycr.pt
+                            <a href="mailto:geral@izzycar.pt" class="site-footer-link">
+                                geral@izzycar.pt
                             </a>
                         </p>
                     </div>
