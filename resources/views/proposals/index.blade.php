@@ -63,7 +63,12 @@
                     @foreach($proposals as $proposal)
                     <tr>
                         <td>{{ $proposal->client->name }}</td>
-                        <td>{{ $proposal->brand }}</td>
+                        <td><a href="{{ route('proposals.show', [
+    'brand' => Str::slug($proposal->brand),
+    'model' => Str::slug($proposal->model),
+    'version' => Str::slug($proposal->version),
+    'id' => $proposal->id
+]) }}" class="btn btn-sm btn-primary" title="Ver Proposta">{{ $proposal->brand }}</a></td>
                         <td>{{ $proposal->model }}</td>
                         <td>{{ $proposal->version }}</td>
                         <td>
