@@ -17,7 +17,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>@yield('title', 'Izzycar')</title>
+    <title>@yield('title', 'Izzycar' . $proposal->brand . " " . $proposal->model . " " . $proposal->version . "- proposta")</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('img/logo-arredondado.png') }}">
 
     <!-- CSS FILES -->
@@ -44,16 +44,16 @@
     <meta property="og:url" content="{{ url()->current() }}" />
 
     @php
-        $image = null;
-        if ($proposal->images) {
-            $image = asset('storage/' . (json_decode($proposal->images, true)[0] ?? ''));
-        }
+    $image = null;
+    if ($proposal->images) {
+    $image = asset('storage/' . (json_decode($proposal->images, true)[0] ?? ''));
+    }
     @endphp
 
     @if($image)
-        <meta property="og:image" content="{{ $image }}" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
+    <meta property="og:image" content="{{ $image }}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     @endif
 
 
@@ -119,7 +119,7 @@
                             <div class="text-center mb-4">
 
                                 {{-- Foto grande do carro --}}
-                               
+
                                 @if($proposal->images)
                                 <img src=" {{ $image }}" alt="Carro" class="img-fluid rounded shadow" style="max-height: 400px; object-fit: cover;">
                                 @endif
