@@ -22,6 +22,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'gerir paginas']);
         Permission::create(['name' => 'gerir menus']);
         Permission::create(['name' => 'gerir utilizadores']);
+        Permission::create(['name' => 'gerir configuracoes']);
         // ----------------------
         // Permissões CMS
         // ----------------------

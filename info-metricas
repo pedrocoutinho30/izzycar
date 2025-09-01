@@ -1,0 +1,135 @@
+Perfeito! Vou listar 10 métricas essenciais que podes acompanhar gratuitamente e como configurá-las usando ferramentas grátis como Google Analytics 4 (GA4), Google Tag Manager (GTM) e Microsoft Clarity.
+
+1. Sessões e utilizadores únicos
+
+O que mede: Quantas visitas e quantas pessoas diferentes entram no site.
+
+Ferramenta: GA4
+
+Como configurar:
+
+Criar conta GA4 e adicionar o código de rastreamento no site.
+
+GA4 mostra automaticamente sessões, utilizadores, duração média e taxa de rejeição.
+
+2. Páginas mais visitadas
+
+O que mede: Quais páginas atraem mais visitas.
+
+Ferramenta: GA4
+
+Como configurar:
+
+Em Relatórios > Engagement > Pages and screens, verás páginas com mais visualizações.
+
+3. Taxa de rejeição (Bounce Rate) / Saídas por página
+
+O que mede: Percentagem de visitantes que saem sem interagir ou a última página antes de sair.
+
+Ferramenta: GA4
+
+Como configurar:
+
+GA4 mostra saídas e taxa de rejeição por página em Engagement > Pages and screens.
+
+4. Cliques em botões ou links importantes
+
+O que mede: Quais botões ou links os utilizadores clicam mais.
+
+Ferramenta: GA4 + GTM
+
+Como configurar:
+
+Criar um evento no GTM para “click” em elementos específicos.
+
+Enviar esse evento para GA4 como evento personalizado.
+
+5. Preenchimento de formulários (ou abandono)
+
+O que mede: Quantos iniciam ou completam formulários.
+
+Ferramenta: GA4 + GTM
+
+Como configurar:
+
+Criar evento de “form submit” no GTM.
+
+Rastrear se o formulário foi completado ou se houve abandono (ex.: detectando foco perdido no último campo).
+
+6. Scroll depth (profundidade de rolagem)
+
+O que mede: Até que ponto os utilizadores descem numa página.
+
+Ferramenta: GA4 ou Microsoft Clarity
+
+Como configurar:
+
+GA4: criar evento “scroll” automático para 90% da página.
+
+Clarity: mostra mapas de rolagem gratuitamente, visual e fácil.
+
+7. Funis de conversão
+
+O que mede: Onde os utilizadores abandonam processos importantes (ex.: checkout, inscrição, formulário).
+
+Ferramenta: GA4
+
+Como configurar:
+
+Em Explore > Funnel exploration, criar funil com páginas ou eventos críticos.
+
+8. Mapas de calor (heatmaps)
+
+O que mede: Onde clicam mais, onde passam o mouse e até onde rolam.
+
+Ferramenta: Microsoft Clarity (100% grátis)
+
+Como configurar:
+
+Criar conta Clarity e adicionar código no site.
+
+Clarity gera automaticamente heatmaps de cada página.
+
+9. Gravação de sessões
+
+O que mede: Ver exatamente o percurso do utilizador pelo site.
+
+Ferramenta: Microsoft Clarity
+
+Como configurar:
+
+Ativar gravação no painel Clarity.
+
+Observa onde clicam, rolam e onde desistem.
+
+10. Eventos personalizados
+
+O que mede: Qualquer ação que consideres importante (downloads, vídeos, pop-ups, etc.)
+
+Ferramenta: GTM + GA4
+
+Como configurar:
+
+Criar trigger no GTM (ex.: click, scroll, interação).
+
+Enviar evento para GA4 com nome descritivo.
+
+Analisar em Reports > Events no GA4.
+
+💡 Resumo visual da combinação de ferramentas gratuitas:
+
+Métrica	Ferramenta grátis	Observação
+Sessões / Utilizadores	GA4	Automático
+Páginas mais visitadas	GA4	Automático
+Taxa de rejeição / Saídas	GA4	Automático
+Cliques em botões / links	GA4 + GTM	Evento personalizado
+Preenchimento / abandono de form	GA4 + GTM	Evento personalizado
+Scroll depth	GA4 / Clarity	Evento ou heatmap
+Funis de conversão	GA4	Funnel exploration
+Mapas de calor	Clarity	Visual e grátis
+Gravação de sessões	Clarity	Visual e grátis
+Outros eventos personalizados	GA4 + GTM	Configurável conforme necessidade
+
+Se quiseres, posso fazer-te um passo a passo prático para instalar GA4 e Microsoft Clarity no teu site hoje, e já ter todas estas métricas grátis a funcionar.
+
+Queres que eu faça isso?

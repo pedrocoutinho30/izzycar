@@ -182,13 +182,16 @@
         ];
 
         $menuItemsAdmin = [
-                ['route' => 'brands.index', 'icon' => 'fa-tags', 'label' => __('Marcas'), 'permission' => 'gerir marcas'],
-                ['route' => 'vehicle-attributes.index', 'icon' => 'fa-cog', 'label' => __('Atributos de Veículo'), 'permission' => 'gerir atributos veiculos'],
-                ['route' => 'page-types.index', 'icon' => 'fa-file', 'label' => __('Tipos de Página'), 'permission' => 'gerir tipos de pagina'],
-                ['route' => 'pages.index', 'icon' => 'fa-file', 'label' => __('Páginas'), 'permission' => 'gerir paginas'],
-                ['route' => 'menus.index', 'icon' => 'fa-file', 'label' => __('Menus'), 'permission' => 'gerir menus'],
-                ['route' => 'users.index', 'icon' => 'fa-person', 'label' => __('Utilizadores'), 'permission' => 'gerir utilizadores'],
-                ];
+        ['route' => 'brands.index', 'icon' => 'fa-tags', 'label' => __('Marcas'), 'permission' => 'gerir marcas'],
+        ['route' => 'vehicle-attributes.index', 'icon' => 'fa-cog', 'label' => __('Atributos de Veículo'), 'permission' => 'gerir atributos veiculos'],
+        ['route' => 'page-types.index', 'icon' => 'fa-file', 'label' => __('Tipos de Página'), 'permission' => 'gerir tipos de pagina'],
+        ['route' => 'pages.index', 'icon' => 'fa-file', 'label' => __('Páginas'), 'permission' => 'gerir paginas'],
+        ['route' => 'menus.index', 'icon' => 'fa-file', 'label' => __('Menus'), 'permission' => 'gerir menus'],
+        ['route' => 'settings.index', 'icon' => 'fa-tags', 'label' => __('Configurações'), 'permission' => 'gerir configuracoes'],
+        ['route' => 'users.index', 'icon' => 'fa-person', 'label' => __('Utilizadores'), 'permission' => 'gerir utilizadores'],
+        ['route' => 'permissions.index', 'icon' => 'fa-tags', 'label' => __('Permissões'), 'permission' => 'gerir permissoes'],
+        ['route' => 'roles.index', 'icon' => 'fa-tags', 'label' => __('Perfis'), 'permission' => 'gerir perfis'],
+        ];
         @endphp
         <!-- Menu Dropdown Mobile -->
         <div class="collapse bg-dark text-white w-100 position-absolute" id="mobileMenu" style="top:56px; left:0; z-index:1050;">
@@ -314,7 +317,7 @@
                     <i class="fas fa-fw fa-file"></i>
                     <span>ADMIN</span>
                 </a>
-                
+
                 <div id="collapseAdmin" class="collapse ">
                     <div class=" py-2 collapse-inner rounded">
                         @foreach ($menuItemsAdmin as $item)

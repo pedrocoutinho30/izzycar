@@ -23,6 +23,9 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\MenuItemController;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,6 +48,10 @@ Auth::routes();
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
+    Route::resource('roles', RoleController::class);
+    Route::resource('settings', SettingController::class);
+
+    Route::resource('permissions', PermissionController::class);
     Route::get('/', 'HomeController@index')->name('home');
 
     Route::get('/profile', 'ProfileController@index')->name('profile');
