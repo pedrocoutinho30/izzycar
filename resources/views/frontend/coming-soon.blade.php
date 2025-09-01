@@ -2,6 +2,17 @@
 <html lang="en">
 
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0NT5HLTZ2J"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-0NT5HLTZ2J');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IzzyCar - Compre o seu carro com facilidade e segurança</title>
@@ -190,24 +201,24 @@
             </a>
         </div>
         <div class="flex space-x-4">
-    <a href="https://www.instagram.com/izzycarpt/" target="_blank" rel="noopener noreferrer" class="social-link">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-            <path d="M16 11.37a4 4 0 1 1-4.73-4.73"></path>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-        </svg>
-    </a>
-    <a href="https://www.facebook.com/profile.php?id=61572831810539" target="_blank" rel="noopener noreferrer" class="social-link">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-        </svg>
-    </a>
-</div>
+            <a href="https://www.instagram.com/izzycarpt/" target="_blank" rel="noopener noreferrer" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37a4 4 0 1 1-4.73-4.73"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61572831810539" target="_blank" rel="noopener noreferrer" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+            </a>
+        </div>
         <p>© 2025 IzzyCar. Todos os direitos reservados.</p>
     </div>
- 
+
 </body>
 
 </html>
