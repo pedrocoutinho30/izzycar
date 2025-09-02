@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Client;
 
 class ContactController extends Controller
 {
@@ -20,6 +21,13 @@ class ContactController extends Controller
             'email' => 'nullable|email|max:255',
             'message' => 'required|string|max:500',
             'url' => 'required|url',
+        ]);
+
+        $client = Client::create([
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'email' => $validated['email'],
+            'origin' => "Site",
         ]);
 
         // Enviar email simples
