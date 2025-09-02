@@ -53,9 +53,11 @@
             </div>
         </div>
         <div class="text-center">
+            @if(Route::currentRouteName() != 'frontend.form-import')
             <a href="#form-proposta" class="btn btn-warning btn-lg mt-4" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
                     Quero importar
                 </a>
+            @endif
         </div>
     </div>
     <div class="footer-bottom text-center mt-3">
