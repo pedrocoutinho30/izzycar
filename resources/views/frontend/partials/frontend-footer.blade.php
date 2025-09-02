@@ -53,18 +53,16 @@
             </div>
         </div>
         <div class="text-center">
-            @if(Route::currentRouteName() != 'frontend.form-import')
-            <a href="#form-proposta" class="btn btn-warning btn-lg mt-4" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
-                    Quero importar
-                </a>
-            @endif
+            <a href="{{ route('frontend.form-import') }}" class="btn btn-warning btn-lg mt-4" >
+                Quero importar
+            </a>
         </div>
     </div>
     <div class="footer-bottom text-center mt-3">
         <div class="container">
             <small class="text-muted">
-                <a target="_blank" href="{{ route('frontend.privacy') }}" class="footer-link text-white">Política de Privacidade</a> | 
-                <a target="_blank" href="{{ route('frontend.terms') }}" class="footer-link text-white">Termos e Condições</a> 
+                <a target="_blank" href="{{ route('frontend.privacy') }}" class="footer-link text-white">Política de Privacidade</a> |
+                <a target="_blank" href="{{ route('frontend.terms') }}" class="footer-link text-white">Termos e Condições</a>
                 <br>
                 © 2025 Izzycar
             </small>

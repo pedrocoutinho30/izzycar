@@ -24,11 +24,12 @@
               <label for="source" class="form-label">Como conheceu a Izzycar?</label>
               <select name="source" id="source" class="form-control">
                   <option value="">Escolha uma opção</option>
-                  <option value="google">Google</option>
-                  <option value="facebook">Facebook</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="amigos">Amigos/Família</option>
-                  <option value="outros">Outros</option>
+                  <option value="Google">Google</option>
+                  <option value="Facebook">Facebook</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="Amigo">Amigos/Família</option>
+                  <option value="Olx">Olx/Standvirtual</option>
+                  <option value="Outro">Outros</option>
               </select>
           </div>
 
@@ -266,6 +267,7 @@
 
           // Script para carregar modelos conforme a marca
           document.addEventListener("DOMContentLoaded", function() {
+
               const brandSelect = document.getElementById('brand');
               const modelSelect = document.getElementById('model');
               if (!brandSelect || !modelSelect || !window.brands) return;
