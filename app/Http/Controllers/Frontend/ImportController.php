@@ -12,6 +12,7 @@ use App\Models\Client;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Frontend\PageController;
+
 class ImportController extends Controller
 {
     public function submitFormImport(Request $request)
@@ -25,12 +26,18 @@ class ImportController extends Controller
 
         // Aqui podes gravar na BD
         $proposal = FormProposal::create($request->all());
-        $client = Client::create([
-            'name' => $proposal->name,
-            'phone' => $proposal->phone,
-            'email' => $proposal->email,
-            'origin' => $proposal->source,
-        ]);
+
+        $clientExist = Client::where('email', $proposal->email)->where('phone', $proposal->phone)->first();
+
+        if (!$clientExist) {
+
+            $client = Client::create([
+                'name' => $proposal->name,
+                'phone' => $proposal->phone,
+                'email' => $proposal->email,
+                'origin' => $proposal->source,
+            ]);
+        }
 
         //TO DO:enviar email para cliente
 
@@ -152,7 +159,7 @@ class ImportController extends Controller
         // });
 
 
-        
+
         $data_custos = $data->contents->mapWithKeys(function ($content) {
             //verifica se o campo é enum  e se for obtem o page com os valores do campo que será um array
             if ($content->field_name == 'import_cost') {
@@ -167,7 +174,7 @@ class ImportController extends Controller
         });
 
 
-         
+
         return view('frontend.import', compact('data', 'data_custos', 'faq', 'why_import', 'brands'));
     }
 }

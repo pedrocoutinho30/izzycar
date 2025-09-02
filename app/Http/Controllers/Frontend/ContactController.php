@@ -24,12 +24,17 @@ class ContactController extends Controller
             'url' => 'required|url',
         ]);
 
-        $client = Client::create([
-            'name' => $validated['name'],
-            'phone' => $validated['phone'],
-            'email' => $validated['email'],
-            'origin' => "Site",
-        ]);
+        $clientExist = Client::where('email', $validated['email'])->where('phone', $validated['phone'])->first();
+
+        if (!$clientExist) {
+
+            $client = Client::create([
+                'name' => $validated['name'],
+                'phone' => $validated['phone'],
+                'email' => $validated['email'],
+                'origin' => "Site",
+            ]);
+        }
 
         // Enviar email simples
         Mail::raw(
