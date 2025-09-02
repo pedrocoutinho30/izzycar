@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Client;
+use App\Models\Brand;
 
 class ContactController extends Controller
 {
@@ -44,5 +45,13 @@ class ContactController extends Controller
         );
 
         return back()->with('success', 'O seu pedido foi enviado com sucesso!');
+    }
+
+
+    public function importForm()
+    {
+
+        $brands = Brand::all();
+        return view('frontend.import-form-page', compact('brands'));
     }
 }

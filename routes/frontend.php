@@ -24,7 +24,8 @@ use App\Http\Controllers\Frontend\NewsController;
 
 // quero redirecionar todas estas rotas para uma rota
 
-
+Route::post('/formulario-importacao', [ImportController::class, 'submitFormImport'])->name('frontend.import-submit');
+Route::get('/formulario-importacao', [ContactController::class, 'importForm'])->name('frontend.form-import');
 
 Route::middleware(['blockInProd'])->group(function () {
     Route::get('/sobre-nos', [PageController::class, 'aboutUs'])->name('frontend.about-us');
@@ -34,6 +35,7 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::get('/politica-privacidade', [PageController::class, 'privacyPolicy'])->name('frontend.privacy-policy');
     Route::get('/termos-condicoes', [PageController::class, 'termsConditions'])->name('frontend.terms-conditions');
     Route::get('/cookies', [PageController::class, 'cookies'])->name('frontend.cookies');
+
     Route::get('/brevemente', [PageController::class, 'comingSoon'])->name('frontend.coming-soon');
 
     Route::get('/', [VehiclesController::class, 'index'])->name('frontend.home');
@@ -46,9 +48,11 @@ Route::middleware(['blockInProd'])->group(function () {
         return view('frontend.teste');
     });
 
+
+
     Route::get('/legalizacao', [LegalizationController::class, 'getLegalizationPage'])->name('frontend.legalization');
     Route::get('/importacao', [ImportController::class, 'getImportPage'])->name('frontend.import');
-    Route::post('/formulario-importacao', [ImportController::class, 'submitFormImport'])->name('frontend.import-submit');
+
     Route::get('/venda', [SellingController::class, 'getSellingPage'])->name('frontend.selling');
 
     Route::get('/noticias', [NewsController::class, 'getNewsPage'])->name('frontend.news');

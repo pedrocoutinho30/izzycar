@@ -122,24 +122,7 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
 
-        document.getElementById('ad_option').addEventListener('change', function() {
-            let adLinksBox = document.getElementById('ad_links_box');
-            let preferencesBox = document.getElementById('preferences_box');
-
-            adLinksBox.classList.add('d-none');
-            preferencesBox.classList.add('d-none');
-
-            if (this.value === 'sim') {
-                adLinksBox.classList.remove('d-none');
-            } else if (this.value === 'nao_sei') {
-                preferencesBox.classList.remove('d-none');
-            }
-        });
-    });
-</script>
 <script>
     const swiper = new Swiper('.mySwiper', {
         slidesPerView: 1,
