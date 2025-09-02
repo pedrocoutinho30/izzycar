@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use App\Models\Setting;
 class ClientController extends Controller
 {
     public function __construct()
@@ -92,6 +92,8 @@ class ClientController extends Controller
     {
         $client = Client::findOrFail($clientId);
 
+        $settings = Setting::all()->pluck('value', 'label')->toArray();
+
         $pdf = Pdf::loadView('clients.contract_service', [
             'cliente' => [
                 'nome' => $client->name,
@@ -99,12 +101,12 @@ class ClientController extends Controller
                 'nif' => $client->vat_number,
             ],
             'prestador' => [
-                'nome' => 'Pedro Coutinho – Izzycar',
-                'nif' => '242414958',
-                'morada' => 'Rua da Imprensa Portuguesa, 1 drt 10, Praia do Furadouro, Ovar'
+                'nome' => $settings['name'],
+                'nif' => $settings['vat_number'],
+                'morada' => $settings['address'],
             ],
-            'iban' => 'PT50 0000 0000 0000 0000 0000 0',
-            'mbway' => '912345678'
+            'iban' => $settings['iban'],
+            'mbway' => $settings['phone'],
         ]);
 
         return $pdf->download('Contrato_Izzycar.pdf');
