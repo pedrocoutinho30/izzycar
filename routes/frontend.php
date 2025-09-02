@@ -55,7 +55,12 @@ Route::middleware(['blockInProd'])->group(function () {
 
     Route::get('/noticias/{slug}', [NewsController::class, 'getNewsPageBySlug'])->name('frontend.news-details');
 
-
+    Route::get('/politica-privacidade', function () {
+        return view('frontend.privacy');
+    })->name('frontend.privacy');
+    Route::get('/termos-condicoes', function () {
+        return view('frontend.terms');
+    })->name('frontend.terms');
 
     Route::get('/load-service-cards/{id}', function ($id) {
         $serviceActive = \App\Models\Page::find($id)?->contents ?? collect();
