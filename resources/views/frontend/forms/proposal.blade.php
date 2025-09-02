@@ -73,13 +73,13 @@
 
                   <div class="col-md-4">
                       <label for="model" class="form-label">Modelo</label>
-                      <select name="model" id="model" class="form-control" required disabled>
+                      <select name="model" id="model" class="form-control" disabled>
                           <option value="">Escolha uma opção</option>
                       </select>
                   </div>
                   <div class="col-md-4">
                       <label for="model" class="form-label">Sub-modelo</label>
-                      <input name="submodel" id="submodel" class="form-control" required>
+                      <input name="submodel" id="submodel" class="form-control">
                   </div>
                   <div class="col-md-4">
                       <label for="fuel" class="form-label">Combustível</label>
@@ -226,6 +226,31 @@
                       preferencesBox.classList.remove('d-none');
                   }
               });
+
+              const brandSelect = document.getElementById('brand');
+              const modelSelect = document.getElementById('model');
+              if (!brandSelect || !modelSelect || !window.brands) return;
+
+              function updateModels() {
+                  const selectedBrand = brandSelect.value;
+                  modelSelect.innerHTML = '<option value="">Escolha uma opção</option>';
+                  modelSelect.disabled = !selectedBrand;
+
+                  if (!selectedBrand) return;
+
+                  const brandObj = window.brands.find(b => b.name === selectedBrand);
+                  if (brandObj && brandObj.models) {
+                      brandObj.models.forEach(function(model) {
+                          const option = document.createElement('option');
+                          option.value = model.name;
+                          option.textContent = model.name;
+                          modelSelect.appendChild(option);
+                      });
+                  }
+              }
+
+              updateModels();
+              brandSelect.addEventListener('change', updateModels);
           });
       </script>
       <script>
@@ -268,30 +293,6 @@
           // Script para carregar modelos conforme a marca
           document.addEventListener("DOMContentLoaded", function() {
 
-              const brandSelect = document.getElementById('brand');
-              const modelSelect = document.getElementById('model');
-              if (!brandSelect || !modelSelect || !window.brands) return;
-
-              function updateModels() {
-                  const selectedBrand = brandSelect.value;
-                  modelSelect.innerHTML = '<option value="">Escolha uma opção</option>';
-                  modelSelect.disabled = !selectedBrand;
-
-                  if (!selectedBrand) return;
-
-                  const brandObj = window.brands.find(b => b.name === selectedBrand);
-                  if (brandObj && brandObj.models) {
-                      brandObj.models.forEach(function(model) {
-                          const option = document.createElement('option');
-                          option.value = model.name;
-                          option.textContent = model.name;
-                          modelSelect.appendChild(option);
-                      });
-                  }
-              }
-
-              updateModels();
-              brandSelect.addEventListener('change', updateModels);
           });
       </script>
       @endpush

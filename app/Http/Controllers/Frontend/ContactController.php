@@ -51,7 +51,9 @@ class ContactController extends Controller
     public function importForm()
     {
 
-        $brands = Brand::all();
+        $brands = Brand::with(['models' => function ($query) {
+            $query->orderBy('name');
+        }])->get();
         return view('frontend.import-form-page', compact('brands'));
     }
 }
