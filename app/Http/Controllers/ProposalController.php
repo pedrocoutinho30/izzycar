@@ -8,10 +8,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Mpdf;
 use App\Models\Brand;
+use App\Models\ConvertedProposal;
 use App\Models\VehicleAttribute;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\Browsershot\Browsershot;
 use App\Models\ProposalAttributeValue;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ProposalAcceptedMail;
+use App\Models\Setting;
+use App\Services\ContractService;
 
 class ProposalController extends Controller
 {
@@ -375,7 +380,7 @@ class ProposalController extends Controller
         return $mpdf->Output('Proposta' . ' Izzycar ' . $proposal->brand . '_' . $proposal->model  . '.pdf', 'I'); // 'I' mostra no navegador
     }
 
-      public function detail($brand, $model, $version, $id)
+    public function detail($brand, $model, $version, $id)
     {
 
         $proposal = Proposal::where('id', $id)
@@ -444,30 +449,9 @@ class ProposalController extends Controller
             return $posA <=> $posB;
         });
 
+        $client = Client::find($proposal->client_id);
 
-
-        return view('proposals.pdf', compact('proposal', 'attributes', 'potencia', 'caixa', 'cilindrada'));
-
-        $html = view('proposals.pdf', compact('proposal'))->render();
-
-
-        // Salvar como PDF
-        return view('proposals.pdf', compact('proposal'));
-
-
-        $pdf = Pdf::loadView('proposals.pdf', compact('proposal'))
-            ->setPaper('a4', 'portrait');
-
-        return $pdf->download('Proposta' . ' Izzycar ' . $proposal->brand . '_' . $proposal->model  . '.pdf');
-
-        // $html = view('proposals.pdf', compact('proposal'))->render();
-        // // Instanciar o mpdf
-        $mpdf = new \Mpdf\Mpdf();
-        // // Escrever o conteúdo HTML no PDF
-        $mpdf->WriteHTML($html);
-
-        // // Gerar o PDF e mostrar no navegador
-        return $mpdf->Output('Proposta' . ' Izzycar ' . $proposal->brand . '_' . $proposal->model  . '.pdf', 'I'); // 'I' mostra no navegador
+        return view('proposals.view-proposal', compact('proposal', 'attributes', 'potencia', 'caixa', 'cilindrada', 'client'));
     }
 
 
@@ -526,9 +510,187 @@ class ProposalController extends Controller
         return redirect()->route('proposals.edit', $newProposal->id)->with('success', 'Proposta duplicada com sucesso!');
     }
 
+    // public function accept(Proposal $proposal)
+    // {
+
+    //     /**
+    //      * 1. mudar estado de proposta para Aprovada
+    //      * 2. Criar registo nas propostas aceites com apenas informação importante (apresentar ja valores que tenho de receber de inicio, valores que vão ser só pagos no final, todos os valores separados para ir marcando o que ja está ou mão pago, etc.)
+    //      * 3. enviar notificação para o cliente com o status da proposta e com contrato de serviço
+    //      * 4. enviar email para mim para ter conhecimento da aceitação
+    //      */
+    //     $proposal->status = 'Aprovada';
+    //     $proposal->save();
+
+    //     $valor_segunda_tranche = $valor_primeira_tranche = ($proposal->transport_cost + $proposal->inspection_commission_cost + $proposal->ipo_cost +  $proposal->imt_cost + +$proposal->registration_cost + +$proposal->license_plate_cost + $proposal->commission_cost) * 0.5; // 50% do valor do carro
+    //     // Criar registo nas propostas aceites
+    //     if (ConvertedProposal::where('proposal_id', $proposal->id)->exists()) {
+    //         return back()->with('error', 'A proposta já foi aceite anteriormente.');
+    //     }
+
+    //     $convertedProposal = ConvertedProposal::create([
+    //         'proposal_id' => $proposal->id,
+    //         'client_id' => $proposal->client_id,
+    //         'status' => 'Iniciada',
+    //         'brand' => $proposal->brand,
+    //         'modelCar' => $proposal->model,
+    //         'version' => $proposal->version,
+    //         'year' => $proposal->proposed_car_year_month,
+    //         'km' => $proposal->proposed_car_mileage,
+    //         'url' => $proposal->url,
+    //         'custo_inspecao_origem' => $proposal->inspection_commission_cost,
+    //         'custo_transporte' => $proposal->transport_cost,
+    //         'custo_ipo' => $proposal->ipo_cost,
+    //         'isv' => $proposal->isv_cost,
+    //         'custo_imt' => $proposal->imt_cost,
+    //         'custo_matricula' => $proposal->license_plate_cost,
+    //         'custo_registo_automovel' => $proposal->registration_cost,
+    //         'valor_primeira_tranche' => $valor_primeira_tranche,
+    //         'valor_segunda_tranche' => $valor_segunda_tranche,
+    //         'valor_carro' => $proposal->proposed_car_value,
+    //         'valor_comissao' => $proposal->commission_cost
+    //     ]);
+
+
+    //     // Enviar notificação para o cliente
+    //     // Notification::send($proposal->client, new ProposalAccepted($proposal));
+    //     $this->sendAcceptanceEmail($proposal->id, $proposal->client_id, $convertedProposal);
+
+    //     // // Enviar email para o admin
+    //     Mail::raw(
+    //         "Proposta {$proposal->id} foi aceite. " . route('converted-proposals.edit', [$convertedProposal->id]),
+    //         function ($mail) {
+    //             $mail->to('geral@izzycar.pt')
+    //                 ->subject('Proposta aceite - Izzycar');
+    //         }
+    //     );
+    //     return back()->with('error', 'A proposta foi aceite. Irá receber confirmação por email e entraremos em contacto brevemente.');
+    // }
+
+
+    // public function sendAcceptanceEmail($proposalId, $client_id, $convertedProposal)
+    // {
+    //     $client = Client::find($client_id);
+    //     $proposal = Proposal::find($proposalId);
+    //     // Aqui vais buscar os dados reais (para já fixo)
+    //     $data = [
+    //         'client_name' => $client->name,
+    //         'brand' => $convertedProposal->brand,
+    //         'model' => $convertedProposal->modelCar,
+    //         'version' => $convertedProposal->version,
+    //         'car_image' => is_array(json_decode($proposal->images, true)) ? json_decode($proposal->images, true)[0] ?? null : null,
+    //     ];
+    //     // Gerar PDF do contrato (podes usar dompdf)
+    //     // $pdfContent = app(ClientController::class)->generateContractPdf($client_id);
+    //     $pdfContent = ContractService::generateContractPdf($client, $convertedProposal);
+    //     $settings = Setting::where('label', 'email')->first();
+    //     Mail::to("pedroc_30@hotmail.com")->send(new ProposalAcceptedMail($convertedProposal, $pdfContent, $data));
+    // }
+
+
+
+    public function accept(Proposal $proposal, Request $request)
+    {
+        //0. Atualizar dados do cliente
+        $input = $request->only([
+            'email',
+            'address',
+            'postal_code',
+            'city',
+            'identification_number',
+            'phone',
+            'vat_number'
+
+        ]);
+
+        // Remove valores vazios
+        $input = array_filter($input, fn($value) => !is_null($value) && $value !== '');
+
+        $client = Client::find($proposal->client_id);
+
+        $client->update($input);
+
+        // 1. Atualizar estado
+        $proposal->status = 'Aprovada';
+        $proposal->save();
+
+        // 2. Criar registo em propostas aceites
+        if (ConvertedProposal::where('proposal_id', $proposal->id)->exists()) {
+            return back()->with('error', 'A proposta já foi aceite anteriormente.');
+        }
+
+        $valor_total = $proposal->transport_cost
+            + $proposal->inspection_commission_cost
+            + $proposal->ipo_cost
+            + $proposal->imt_cost
+            + $proposal->registration_cost
+            + $proposal->license_plate_cost
+            + $proposal->commission_cost;
+
+        $valor_primeira_tranche = $valor_segunda_tranche = $valor_total * 0.5;
+
+        $convertedProposal = ConvertedProposal::create([
+            'proposal_id' => $proposal->id,
+            'client_id' => $proposal->client_id,
+            'status' => 'Iniciada',
+            'brand' => $proposal->brand,
+            'modelCar' => $proposal->model,
+            'version' => $proposal->version,
+            'year' => $proposal->proposed_car_year_month,
+            'km' => $proposal->proposed_car_mileage,
+            'url' => $proposal->url,
+            'custo_inspecao_origem' => $proposal->inspection_commission_cost,
+            'custo_transporte' => $proposal->transport_cost,
+            'custo_ipo' => $proposal->ipo_cost,
+            'isv' => $proposal->isv_cost,
+            'custo_imt' => $proposal->imt_cost,
+            'custo_matricula' => $proposal->license_plate_cost,
+            'custo_registo_automovel' => $proposal->registration_cost,
+            'valor_primeira_tranche' => $valor_primeira_tranche,
+            'valor_segunda_tranche' => $valor_segunda_tranche,
+            'valor_carro' => $proposal->proposed_car_value,
+            'valor_comissao' => $proposal->commission_cost,
+        ]);
+
+        // 3. Enviar notificação para o cliente
+        $this->sendAcceptanceEmail($proposal, $convertedProposal);
+
+        // 4. Enviar email para o admin
+        Mail::raw(
+            "Proposta {$proposal->id} foi aceite. " . route('converted-proposals.edit', [$convertedProposal->id]),
+            function ($mail) {
+                $mail->to('geral@izzycar.pt')
+                    ->subject('Proposta aceite - Izzycar');
+            }
+        );
+
+        return back()->with('success', 'A proposta foi aceite. O cliente receberá um email com o contrato.');
+    }
+
+    public function sendAcceptanceEmail($proposal, $convertedProposal)
+    {
+        $client = Client::find($proposal->client_id);
+
+        $data = [
+            'client_name' => $client->name,
+            'brand' => $convertedProposal->brand,
+            'model' => $convertedProposal->modelCar,
+            'version' => $convertedProposal->version,
+            'car_image' => is_array(json_decode($proposal->images, true))
+                ? json_decode($proposal->images, true)[0] ?? null
+                : null,
+        ];
+
+        // Gerar PDF em memória
+        $pdfContent = ContractService::generateContractPdf($client);
+
+        // Enviar para o cliente e em cc para admin
+        Mail::to($client->email)
+            ->cc('geral@izzycar.pt')
+            ->send(new ProposalAcceptedMail($convertedProposal, $pdfContent, $data));
+    }
     public function sentWhatsapp($id)
     {
-
-        DD($id);
+        dd($id);
     }
 }

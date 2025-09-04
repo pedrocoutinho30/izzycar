@@ -14,18 +14,18 @@ use App\Http\Controllers\AdSearchController;
 use App\Http\Controllers\VehicleAttributeController;
 use App\Http\Controllers\AnuncioController;
 use App\Http\Controllers\FrontendAnuncioController;
-
 use App\Http\Controllers\PageTypeController;
-use App\Http\Controllers\PageFieldController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\MenuItemController;
-use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ConvertedProposalController;
+use App\Models\ConvertedProposal;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -43,6 +43,10 @@ use App\Http\Controllers\PermissionController;
 
 
 Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');
+Route::post('/proposals/{proposal}/accept', [ProposalController::class, 'accept'])
+    ->name('proposals.accept');
+Route::get('/proposta/{brand}/{model}/{version}/{id}/timeline', [ConvertedProposalController::class, 'detailTimeline'])
+    ->name('converted-proposals.timeline');
 
 Auth::routes();
 
@@ -89,6 +93,21 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/proposals/{proposal}/duplicate', [ProposalController::class, 'duplicate'])->name('proposals.duplicate');
 
     Route::patch('proposals/{proposal}/update-status', [ProposalController::class, 'updateStatus'])->name('proposals.updateStatus');
+
+    Route::patch('/converted-proposals/{id}/update-status', [ConvertedProposalController::class, 'updateStatus'])->name('converted-proposals.updateStatus');
+
+    // Route::get('/converted-proposals', [ConvertedProposalController::class, 'index'])
+    //     ->name('converted-proposals.index');
+
+    // Route::put('/converted-proposals/{convertedProposal}', [ConvertedProposalController::class, 'update'])
+    //     ->name('converted-proposals.update');
+
+    // Route::get('/converted-proposals/{convertedProposal}/edit', [ConvertedProposalController::class, 'edit'])
+    //     ->name('converted-proposals.edit');
+
+    Route::resource('converted-proposals', ConvertedProposalController::class);
+
+
 
 
 

@@ -109,7 +109,30 @@ class ClientController extends Controller
             'mbway' => $settings['phone'],
         ]);
 
-        return $pdf->download('Contrato_Izzycar.pdf');
-        // return view('clients.contract_service', compact('client'));
+        // return $pdf->download('Contrato_Izzycar_' . $client->name . '.pdf');
+        return view('clients.contract_service', compact('client'));
     }
+
+    public function generateContractPdf($clientId)
+{
+    $client = Client::findOrFail($clientId);
+    $settings = Setting::all()->pluck('value', 'label')->toArray();
+
+    $pdf = Pdf::loadView('clients.contract_service', [
+        'cliente' => [
+            'nome' => $client->name,
+            'morada' => $client->address,
+            'nif' => $client->vat_number,
+        ],
+        'prestador' => [
+            'nome' => $settings['name'],
+            'nif' => $settings['vat_number'],
+            'morada' => $settings['address'],
+        ],
+        'iban' => $settings['iban'],
+        'mbway' => $settings['phone'],
+    ]);
+
+    return $pdf->output(); // devolve bytes do PDF
+}
 }

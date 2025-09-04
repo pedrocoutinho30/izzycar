@@ -165,6 +165,7 @@
         $menuItemsGestao = [
         ['route' => 'clients.index', 'icon' => 'fa-users', 'label' => __('Clientes'), 'permission' => 'gerir clientes'],
         ['route' => 'proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas'), 'permission' => 'gerir propostas'],
+        ['route' => 'converted-proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas Convertidas'), 'permission' => 'gerir propostas'],
         ['route' => 'vehicles.index', 'icon' => 'fa-car-side', 'label' => __('Veículos'), 'permission' => 'gerir veiculos'],
         ['route' => 'expenses.index', 'icon' => 'fa-file-invoice-dollar','label' => __('Despesas'), 'permission' => 'gerir despesas'],
         ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'label' => __('Vendas'), 'permission' => 'gerir vendas'],
@@ -172,6 +173,8 @@
         ['route' => 'partners.index', 'icon' => 'fa-handshake', 'label' => __('Parceiros'), 'permission' => 'gerir parceiros'],
         ['route' => 'ad-searches.index', 'icon' => 'fa-chart-line', 'label' => __('Análise de Mercado'), 'permission' => 'analisar mercado'],
         ];
+
+        
 
         $menuItemsCMS = [
         ['route' => 'pages.imports', 'icon' => 'fa-file', 'label' => __('Importações'), 'permission' => 'gerir importacoes'],

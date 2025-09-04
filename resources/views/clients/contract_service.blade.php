@@ -45,14 +45,14 @@
     <div class="section">
         <h2>1. Identificação das Partes</h2>
         <p><b>Prestador:</b> <br>
-            Nome:<b> {{ $prestador['nome'] }} </b><br>
-            NIF: <b>{{ $prestador['nif'] }} </b><br>
-            Morada: <b>{{ $prestador['morada'] }}</b></p>
+            Nome:<b>  </b><br>
+            NIF: <b></b><br>
+            Morada: <b></b></p>
 
         <p><b>Cliente:</b><br>
-            Nome: <b>{{ $cliente['nome'] }} </b><br>
-            Morada: <b>{{ $cliente['morada'] }} </b><br>
-            NIF: <b>{{ $cliente['nif'] }} </b><br>
+            Nome: <b> </b><br>
+            Morada: <b> </b><br>
+            NIF: <b> </b><br>
     </div>
 
     <div class="section">
@@ -85,8 +85,8 @@
             • 50% na entrega do automóvel.<br>
             • Pagamento via transferência ou MB Way:<br>
             
-            IBAN: <b>{{ $iban }}</b><br>
-            MB Way: <b>{{ $mbway }}</b></p>
+            IBAN: <b></b><br>
+            MB Way: <b></b></p>
 
         <p><b>Aquisição do veículo:</b><br>
             O pagamento é efetuado diretamente pelo Cliente ao stand de origem.</p>
@@ -104,7 +104,12 @@
                     Data: ____ / ____ / ______
                 </td>
                 <td>
-                    _________________________________ <br>
+                    @php
+                    $assinatura = "storage/". \App\Models\Setting::where('label', 'assinatura_prestador')->pluck('value')->first();
+                    @endphp
+        
+                    <img src="{{url($assinatura)}}" alt="Assinatura" style="height: 80px;">
+                     <br>
                     Assinatura do Prestador <br>
                     Data: ____ / ____ / ______ <br>
                 </td>

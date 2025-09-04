@@ -847,11 +847,9 @@ blockquote {
 /*---------------------------------------
   TIMELINE              
 -----------------------------------------*/
-.timeline-section {
-  background-image: url('../images/colleagues-working-cozy-office-medium-shot.jpg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+
+
+.timeline-container {
   position: relative;
 }
 
@@ -861,52 +859,52 @@ blockquote {
   padding-left: 0;
 }
 
-.timeline-container .vertical-scrollable-timeline .list-progress {
-  width: 8px;
-  height: 87%;
-  background-color: var(--primary-color);
+.timeline-container .list-progress {
   position: absolute;
-  left: 52px;
   top: 0;
-  overflow: hidden;
+  left: 35px;      /* antes 52px, centraliza com o ícone de 70px */
+  width: 6px;       /* antes 8px, mais fino */
+  height: 100%;
+  background-color: #ddd;
+  z-index: 0;
 }
+
+.timeline-container .list-progress .inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: green;
+}
+
 
 .timeline-container .vertical-scrollable-timeline .list-progress .inner {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  height: 100%;
-  background-color: var(--secondary-color);
+  top: 0;
+  left: 0;
   width: 100%;
+  background-color: green;
 }
 
 .timeline-container .vertical-scrollable-timeline li {
   position: relative;
-  padding: 20px 0px 65px 145px;
+  padding: 15px 0px 40px 100px; /* menos espaçamento */
 }
 
 .timeline-container .vertical-scrollable-timeline li:last-child {
   padding-bottom: 0;
 }
 
-.timeline-container .vertical-scrollable-timeline li p {
-  line-height: 40px;
-}
-
-.timeline-container .vertical-scrollable-timeline li p:last-child {
-  margin-bottom: 0;
-}
-
 .timeline-container .vertical-scrollable-timeline li .icon-holder {
   position: absolute;
   left: 0;
   top: 0;
-  width: 104px;
-  height: 104px;
+  width: 70px;     /* antes 104px */
+  height: 70px;    /* antes 104px */
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--secondary-color);
+  background-color: var(--accent-color);
   border-radius: 50%;
   z-index: 1;
   transition: 0.4s all;
@@ -914,9 +912,9 @@ blockquote {
 
 .timeline-container .vertical-scrollable-timeline li .icon-holder::before {
   content: "";
-  width: 80px;
-  height: 80px;
-  border: 4px solid #fff;
+  width: 55px;   /* antes 80px */
+  height: 55px;  /* antes 80px */
+  border: 3px solid #fff; /* mais fino */
   position: absolute;
   background-color: var(--secondary-color);
   border-radius: 50%;
@@ -925,27 +923,31 @@ blockquote {
 }
 
 .timeline-container .vertical-scrollable-timeline li .icon-holder i {
-  font-size: 25px;
-  color: var(--white-color);
+  font-size: 18px;
+  color: var(--accent-color);
 }
 
-.timeline-container .vertical-scrollable-timeline li::before {
-  content: "";
-  position: absolute;
-  height: 100%;
-  width: 8px;
-  background-color: transparent;
-  left: 52px;
-  z-index: 0;
-}
 
+
+/* estados */
 .timeline-container .vertical-scrollable-timeline li.active .icon-holder {
-  background-color: var(--primary-color);
+  background-color: green;
 }
 
 .timeline-container .vertical-scrollable-timeline li.active .icon-holder::before {
-  background-color: var(--primary-color);
+  background-color: green;
+  border-color: #fff;
 }
+
+.timeline-container .vertical-scrollable-timeline li p {
+  font-size: 0.875rem; /* reduzir texto */
+  line-height: 1.3;
+}
+.timeline-container .vertical-scrollable-timeline li h4 {
+  font-size: 2rem; /* reduzir título */
+  margin-bottom: 5px;
+}
+
 
 
 /*---------------------------------------
@@ -1270,15 +1272,7 @@ blockquote {
   .custom-block-topics-listing a {
     flex-direction: column;
   }
-
-  .timeline-container .vertical-scrollable-timeline .list-progress {
-    height: 75%;
-  }
-
-  .timeline-container .vertical-scrollable-timeline li {
-    padding-left: 135px;
-  }
-
+  
   .subscribe-form-wrap {
     padding-top: 30px;
     padding-bottom: 0;
