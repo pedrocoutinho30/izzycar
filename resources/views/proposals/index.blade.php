@@ -53,8 +53,8 @@
                 <div class="card mb-3 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">{{ $proposal->brand }} {{ $proposal->model }}</h5>
-                        <p class="card-text mb-1"><strong>Cliente:</strong> {{ $proposal->client->name }}</p>
-                        <p class="card-text mb-1"><strong>Versão:</strong> {{ $proposal->version }}</p>
+                        <p class="card-text mb-1"><strong>Cliente:</strong> {{ $proposal ? $proposal->client->name : '' }}</p>
+                        <p class="card-text mb-1"><strong>Versão:</strong> {{ $proposal ? $proposal->version : '' }}</p>
                         <p class="card-text mb-1"><strong>Estado:</strong> 
                             <select class="form-select form-select-sm status-dropdown" data-id="{{ $proposal->id }}">
                                 <option value="Pendente" {{ $proposal->status == 'Pendente' ? 'selected' : '' }}>Pendente</option>
@@ -109,10 +109,10 @@
                         @foreach($proposals as $proposal)
                         @if($proposal)
                         <tr>
-                            <td>{{ $proposal->client->name }}</td>
-                            <td>{{ $proposal->brand }} </td>
-                            <td>{{ $proposal->model }}</td>
-                            <td>{{ $proposal->version }}</td>
+                            <td>{{ $proposal ? $proposal->client->name : '' }}</td>
+                            <td>{{ $proposal ? $proposal->brand : '' }}</td>
+                            <td>{{ $proposal ? $proposal->model : '' }}</td>
+                            <td>{{ $proposal ? $proposal->version : '' }}</td>
                             <td>
                                 <select class="form-select form-select-sm status-dropdown" data-id="{{ $proposal->id }}">
                                     <option value="Pendente" {{ $proposal->status == 'Pendente' ? 'selected' : '' }}>Pendente</option>
