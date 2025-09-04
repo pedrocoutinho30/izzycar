@@ -7,8 +7,7 @@
     <div class="container py-5">
         <div class="row">
             <div class="col-md-4 col-4 text-start">
-                {{ url('/storage/' . json_decode($convertedProposal->proposal->images, true)[0]) }}
-                <img src="{{ public_path('/storage/' . json_decode($convertedProposal->proposal->images, true)[0]) }}" alt="Logo Izzycar" style="height:auto; width:120px;">
+                <img src="{{ url('/storage/' . json_decode($convertedProposal->proposal->images, true)[0]) }}" alt="Logo Izzycar" style="height:auto; width:120px;">
                 <div class="mt-3">
                     <h5 class="text-white">{{ $convertedProposal->brand }} {{ $convertedProposal->model }} {{ $convertedProposal->version }}</h5>
                     <p class="text-muted mb-1">{{ $convertedProposal->year }} | {{ $convertedProposal->km }} km</p>
