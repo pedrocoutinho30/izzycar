@@ -114,7 +114,6 @@ class ConvertedProposalController extends Controller
         $allStatus = [
             ['status' => 'Iniciada', 'icon' => 'fa fa-play'],
             ['status' => 'Negociação Carro', 'icon' => 'fa fa-car'],
-            ['status' => 'Inspeção por EUROVERIFY', 'icon' => 'fa fa-car'],
 
             ['status' => 'Transporte', 'icon' => 'fa fa-truck'],
             ['status' => 'IPO', 'icon' => 'fa fa-car'],
