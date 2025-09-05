@@ -84,7 +84,7 @@
             • 50% na adjudicação do serviço.<br>
             • 50% na entrega do automóvel.<br>
             • Pagamento via transferência ou MB Way:<br>
-            
+
             IBAN: <b>{{ $iban }}</b><br>
             MB Way: <b>{{ $mbway }}</b></p>
 
@@ -105,13 +105,18 @@
                 </td>
                 <td style="position: relative; height: 80px;">
                     <span style="position: absolute; bottom: 52px; left: 50%; transform: translateX(-50%);">
-                        {{public_path($signaturePath)}}
-                        @if($signaturePath ?? false)
-                        
-                            <img src="{{public_path($signaturePath)}}" alt="Assinatura" style="height: 50px;">
+                        @php
+                        $signature = null;
+                        if (!empty($signaturePath) && file_exists(public_path($signaturePath))) {
+                        $signature = base64_encode(file_get_contents(public_path($signaturePath)));
+                        }
+                        @endphp
+
+                        @if($signature)
+                        <img src="data:image/png;base64,{{ $signature }}" alt="Assinatura" style="height: 50px;">
                         @endif
                     </span>
-                    
+
                     <!-- <span style="position: absolute; bottom: 0; left: 0; right: 0; text-align: center;">
                         _________________________________
                     </span> -->
