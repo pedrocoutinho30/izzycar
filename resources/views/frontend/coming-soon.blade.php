@@ -176,7 +176,7 @@
 
 <body>
     <div class="container">
-        <img src="img/logo-transparente.png" class="logo" alt="Logo da izzycar">
+        <img src="{{ asset($logotipo) }}" class="logo" alt="Logo da izzycar">
         <h2>Brevemente disponível</h2>
         <h3>Estamos a trabalhar para melhorar a sua experiência</h3>
         <h3>Em breve teremos novidades</h3>
