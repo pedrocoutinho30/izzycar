@@ -143,7 +143,7 @@
 
                             <div class="mb-3">
                                 <label for="clientNif" class="form-label">NIF</label>
-                                <input type="text" class="form-control" id="clientNif" name="nif" required>
+                                <input type="text" class="form-control" id="clientNif" name="vat_number" required>
                             </div>
                             @endif
                             @if($client->identification_number == null || $client->identification_number == '')

@@ -70,7 +70,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ url($logotipo) }}" alt="Izzycar Logo"> 
+            <img src="{{ url($logotipo) }}" alt="Izzycar Logo">
             <div class="title">Proposta Aceite 🚗 </div>
         </div>
 
