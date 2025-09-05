@@ -1,6 +1,6 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Izzycar')
+@section('title', 'Izzycar - Importação de Veículos')
 
 @section('content')
 

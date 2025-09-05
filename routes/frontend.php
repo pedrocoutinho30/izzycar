@@ -28,11 +28,18 @@ Route::post('/formulario-importacao', [ImportController::class, 'submitFormImpor
 Route::get('/formulario-importacao', [ContactController::class, 'importForm'])->name('frontend.form-import');
 
 
- Route::get('teste', function () {
-       $client = \App\Models\Client::first();
-       $pdf = \App\Services\ContractService::generateContractPdf($client);
-       return response($pdf, 200)->header('Content-Type', 'application/pdf');
-    });
+Route::get('teste', function () {
+
+    $convertedProposal = \App\Models\ConvertedProposal::first();
+    $data = [
+        'client_name' => "nome do cliente",
+        'brand' => $convertedProposal->brand,
+        'model' => $convertedProposal->modelCar,
+        'version' => $convertedProposal->version,
+        'car_image' => null,
+    ];
+    return view('emails.proposal_accepted', ['data' => $data]);
+});
 Route::middleware(['blockInProd'])->group(function () {
     Route::get('/sobre-nos', [PageController::class, 'aboutUs'])->name('frontend.about-us');
     Route::get('/servicos', [PageController::class, 'services'])->name('frontend.services');
@@ -50,7 +57,7 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::get('/viaturas/{brand}/{model}/{id}', [VehiclesController::class, 'vehicleDetails'])->name('vehicles.details');
     Route::post('/contact/vehicle', [ContactController::class, 'send'])->name('contact.vehicle');
 
-   
+
 
 
 

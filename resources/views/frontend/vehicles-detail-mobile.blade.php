@@ -77,7 +77,7 @@
                                     'id' => $vehicle->reference]) }}"
                         target="_blank"
                         class="btn btn-outline-form">
-                        <i class="bi bi-whatsapp"></i>
+                        <i class="bi bi-whatsapp fs-3"></i>
                     </a>
                     <button class="btn btn-outline-form flex-fill" data-bs-toggle="modal" data-bs-target="#contactModal">
                         Pedir informações

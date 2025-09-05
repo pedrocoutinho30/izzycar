@@ -19,51 +19,20 @@
             margin: auto;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .car-info {
-            background: #f1f1f1;
-            padding: 15px;
-            border-radius: 6px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .car-info img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-
-        .status {
-            font-size: 16px;
-            padding: 10px;
-            background: #e9ecef;
-            border-radius: 6px;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .footer {
-            margin-top: 30px;
-            font-size: 14px;
-            color: #777;
-            text-align: center;
-        }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>🚗 Atualização do Estado da Proposta</h2>
+    <div class="container" style="background: #111111; border-radius: 8px; padding: 25px; max-width: 600px; margin: auto; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+
+
+        <div style="  text-align: center;
+            margin-bottom: 20px;">
+            <img src="{{ url($logotipo) }}" alt="Izzycar Logo" style="max-height: 60px; margin-bottom: 10px;">
+            <div class="title" style="font-size: 24px; font-weight: bold; color: #990000;">Atualização do Estado da Proposta </div>
         </div>
 
-        <p>Olá <b>{{ $client_name }}</b>,</p>
+        <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Olá <b>{{ $client_name }}</b>,</p>
 
 
         @php
@@ -95,19 +64,30 @@
         $message = "O processo foi cancelado. Se desejar, estamos disponíveis para esclarecer dúvidas ou apresentar novas soluções para si.";
         }
         @endphp
-        <p>{{ $message }}</p>
+        <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">{{ $message }}</p>
 
-        <div class="status">
-            <b>{{ $oldStatus }}</b> ➝ <b>{{ $newStatus }}</b>
-        </div>
-
-        <div class="car-info">
+        <div style="font-size: 16px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 6px;
+            text-align: center;
+            margin: 20px 0;">
             <h3>{{ $convertedProposal->brand }} {{ $convertedProposal->modelCar }} {{ $convertedProposal->version }}</h3>
         </div>
+        <div style="font-size: 16px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 6px;
+            text-align: center;
+            margin: 20px 0;">
+            <b style="color: #990000;">{{ $oldStatus }}</b> ➝ <b style="color: green;">{{ $newStatus }}</b>
+        </div>
 
-        <p>Iremos mantê-lo informado sobre os próximos passos do processo.</p>
 
-        <div class="footer">
+
+        <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Iremos mantê-lo informado sobre os próximos passos do processo.</p>
+
+        <div class="footer" style="font-size: 16px; text-align: center; margin-bottom: 20px; color: #fff; margin-top: 30px;">
             <p>Equipa Izzycar</p>
             <p><i>Este é um email automático, por favor não responda diretamente a esta mensagem.</i></p>
         </div>
