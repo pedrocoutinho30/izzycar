@@ -105,16 +105,10 @@
                 </td>
                 <td style="position: relative; height: 80px;">
                     <span style="position: absolute; bottom: 52px; left: 50%; transform: translateX(-50%);">
-                        @php
-                        $signature = null;
-                        dd(public_path($signaturePath), file_exists(public_path($signaturePath)));
-                        if (!empty($signaturePath) && file_exists(public_path($signaturePath))) {
-                        $signature = base64_encode(file_get_contents(public_path($signaturePath)));
-                        }
-                        @endphp
 
-                        @if($signature)
-                        <img src="data:image/png;base64,{{ $signature }}" alt="Assinatura" style="height: 50px;">
+
+                        @if($signaturePath)
+                        <img src="{{ $signaturePath }}" alt="Assinatura" style="height: 50px;">
                         @endif
                     </span>
 

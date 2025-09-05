@@ -10,8 +10,15 @@ class ContractService
 {
     public static function generateContractPdf($client)
     {
-        
+
         $settings = Setting::all()->pluck('value', 'label')->toArray();
+
+        $path = storage_path('app/public/' . ($settings['assinatura_prestador'] ?? ''));
+
+        if (file_exists($path)) {
+            $signature = base64_encode(file_get_contents($path));
+            $src = "data:image/png;base64," . $signature;
+        }
         $data = [
             'cliente' => [
                 'nome' => $client->name,
@@ -25,7 +32,7 @@ class ContractService
             ],
             'iban' => $settings['iban'],
             'mbway' => $settings['phone'],
-            'signaturePath' => "storage/app/public/" . $settings['assinatura_prestador'] ?? null
+            'signaturePath' => $src ?? null,
         ];
         return Pdf::loadView('pdf.contract_service', $data)->output();
     }
