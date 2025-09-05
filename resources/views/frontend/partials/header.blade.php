@@ -3,7 +3,7 @@
 
         {{-- Logo --}}
         <a class="navbar-brand" href="{{ route('frontend.home') }}">
-            <img src="{{ asset('img/logo-transparente.png') }}" alt="Logo" class="navbar-logo" style="height:auto; width:120px;">
+            <img src="{{ asset($logotipo) }}" alt="Logo" class="navbar-logo" style="height:auto; width:120px;">
         </a>
 
         {{-- Menu central --}}

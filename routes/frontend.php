@@ -45,9 +45,16 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::post('/contact/vehicle', [ContactController::class, 'send'])->name('contact.vehicle');
 
     Route::get('teste', function () {
-       $client = \App\Models\Client::first();
-       $pdf = \App\Services\ContractService::generateContractPdf($client);
-       return response($pdf, 200)->header('Content-Type', 'application/pdf');
+        $data = [
+            "client_name" => "Pedro Coutinho",
+            "brand" => "BMW",
+            "model" => "X5",
+            "version" => "M50d",
+            "car_image" => "https://www.izzycar.pt/img/logo-simples.png",
+           
+           
+        ];
+        return view('emails.proposal_accepted', compact('data'));
     });
 
 

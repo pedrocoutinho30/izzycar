@@ -29,7 +29,11 @@ class AppServiceProvider extends ServiceProvider
                 ->with('children_active')
                 ->main()
                 ->get();
+
+                $logo = \App\Models\Setting::where('label', 'logo')->first()->value;
             $view->with('menus', $menus);
+            $view->with('logotipo', "storage/" . $logo);
+
         });
 
         Paginator::useBootstrap();

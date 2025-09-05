@@ -7,9 +7,10 @@
     <div class="container py-5">
         <div class="row">
             <div class="col-md-4 col-4 text-start">
-                <img src="{{ url('/storage/' . json_decode($convertedProposal->proposal->images, true)[0]) }}" alt="Logo Izzycar" style="height:auto; width:120px;">
                 <div class="mt-3">
                     <h5 class="text-white">{{ $convertedProposal->brand }} {{ $convertedProposal->model }} {{ $convertedProposal->version }}</h5>
+                    <img src="{{ url('/storage/' . json_decode($convertedProposal->proposal->images, true)[0]) }}" alt="Logo Izzycar" style="height:auto; width:420px;">
+
                     <p class="text-muted mb-1">{{ $convertedProposal->year }} | {{ $convertedProposal->km }} km</p>
                     <p class="text-muted mb-1">Cliente: {{ $convertedProposal->proposal->client->name }}</p>
                     <p class="text-muted mb-1">Data da Proposta: {{ \Carbon\Carbon::parse($convertedProposal->proposal->created_at)->locale('pt_PT')->isoFormat('DD-mm-YYYY') }}</p>
@@ -25,7 +26,6 @@
                 $lastCompletedIndex = $i;
                 }
                 }
-
                 $totalSteps = count($allStatus);
                 $progressPercent = $lastCompletedIndex !== null
                 ? (($lastCompletedIndex + 1) / $totalSteps) * 100

@@ -22,11 +22,19 @@ class SettingController extends Controller
     public function store(Request $request)
     {
         $data = $this->validateData($request);
-
         // Upload de imagem se for o caso
         if ($request->tipo === 'image' && $request->hasFile('valor')) {
-            $data['value'] = $request->file('valor')->store('settings', 'public');
+            $file = $request->file('valor');
+
+            // Gera um nome único ou personalizado
+            $filename =  $request->label . '.' . $file->getClientOriginalExtension();
+
+            // Guarda com o nome escolhido
+            $path = $file->storeAs('settings', $filename, 'public');
+
+            $data['value'] = $path;
         }
+
 
         Setting::create($data);
 
@@ -47,7 +55,16 @@ class SettingController extends Controller
             if ($setting->value) {
                 Storage::disk('public')->delete($setting->value);
             }
-            $data['value'] = $request->file('valor')->store('settings', 'public');
+
+            $file = $request->file('valor');
+
+            // nome da imagem: usa o nome do setting + extensão
+            $filename =  $setting->label . '.' . $file->getClientOriginalExtension();
+
+            // guarda com nome fixo
+            $path = $file->storeAs('settings', $filename, 'public');
+
+            $data['value'] = $path;
         }
 
         $setting->update($data);

@@ -16,6 +16,7 @@ use App\Models\ProposalAttributeValue;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ProposalAcceptedMail;
 use App\Models\Setting;
+use App\Models\StatusProposalHistory;
 use App\Services\ContractService;
 
 class ProposalController extends Controller
@@ -614,6 +615,7 @@ class ProposalController extends Controller
         $proposal->status = 'Aprovada';
         $proposal->save();
 
+
         // 2. Criar registo em propostas aceites
         if (ConvertedProposal::where('proposal_id', $proposal->id)->exists()) {
             return back()->with('error', 'A proposta já foi aceite anteriormente.');
@@ -652,6 +654,12 @@ class ProposalController extends Controller
             'valor_comissao' => $proposal->commission_cost,
         ]);
 
+        //Criar registo de historico
+        StatusProposalHistory::create([
+            'new_status' => 'Iniciada',
+            'old_status' => null,
+            'converted_proposal_id' => $convertedProposal->id,
+        ]);
         // 3. Enviar notificação para o cliente
         $this->sendAcceptanceEmail($proposal, $convertedProposal);
 
