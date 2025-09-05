@@ -112,11 +112,27 @@ class VehicleController extends Controller
 
         // Salvar imagens
         if ($request->hasFile('images')) {
+            $i = 1;
             foreach ($request->file('images') as $image) {
-                $path = $image->store('vehicles', 'public');
+                $extension = $image->getClientOriginalExtension();
+
+                // Nome personalizado: vehicles_brand_model_version_id_numeração
+                $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}." . $extension;
+
+                // Guardar com o nome personalizado
+                $path = $image->storeAs(
+                    "vehicles/{$vehicle->id}", // Pasta
+                    $fileName,                 // Nome
+                    'public'                   // Disco
+                );
+
+                // Gravar no banco de dados
                 $vehicle->images()->create(['image_path' => $path]);
+
+                $i++;
             }
         }
+
 
 
         return redirect()->route('vehicles.index')->with('success', 'Veículo criado com sucesso!');
@@ -198,12 +214,31 @@ class VehicleController extends Controller
             ]);
         }
         // Salvar novas imagens
+        // Update - adicionar novas imagens sem apagar as antigas
         if ($request->hasFile('images')) {
+            // Descobrir quantas imagens já existem para continuar a numeração
+            $i = $vehicle->images()->count() + 1;
+
             foreach ($request->file('images') as $image) {
-                $path = $image->store('vehicles', 'public');
+                $extension = $image->getClientOriginalExtension();
+
+                // Nome personalizado
+                $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}." . $extension;
+
+                // Guardar com nome personalizado
+                $path = $image->storeAs(
+                    "vehicles/{$vehicle->id}", // Pasta
+                    $fileName,                 // Nome
+                    'public'                   // Disco
+                );
+
+                // Gravar no banco de dados
                 $vehicle->images()->create(['image_path' => $path]);
+
+                $i++;
             }
         }
+
         return redirect()->route('vehicles.index')->with('success', 'Veículo atualizado com sucesso!');
     }
 

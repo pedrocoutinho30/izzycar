@@ -135,17 +135,30 @@ class ProposalController extends Controller
         if ($request->hasFile('images')) {
             $images = $request->file('images');
             $imagePaths = [];
+            $i = 1;
 
             foreach ($images as $image) {
-                $path = $image->store('proposals/' . $request->client_id . '/' . $proposal->id, 'public');
+                // Garante extensão original
+                $extension = $image->getClientOriginalExtension();
+
+                // Nome personalizado
+                $fileName = "{$proposal->brand}_{$proposal->model}_{$proposal->version}_{$proposal->proposed_car_year_month}_{$proposal->id}_{$i}." . $extension;
+
+                // Caminho
+                $path = $image->storeAs(
+                    "proposals/{$proposal->client_id}/{$proposal->id}", // diretório
+                    $fileName,                                         // nome do ficheiro
+                    'public'                                           // disco
+                );
+
                 $imagePaths[] = $path;
+                $i++;
             }
 
-            // Salvar os caminhos das imagens no banco de dados
+            // Salvar os caminhos das imagens no banco
             $proposal->images = json_encode($imagePaths);
             $proposal->save();
         }
-
 
 
         return redirect()->route('proposals.index')->with('success', 'Proposal created successfully.');
@@ -262,15 +275,33 @@ class ProposalController extends Controller
             }
         }
 
-        // Adicionar novas imagens
+        // Adicionar novas imagens no update
         if ($request->hasFile('images')) {
             $images = $request->file('images');
-            $imagePaths = [];
+
+            // Pegar as imagens já existentes
+            $existingImages = $proposal->images ? json_decode($proposal->images, true) : [];
+            $imagePaths = $existingImages;
+
+            // Descobrir quantas já existem para continuar a numeração
+            $i = count($existingImages) + 1;
 
             foreach ($images as $image) {
-                // Armazenar cada imagem na pasta correta
-                $path = $image->store('proposals/' . $request->client_id . '/' . $proposal->id, 'public');
+                // Extensão do ficheiro original
+                $extension = $image->getClientOriginalExtension();
+
+                // Nome personalizado: brand_model_version_id_numeração
+                $fileName = "{$proposal->brand}_{$proposal->model}_{$proposal->version}_{$proposal->proposed_car_year_month}_{$proposal->id}_{$i}." . $extension;
+
+                // Guardar na pasta correta
+                $path = $image->storeAs(
+                    "proposals/{$request->client_id}/{$proposal->id}",
+                    $fileName,
+                    'public'
+                );
+
                 $imagePaths[] = $path;
+                $i++;
             }
 
             // Atualizar as imagens no banco de dados
