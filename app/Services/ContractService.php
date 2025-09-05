@@ -25,7 +25,7 @@ class ContractService
             ],
             'iban' => $settings['iban'],
             'mbway' => $settings['phone'],
-            'signaturePath' =>  $settings['assinatura_prestador'] ?? null
+            'signaturePath' => "storage/app/public/" . $settings['assinatura_prestador'] ?? null
         ];
         return Pdf::loadView('pdf.contract_service', $data)->output();
     }
