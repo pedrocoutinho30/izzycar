@@ -105,10 +105,10 @@
                 </td>
                 <td style="position: relative; height: 80px;">
                     <span style="position: absolute; bottom: 52px; left: 50%; transform: translateX(-50%);">
-                        {{url($signaturePath)}}
+                        {{public_path($signaturePath)}}
                         @if($signaturePath ?? false)
                         
-                            <img src="{{url($signaturePath)}}" alt="Assinatura" style="height: 50px;">
+                            <img src="{{public_path($signaturePath)}}" alt="Assinatura" style="height: 50px;">
                         @endif
                     </span>
                     
