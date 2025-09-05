@@ -27,6 +27,12 @@ use App\Http\Controllers\Frontend\NewsController;
 Route::post('/formulario-importacao', [ImportController::class, 'submitFormImport'])->name('frontend.import-submit');
 Route::get('/formulario-importacao', [ContactController::class, 'importForm'])->name('frontend.form-import');
 
+
+ Route::get('teste', function () {
+       $client = \App\Models\Client::first();
+       $pdf = \App\Services\ContractService::generateContractPdf($client);
+       return response($pdf, 200)->header('Content-Type', 'application/pdf');
+    });
 Route::middleware(['blockInProd'])->group(function () {
     Route::get('/sobre-nos', [PageController::class, 'aboutUs'])->name('frontend.about-us');
     Route::get('/servicos', [PageController::class, 'services'])->name('frontend.services');
@@ -44,18 +50,7 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::get('/viaturas/{brand}/{model}/{id}', [VehiclesController::class, 'vehicleDetails'])->name('vehicles.details');
     Route::post('/contact/vehicle', [ContactController::class, 'send'])->name('contact.vehicle');
 
-    Route::get('teste', function () {
-        $data = [
-            "client_name" => "Pedro Coutinho",
-            "brand" => "BMW",
-            "model" => "X5",
-            "version" => "M50d",
-            "car_image" => "https://www.izzycar.pt/img/logo-simples.png",
-           
-           
-        ];
-        return view('emails.proposal_accepted', compact('data'));
-    });
+   
 
 
 
