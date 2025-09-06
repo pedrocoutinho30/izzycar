@@ -6,103 +6,133 @@
             <img src="{{ asset($logotipo) }}" alt="Logo" class="navbar-logo" style="height:auto; width:120px;">
         </a>
 
-        {{-- Menu central --}}
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            <!-- <ul class="nav nav-tabs">
-                @foreach($menus as $menu)
-                @if($menu->children->isEmpty())
-                <li class="nav-item">
-                    <a class="nav-link {{ $menu->route_name && Route::currentRouteName() == $menu->route_name ? 'active' : '' }}"
-                        href="{{ $menu->route_name ? route($menu->route_name) : '#' }}">
-                        {{ $menu->title }}
-                    </a>
-                </li>
-                @else
-                <li class="nav-item dropdown">
-                    @php
-                    $active = false;
-                    foreach($menu->children as $child) {
-                    if($child->route_name && Route::currentRouteName() == $child->route_name) {
-                    $active = true;
-                    break;
-                    }
-                    }
-                    @endphp
-                    <a class="nav-link dropdown-toggle {{ $active ? 'active' : '' }}" data-bs-toggle="dropdown" href="#">
-                        {{ $menu->title }}
-                    </a>
-                    <ul class="dropdown-menu">
-                        @foreach($menu->children as $child)
-                        <li>
-                            <a class="dropdown-item {{ $child->route_name && Route::currentRouteName() == $child->route_name ? 'active' : '' }}"
-                                href="{{ route($child->route_name) }}">
-                                {{ $child->title }}
-                            </a>
-                        </li>
-                        @endforeach
-                    </ul>
-                </li>
-                @endif
-                @endforeach
-            </ul> -->
-
-            <ul class="navbar-nav ms-lg-5 me-lg-auto">
-                @foreach($menus->where('parent_id', null) as $menu)
-                @php
-                $hasChildren = $menu->children_active->count() > 0;
-                $active = $menu->route_name && Route::currentRouteName() == $menu->route_name;
-
-                foreach($menu->children_active as $child) {
-                if($child->route_name && Route::currentRouteName() == $child->route_name) {
-                $active = true;
-                break;
-                }
-                }
-                @endphp
-
-                @if(!$hasChildren)
-                <li class="nav-item">
-                    <a class="nav-link {{ $active ? 'active' : '' }}"
-                        href="{{ $menu->route_name ? route($menu->route_name) : '#' }}">
-                        {{ $menu->title }}  
-                    </a>
-                </li>
-                @else
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {{ $active ? 'active' : '' }}"
-                        href=""
-                        id="navbarDropdown{{ $menu->id }}"
-                        role="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        {{ $menu->title }}
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown{{ $menu->id }}">
-                        @foreach($menu->children_active as $child)
-                        <li>
-                            <a class="dropdown-item {{ $child->route_name && Route::currentRouteName() == $child->route_name ? 'active' : '' }}"
-                                href="{{ route($child->route_name) }}">
-                                {{ $child->title }}
-                            </a>
-                        </li>
-                        @endforeach
-                    </ul>
-                </li>
-                @endif
-                @endforeach
-            </ul>
-
-
+        <div class="desktop-only">
+            @include('frontend.partials.menu-desktop')
         </div>
 
-        {{-- Navbar toggler (mobile) --}}
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="mobile-only">
+            @include('frontend.partials.menu-mobile')
+        </div>
 
     </div>
 </nav>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // breakpoint mobile < lg
+  const MOBILE_QUERY = '(max-width: 991.98px)';
+
+  const normPath = (p) => {
+    if (!p) return null;
+    try {
+      // constrói URL absolutando com o origin para lidar com hrefs relativos/absolutos
+      const u = new URL(p, window.location.origin);
+      let np = u.pathname.replace(/\/+$/, ''); // remove trailing slash
+      return np === '' ? '/' : np;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const getLinksForMode = (isMobile) => {
+    const selector = isMobile ? '.mobile-only' : '.desktop-only';
+    const container = document.querySelector(selector);
+    if (!container) return [];
+    return Array.from(container.querySelectorAll('a.nav-link[href], a.dropdown-item[href]'))
+      .filter(a => {
+        const href = a.getAttribute('href');
+        return href && href !== '#' && !href.startsWith('javascript:');
+      });
+  };
+
+  const clearActivesIn = (isMobile) => {
+    const selector = isMobile ? '.mobile-only' : '.desktop-only';
+    document.querySelectorAll(selector + ' .active').forEach(el => el.classList.remove('active'));
+  };
+
+  const activateLink = (a, isMobile) => {
+    if (!a) return;
+    a.classList.add('active');
+    const dropdown = a.closest('.nav-item.dropdown');
+    if (dropdown) {
+      const toggle = dropdown.querySelector('.dropdown-toggle');
+      if (toggle) toggle.classList.add('active');
+    }
+
+    // Se mobile, fecha o collapse (se aberto)
+    // if (isMobile) {
+    //   const mobileCollapse = document.getElementById('mobileMenu'); // assegura que o id é este
+    //   if (mobileCollapse) {
+    //     try {
+    //       const bsInstance = bootstrap.Collapse.getInstance(mobileCollapse) || new bootstrap.Collapse(mobileCollapse, {toggle:false});
+    //       bsInstance.hide();
+    //     } catch (err) {
+    //       // bootstrap não disponível? ignora.
+    //     }
+    //   }
+    // }
+  };
+
+  const updateActive = () => {
+    const isMobile = window.matchMedia(MOBILE_QUERY).matches;
+    const links = getLinksForMode(isMobile);
+    if (!links.length) return;
+
+    clearActivesIn(isMobile);
+
+    const currentPath = normPath(window.location.pathname);
+
+    let winner = null;
+    // exact match
+    for (const a of links) {
+      const p = normPath(a.getAttribute('href'));
+      if (p && p === currentPath) { winner = a; break; }
+    }
+
+    // fallback: longest matching prefix
+    if (!winner) {
+      let bestLen = 0;
+      for (const a of links) {
+        const p = normPath(a.getAttribute('href'));
+        if (!p || p === '/') continue;
+        if (currentPath === p || currentPath.startsWith(p + '/')) {
+          if (p.length > bestLen) { bestLen = p.length; winner = a; }
+        }
+      }
+    }
+
+    if (winner) activateLink(winner, isMobile);
+
+    // add click handlers (mantém 1 ativo no clique; útil em SPA/PJAX)
+    links.forEach(a => {
+      // remove handlers duplicados
+      a.removeEventListener('click', a.__menuActiveHandler);
+      a.__menuActiveHandler = function (ev) {
+        clearActivesIn(isMobile);
+        activateLink(this, isMobile);
+      };
+      a.addEventListener('click', a.__menuActiveHandler);
+    });
+  };
+
+  // run on load
+  updateActive();
+
+  // rerun on resize (debounced)
+  let _t;
+  window.addEventListener('resize', function() {
+    clearTimeout(_t);
+    _t = setTimeout(updateActive, 120);
+  });
+
+  // rerun when bootstrap collapse is shown (em caso de abrir/fechar)
+  document.addEventListener('shown.bs.collapse', function(e){ updateActive(); });
+  document.addEventListener('hidden.bs.collapse', function(e){ updateActive(); });
+});
+</script>
+
+
+
+
 
 
 <style>
