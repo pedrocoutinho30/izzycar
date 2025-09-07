@@ -414,7 +414,7 @@
         fuelSelect.addEventListener('change', updateVehicles);
 
         // Quando muda os kms
-        kilometersSelect.addEventListener('change', updateVehicles);
+        // kilometersSelect.addEventListener('change', updateVehicles);
 
         // Botão limpar filtros
         clearFiltersBtn.addEventListener('click', clearFilters);

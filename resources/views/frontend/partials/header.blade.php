@@ -1,10 +1,4 @@
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container d-flex justify-content-between align-items-center">
 
-        {{-- Logo --}}
-        <a class="navbar-brand" href="{{ route('frontend.home') }}">
-            <img src="{{ asset($logotipo) }}" alt="Logo" class="navbar-logo" style="height:auto; width:120px;">
-        </a>
 
         <div class="desktop-only">
             @include('frontend.partials.menu-desktop')
@@ -14,8 +8,6 @@
             @include('frontend.partials.menu-mobile')
         </div>
 
-    </div>
-</nav>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // breakpoint mobile < lg

@@ -408,6 +408,11 @@ strong {
   border-radius: 8px;
 }
 
+.navbar-logo {
+  height: auto;
+  width: 120px;
+}
+
 .navbar-brand,
 .navbar-brand:hover {
   font-size: var(--h3-font-size);
@@ -862,8 +867,10 @@ blockquote {
 .timeline-container .list-progress {
   position: absolute;
   top: 0;
-  left: 35px;      /* antes 52px, centraliza com o ícone de 70px */
-  width: 6px;       /* antes 8px, mais fino */
+  left: 35px;
+  /* antes 52px, centraliza com o ícone de 70px */
+  width: 6px;
+  /* antes 8px, mais fino */
   height: 100%;
   background-color: #ddd;
   z-index: 0;
@@ -888,7 +895,8 @@ blockquote {
 
 .timeline-container .vertical-scrollable-timeline li {
   position: relative;
-  padding: 15px 0px 40px 100px; /* menos espaçamento */
+  padding: 15px 0px 40px 100px;
+  /* menos espaçamento */
 }
 
 .timeline-container .vertical-scrollable-timeline li:last-child {
@@ -899,8 +907,10 @@ blockquote {
   position: absolute;
   left: 0;
   top: 0;
-  width: 70px;     /* antes 104px */
-  height: 70px;    /* antes 104px */
+  width: 70px;
+  /* antes 104px */
+  height: 70px;
+  /* antes 104px */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -912,9 +922,12 @@ blockquote {
 
 .timeline-container .vertical-scrollable-timeline li .icon-holder::before {
   content: "";
-  width: 55px;   /* antes 80px */
-  height: 55px;  /* antes 80px */
-  border: 3px solid #fff; /* mais fino */
+  width: 55px;
+  /* antes 80px */
+  height: 55px;
+  /* antes 80px */
+  border: 3px solid #fff;
+  /* mais fino */
   position: absolute;
   background-color: var(--secondary-color);
   border-radius: 50%;
@@ -940,11 +953,14 @@ blockquote {
 }
 
 .timeline-container .vertical-scrollable-timeline li p {
-  font-size: 0.875rem; /* reduzir texto */
+  font-size: 0.875rem;
+  /* reduzir texto */
   line-height: 1.3;
 }
+
 .timeline-container .vertical-scrollable-timeline li h4 {
-  font-size: 2rem; /* reduzir título */
+  font-size: 2rem;
+  /* reduzir título */
   margin-bottom: 5px;
 }
 
@@ -1272,7 +1288,7 @@ blockquote {
   .custom-block-topics-listing a {
     flex-direction: column;
   }
-  
+
   .subscribe-form-wrap {
     padding-top: 30px;
     padding-bottom: 0;
@@ -1379,6 +1395,32 @@ blockquote {
     /* evita zoom no iOS */
   }
 
+  /* Ajustar altura da barra no mobile */
+  .navbar {
+    background-color: var(--primary-color);
+    padding-top: 0.25rem;
+    /* menos espaço em cima */
+    padding-bottom: 0.25rem;
+    /* menos espaço em baixo */
+    min-height: unset;
+    /* remove altura mínima do bootstrap */
+  }
+
+  /* Não deixar o logo encolher */
+  .navbar-logo {
+    width: 120px;
+    /* mantém o logo igual */
+    height: auto;
+  }
+
+  /* Tira espaço extra da marca (logo wrapper) */
+  .navbar-brand {
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    /* evita que o wrapper aumente a altura */
+  }
+
   .desktop-only {
     display: none;
   }
@@ -1389,6 +1431,7 @@ blockquote {
 }
 
 @media (min-width: 769px) {
+
   .desktop-only {
     display: block;
   }
