@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="text-center">
-            <a href="{{ route('frontend.form-import') }}" class="btn btn-warning btn-lg mt-4">
+            <a href="{{ route('frontend.form-import') }}" class="btn btn-warning btn-lg mt-4" >
                 Quero importar
             </a>
         </div>

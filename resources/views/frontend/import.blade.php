@@ -4,13 +4,12 @@
 
 @section('content')
 
+@include('frontend.partials.hero-section', ['title' => $data->process_import['title'], 'subtitle' => $data->process_import['subtitle']])
 
-
-<section class="hero-section d-flex justify-content-center align-items-center" id="section_home_import">
+<section class="featured-section">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-12 mx-auto text-center">
-                <h1 class="text-white">{{$data->process_import['title']}}</h1>
+        <div class="row justify-content-center">
+            <div class="col-12 text-center mt-4 mb-4">
                 <a href="#form-proposta" class="btn btn-warning btn-lg mt-4" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
                     Pedir Proposta
                 </a>
@@ -18,6 +17,8 @@
         </div>
     </div>
 </section>
+
+
 
 <section class="section-padding" id="section_description_import">
     <div class="container">
@@ -113,7 +114,7 @@
 
 
 @include('frontend.partials.import-form-modal', [
-    'brands' => $brands,
+'brands' => $brands,
 ])
 
 

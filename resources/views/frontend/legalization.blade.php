@@ -4,29 +4,26 @@
 
 @section('content')
 
+@include('frontend.partials.hero-section', ['title' => $data->contents['title'], 'subtitle' => $data->contents['subtitle']])
 
-<section class="hero-section d-flex justify-content-center align-items-center" id="section_home_legalization">
+<section class="featured-section">
     <div class="container">
-        <div class="row">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center mb-4">
 
-            <div class="col-lg-8 col-12 mx-auto">
-                <h1 class="text-white text-center"> {{$data->contents['title']}}
-                </h1>
-
-                <h5 class="text-center"> {{$data->contents['subtitle']}}</h5>
-
-                <p> {{$data->contents['content']}}</p>
             </div>
         </div>
-
     </div>
 </section>
 
+
 <section class="section-padding" id="section_legalization">
     <div class="container">
-    @include('frontend.partials.vertical-tabs', [
-            'data' => $data->contents['enum'],
-            'title' => "",
+        <p> {{$data->contents['content']}}</p>
+
+        @include('frontend.partials.vertical-tabs', [
+        'data' => $data->contents['enum'],
+        'title' => "",
         ])
     </div>
 </section>

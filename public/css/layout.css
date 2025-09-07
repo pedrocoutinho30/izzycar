@@ -11,6 +11,7 @@ https://templatemo.com/tm-590-topic-listing
 -----------------------------------------*/
 :root {
   --white-color: #ffffff;
+  --yellow-color: #986b33;
   --primary-color: #111111;
   --secondary-color: #2a2a2a;
   /* + escuro e mais consistente */
@@ -376,7 +377,7 @@ strong {
 }
 
 .sticky-wrapper.is-sticky .navbar {
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
 }
 
 .navbar {
@@ -608,11 +609,15 @@ strong {
   HERO        
 -----------------------------------------*/
 .hero-section {
-  background-image: linear-gradient(15deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+
+  background-image: linear-gradient(0deg,
+      var(--accent-color) 0%,
+      var(--primary-color) 80%,
+      var(--primary-color) 100%);
   position: relative;
   overflow: hidden;
-  padding-top: 150px;
-  padding-bottom: 150px;
+  padding-top: 60px;
+  padding-bottom: 60px;
 }
 
 .hero-section .input-group {
@@ -646,7 +651,7 @@ strong {
   TOPICS              
 -----------------------------------------*/
 .featured-section {
-  background-color: var(--secondary-color);
+  background-color: var(--accent-color);
   border-radius: 0 0 100px 100px;
   padding-bottom: 100px;
 }

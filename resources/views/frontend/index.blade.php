@@ -3,65 +3,53 @@
 @section('title', 'Izzycar')
 
 @section('content')
-<section class="hero-section d-flex justify-content-center align-items-center" id="section_home">
-    <div class="container">
-        <div class="row">
 
-            <div class="col-lg-8 col-12 mx-auto">
-                <h1 class="text-white text-center"> Izzycar </h1>
-                </h1>
-
-                <h5 class="text-center"> Importação de Veículos na Mão</h5>
-            </div>
-        </div>
-    </div>
-</section>
-
+@include('frontend.partials.hero-section', ['title' => 'Izzycar', 'subtitle' => 'Importação de Veículos na Mão'])
 
 <section class="featured-section">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 text-center mb-4">
-                <img src="{{ asset('storage/' . $vehicles[0]->images[0]->image_path) }}"
+                <!-- <img src="{{ asset('storage/' . $vehicles[0]->images[0]->image_path) }}"
                     class="img-fluid rounded" style="max-width: auto; max-height: 200px;"
-                    alt="{{ $vehicles[0]->brand }} {{ $vehicles[0]->model }}">
+                    alt="{{ $vehicles[0]->brand }} {{ $vehicles[0]->model }}"> -->
 
             </div>
-
+        </div>
     </div>
+</section>
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+@endpush
 
-    @push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
-    @endpush
-
-    @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-    <script>
-        new Swiper('.mySwiper', {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            loop: true,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<script>
+    new Swiper('.mySwiper', {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: true,
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        breakpoints: {
+            768: {
+                slidesPerView: 2,
             },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            breakpoints: {
-                768: {
-                    slidesPerView: 2,
-                },
-                992: {
-                    slidesPerView: 3,
-                }
+            992: {
+                slidesPerView: 3,
             }
-        });
-    </script>
-    @endpush
+        }
+    });
+</script>
+@endpush
 
-    <!-- 
+<!-- 
             <div class="col-lg-4 col-12 mb-4 mb-lg-0">
                 <div class="custom-block bg-white shadow-lg">
                     <a href="topics-detail.html">
@@ -100,9 +88,8 @@
                 </div>
             </div> -->
 
-    </div>
-    </div>
-</section>
+
+
 
 <?php
 // $servicos = $navItems->where('url', 'servicos')->first()->page;
