@@ -58,7 +58,7 @@
             ])
         </div>
         <div class="mobile-only">
-            @include('frontend.partials.vertical-tabs-mobile', [
+            @include('frontend.partials.accordion-mobile', [
             'data' => $data->process_import['process_import'],
             'title' => "Passo a passo",
             ])
@@ -82,9 +82,9 @@
             ])
         </div>
         <div class="mobile-only">
-            @include('frontend.partials.vertical-tabs-mobile', [
+            @include('frontend.partials.accordion-mobile', [
             'data' => $data_custos['enum'],
-            'title' => "Custos de importaçãos",
+            'title' => "Custos de importação",
             ])
         </div>
     </div>

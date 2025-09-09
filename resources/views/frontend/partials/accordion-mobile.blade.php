@@ -1,9 +1,9 @@
 <div class="row mt-4">
-    <h3 class="text-center">{{ $title }}</h3>
+    <h3 class="text-center mb-4">{{ $title }}</h3>
     @php
     $accordionId = 'accordion-' . \Illuminate\Support\Str::slug($title) . '-' . uniqid();
     @endphp
-    <div class="accordion custom-accordion" id="{{ $accordionId }}">
+    <div class="accordion custom-accordion mt-3" id="{{ $accordionId }}">
         @forelse ($data ?? [] as $key => $item)
         @php
         $slug = \Illuminate\Support\Str::slug($item['title']);
