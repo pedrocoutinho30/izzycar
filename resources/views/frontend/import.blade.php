@@ -22,9 +22,11 @@
 
 <section class="section-padding" id="section_description_import">
     <div class="container">
-        <h3 class="text-center "> {{$data->process_import['subtitle']}}</h3>
-        <h5 class="text-center text-muted"> {!!$data->process_import['description']!!}</h5>
-        <h6>{!!$data->process_import['content']!!}</h6>
+        <p class="text-center text-black">{!!$data->process_import['description']!!} </p>
+        <p class="text-center text-black">{!!$data->process_import['content']!!}</p>
+
+
+
     </div>
 </section>
 
@@ -34,13 +36,11 @@
         <div class="row">
             @foreach ($why_import['enum_why_import'] as $item)
             <div class="col-md-6 mb-4 mr-4">
-
                 <div class="custom-block card-listing shadow-lg p-4 h-100">
-
-                    <h5 class="mb-2" style="min-height: 3.5em; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    <h5 class="mb-2 text-white" style="min-height: 3.5em; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                         {{ $item['title'] }}
                     </h5>
-                    <p>{{ $item['content'] }}</p>
+                    <p class="text-white">{{ $item['content'] }}</p>
                 </div>
             </div>
             @endforeach
@@ -51,10 +51,18 @@
 <section class="section-padding" id="section_import">
     <div class="container">
 
-        @include('frontend.partials.vertical-tabs', [
-        'data' => $data->process_import['process_import'],
-        'title' => "Passo a passo",
-        ])
+        <div class="desktop-only">
+            @include('frontend.partials.vertical-tabs', [
+            'data' => $data->process_import['process_import'],
+            'title' => "Passo a passo",
+            ])
+        </div>
+        <div class="mobile-only">
+            @include('frontend.partials.vertical-tabs-mobile', [
+            'data' => $data->process_import['process_import'],
+            'title' => "Passo a passo",
+            ])
+        </div>
     </div>
 </section>
 
@@ -67,10 +75,18 @@
 @if(!empty($data_custos))
 <section class="section-padding" id="section_import_costs">
     <div class="container">
-        @include('frontend.partials.vertical-tabs', [
-        'data' => $data_custos['enum'],
-        'title' => "Custos de importação",
-        ])
+        <div class="desktop-only">
+            @include('frontend.partials.vertical-tabs', [
+            'data' => $data_custos['enum'],
+            'title' => "Custos de importação",
+            ])
+        </div>
+        <div class="mobile-only">
+            @include('frontend.partials.vertical-tabs-mobile', [
+            'data' => $data_custos['enum'],
+            'title' => "Custos de importaçãos",
+            ])
+        </div>
     </div>
 </section>
 <section class="section-padding text-center">
@@ -83,6 +99,7 @@
 
 <section class="section-padding" id="section_faq">
     <div class="container">
+
         <h3 class="text-center mb-4">Perguntas Frequentes</h3>
         <div class="accordion custom-accordion" id="accordionExample">
             @forelse ($faq['enum'] ?? [] as $faqItem)
@@ -93,14 +110,14 @@
                         data-bs-target="#collapse{{ $loop->index }}"
                         aria-expanded="false"
                         aria-controls="collapse{{ $loop->index }}">
-                        {{ $faqItem['awnser'] }}
+                        {{ $faqItem['question'] }}
                     </button>
                 </h2>
                 <div id="collapse{{ $loop->index }}" class="accordion-collapse collapse"
                     aria-labelledby="heading{{ $loop->index }}"
                     data-bs-parent="#accordionExample">
                     <div class="accordion-body text-dark">
-                        {!! $faqItem['response'] !!}
+                        {!! $faqItem['answer'] !!}
                     </div>
                 </div>
             </div>

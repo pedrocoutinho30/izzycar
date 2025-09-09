@@ -174,7 +174,6 @@ class ImportController extends Controller
         });
 
 
-
         return view('frontend.import', compact('data', 'data_custos', 'faq', 'why_import', 'brands'));
     }
 }

@@ -177,6 +177,7 @@
         
 
         $menuItemsCMS = [
+        ['route' => 'pages.homepage', 'icon' => 'fa-file', 'label' => __('Homepage'), 'permission' => 'gerir paginas'],
         ['route' => 'pages.imports', 'icon' => 'fa-file', 'label' => __('Importações'), 'permission' => 'gerir importacoes'],
         ['route' => 'pages.legalizations', 'icon' => 'fa-file', 'label' => __('Legalizações'), 'permission' => 'gerir legalizacoes'],
         ['route' => 'pages.categories', 'icon' => 'fa-file', 'label' => __('Categorias de Notícias'), 'permission' => 'gerir categoria de noticias'],

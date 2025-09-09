@@ -80,173 +80,235 @@
 
 <!-- CKEditor 5 -->
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script src="{{ asset('vendor/ckeditor/build/ckeditor.js') }}"></script>
+
+<!-- Tom Select -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const titleInput = document.getElementById("title");
-        const slugInput = document.getElementById("slug");
 
-        // Só gera slug se ainda não existir (isto significa que é CREATE)
-        if (titleInput && slugInput && !slugInput.value) {
-            titleInput.addEventListener("input", function() {
-                let slug = titleInput.value
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-') // troca espaços e caracteres especiais
-                    .replace(/^-+|-+$/g, ''); // remove "-" do início e fim
-                slugInput.value = slug;
-            });
-        }
-    });
-    
-    const contents = @json($contents ?? []);
-    const allPages = @json($allPages);
-
-    function createInputField(field, value = null) {
-        let inputHTML = '';
-        const label = `<label class="form-label">${field.name}</label>`;
-
-        switch (field.type) {
-            case 'text':
-                inputHTML = `<input type="text" name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''} value="${value ?? ''}">`;
-                break;
-
-            case 'textarea':
-                inputHTML = `<textarea name="fields[${field.label}]" class="form-control ckeditor" ${field.is_required ? 'required' : ''}>${value ?? ''}</textarea>`;
-                break;
-
-            case 'image':
-                inputHTML = `
-                    <input type="file" name="fields[${field.label}]" accept="image/*" class="form-control" ${field.is_required ? 'required' : ''} onchange="previewImage(this)">
-                    <img src="${value ?? ''}" alt="Preview" style="max-width: 200px; margin-top: 10px; ${value ? 'display:block' : 'display:none'}" class="preview-image">
-                `;
-                break;
-
-            case 'gallery':
-                inputHTML = `
-                    <input type="file" name="fields[${field.label}][]" accept="image/*" multiple class="form-control" ${field.is_required ? 'required' : ''} onchange="previewGallery(this)">
-                    <div class="gallery-preview d-flex flex-wrap gap-2 mt-2"></div>
-                    ${value ? renderGalleryPreview(JSON.parse(value)) : ''}
-                `;
-                break;
-
-            case 'boolean':
-                inputHTML = `
-                    <select name="fields[${field.label}]" class="form-select" ${field.is_required ? 'required' : ''}>
-                        <option value="1" ${value == '1' ? 'selected' : ''}>Sim</option>
-                        <option value="0" ${value == '0' ? 'selected' : ''}>Não</option>
-                    </select>`;
-                break;
-
-            case 'select':
-                let selectOptions = [];
-                try {
-                    selectOptions = field.options ? JSON.parse(field.options) : [];
-                } catch (e) {
-                    console.error("Erro ao parsear opções:", e);
+                function initTomSelect(container = document) {
+                    container.querySelectorAll('.tom-select').forEach(el => {
+                        if (!el.tomselect) {
+                            new TomSelect(el, {
+                                plugins: ['remove_button'],
+                                placeholder: 'Seleciona as páginas...'
+                            });
+                        }
+                    });
                 }
 
-                inputHTML = `
-        <select name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''}>
-            ${selectOptions.map(o => `<option value="${o}" ${value == o ? 'selected' : ''}>${o}</option>`).join('')}
-        </select>`;
-                break;
-            case 'radio':
-                const radioOptions = field.options ? field.options.split(',') : [];
-                inputHTML = radioOptions.map(o => `
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="fields[${field.label}]" value="${o.trim()}" ${value == o.trim() ? 'checked' : ''} ${field.is_required ? 'required' : ''}>
-                        <label class="form-check-label">${o.trim()}</label>
-                    </div>
-                `).join('');
-                break;
+                const titleInput = document.getElementById("title");
+                const slugInput = document.getElementById("slug");
 
-            case 'page':
-                inputHTML = `
-                     <select name="fields[${field.label}][]" class="form-control" multiple>
-            ${allPages
-                .filter(page => page.page_type_id == field.page_type) // só mostra as páginas do tipo selecionado
-                .map(page => `
-                    <option value="${page.id}" ${(value && value.includes(page.id)) ? 'selected' : ''}>
-                        ${page.title} 
-                    </option>
-                `).join('')}
-        </select>
-                `;
-                break;
+                if (titleInput && slugInput && !slugInput.value) {
+                    titleInput.addEventListener("input", function() {
+                        let slug = titleInput.value
+                            .toLowerCase()
+                            .replace(/[^a-z0-9]+/g, '-')
+                            .replace(/^-+|-+$/g, '');
+                        slugInput.value = slug;
+                    });
+                }
 
-            case 'date':
-                inputHTML = `
-                    <input type="date" name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''} value="${value ?? ''}">
-                `;
-                break;
-            case 'datetime':
-                inputHTML = `<input type="datetime-local" name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''} value="${value ? value.replace(' ', 'T') : ''}">`;
-                break;
-            default:
-                inputHTML = `<input type="text" name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''} value="${value ?? ''}">`;
-        }
+                const contents = @json($contents ?? []);
+                const allPages = @json($allPages);
+                const storageBaseUrl = "{{ asset('storage') }}/";
 
-        return `<div class="mb-3">${label}${inputHTML}</div>`;
-    }
+                function createInputField(field, value = null) {
+                    let inputHTML = '';
+                    const label = `<label class="form-label">${field.name}</label>`;
 
-    function renderGalleryPreview(images) {
-        if (!images || !Array.isArray(images)) return '';
-        return images.map(src => `<img src="${src}" style="max-width: 100px; margin-right: 10px;">`).join('');
-    }
+                    switch (field.type) {
+                        case 'text':
+                            inputHTML = `<input type="text" name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''} value="${value ?? ''}">`;
+                            break;
 
-    function previewImage(input) {
-        const file = input.files[0];
-        if (!file) return;
+                        case 'textarea':                            
+                            inputHTML = `<textarea name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''}>${value ?? ''}</textarea>`;
+                            break;
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = input.nextElementSibling;
-            img.src = e.target.result;
-            img.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
+                        case 'image':
+                            const imageUrl = value ? storageBaseUrl + value : '';
+                            inputHTML = `
+                        <input type="file" name="fields[${field.label}]" accept="image/*" class="form-control" ${field.is_required ? 'required' : ''} onchange="previewImage(this)">
+                        <input type="hidden" name="fields_existing[${field.label}]" value="${value ?? ''}">
+                        <img src="${imageUrl}" alt="Preview" style="max-width: 200px; margin-top: 10px; ${imageUrl ? 'display:block' : 'display:none'}" class="preview-image">
+                    `;
+                            break;
 
-    function previewGallery(input) {
-        const previewWrapper = input.nextElementSibling;
-        previewWrapper.innerHTML = '';
+                        case 'gallery':
+                            inputHTML = `
+        <div class="gallery-wrapper">
+            <div class="d-flex align-items-center gap-2">
+                <input type="file" name="fields[${field.label}][]" 
+                       accept="image/*" multiple 
+                       class="form-control" 
+                       ${field.is_required ? 'required' : ''} 
+                       onchange="previewGallery(this, '${field.label}')">
+                <button type="button" class="btn btn-sm btn-outline-danger" 
+                        onclick="clearGallery(this)">
+                    Limpar imagens
+                </button>
+            </div>
+            <div class="gallery-preview d-flex flex-wrap gap-2 mt-2">
+                ${value ? renderGalleryPreview(JSON.parse(value), field.label) : ''}
+            </div>
+        </div>
+    `;
+                            break;
 
-        Array.from(input.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.maxWidth = '100px';
-                img.style.marginRight = '10px';
-                previewWrapper.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
-    }
+                        case 'boolean':
+                            inputHTML = `
+                        <select name="fields[${field.label}]" class="form-select" ${field.is_required ? 'required' : ''}>
+                            <option value="1" ${value == '1' ? 'selected' : ''}>Sim</option>
+                            <option value="0" ${value == '0' ? 'selected' : ''}>Não</option>
+                        </select>`;
+                            break;
 
-    document.getElementById('page_type_id').addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const fields = JSON.parse(selectedOption.getAttribute('data-fields'));
-        const wrapper = document.getElementById('dynamic-fields');
+                        case 'select':
+                            let selectOptions = [];
+                            try {
+                                selectOptions = field.options ? JSON.parse(field.options) : [];
+                            } catch (e) {
+                                console.error("Erro ao parsear opções:", e);
+                            }
+                            inputHTML = `
+                        <select name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''}>
+                            ${selectOptions.map(o => `<option value="${o}" ${value == o ? 'selected' : ''}>${o}</option>`).join('')}
+                        </select>`;
+                            break;
 
-        wrapper.innerHTML = '';
+                        case 'radio':
+                            const radioOptions = field.options ? field.options.split(',') : [];
+                            inputHTML = radioOptions.map(o => `
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="fields[${field.label}]" value="${o.trim()}" ${value == o.trim() ? 'checked' : ''} ${field.is_required ? 'required' : ''}>
+                            <label class="form-check-label">${o.trim()}</label>
+                        </div>
+                    `).join('');
+                            break;
 
-        fields.sort((a, b) => a.order - b.order).forEach(field => {
-            const value = contents[field.label] ?? null;
-            wrapper.insertAdjacentHTML('beforeend', createInputField(field, value));
-        });
+                        case 'page':
+                            inputHTML = `
+                        <select name="fields[${field.label}][]" class=" tom-select" multiple>
+                            ${allPages
+                                .filter(page => page.page_type_id == field.page_type)
+                                .map(page => `
+                                    <option value="${page.id}" ${(value && value.includes(page.id)) ? 'selected' : ''}>
+                                        ${page.title} 
+                                    </option>
+                                `).join('')}
+                        </select>
+                    `;
+                            break;
 
-        // Inicializa CKEditor
-        document.querySelectorAll('.ckeditor').forEach(textarea => {
-            ClassicEditor.create(textarea).catch(error => console.error(error));
-        });
-    });
+                        case 'date':
+                            inputHTML = `<input type="date" name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''} value="${value ?? ''}">`;
+                            break;
 
-    window.addEventListener('DOMContentLoaded', () => {
-        const select = document.getElementById('page_type_id');
-        if (select.value) {
-            select.dispatchEvent(new Event('change'));
-        }
-    });
+                        case 'datetime':
+                            inputHTML = `<input type="datetime-local" name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''} value="${value ? value.replace(' ', 'T') : ''}">`;
+                            break;
+
+                        default:
+                            inputHTML = `<input type="text" name="fields[${field.label}]" class="form-control" ${field.is_required ? 'required' : ''} value="${value ?? ''}">`;
+                    }
+
+                    return `<div class="mb-3">${label}${inputHTML}</div>`;
+                }
+
+                function renderGalleryPreview(images) {
+                    if (!images || !Array.isArray(images)) return '';
+                    return images.map(value => {
+                        const imageUrl = value ? storageBaseUrl + value : '';
+                        return `<img src="${imageUrl}" style="max-width: 100px; margin-right: 10px;">`;
+                    }).join('');
+                }
+
+                window.previewImage = function(input) {
+                    const file = input.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = input.nextElementSibling.nextElementSibling;
+                        img.src = e.target.result;
+                        img.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+
+                window.previewGallery = function(input) {
+                    const previewWrapper = input.nextElementSibling;
+                    previewWrapper.innerHTML = '';
+                    Array.from(input.files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.maxWidth = '100px';
+                            img.style.marginRight = '10px';
+                            previewWrapper.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                document.getElementById('page_type_id').addEventListener('change', function() {
+                        const selectedOption = this.options[this.selectedIndex];
+                        const fields = JSON.parse(selectedOption.getAttribute('data-fields'));
+                        const wrapper = document.getElementById('dynamic-fields');
+
+                        wrapper.innerHTML = '';
+
+                        fields.sort((a, b) => a.order - b.order).forEach(field => {
+                            const value = contents[field.label] ?? null;
+                            wrapper.insertAdjacentHTML('beforeend', createInputField(field, value));
+                        });
+
+                        // CKEditor
+                        document.querySelectorAll('.ckeditor').forEach(textarea => {
+                                ClassicEditor.create(textarea, {
+                                        toolbar: [
+                                            'heading', '|',
+                                            'bold', 'italic', 'underline', 'link',
+                                            'bulletedList', 'numberedList', '|',
+                                            'blockQuote', 'insertTable', 'mediaEmbed', '|',
+                                            'undo', 'redo', '|',
+                                            'sourceEditing' // botão para ver/editar HTML
+                                        ],
+                                        extraPlugins: [window.ClassicEditor.builtinPlugins.find(p => p.pluginName === 'SourceEditing')],
+                                        placeholder: 'Escreve aqui o conteúdo (ou edita em HTML)...'
+                                    }).catch(error => console.error(error));
+                                });
+
+                            // Tom Select
+                            initTomSelect(wrapper);
+                        });
+
+                    // Inicializa se já houver tipo de página selecionado
+                    const select = document.getElementById('page_type_id');
+                    if (select.value) {
+                        select.dispatchEvent(new Event('change'));
+                    }
+
+                    // Inicializa selects estáticos
+                    initTomSelect(document);
+                });
+
+            function clearGallery(button) {
+                const wrapper = button.closest('.gallery-wrapper');
+                if (!wrapper) return;
+
+                // Limpa o input file
+                const input = wrapper.querySelector('input[type="file"]');
+                if (input) input.value = "";
+
+                // Limpa o preview (imagens + hidden inputs)
+                const preview = wrapper.querySelector('.gallery-preview');
+                if (preview) preview.innerHTML = "";
+            }
 </script>
 @endsection

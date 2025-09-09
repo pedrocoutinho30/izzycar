@@ -41,6 +41,8 @@ class PageController extends Controller
 
     public function store(Request $request)
     {
+
+
         $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:pages,slug',
@@ -53,6 +55,67 @@ class PageController extends Controller
             'page_type_id' => $request->page_type_id,
         ]);
 
+
+        $fields = [];
+        $fields = $request->all()['fields'] ?? [];
+
+       
+        foreach ($fields as $fieldLabel => $value) {
+            $fieldValue = '';
+            if ($value instanceof \Illuminate\Http\UploadedFile) {
+                $originalName = $value->getClientOriginalName();
+                $fieldValue = $value->storeAs('files', $originalName, 'public');
+            } elseif (is_array($value) && count($value) > 0 && $value[0] instanceof \Illuminate\Http\UploadedFile) {
+                // múltiplos ficheiros (galeria)
+                $filePaths = [];
+                foreach ($value as $file) {
+                    $originalName = $file->getClientOriginalName();
+                    $filePaths[] = $file->storeAs('files', $originalName, 'public');
+                }
+                $fieldValue = json_encode($filePaths);
+            } else {
+                $fieldValue = is_array($value) ? json_encode($value) : $value;
+            }
+
+            // atualizar ou criar campo
+            $content = $page->contents()->where('field_name', $fieldLabel)->first();
+            if ($content) {
+                $content->update(['field_value' => $fieldValue]);
+            } else {
+                $page->contents()->create([
+                    'field_name' => $fieldLabel,
+                    'field_value' => $fieldValue,
+                ]);
+            }
+        }
+
+
+
+
+        $redirect = '';
+        $pageType = $page->pageType->name;
+        if ($pageType == PageType::NEWS) {
+            $redirect = 'news';
+        } else if ($pageType == PageType::CATEGORIES) {
+            $redirect = 'categories';
+        } else if ($pageType == PageType::LEGALIZATIONS) {
+            $redirect = 'legalizations';
+        } else if ($pageType == PageType::IMPORTS) {
+            $redirect = 'imports';
+        } else if ($pageType == PageType::SELLING) {
+            $redirect = 'selling';
+        } else if ($pageType == PageType::HOMEPAGE) {
+            $redirect = 'homepage';
+        } else {
+            $redirect = 'index';
+        }
+        return redirect()->route('pages.' . $redirect)->with('success', 'Página criada com sucesso.');
+        // Pega campos normais
+        if ($request->has('fields')) {
+            $fields = $request->input('fields');
+        }
+
+        // trata de campos de texto
         $fields = $request->input('fields', []);
         foreach ($fields as $fieldLabel => $value) {
             $page->contents()->create([
@@ -61,7 +124,36 @@ class PageController extends Controller
             ]);
         }
 
-        return redirect()->route('pages.index')->with('success', 'Página criada com sucesso.');
+        // Pega arquivos dentro de fields
+        if ($request->hasFile('fields')) {
+
+            foreach ($request->file('fields') as $key => $file) {
+                $originalName = $file->getClientOriginalName();
+                $fieldValue = $file->storeAs('files', $originalName, 'public');
+                $page->contents()->create([
+                    'field_name' => $key,
+                    'field_value' => $fieldValue
+                ]);
+            }
+        }
+        $redirect = '';
+        $pageType = $page->pageType->name;
+        if ($pageType == PageType::NEWS) {
+            $redirect = 'news';
+        } else if ($pageType == PageType::CATEGORIES) {
+            $redirect = 'categories';
+        } else if ($pageType == PageType::LEGALIZATIONS) {
+            $redirect = 'legalizations';
+        } else if ($pageType == PageType::IMPORTS) {
+            $redirect = 'imports';
+        } else if ($pageType == PageType::SELLING) {
+            $redirect = 'selling';
+        } else if ($pageType == PageType::HOMEPAGE) {
+            $redirect = 'homepage';
+        } else {
+            $redirect = 'index';
+        }
+        return redirect()->route('pages.' . $redirect)->with('success', 'Página criada com sucesso.');
     }
 
     public function edit(Page $page)
@@ -77,6 +169,7 @@ class PageController extends Controller
 
     public function update(Request $request, Page $page)
     {
+
         $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:pages,slug,' . $page->id,
@@ -90,13 +183,72 @@ class PageController extends Controller
             'page_type_id' => $request->page_type_id,
         ]);
 
+        $fields = $request->all()['fields'] ?? [];
+
+        foreach ($fields as $fieldLabel => $value) {
+            $fieldValue = '';
+            if ($value instanceof \Illuminate\Http\UploadedFile) {
+                $originalName = $value->getClientOriginalName();
+                $fieldValue = $value->storeAs('files', $originalName, 'public');
+            } elseif (is_array($value) && count($value) > 0 && $value[0] instanceof \Illuminate\Http\UploadedFile) {
+                // múltiplos ficheiros (galeria)
+                $filePaths = [];
+                foreach ($value as $file) {
+                    $originalName = $file->getClientOriginalName();
+                    $filePaths[] = $file->storeAs('files', $originalName, 'public');
+                }
+                $fieldValue = json_encode($filePaths);
+            } else {
+                $fieldValue = is_array($value) ? json_encode($value) : $value;
+            }
+
+            // atualizar ou criar campo
+            $content = $page->contents()->where('field_name', $fieldLabel)->first();
+            if ($content) {
+                $content->update(['field_value' => $fieldValue]);
+            } else {
+                $page->contents()->create([
+                    'field_name' => $fieldLabel,
+                    'field_value' => $fieldValue,
+                ]);
+            }
+        }
+
+
+        $redirect = '';
+        $pageType = $page->pageType->name;
+        if ($pageType == PageType::NEWS) {
+            $redirect = 'news';
+        } else if ($pageType == PageType::CATEGORIES) {
+            $redirect = 'categories';
+        } else if ($pageType == PageType::LEGALIZATIONS) {
+            $redirect = 'legalizations';
+        } else if ($pageType == PageType::IMPORTS) {
+            $redirect = 'imports';
+        } else if ($pageType == PageType::SELLING) {
+            $redirect = 'selling';
+        } else if ($pageType == PageType::HOMEPAGE) {
+            $redirect = 'homepage';
+        } else {
+            $redirect = 'index';
+        }
+        return redirect()->route('pages.' . $redirect)->with('success', 'Página atualizada com sucesso.');
 
         // Atualizar conteúdos (excluir os antigos e inserir os novos)
         $page->contents()->delete();
+        $fields = [];
+        if ($request->has('fields')) {
+            $fields = $request->input('fields');
+        }
+        $existingFields = $request->input('fields_existing', []);
 
+
+
+
+
+        // trata de campos de texto
         $fields = $request->input('fields', []);
         foreach ($fields as $fieldLabel => $value) {
-
             if (is_array($value)) {
                 foreach ($value as $key => $val) {
 
@@ -110,7 +262,89 @@ class PageController extends Controller
             ]);
         }
 
-        return redirect()->route('pages.index')->with('success', 'Página atualizada com sucesso.');
+
+        // Arquivos dentro de fields
+        if ($request->hasFile('fields')) {
+
+            foreach ($request->file('fields') as $key => $file) {
+                $originalName = $file->getClientOriginalName();
+                $fieldValue = $file->storeAs('files', $originalName, 'public');
+                $page->contents()->create([
+                    'field_name' => $key,
+                    'field_value' => $fieldValue
+                ]);
+                //remover a que foi alterada do existing fields
+                if (isset($existingFields[$key])) {
+                    unset($existingFields[$key]);
+                }
+            }
+        }
+        //verificar se existe ainda alguma coisa no existingFields e criar ou seja, aqui são imagens antigas que não foram alteradas
+        foreach ($existingFields as $key => $value) {
+
+            $page->contents()->create([
+                'field_name' => $key,
+                'field_value' => $value
+            ]);
+        }
+
+
+        $hasFiles = collect($request->all()['fields'] ?? [])
+            ->flatten()
+            ->contains(fn($val) => $val instanceof \Illuminate\Http\UploadedFile);
+        $fields = $request->all()['fields'] ?? [];
+
+        if ($hasFiles) {
+            foreach ($fields as $fieldLabel => $value) {
+                $fieldValue = '';
+                if ($value instanceof \Illuminate\Http\UploadedFile) {
+                    $originalName = $value->getClientOriginalName();
+                    $fieldValue = $value->storeAs('files', $originalName, 'public');
+                } elseif (is_array($value) && count($value) > 0 && $value[0] instanceof \Illuminate\Http\UploadedFile) {
+                    // múltiplos ficheiros (galeria)
+                    $filePaths = [];
+                    foreach ($value as $file) {
+                        $originalName = $file->getClientOriginalName();
+                        $filePaths[] = $file->storeAs('files', $originalName, 'public');
+                    }
+                    $fieldValue = json_encode($filePaths);
+                } else {
+                    $fieldValue = is_array($value) ? json_encode($value) : $value;
+                }
+
+                // atualizar ou criar campo
+                $content = $page->contents()->where('field_name', $fieldLabel)->first();
+                if ($content) {
+                    $content->update(['field_value' => $fieldValue]);
+                } else {
+                    $page->contents()->create([
+                        'field_name' => $fieldLabel,
+                        'field_value' => $fieldValue,
+                    ]);
+                }
+            }
+        }
+
+
+
+        $redirect = '';
+        $pageType = $page->pageType->name;
+        if ($pageType == PageType::NEWS) {
+            $redirect = 'news';
+        } else if ($pageType == PageType::CATEGORIES) {
+            $redirect = 'categories';
+        } else if ($pageType == PageType::LEGALIZATIONS) {
+            $redirect = 'legalizations';
+        } else if ($pageType == PageType::IMPORTS) {
+            $redirect = 'imports';
+        } else if ($pageType == PageType::SELLING) {
+            $redirect = 'selling';
+        } else if ($pageType == PageType::HOMEPAGE) {
+            $redirect = 'homepage';
+        } else {
+            $redirect = 'index';
+        }
+        return redirect()->route('pages.' . $redirect)->with('success', 'Página atualizada com sucesso.');
     }
 
     public function destroy(Page $page)
@@ -118,7 +352,25 @@ class PageController extends Controller
         $page->contents()->delete();
         $page->delete();
 
-        return redirect()->route('pages.index')->with('success', 'Página eliminada com sucesso.');
+
+        $redirect = '';
+        $pageType = $page->pageType->name;
+        if ($pageType == PageType::NEWS) {
+            $redirect = 'news';
+        } else if ($pageType == PageType::CATEGORIES) {
+            $redirect = 'categories';
+        } else if ($pageType == PageType::LEGALIZATIONS) {
+            $redirect = 'legalizations';
+        } else if ($pageType == PageType::IMPORTS) {
+            $redirect = 'imports';
+        } else if ($pageType == PageType::SELLING) {
+            $redirect = 'selling';
+        } else if ($pageType == PageType::HOMEPAGE) {
+            $redirect = 'homepage';
+        } else {
+            $redirect = 'index';
+        }
+        return redirect()->route('pages.' . $redirect)->with('success', 'Página eliminada com sucesso.');
     }
 
     public function getNews()
@@ -148,10 +400,20 @@ class PageController extends Controller
 
         $pageType = PageType::where('name', PageType::IMPORTS)->first();
         $pages = Page::where('page_type_id', $pageType->id)->get();
-
-
+        
 
         return view('pages.imports', compact('pages', 'pageType'));
+    }
+
+    public function getHomepage()
+    {
+
+        $pageType = PageType::where('name', PageType::HOMEPAGE)->first();
+        $pages = Page::where('page_type_id', $pageType->id)->get();
+
+
+
+        return view('pages.homepage', compact('pages', 'pageType'));
     }
 
     public function getSelling()

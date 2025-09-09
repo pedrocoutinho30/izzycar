@@ -1,4 +1,5 @@
 <div class="row mt-4">
+
     <h3 class="text-center">{{$title}}</h3>
     <!-- Tabs verticais -->
     <div class="col-md-3">
@@ -38,8 +39,9 @@
                     <p class="text-dark mb-4">
                         {!! $tab['content'] ?? '' !!}
                     </p>
-
-                    <img src="{{ asset($tab['image'] ?? 'images/default-car.jpg') }}"  style="max-width: 300px; height: auto;" class="img-fluid rounded shadow-sm mt-3" alt="{{ $tab['title'] }}">
+                    @if(!empty($tab['image']))
+                    <img src="{{ asset('storage/'. $tab['image'] ) }}" style="width: 300px; height: 300px; object-fit: cover;" class="img-fluid rounded shadow-sm mt-3" alt="{{ $tab['title'] }}">
+                    @endif
                 </div>
 
             </div>
@@ -47,3 +49,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    function initVerticalTabs() {
+        document.querySelectorAll('.desktop-only, .mobile-only').forEach(container => {
+            container.querySelectorAll('.nav-tabs').forEach(nav => {
+                const firstButton = nav.querySelector('.nav-link');
+                if (firstButton) firstButton.classList.add('active');
+                const firstPane = document.querySelector(firstButton.dataset.bsTarget);
+                if (firstPane) firstPane.classList.add('show', 'active');
+            });
+        });
+    }
+
+    // Inicializa no load normal
+    document.addEventListener('DOMContentLoaded', initVerticalTabs);
+
+    // Inicializa quando voltar com back/forward
+    window.addEventListener('pageshow', initVerticalTabs);
+</script>

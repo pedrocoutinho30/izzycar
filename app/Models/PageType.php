@@ -11,6 +11,7 @@ class PageType extends Model
     const LEGALIZATIONS = 'Legalização';
     const IMPORTS = 'Importação';
     const SELLING = 'Venda Automóvel';
+    const HOMEPAGE = 'Homepage';
     
     protected $fillable = ['name', 'slug'];
 

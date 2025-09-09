@@ -299,6 +299,7 @@ strong {
   color: var(--accent-color);
 }
 
+
 /*---------------------------------------
   CUSTOM BUTTON               
 -----------------------------------------*/
@@ -653,13 +654,13 @@ strong {
 .featured-section {
   background-color: var(--accent-color);
   border-radius: 0 0 100px 100px;
-  padding-bottom: 100px;
+  /* padding-bottom: 100px; */
 }
 
 .featured-section .row {
   position: relative;
-  bottom: 100px;
-  margin-bottom: -100px;
+  /* bottom: 100px;
+  margin-bottom: -100px; */
 }
 
 .custom-block {

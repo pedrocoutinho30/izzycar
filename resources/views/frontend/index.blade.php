@@ -10,9 +10,10 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 text-center mb-4">
-                <!-- <img src="{{ asset('storage/' . $vehicles[0]->images[0]->image_path) }}"
-                    class="img-fluid rounded" style="max-width: auto; max-height: 200px;"
-                    alt="{{ $vehicles[0]->brand }} {{ $vehicles[0]->model }}"> -->
+
+                <!-- <img src="{{ asset('storage/' . $page->contents->where('field_name', 'image')->first()->field_value) }}"
+                    class="img-fluid rounded" style="max-width: 1000; max-height: 400px;"
+                    alt="teste"> -->
 
             </div>
         </div>

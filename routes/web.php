@@ -153,6 +153,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     // Itens de Menu
     Route::resource('menu-items', MenuItemController::class)->only(['store', 'update', 'destroy'])->names('menu-items');
 
+    Route::get('homepage', [PageController::class, 'getHomepage'])->name('pages.homepage');
     Route::get('news', [PageController::class, 'getNews'])->name('pages.news');
     Route::get('categories', [PageController::class, 'getCategories'])->name('pages.categories');
     Route::get('legalizations', [PageController::class, 'getLegalizations'])->name('pages.legalizations');

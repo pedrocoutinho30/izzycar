@@ -8,6 +8,7 @@ use App\Models\VehicleAttribute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use \App\Models\Page;
 
 class VehiclesController extends Controller
 {
@@ -28,7 +29,10 @@ class VehiclesController extends Controller
             return $vehicles->sortByDesc('created_at')->take(5);
         });
 
-        return view('frontend.index', compact('vehicles_count', 'last_vehicles', 'vehicles'));
+        $page = Page::where('slug', 'homepage')
+            ->with('contents')
+            ->firstOrFail();
+        return view('frontend.index', compact('vehicles_count', 'last_vehicles', 'vehicles', 'page'));
     }
 
     public function vehicles(Request $request)
@@ -184,89 +188,89 @@ class VehiclesController extends Controller
     }
 
     // para os filtros
-   public function modelsByBrand(Request $request)
-{
-    $brand = $request->get('brand');
+    public function modelsByBrand(Request $request)
+    {
+        $brand = $request->get('brand');
 
-    $cacheKey = "models_by_brand_" . md5($brand);
+        $cacheKey = "models_by_brand_" . md5($brand);
 
-    $models = Cache::remember($cacheKey, 600, function () use ($brand) {
-        return Vehicle::where('brand', $brand)
-            ->pluck('model')
-            ->unique()
-            ->values();
-    });
+        $models = Cache::remember($cacheKey, 600, function () use ($brand) {
+            return Vehicle::where('brand', $brand)
+                ->pluck('model')
+                ->unique()
+                ->values();
+        });
 
-    return response()->json($models);
-}
+        return response()->json($models);
+    }
 
-public function yearsByBrand(Request $request)
-{
-    $brand = $request->get('brand');
+    public function yearsByBrand(Request $request)
+    {
+        $brand = $request->get('brand');
 
-    $cacheKey = "years_by_brand_" . md5($brand);
+        $cacheKey = "years_by_brand_" . md5($brand);
 
-    $years = Cache::remember($cacheKey, 600, function () use ($brand) {
-        return Vehicle::where('brand', $brand)
-            ->pluck('year')
-            ->unique()
-            ->sortDesc()
-            ->values();
-    });
+        $years = Cache::remember($cacheKey, 600, function () use ($brand) {
+            return Vehicle::where('brand', $brand)
+                ->pluck('year')
+                ->unique()
+                ->sortDesc()
+                ->values();
+        });
 
-    return response()->json($years);
-}
+        return response()->json($years);
+    }
 
-public function yearsByBrandModel(Request $request)
-{
-    $brand = $request->get('brand');
-    $model = $request->get('model');
+    public function yearsByBrandModel(Request $request)
+    {
+        $brand = $request->get('brand');
+        $model = $request->get('model');
 
-    $cacheKey = "years_by_brand_model_" . md5($brand . '_' . $model);
+        $cacheKey = "years_by_brand_model_" . md5($brand . '_' . $model);
 
-    $years = Cache::remember($cacheKey, 600, function () use ($brand, $model) {
-        $query = Vehicle::query();
+        $years = Cache::remember($cacheKey, 600, function () use ($brand, $model) {
+            $query = Vehicle::query();
 
-        if ($brand) {
-            $query->where('brand', $brand);
-        }
+            if ($brand) {
+                $query->where('brand', $brand);
+            }
 
-        if ($model) {
-            $query->where('model', $model);
-        }
+            if ($model) {
+                $query->where('model', $model);
+            }
 
-        return $query->pluck('year')->unique()->sortDesc()->values();
-    });
+            return $query->pluck('year')->unique()->sortDesc()->values();
+        });
 
-    return response()->json($years);
-}
+        return response()->json($years);
+    }
 
-public function fuelsByBrandModelYear(Request $request)
-{
-    $brand = $request->get('brand');
-    $model = $request->get('model');
-    $year = $request->get('year');
+    public function fuelsByBrandModelYear(Request $request)
+    {
+        $brand = $request->get('brand');
+        $model = $request->get('model');
+        $year = $request->get('year');
 
-    $cacheKey = "fuels_by_brand_model_year_" . md5($brand . '_' . $model . '_' . $year);
+        $cacheKey = "fuels_by_brand_model_year_" . md5($brand . '_' . $model . '_' . $year);
 
-    $fuels = Cache::remember($cacheKey, 600, function () use ($brand, $model, $year) {
-        $query = Vehicle::query();
+        $fuels = Cache::remember($cacheKey, 600, function () use ($brand, $model, $year) {
+            $query = Vehicle::query();
 
-        if ($brand) {
-            $query->where('brand', $brand);
-        }
+            if ($brand) {
+                $query->where('brand', $brand);
+            }
 
-        if ($model) {
-            $query->where('model', $model);
-        }
+            if ($model) {
+                $query->where('model', $model);
+            }
 
-        if ($year) {
-            $query->where('year', $year);
-        }
+            if ($year) {
+                $query->where('year', $year);
+            }
 
-        return $query->pluck('fuel')->unique()->values();
-    });
+            return $query->pluck('fuel')->unique()->values();
+        });
 
-    return response()->json($fuels);
-}
+        return response()->json($fuels);
+    }
 }
