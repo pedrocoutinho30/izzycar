@@ -5,14 +5,14 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0NT5HLTZ2J"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
+        // window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
+        // function gtag() {
+        //     dataLayer.push(arguments);
+        // }
+        // gtag('js', new Date());
 
-        gtag('config', 'G-0NT5HLTZ2J');
+        // gtag('config', 'G-0NT5HLTZ2J');
     </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,8 +38,8 @@
 
 <body id="top">
 
-    @include('frontend.partials.header' )
-
+    @include('frontend.partials.header')
+    @include('frontend.partials.cookies')
 
     <main>
         @yield('content')

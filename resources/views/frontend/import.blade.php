@@ -32,7 +32,7 @@
 
 <section class="section-padding" id="section_why_import">
     <div class="container">
-        <h3 class="text-center mb-4">Porque Importar com a Izzycar</h3>
+        <h3 class="text-center mb-4">Porque Importar com a Izzycar?</h3>
         <div class="row">
             @foreach ($why_import['enum_why_import'] as $item)
             <!-- <div class="col-md-6 mb-4 mr-4">
@@ -121,7 +121,7 @@
                         data-bs-target="#collapse-faq-{{ $loop->index }}"
                         aria-expanded="false"
                         aria-controls="collapse-faq-{{ $loop->index }}">
-                        {{ $faqItem['question'] }}
+                        {{ strip_tags($faqItem['question']) }}
                     </button>
                 </h2>
                 <div id="collapse-faq-{{ $loop->index }}" class="accordion-collapse collapse"

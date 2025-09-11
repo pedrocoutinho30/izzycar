@@ -33,7 +33,7 @@
                             @foreach(json_decode($news['contents']['gallery']) as $index => $image)
                             <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
                                 <img src="{{ asset('storage/' . $image) }}"
-                                    class="d-block w-100 img-fluid rounded"
+                                    class="d-block w-100 img-fluid rounded" style=" max-height: 500px; width: auto; object-fit: cover;"
                                     alt="Imagem da notícia: {{ $news['contents']['title'] }}">
                             </div>
                             @endforeach
