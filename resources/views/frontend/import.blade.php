@@ -36,11 +36,20 @@
         <div class="row">
             @foreach ($why_import['enum_why_import'] as $item)
             <div class="col-md-6 mb-4 mr-4">
-                <div class="custom-block card-listing shadow-lg p-4 h-100">
-                    <h5 class="mb-2 text-white" style="min-height: 3.5em; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                <div class="custom-block card-listing shadow-lg  h-100">
+                    <h5 class="text-accent">
                         {{ $item['title'] }}
                     </h5>
-                    <p class="text-white">{{ $item['content'] }}</p>
+                    <p class="">{!! $item['content'] !!}</p>
+                </div>
+
+            </div>
+            <div class="col-md-6 mb-4 mr-4">
+                <div class="custom-block custom-block-transparent news-listing shadow-lg p-4h-100">
+                    <h5 class="text-accent">
+                        {{ $item['title'] }}
+                    </h5>
+                    <p class="text-dark">{!! $item['content'] !!}</p>
                 </div>
             </div>
             @endforeach
@@ -51,13 +60,14 @@
 <section class="section-padding" id="section_import">
     <div class="container">
 
-        <div class="desktop-only">
+
+        <div id="desktop-content">
             @include('frontend.partials.vertical-tabs', [
             'data' => $data->process_import['process_import'],
             'title' => "Passo a passo",
             ])
         </div>
-        <div class="mobile-only">
+        <div id="mobile-content">
             @include('frontend.partials.accordion-mobile', [
             'data' => $data->process_import['process_import'],
             'title' => "Passo a passo",
@@ -75,13 +85,13 @@
 @if(!empty($data_custos))
 <section class="section-padding" id="section_import_costs">
     <div class="container">
-        <div class="desktop-only">
-            @include('frontend.partials.vertical-tabs', [
+        <div id="desktop-content-custos">
+            @include('frontend.partials.horizontal-tabs', [
             'data' => $data_custos['enum'],
             'title' => "Custos de importação",
             ])
         </div>
-        <div class="mobile-only">
+        <div id="mobile-content-custos">
             @include('frontend.partials.accordion-mobile', [
             'data' => $data_custos['enum'],
             'title' => "Custos de importação",
@@ -97,25 +107,26 @@
 @endif
 
 
-<section class="section-padding" id="section_faq">
+<section class="section-padding mb-4" id="section_faq">
     <div class="container">
 
         <h3 class="text-center mb-4">Perguntas Frequentes</h3>
-        <div class="accordion custom-accordion" id="accordionExample">
+        <!-- FAQ -->
+        <div class="accordion custom-accordion" id="accordionFaq">
             @forelse ($faq['enum'] ?? [] as $faqItem)
             <div class="accordion-item">
-                <h2 class="accordion-header" id="heading{{ $loop->index }}">
+                <h2 class="accordion-header" id="heading-faq-{{ $loop->index }}">
                     <button class="accordion-button collapsed" type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#collapse{{ $loop->index }}"
+                        data-bs-target="#collapse-faq-{{ $loop->index }}"
                         aria-expanded="false"
-                        aria-controls="collapse{{ $loop->index }}">
+                        aria-controls="collapse-faq-{{ $loop->index }}">
                         {{ $faqItem['question'] }}
                     </button>
                 </h2>
-                <div id="collapse{{ $loop->index }}" class="accordion-collapse collapse"
-                    aria-labelledby="heading{{ $loop->index }}"
-                    data-bs-parent="#accordionExample">
+                <div id="collapse-faq-{{ $loop->index }}" class="accordion-collapse collapse"
+                    aria-labelledby="heading-faq-{{ $loop->index }}"
+                    data-bs-parent="#accordionFaq">
                     <div class="accordion-body text-dark">
                         {!! $faqItem['answer'] !!}
                     </div>
@@ -142,6 +153,37 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
 <script>
+    function handleResponsiveTabs() {
+        const desktopDivPassos = document.getElementById('desktop-content');
+        const mobileDivPassos = document.getElementById('mobile-content');
+
+        if (window.innerWidth >= 769) {
+            desktopDivPassos.style.display = 'block';
+            mobileDivPassos.style.display = 'none';
+        } else {
+            desktopDivPassos.style.display = 'none';
+            mobileDivPassos.style.display = 'block';
+        }
+
+        const desktopDivCustos = document.getElementById('desktop-content-custos');
+        const mobileDivCustos = document.getElementById('mobile-content-custos');
+
+        if (window.innerWidth >= 769) {
+            desktopDivCustos.style.display = 'block';
+            mobileDivCustos.style.display = 'none';
+        } else {
+            desktopDivCustos.style.display = 'none';
+            mobileDivCustos.style.display = 'block';
+        }
+    }
+
+    // Inicializa no load
+    document.addEventListener('DOMContentLoaded', handleResponsiveTabs);
+
+    // Atualiza se a janela for redimensionada
+    window.addEventListener('resize', handleResponsiveTabs);
+
+
     const swiper = new Swiper('.mySwiper', {
         slidesPerView: 1,
         spaceBetween: 10,

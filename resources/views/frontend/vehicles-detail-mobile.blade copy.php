@@ -33,43 +33,43 @@
             </div>
         </div>
         <!-- Detalhes do veículo -->
-        <div class="card news-listing shadow-sm mb-3">
+        <div class="card card-listing shadow-sm mb-3">
             <div class="card-body">
-                <h3 class="text-accent mb-1">{{ $vehicle->brand }}</h3>
-                <h5 class="text-accent mb-3">{{ $vehicle->model }} {{ $vehicle->version }}</h5>
+                <h3 class="text-white mb-1">{{ $vehicle->brand }}</h3>
+                <h5 class="text-white mb-3">{{ $vehicle->model }} {{ $vehicle->version }}</h5>
 
                 <h3 class="text-accent mb-3">{{ number_format(round($vehicle->sell_price), 0, ',', ' ') }} €</h3>
 
                 <div class="row g-2 mb-3">
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.calendar')</span>
-                        <p class="mb-0 text-dark">{{ $vehicle->year }}</p>
+                        <p class="mb-0">{{ $vehicle->year }}</p>
                     </div>
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.road')</span>
-                        <p class="mb-0 text-dark">{{ $vehicle->kilometers }} KM</p>
+                        <p class="mb-0">{{ $vehicle->kilometers }} KM</p>
                     </div>
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.fuel')</span>
-                        <p class="mb-0 text-dark">{{ $vehicle->fuel }}</p>
+                        <p class="mb-0">{{ $vehicle->fuel }}</p>
                     </div>
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.motor')</span>
-                        <p class="mb-0 text-dark">{{$cilindrada}} CC</p>
+                        <p class="mb-0">{{$cilindrada}} CC</p>
                     </div>
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.power')</span>
-                        <p class="mb-0 text-dark">{{$potencia}} CV</p>
+                        <p class="mb-0">{{$potencia}} CV</p>
                     </div>
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.gearbox')</span>
-                        <p class="mb-0 text-dark">{{$caixa}}</p>
+                        <p class="mb-0">{{$caixa}}</p>
                     </div>
                 </div>
 
                 <div class="d-flex gap-2">
                     <button class="btn btn-outline-form flex-fill" data-bs-toggle="modal" data-bs-target="#shareModal">
-                        <i class="bi bi-share-fill text-dark"></i>
+                        <i class="bi bi-share-fill"></i>
                     </button>
                     <a href="https://wa.me/351914250947?text=Olá, gostaria de saber mais informações sobre o veículo {{$vehicle->brand}} {{$vehicle->model}} {{$vehicle->version}} ({{ $vehicle->reference }})
                                 Link: {{ route('vehicles.details',  ['brand' => Str::slug($vehicle->brand),
@@ -77,10 +77,10 @@
                                     'id' => $vehicle->reference]) }}"
                         target="_blank"
                         class="btn btn-outline-form">
-                        <i class="bi bi-whatsapp fs-3 text-dark"></i>
+                        <i class="bi bi-whatsapp fs-3"></i>
                     </a>
-                    <button class="btn btn-outline-form flex-fill text-dark" data-bs-toggle="modal" data-bs-target="#contactModal">
-                        Informações
+                    <button class="btn btn-outline-form flex-fill" data-bs-toggle="modal" data-bs-target="#contactModal">
+                        Pedir informações
                     </button>
                 </div>
             </div>
@@ -92,15 +92,15 @@
 
         <!-- Equipamento / Atributos -->
         @foreach ($attributes as $group => $attrs)
-        <div class="card news-listing shadow-sm mb-3">
+        <div class="card card-listing shadow-sm mb-3">
             <div class="card-body">
-                <h5 class="card-title text-accent fw-semibold mb-3">{{ $group }}</h5>
+                <h5 class="card-title fw-semibold mb-3">{{ $group }}</h5>
                 <div class="row g-2">
                     @foreach ($attrs as $attr => $value)
                     @if(!in_array($attr, ['Potência', 'Cilindrada', 'Transmissão']))
                     <div class="col-12 d-flex align-items-center">
                         <i class="bi bi-check-circle-fill me-2" style="color: var(--accent-color);"></i>
-                        <span class="text-dark">{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
+                        <span>{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
                     </div>
                     @endif
                     @endforeach

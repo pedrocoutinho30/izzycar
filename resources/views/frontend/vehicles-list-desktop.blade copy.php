@@ -54,7 +54,7 @@
         <div id="vehicles-container" class="row">
             @foreach ($vehicles as $vehicle)
 
-            <div class="custom-block custom-block-transparent news-listing shadow-lg mb-5">
+            <div class="custom-block custom-block-topics-listing card-listing shadow-lg mb-5">
                 <a href="{{ route('vehicles.details', [
                                     'brand' => Str::slug($vehicle->brand),
                                     'model' => Str::slug($vehicle->model),
@@ -92,22 +92,21 @@
                         {{-- Info lateral --}}
                         <div class="custom-block-topics-listing-info d-flex">
                             <div>
-                                <h3 class="text-accent">{{ $vehicle->brand }}</h3>
-                                <h6 class="mb-2 text-accent">{{ $vehicle->model }} {{ $vehicle->version }}</h6>
+                                <h3 class="text-white">{{ $vehicle->brand }}</h3>
+                                <h6 class="mb-2 text-white">{{ $vehicle->model }} {{ $vehicle->version }}</h6>
 
                                 <p class="mb-1 list">
                                     @if(!empty($vehicle->year))
-                                    <span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;&nbsp;
-                                    <span class="text-dark">{{ $vehicle->year }} </span>&nbsp;&nbsp;
-                                @endif
+                                    <span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;&nbsp;{{ $vehicle->year }}&nbsp;&nbsp;
+                                    @endif
 
-                                @if(!empty($vehicle->fuel) )
-                                <span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;<span class="text-dark">{{ $vehicle->fuel }}</span>&nbsp;&nbsp;
-                                @endif
+                                    @if(!empty($vehicle->fuel) )
+                                    <span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;{{ $vehicle->fuel }}&nbsp;&nbsp;
+                                    @endif
 
-                                @if(!empty($vehicle->kilometers))
-                                <span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;<span class="text-dark">{{ $vehicle->kilometers   }} KM</span>
-                                @endif
+                                    @if(!empty($vehicle->kilometers))
+                                    <span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;{{ $vehicle->kilometers   }} KM
+                                    @endif
                                 </p>
 
                             </div>
@@ -330,19 +329,19 @@
             }
 
             return `
-    <div class="custom-block custom-block-transparent news-listing shadow-lg mb-5">
+    <div class="custom-block custom-block-topics-listing card-listing shadow-lg mb-5">
         <a href="/viaturas/${toSlug(vehicle.brand)}/${toSlug(vehicle.model)}/${vehicle.reference}">
             <div class="d-flex">
                 ${imagesHtml}
                 <div class="custom-block-topics-listing-info d-flex">
                     <div>
-                        <h3 class="text-accent">${vehicle.brand}</h3>
-                        <h6 class="mb-2 text-accent">${vehicle.model} ${vehicle.version ?? ""}</h6>
+                        <h3 class="text-white">${vehicle.brand}</h3>
+                        <h6 class="mb-2 text-white">${vehicle.model} ${vehicle.version ?? ""}</h6>
 
                         <p class="mb-1 list">
-                            ${vehicle.year ? `<span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;&nbsp;<span class="text-dark">${vehicle.year}&nbsp;&nbsp;</span>` : ""}
-                            ${vehicle.fuel ? `<span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;<span class="text-dark">${vehicle.fuel}&nbsp;&nbsp;</span>` : ""}
-                            ${vehicle.kilometers ? `<span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;<span class="text-dark">${vehicle.kilometers} KM</span>` : ""}
+                            ${vehicle.year ? `<span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;&nbsp;${vehicle.year}&nbsp;&nbsp;` : ""}
+                            ${vehicle.fuel ? `<span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;${vehicle.fuel}&nbsp;&nbsp;` : ""}
+                            ${vehicle.kilometers ? `<span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;${vehicle.kilometers} KM` : ""}
                         </p>
                     </div>
                     <span class="price ms-auto align-self-start px-4 py-3 fs-5">

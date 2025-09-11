@@ -1,16 +1,16 @@
 <section class="explore-section section-padding" id="section_veiculos">
     <div class="container">
         <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="mb-4">Veículos em Destaque</h2>
+            <div class="col-12 text-center mb-3">
+                <h2 class="mb-2">Veículos em Destaque</h2>
             </div>
         </div>
 
-        <div class="swiper mySwiperHome ">
+        <div class="swiper mySwiperHome mt-2">
             <div class="swiper-wrapper">
                 @foreach ($vehicles as $vehicle)
-                <div class="swiper-slide">
-                    <div class="custom-block card-listing shadow-lg p-4 h-100">
+                <div class="swiper-slide ">
+                    <div class="custom-block custom-block-transparent news-listing  p-4 h-100">
                         <a href="{{ route('vehicles.details', [
                                     'brand' => Str::slug($vehicle->brand),
                                     'model' => Str::slug($vehicle->model),
@@ -56,17 +56,24 @@
 <style>
     .swiper {
         padding-bottom: 50px;
+        background-color: transparent !important;
     }
 
     .swiper-slide {
+        background-color: transparent !important;
         display: flex;
         justify-content: center;
         height: auto;
+        overflow: visible !important;
+        padding-top: 10px;
+        /* espaço extra em cima */
+        box-sizing: border-box;
     }
 
     .custom-block {
         width: 100%;
         max-width: 360px;
+        background-color: transparent !important;
     }
 
     .swiper-button-next,
@@ -97,7 +104,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 <script>
-   new Swiper('.mySwiperHome', {
+    new Swiper('.mySwiperHome', {
         slidesPerView: 1,
         spaceBetween: 10,
         loop: false,

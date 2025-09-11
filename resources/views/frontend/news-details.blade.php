@@ -6,58 +6,83 @@
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-8 ">
-
-
                 <div class="news-box">
                     <h4 class="text-accent"> {{$news['contents']['title']}}</h4>
-                    <p class="text-muted"> {!!$news['contents']['subtitle']!!}</p>
+                    <p class="news-content-white"> {!!$news['contents']['subtitle']!!}</p>
                     @if(!empty($news['contents']['date']))
-                    <p class="text-muted mb-1" style="font-size: 0.9rem;">
-                        {{ \Carbon\Carbon::parse($news['contents']['date'])->format('d-m-Y') }}
+                    <p class="text-muted mb-1" style="font-size: 0.8rem !important;">
+                        {{ \Carbon\Carbon::parse($news['contents']['date'])->format('d.m.Y') }}
                     </p>
                     @endif
-                    <img src="{{ $news->image_path ? asset('storage/' . $news->image_path) : asset('images/default-car.jpg') }}"
+                    @if($news['contents']['image'])
+                    <img src="{{  asset('storage/' . $news['contents']['image'])  }}"
                         class="img-fluid mb-3 rounded image-news"
                         alt="Imagem ilustrativa"
                         alt="Imagem da notícia: {{ $news['contents']['title'] }}">
+                    @endif
                     <div class="text-white">
                         <div class="news-content-white">
                             {!! $news['contents']['content'] !!}
                         </div>
 
                     </div>
+                    @if(!empty($news['contents']['gallery']) )
 
+                    <div id="newsGalleryCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            @foreach(json_decode($news['contents']['gallery']) as $index => $image)
+                            <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                <img src="{{ asset('storage/' . $image) }}"
+                                    class="d-block w-100 img-fluid rounded"
+                                    alt="Imagem da notícia: {{ $news['contents']['title'] }}">
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Controles -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#newsGalleryCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#newsGalleryCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Próximo</span>
+                        </button>
+
+                        <!-- Indicadores -->
+                        <div class="carousel-indicators">
+                            @foreach(json_decode($news['contents']['gallery']) as $index => $image)
+                            <button type="button"
+                                data-bs-target="#newsGalleryCarousel"
+                                data-bs-slide-to="{{ $index }}"
+                                class="{{ $index === 0 ? 'active' : '' }}"
+                                aria-current="{{ $index === 0 ? 'true' : 'false' }}"
+                                aria-label="Slide {{ $index + 1 }}"></button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    @endif
                     <div class="news-content-white">
                         {!! $news['contents']['summary'] !!}
                     </div>
-                    @if(!empty($news['contents']['categorias']) && is_array($news['contents']['categorias']) && count($news['contents']['categorias']) > 0)
-                    <div class="tags mt-auto">
-                        @foreach($news['contents']['categorias'] as $categoria)
-                        <span class="badge-category">{{ $categoria['name'] }}</span>
+                    @if(isset($news['contents']['categories']) && is_array(json_decode($news['contents']['categories'])))
+                    <div class="tags mt-2">
+                        @foreach(json_decode($news['contents']['categories']) as $category)
+                        @php $categoryName = App\Models\Page::find($category); @endphp
+                        <span class="badge-category">{{ $categoryName['contents'][0]['field_value'] }}</span>
                         @endforeach
                     </div>
                     @endif
+
                 </div>
+
 
 
             </div>
+
             <div class="col-lg-4 ">
-                <div class="recent-news-box p-3 ">
-                    <div class="group-badge-stylish">Notícias Recentes</div>
-                    <div class="list-group mt-3">
-                        @foreach($recentNews as $recent)
-                        <a href="{{ route('frontend.news-details', $recent->slug) }}"
-                            class="list-group-item  mb-2">
-                            <p class="mb-1 text-white">{{ $recent['contents']['title'] }}</p>
-                            <small class="text-muted">
-                                @if(!empty($recent['contents']['date']))
-                                {{ \Carbon\Carbon::parse($recent['contents']['date'])->format('d-m-Y') }}
-                                @endif
-                            </small>
-                        </a>
-                        @endforeach
-                    </div>
-                </div>
+
                 {{-- Os nossos serviços --}}
                 <div class="recent-news-box p-3 mt-4 ">
                     <div class="group-badge-stylish">Serviços</div>
@@ -78,13 +103,13 @@
                             </div>
                         </a>
 
-                        <a href="{{ route('frontend.selling') }}" class="list-group-item mb-2 d-flex align-items-center">
+                        <!-- <a href="{{ route('frontend.selling') }}" class="list-group-item mb-2 d-flex align-items-center">
                             <div class="vehicle-info">
                                 <p class="mb-1 text-white" style="font-size: 0.9rem;">
                                     <strong>Venda</strong>
                                 </p>
                             </div>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
                 {{-- Bloco Carros à Venda --}}
@@ -105,17 +130,33 @@
                                 style="width: 60px; height: 60px; object-fit: cover;">
 
                             {{-- Info lateral --}}
-                            <div class="vehicle-info">
+                            <div class="vehicle-info ">
                                 <p class="mb-1 text-white" style="font-size: 0.9rem;">
                                     <strong>{{ $vehicle->brand }} {{ $vehicle->model }}</strong> {{ $vehicle->version }}
                                 </p>
-                                <small class="text-muted" style="font-size: 0.8rem;">
+                                <small class="text-dark" style="font-size: 0.8rem;">
                                     {{ $vehicle->year ?? '-' }} | {{ number_format($vehicle->kilometers ?? 0, 0, ',', '.') }} KM
                                 </small>
-                                <p class="mb-0 text-accent" style="font-size: 0.9rem; font-weight: bold;">
+                                <p class="mb-0 text-accent " style="font-size: 1.1rem;">
                                     € {{ number_format($vehicle->sell_price ?? 0, 0, ',', '.') }}
                                 </p>
                             </div>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="recent-news-box p-3 mt-4 ">
+                    <div class="group-badge-stylish">Notícias Recentes</div>
+                    <div class="list-group mt-3">
+                        @foreach($recentNews as $recent)
+                        <a href="{{ route('frontend.news-details', $recent->slug) }}"
+                            class="list-group-item  mb-2">
+                            <p class="mb-1 text-white">{{ $recent['contents']['title'] }}</p>
+                            <small class="text-muted " style="font-size: 0.8rem !important;">
+                                @if(!empty($recent['contents']['date']))
+                                {{ \Carbon\Carbon::parse($recent['contents']['date'])->format('d.m.Y') }}
+                                @endif
+                            </small>
                         </a>
                         @endforeach
                     </div>
@@ -136,9 +177,13 @@
         color: var(--text-muted-color) !important;
     }
 
+    .news-content-white *:not([style*="color"]) {
+        color: var(--primary-color) !important;
+    }
+
     .news-box {
-        border: 1px solid #ddd;
-        background-color: var(--secondary-color);
+        border: 1px solid var(--accent-color);
+        background-color: transparent;
         /* quadrado preto */
         border-radius: 10px;
         /* cantos arredondados (opcional) */
@@ -158,7 +203,7 @@
 
 
     .recent-news-box {
-        background: var(--secondary-color);
+        background: var(--muted-color);
         /* fundo preto */
         color: #fff;
         /* texto branco */
@@ -179,6 +224,15 @@
         background: var(--accent-color);
         /* efeito hover */
     }
+
+    .recent-news-box .list-group-item:hover .text-accent {
+        background: var(--accent-color);
+        color: var(--primary-color);
+        /* efeito hover */
+    }
+
+
+
 
     .group-badge-stylish {
         background: var(--accent-color);
@@ -217,5 +271,9 @@
     .vehicle-info p,
     .vehicle-info small {
         margin: 0;
+    }
+
+    .vehicle-info:hover {
+        color: var(--primary-color);
     }
 </style>

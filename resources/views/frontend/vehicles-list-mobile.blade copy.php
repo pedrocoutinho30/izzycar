@@ -50,7 +50,7 @@
       <div id="vehicles-container-mobile" class="row">
           @foreach ($vehicles as $vehicle)
 
-          <div class="custom-block custom-block-transparent news-listing shadow-lg mb-5">
+          <div class="custom-block custom-block-topics-listing card-listing shadow-lg mb-5">
               <a href="{{ route('vehicles.details', [
                                     'brand' => Str::slug($vehicle->brand),
                                     'model' => Str::slug($vehicle->model),
@@ -87,25 +87,25 @@
 
                   {{-- Marca / Modelo --}}
                   <div class="text-center mb-2">
-                      <h3 class="text-accent mb-1">{{ $vehicle->brand }}</h3>
-                      <h6 class="text-accent">{{ $vehicle->model }} {{ $vehicle->version }}</h6>
+                      <h3 class="text-white mb-1">{{ $vehicle->brand }}</h3>
+                      <h6 class="text-white">{{ $vehicle->model }} {{ $vehicle->version }}</h6>
                   </div>
 
                   {{-- Especificações e preço --}}
                   <div class="d-flex flex-column flex-md-row justify-content-between align-items-center  p-2 ">
 
                       <div class="text-white mb-2 mb-md-0 text-center">
-                          <p class="mb-1 text-center">
+                          <p class="mb-1">
                               @if(!empty($vehicle->year))
-                              <span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;<span class="text-dark" style="font-size: 1.0rem !important;">{{ $vehicle->year }}&nbsp;&nbsp;</span>
+                              <span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;{{ $vehicle->year }}&nbsp;&nbsp;
                               @endif
 
                               @if(!empty($vehicle->fuel))
-                              <span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;<span class="text-dark" style="font-size: 1.0rem !important;">{{ $vehicle->fuel }}&nbsp;&nbsp;</span>
+                              <span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;{{ $vehicle->fuel }}&nbsp;&nbsp;
                               @endif
 
                               @if(!empty($vehicle->kilometers))
-                              <span class="icon-colored">@include('components.icons.road')</span>&nbsp;<span class="text-dark" style="font-size: 1.0rem !important;">{{ $vehicle->kilometers }} KM</span>
+                              <span class="icon-colored">@include('components.icons.road')</span>&nbsp;{{ $vehicle->kilometers }} KM
                               @endif
                           </p>
                       </div>
@@ -182,7 +182,9 @@
               fuelSelect.innerHTML = '<option value="">Combustível</option>';
 
               // Reset kms se quiser ativar (por enquanto está comentado no HTML)
-             
+              if (kilometersSelect) {
+                  kilometersSelect.value = '';
+              }
 
               updateClearButtonVisibility();
               updateVehicles();
@@ -275,19 +277,19 @@
               }
 
               return `
-    <div class="custom-block custom-block-transparent news-listing shadow-lg mb-5">
+    <div class="custom-block custom-block-topics-listing card-listing shadow-lg mb-5">
         <a href="/vehicles/${vehicle.brand.toLowerCase()}/${vehicle.model.toLowerCase()}/${vehicle.id}">
             <div class="d-flex">
                 ${imagesHtml}
                 <div class="custom-block-topics-listing-info d-flex">
                     <div>
-                        <h3 class="text-accent">${vehicle.brand}</h3>
-                        <h6 class="mb-2 text-accent">${vehicle.model} ${vehicle.version ?? ""}</h6>
+                        <h3 class="text-white">${vehicle.brand}</h3>
+                        <h6 class="mb-2 text-white">${vehicle.model} ${vehicle.version ?? ""}</h6>
 
-                        <p class="mb-1 text-center list " style="font-size: 1.0rem !important;">
-                            ${vehicle.year ? `<span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;&nbsp;<span class="text-dark" style="font-size: 1.0rem !important;">${vehicle.year}&nbsp;&nbsp;</span>` : ""}
-                            ${vehicle.fuel ? `<span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;<span class="text-dark" style="font-size: 1.0rem !important;">${vehicle.fuel}&nbsp;&nbsp;</span>` : ""}
-                            ${vehicle.kilometers ? `<span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;<span class="text-dark" style="font-size: 1.0rem !important;">${vehicle.kilometers} KM</span>` : ""}
+                        <p class="mb-1 list">
+                            ${vehicle.year ? `<span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;&nbsp;${vehicle.year}&nbsp;&nbsp;` : ""}
+                            ${vehicle.fuel ? `<span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;${vehicle.fuel}&nbsp;&nbsp;` : ""}
+                            ${vehicle.kilometers ? `<span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;${vehicle.kilometers} KM` : ""}
                         </p>
                     </div>
                     <span class="price ms-auto align-self-start px-4 py-3 fs-5">
@@ -348,21 +350,21 @@
                   }
 
                   const html = `
-        <div class="custom-block custom-block-transparent news-listing shadow-lg mb-5">
+        <div class="custom-block custom-block-topics-listing card-listing shadow-lg mb-5">
             <a href="/viaturas/${toSlug(vehicle.brand)}/${toSlug(vehicle.model)}/${vehicle.reference}">
                 ${imagesHtml}
 
                 <div class="text-center mb-2">
-                    <h3 class="text-accent mb-1">${vehicle.brand}</h3>
-                    <h6 class="text-accent">${vehicle.model} ${vehicle.version}</h6>
+                    <h3 class="text-white mb-1">${vehicle.brand}</h3>
+                    <h6 class="text-white">${vehicle.model} ${vehicle.version}</h6>
                 </div>
 
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center p-2">
                     <div class="text-white mb-2 mb-md-0">
-                        <p class="mb-1 text-center" > 
-                            ${vehicle.year ? `<span class="icon-colored">@include('components.icons.calendar')</span> <span class="text-dark" style="font-size: 1.0rem !important;">${vehicle.year} </span> ` : ''}
-                            ${vehicle.fuel ? `<span class="icon-colored">@include('components.icons.fuel')</span> <span class="text-dark" style="font-size: 1.0rem !important;">${vehicle.fuel} </span> ` : ''}
-                            ${vehicle.kilometers ? `<span class="icon-colored">@include('components.icons.road')</span> <span class="text-dark" style="font-size: 1.0rem !important;">${vehicle.kilometers} KM</span>` : ''}
+                        <p class="mb-1">
+                            ${vehicle.year ? `<span class="icon-colored">@include('components.icons.calendar')</span> ${vehicle.year}  ` : ''}
+                            ${vehicle.fuel ? `<span class="icon-colored">@include('components.icons.fuel')</span> ${vehicle.fuel}  ` : ''}
+                            ${vehicle.kilometers ? `<span class="icon-colored">@include('components.icons.road')</span> ${vehicle.kilometers} KM` : ''}
                         </p>
                     </div>
 

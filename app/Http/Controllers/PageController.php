@@ -59,7 +59,6 @@ class PageController extends Controller
         $fields = [];
         $fields = $request->all()['fields'] ?? [];
 
-       
         foreach ($fields as $fieldLabel => $value) {
             $fieldValue = '';
             if ($value instanceof \Illuminate\Http\UploadedFile) {
@@ -185,6 +184,7 @@ class PageController extends Controller
 
         $fields = $request->all()['fields'] ?? [];
 
+
         foreach ($fields as $fieldLabel => $value) {
             $fieldValue = '';
             if ($value instanceof \Illuminate\Http\UploadedFile) {
@@ -205,8 +205,10 @@ class PageController extends Controller
             // atualizar ou criar campo
             $content = $page->contents()->where('field_name', $fieldLabel)->first();
             if ($content) {
+                
                 $content->update(['field_value' => $fieldValue]);
             } else {
+               
                 $page->contents()->create([
                     'field_name' => $fieldLabel,
                     'field_value' => $fieldValue,
@@ -400,7 +402,7 @@ class PageController extends Controller
 
         $pageType = PageType::where('name', PageType::IMPORTS)->first();
         $pages = Page::where('page_type_id', $pageType->id)->get();
-        
+
 
         return view('pages.imports', compact('pages', 'pageType'));
     }

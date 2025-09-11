@@ -23,7 +23,7 @@
                 <div class="swiper mySwiperThumbs mt-1">
                     <div class="swiper-wrapper">
                         @foreach ($vehicle->images as $key => $image)
-                        <div class="swiper-slide" style="width: 80px; cursor: pointer;">
+                        <div class="swiper-slide " style="width: 100px; height: 100px; cursor: pointer; object-fit: cover;">
                             <img src="{{ asset('storage/' . $image->image_path) }}"
                                 class="img-fluid rounded"
                                 alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
@@ -36,12 +36,12 @@
             <!-- Coluna com detalhes -->
             <div class="col-lg-4 ">
                 <div class="col-12">
-                    <div class="card card-listing shadow-sm h-100">
+                    <div class="card custom-block-transparent news-listing shadow-sm h-100">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12 mt-4">
-                                    <h3 class="text-white">{{ $vehicle->brand }}</h3>
-                                    <h5 class="text-white"> {{ $vehicle->model }} {{ $vehicle->version }}</h5>
+                                    <h3 class="text-accent">{{ $vehicle->brand }}</h3>
+                                    <h5 class="text-accent"> {{ $vehicle->model }} {{ $vehicle->version }}</h5>
 
                                 </div>
                             </div>
@@ -49,37 +49,37 @@
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start ">
                                         <span class="icon-colored pe-3">@include('components.icons.calendar')</span>
-                                        <p class="mb-0">{{ $vehicle->year }}</p>
+                                        <p class="mb-0 text-dark">{{ $vehicle->year }}</p>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-center">
                                         <span class="icon-colored pe-3">@include('components.icons.road')</span>
-                                        <p class="mb-0">{{ $vehicle->kilometers }} KM</p>
+                                        <p class="mb-0 text-dark">{{ $vehicle->kilometers }} KM</p>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.fuel')</span>
-                                        <p class="mb-0">{{ $vehicle->fuel }}</p>
+                                        <p class="mb-0 text-dark">{{ $vehicle->fuel }}</p>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.motor')</span>
-                                        <p class="mb-0">{{$cilindrada}} CC</p>
+                                        <p class="mb-0 text-dark">{{$cilindrada}} CC</p>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.power')</span>
-                                        <p class="mb-0">{{$potencia}} CV</p>
+                                        <p class="mb-0 text-dark">{{$potencia}} CV</p>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.gearbox')</span>
-                                        <p class="mb-0">{{$caixa}}</p>
+                                        <p class="mb-0 text-dark">{{$caixa}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -90,7 +90,7 @@
                             <div class="d-flex gap-3 align-items-center mt-3">
                                 <!-- Botão de partilha -->
                                 <button type="button" class="btn btn-outline-form" data-bs-toggle="modal" data-bs-target="#shareModal">
-                                    <i class="bi bi-share-fill"></i>
+                                    <i class="bi bi-share-fill text-dark"></i>
                                 </button>
                                 <a href="https://wa.me/351914250947?text=Olá, gostaria de saber mais informações sobre o veículo {{$vehicle->brand}} {{$vehicle->model}} {{$vehicle->version}} ({{ $vehicle->reference }})
                                 Link: {{ route('vehicles.details',  ['brand' => Str::slug($vehicle->brand),
@@ -98,10 +98,10 @@
                                     'id' => $vehicle->reference]) }}"
                                     target="_blank"
                                     class="btn btn-outline-form">
-                                    <i class="bi bi-whatsapp"></i>
+                                    <i class="bi bi-whatsapp text-dark"></i>
                                 </a>
-                                <button type="button" class="btn btn-outline-form" data-bs-toggle="modal" data-bs-target="#contactModal">
-                                    Pedir informações
+                                <button type="button" class="btn btn-outline-form text-dark" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                    Informações
                                 </button>
 
                             </div>
@@ -118,17 +118,17 @@
 
             @foreach ($attributes as $group => $attrs)
             <div class="col-12">
-                <div class="card card-listing shadow-sm h-100">
+                <div class="card news-listing shadow-sm h-100">
                     <div class="card-body">
-                        <h5 class="card-title fw-semibold mb-4">{{ $group }}</h5>
+                        <h5 class="text-accent fw-semibold mb-4">{{ $group }}</h5>
 
                         <div class="row">
                             @foreach ($attrs as $attr => $value)
                             @if(!in_array($attr, ['Potência', 'Cilindrada', 'Transmissão']))
-                            <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="col-md-4 col-sm-6 mb-3">
                                 <div class="d-flex align-items-start">
                                     <i class="bi bi-check-circle-fill me-2" style="color: var(--accent-color);"></i>
-                                    <span>{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
+                                    <span class="text-dark">{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
                                 </div>
                             </div>
                             @endif

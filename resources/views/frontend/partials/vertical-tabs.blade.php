@@ -24,7 +24,7 @@
     </div>
 
     <!-- Conteúdo -->
-    <div class="col-md-9">
+    <div class="col-md-8">
         <div class="tab-content" id="v-tabs-content-import">
             @foreach ($data as $index => $tab)
             @php
@@ -36,11 +36,11 @@
                 role="tabpanel"
                 aria-labelledby="tab-import-{{ $slug }}">
                 <div class="content-tab px-4 py-5 text-center">
-                    <p class="text-dark mb-4">
-                        {!! $tab['content'] ?? '' !!}
+                    <p class="text-muted">
+                        {!! $tab['content']  !!}
                     </p>
                     @if(!empty($tab['image']))
-                    <img src="{{ asset('storage/'. $tab['image'] ) }}" style="width: 300px; height: 300px; object-fit: cover;" class="img-fluid rounded shadow-sm mt-3" alt="{{ $tab['title'] }}">
+                    <img src="{{ asset('storage/'. $tab['image'] ) }}" style="width: 300px; height: 300px; object-fit: cover; border: 3px solid #7f1f1fff;" class="img-fluid rounded shadow-sm mt-3" alt="{{ $tab['title'] }}">
                     @endif
                 </div>
 
@@ -51,20 +51,21 @@
 </div>
 
 <script>
-    function initVerticalTabs() {
-        document.querySelectorAll('.desktop-only, .mobile-only').forEach(container => {
-            container.querySelectorAll('.nav-tabs').forEach(nav => {
-                const firstButton = nav.querySelector('.nav-link');
-                if (firstButton) firstButton.classList.add('active');
-                const firstPane = document.querySelector(firstButton.dataset.bsTarget);
-                if (firstPane) firstPane.classList.add('show', 'active');
-            });
-        });
-    }
+ 
+    // function initVerticalTabs() {
+    //     document.querySelectorAll('.desktop-only, .mobile-only').forEach(container => {
+    //         container.querySelectorAll('.nav-tabs').forEach(nav => {
+    //             const firstButton = nav.querySelector('.nav-link');
+    //             if (firstButton) firstButton.classList.add('active');
+    //             const firstPane = document.querySelector(firstButton.dataset.bsTarget);
+    //             if (firstPane) firstPane.classList.add('show', 'active');
+    //         });
+    //     });
+    // }
 
-    // Inicializa no load normal
-    document.addEventListener('DOMContentLoaded', initVerticalTabs);
+    // // Inicializa no load normal
+    // document.addEventListener('DOMContentLoaded', initVerticalTabs);
 
-    // Inicializa quando voltar com back/forward
-    window.addEventListener('pageshow', initVerticalTabs);
+    // // Inicializa quando voltar com back/forward
+    // window.addEventListener('pageshow', initVerticalTabs);
 </script>

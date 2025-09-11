@@ -31,11 +31,11 @@
         <div class="row">
             @foreach ($data->contents['enum'] as $item)
             <div class="col-md-6 mb-4 mr-4">
-                <div class="custom-block card-listing shadow-lg p-4 h-100">
-                    <h5 class="mb-2 text-white" style="min-height: 3.5em; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                <div class="custom-block card-listing shadow-lg  h-100">
+                    <h5 class="text-accent" >
                         {{ $item['title'] }}
                     </h5>
-                    <p class="text-white">{{ $item['content'] }}</p>
+                    <p class="text-muted">{!! $item['content'] !!}</p>
                 </div>
             </div>
             @endforeach

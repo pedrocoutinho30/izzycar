@@ -24,6 +24,7 @@ https://templatemo.com/tm-590-topic-listing
   --p-color: #cccccc;
   /* texto padrão claro */
   --text-muted-color: #888888;
+  --muted-color: #514f4f;
   /* texto secundário */
   --border-color: #333333;
   /* borda neutra sutil */
@@ -37,8 +38,12 @@ https://templatemo.com/tm-590-topic-listing
   /* hover link ainda mais forte */
 
 
-  --body-font-family: 'Open Sans', sans-serif;
-  --title-font-family: 'Montserrat', sans-serif;
+
+
+  --body-font-family: 'Open Sans',
+    sans-serif;
+  --title-font-family: 'Montserrat',
+    sans-serif;
 
   --h1-font-size: 58px;
   --h2-font-size: 46px;
@@ -64,12 +69,34 @@ https://templatemo.com/tm-590-topic-listing
 
 }
 
+
 body {
   background-color: var(--white-color);
   font-family: var(--body-font-family);
 }
 
+.text-muted,
+.text-muted *:not([style*="color"]) {
+  color: var(--text-muted-color) !important;
+  font-family: var(--body-font-family) !important;
+  font-size: var(--p-font-size) !important;
+  font-weight: var(--font-weight-medium);
 
+
+}
+
+.text-dark,
+.text-dark *:not([style*="color"]):not([style*="var(--accent-color)"]) {
+  color: var(--dark-color) !important;
+  font-family: var(--body-font-family) !important;
+  font-size: var(--p-font-size) !important;
+  font-weight: var(--font-weight-medium);
+}
+
+.text-dark-hover:hover
+{
+  color: var(--dark-color) !important;
+}
 /*---------------------------------------
   TYPOGRAPHY               
 -----------------------------------------*/
@@ -127,7 +154,7 @@ h6 {
 
 p {
   color: var(--p-color);
-  font-size: var(--p-font-size-small);
+  font-size: var(--p-font-size);
   font-weight: var(--font-weight-normal);
 }
 
@@ -198,6 +225,7 @@ strong {
   border-bottom: 1px solid #ecf3f2;
   margin-bottom: 40px;
   justify-content: center;
+  gap: 10px;
 }
 
 .nav-tabs .nav-link {
@@ -205,22 +233,38 @@ strong {
   border-top: 0;
   border-right: 0;
   border-left: 0;
-  color: var(--p-color);
+  color: var(--primary-color);
   font-family: var(--title-font-family);
   font-size: var(--btn-font-size);
   font-weight: var(--font-weight-medium);
   padding: 15px 25px;
   transition: all 0.3s;
+  border: none;
+  /* remove bordas padrão */
+  border-bottom: 3px solid transparent;
+  /* linha inferior só aparece no ativo */
 }
 
 
 
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active,
-.nav-tabs .nav-link:focus,
-.nav-tabs .nav-link:hover {
-  border-bottom-color: var(--primary-color);
-  color: var(--primary-color);
+.nav-tabs .nav-link:focus {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  /* ou a tua cor accent */
+  color: #000 !important;
+  /* texto sempre preto */
+  border-radius: 6px;
+  /* opcional, fica mais bonito */
+  font-weight: 600;
+}
+
+.nav-tabs .nav-link:hover:not(.active):not(:focus) {
+  background-color: transparent;
+  border-color: var(--accent-color);
+  color: var(--accent-color) !important;
+  font-weight: 600;
 }
 
 
@@ -405,7 +449,16 @@ strong {
 }
 
 .card-listing {
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
+  /* Ou qualquer cor desejada */
+  color: var(--white-color);
+  /* Para garantir contraste em modo escuro */
+  border-radius: 8px;
+}
+
+.news-listing {
+  border: 1px solid var(--accent-color);
+  background-color: transparent;
   /* Ou qualquer cor desejada */
   color: var(--white-color);
   /* Para garantir contraste em modo escuro */
@@ -663,19 +716,29 @@ strong {
   margin-bottom: -100px; */
 }
 
+
+
+
 .custom-block {
   border-radius: var(--border-radius-medium);
   position: relative;
   overflow: hidden;
   padding: 30px;
   transition: all 0.3s ease;
-  height: 100%;
+  height: 88%;
 }
 
 .custom-block:hover {
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
   transform: translateY(-3px);
 }
+
+.custom-block-transparent:hover {
+  background-color: transparent !important;
+  outline-offset: 4px;
+  transform: translateY(-3px);
+}
+
 
 .custom-block>a {
   width: 100%;
@@ -1362,7 +1425,7 @@ blockquote {
 .badge-category {
   display: inline-block;
   background-color: var(--accent-color);
-  color: var(--primary-color);
+  color: var(--white-color);
   padding: 0.3rem 0.8rem;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -1458,15 +1521,15 @@ blockquote {
 
   .hero-section {
 
-  background-image: linear-gradient(0deg,
-      var(--accent-color) 0%,
-      var(--primary-color) 80%,
-      var(--primary-color) 100%);
-  position: relative;
-  overflow: hidden;
-  padding-top: 30px;
-  padding-bottom: 30px;
-}
+    background-image: linear-gradient(0deg,
+        var(--accent-color) 0%,
+        var(--primary-color) 80%,
+        var(--primary-color) 100%);
+    position: relative;
+    overflow: hidden;
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
 
 }
 
