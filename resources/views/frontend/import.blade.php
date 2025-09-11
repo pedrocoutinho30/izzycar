@@ -35,7 +35,7 @@
         <h3 class="text-center mb-4">Porque Importar com a Izzycar</h3>
         <div class="row">
             @foreach ($why_import['enum_why_import'] as $item)
-            <div class="col-md-6 mb-4 mr-4">
+            <!-- <div class="col-md-6 mb-4 mr-4">
                 <div class="custom-block card-listing shadow-lg  h-100">
                     <h5 class="text-accent">
                         {{ $item['title'] }}
@@ -43,13 +43,13 @@
                     <p class="">{!! $item['content'] !!}</p>
                 </div>
 
-            </div>
+            </div> -->
             <div class="col-md-6 mb-4 mr-4">
                 <div class="custom-block custom-block-transparent news-listing shadow-lg p-4h-100">
                     <h5 class="text-accent">
                         {{ $item['title'] }}
                     </h5>
-                    <p class="text-dark">{!! $item['content'] !!}</p>
+                    <div class="text-dark">{!! $item['content'] !!}</div>
                 </div>
             </div>
             @endforeach

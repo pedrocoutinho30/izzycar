@@ -30,12 +30,20 @@
         <h3 class="text-center mb-4">Todos os passos para legalizar o seu veículo</h3>
         <div class="row">
             @foreach ($data->contents['enum'] as $item)
-            <div class="col-md-6 mb-4 mr-4">
+            <!-- <div class="col-md-6 mb-4 mr-4">
                 <div class="custom-block card-listing shadow-lg  h-100">
                     <h5 class="text-accent" >
                         {{ $item['title'] }}
                     </h5>
                     <p class="text-muted">{!! $item['content'] !!}</p>
+                </div>
+            </div> -->
+            <div class="col-md-6 mb-4 mr-4">
+                <div class="custom-block custom-block-transparent news-listing shadow-lg p-4h-100">
+                    <h5 class="text-accent">
+                        {{ $item['title'] }}
+                    </h5>
+                    <div class="text-dark mb-4">{!! $item['content'] !!}</div>
                 </div>
             </div>
             @endforeach
