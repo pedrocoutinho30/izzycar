@@ -39,7 +39,7 @@
                 </div>
             </div> -->
             <div class="col-md-6 mb-4 mr-4">
-                <div class="custom-block custom-block-transparent news-listing shadow-lg p-4h-100">
+                <div class="custom-block custom-block-transparent news-listing shadow-lg p-4 h-100">
                     <h5 class="text-accent">
                         {{ $item['title'] }}
                     </h5>
