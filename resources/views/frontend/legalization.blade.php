@@ -27,7 +27,7 @@
 <section class="section-padding" id="section_legalization">
     <div class="container">
 
-        <h3 class="text-center mb-4">Todos os passos para legalizar o seu veículo</h3>
+        <h3 class="text-center mb-4">Passos para legalizar o seu veículo</h3>
         <div class="row">
             @foreach ($data->contents['enum'] as $item)
             <!-- <div class="col-md-6 mb-4 mr-4">
