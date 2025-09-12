@@ -1,7 +1,7 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Izzycar')
-
+@section('title', 'Importação, Legalização e Venda de Carros Usados em Portugal | IzzyCar')
+@section('meta_description', 'Descubra a IzzyCar: especialistas em importação de carros, legalização de veículos e venda de carros usados em Portugal. Faça a escolha certa para o seu próximo carro.')
 @section('content')
 
 @include('frontend.partials.hero-section', ['title' => 'Izzycar', 'subtitle' => 'Importação de Veículos na Mão'])

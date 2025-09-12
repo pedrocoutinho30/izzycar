@@ -1,5 +1,7 @@
 @extends('frontend.partials.layout')
-@section('title', 'Izzycar')
+@section('title', $news['contents']['title'] . ' | Izzycar')
+@section('meta_description', 'Leia a notícia completa: {{$news["contents"]["subtitle"]}} - mantenha-se informado sobre o mercado automóvel, importação, legalização e novidades de carros usados.')
+
 
 @section('content')
 <section class="py-5 bg-light">

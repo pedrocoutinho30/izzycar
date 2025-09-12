@@ -1,6 +1,7 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Izzycar - Notícias')
+@section('title', 'Notícias Automóveis em Portugal | Izzycar')
+@section('meta_description', 'Fique atualizado com as últimas notícias do mercado automóvel em Portugal. Tendências, novidades, dicas e tudo sobre carros importados e usados.')
 
 @section('content')
 
@@ -10,7 +11,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 text-center mb-4">
-                
+
             </div>
         </div>
     </div>

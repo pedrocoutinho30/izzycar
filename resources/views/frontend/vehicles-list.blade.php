@@ -1,6 +1,9 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Izzycar')
+@section('title', 'Carros Usados em Portugal | Compra e Venda | IzzyCar')
+@section('meta_description', 'Encontre carros usados de qualidade em Portugal. A IzzyCar oferece opções confiáveis para compra e venda de veículos, com garantia e transparência.')
+
+
 @php use Illuminate\Support\Str; @endphp
 @section('content')
 

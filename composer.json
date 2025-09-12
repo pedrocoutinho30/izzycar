@@ -22,6 +22,7 @@
         "mpdf/mpdf": "^8.2",
         "spatie/browsershot": "^5.0",
         "spatie/laravel-permission": "^6.21",
+        "spatie/laravel-sitemap": "^7.3",
         "symfony/http-client": "^6.1",
         "symfony/mailgun-mailer": "^6.1",
         "symfony/postmark-mailer": "^6.1"

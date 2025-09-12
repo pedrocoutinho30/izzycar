@@ -1,6 +1,7 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Izzycar - Importação de Veículos')
+@section('title', 'Importação de Veículos | Izzycar')
+@section('meta_description', 'Importe o seu carro de forma simples e descomplicada. A IzzyCar ajuda com todo o processo de importação de veículos, documentação e transporte para Portugal.')
 
 @section('content')
 

@@ -1,5 +1,9 @@
 @extends('frontend.partials.layout')
-@section('title', 'Izzycar')
+
+
+@section('title', $vehicle->brand . ' ' . $vehicle->model . ' Usado à Venda | IzzyCar')
+
+@section('meta_description', 'Encontre carros usados de qualidade em Portugal. A IzzyCar oferece opções confiáveis para compra e venda de veículos, com garantia e transparência.')
 
 @section('content')
 

@@ -1,6 +1,7 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Izzycar - Legalização de Veículos')
+@section('title', 'Legalização de Veículos | Izzycar')
+@section('meta_description', 'Legalize o seu carro importado sem complicações. A IzzyCar cuida de todo o processo de documentação, inspeções e registos automóveis em Portugal.')
 
 @section('content')
 
