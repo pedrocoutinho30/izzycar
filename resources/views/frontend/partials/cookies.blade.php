@@ -22,8 +22,9 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.4);
-        backdrop-filter: blur(5px); /* Aplica blur no resto da página */
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(5px);
+        /* Aplica blur no resto da página */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -112,6 +113,20 @@
                 gtag('config', 'G-0NT5HLTZ2J');
             `;
             document.head.appendChild(script2);
+
+
+            let scriptHotjar = document.createElement("script");
+            scriptHotjar.innerHTML = `
+                (function(h,o,t,j,a,r){
+                    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+                    h._hjSettings={hjid:6518381,hjsv:6};
+                    a=o.getElementsByTagName('head')[0];
+                    r=o.createElement('script');r.async=1;
+                    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+                    a.appendChild(r);
+                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+                `;
+            document.head.appendChild(scriptHotjar);
         }
     }
 </script>
