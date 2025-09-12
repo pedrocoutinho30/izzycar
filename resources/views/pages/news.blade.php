@@ -21,7 +21,8 @@
                         <th>Título</th>
                         <th>Slug</th>
                         <th>Tipo</th>
-                        <th>Criada em</th>
+                        <th>Publicado</th>
+                        <th>Publicado em</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -33,11 +34,15 @@
                         <td>{{ $page->title }}</td>
                         <td>{{ $page->slug }}</td>
                         <td>{{ $page->pageType->name ?? '-' }}</td>
-                        <td>{{ $page->created_at->format('d/m/Y H:i') }}</td>
+                        <td>{{$page->contents->where('field_name', 'status')->first()->field_value ?? ''}}</td>
+                        <td>{{ $page->contents->where('field_name', 'published_at')->first()->field_value ?? '' }}</td>
                         <td>
                             <div class="btn-group" role="group" aria-label="Ações">
                                 <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-warning" title="Editar">
                                     <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{{ url('/noticias/' . $page->slug) }}" class="btn btn-sm btn-info" title="Ver">
+                                    <i class="fas fa-eye"></i>
                                 </a>
                                 <form action="{{ route('pages.destroy', $page->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
                                     @csrf
