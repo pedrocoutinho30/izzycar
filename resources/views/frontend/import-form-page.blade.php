@@ -4,9 +4,9 @@
 
 @section('content')
 
-<section class="explore-section section-padding" class="bg-dark rounded shadow-sm">
-    <div class="container">
-        <h4 class=" mb-3 mt-3 text-accent" id="formPropostaLabel">Peça já a sua proposta</h4>
+<section class="explore-section section-padding mt-4" class="bg-dark rounded shadow-sm">
+    <div class="container mt-4">
+        <h4 class=" mb-3 text-accent" id="formPropostaLabel">Peça já a sua proposta</h4>
         @include('frontend.forms.proposal', ['brands' => $brands])
     </div>
 </section>

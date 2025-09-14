@@ -22,12 +22,10 @@
                         alt="Imagem ilustrativa"
                         alt="Imagem da notícia: {{ $news['contents']['title'] }}">
                     @endif
-                    <div class="text-white">
-                        <div class="news-content-white">
-                            {!! $news['contents']['content'] !!}
-                        </div>
-
+                    <div class="text-dark">
+                        {!! $news['contents']['content'] !!}
                     </div>
+
                     @if(!empty($news['contents']['gallery']) )
 
                     <div id="newsGalleryCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
@@ -65,7 +63,7 @@
                     </div>
 
                     @endif
-                    <div class="news-content-white">
+                    <div class="text-dark">
                         {!! $news['contents']['summary'] !!}
                     </div>
                     @if(isset($news['contents']['categories']) && is_array(json_decode($news['contents']['categories'])))
@@ -176,7 +174,7 @@
     .news-content-white h4,
     .news-content-white h5,
     .news-content-white h6 {
-        color: var(--text-muted-color) !important;
+        color: var(--text-muted-color);
     }
 
     .news-content-white *:not([style*="color"]) {

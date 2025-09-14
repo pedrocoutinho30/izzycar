@@ -86,7 +86,7 @@ body {
 }
 
 .text-dark,
-.text-dark *:not([style*="color"]):not([style*="var(--accent-color)"]) {
+.text-dark *:not([style*="color"]):not([style*="var(--accent-color)"]):not(b, strong):not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
   color: var(--dark-color) !important;
   font-family: var(--body-font-family) !important;
   font-size: var(--p-font-size) !important;

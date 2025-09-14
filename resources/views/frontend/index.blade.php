@@ -10,14 +10,45 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 text-center mb-4">
-
-                <!-- <img src="{{ asset('storage/' . $page->contents->where('field_name', 'image')->first()->field_value) }}"
-                    class="img-fluid rounded" style="max-width: 1000; max-height: 400px;"
-                    alt="teste"> -->
-
             </div>
         </div>
     </div>
+</section>
+@php
+$home = App\Models\Page::where('slug', 'homepage')->first();
+@endphp
+
+<div class="container mt-4">
+
+    <!-- <h3>{{ $home['contents']->where('field_name', 'title')->first()->field_value   }}</h3> -->
+
+
+    <div class="text-center mb-4 text-dark">{!! $home['contents']->where('field_name', 'content')->first()->field_value !!}</div>
+
+    <div class="text-center text-dark">{!! $home['contents']->where('field_name', 'nossa_missao')->first()->field_value !!}</div>
+
+
+    <div class="text-center text-dark">{!! $home['contents']->where('field_name', 'nosso_papel')->first()->field_value !!}</div>
+
+
+    <div class="text-center text-dark">{!! $home['contents']->where('field_name', 'nossos_valores')->first()->field_value !!}</div>
+
+
+
+
+    <div class="text-center">
+        <a href="{{ route('frontend.form-import') }}" class="btn btn-warning btn-lg mt-4">
+            Quero importar
+        </a>
+    </div>
+</div>
+</section>
+
+
+<section class="explore-section">
+
+
+
 </section>
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
