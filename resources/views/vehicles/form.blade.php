@@ -238,7 +238,6 @@
             @endif -->
 
             <div class="form-group col-md-6 mt-4">
-              
                 <x-image-manager :label="'Imagens do Veículo'" :images="$existingImages" name="images" :multi="true" id="vehicleImages" />
             </div>
 

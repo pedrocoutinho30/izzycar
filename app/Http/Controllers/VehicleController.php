@@ -113,26 +113,36 @@ class VehicleController extends Controller
         }
 
         // Salvar imagens
-        if ($request->hasFile('images')) {
-            $i = 1;
-            foreach ($request->file('images') as $image) {
-                $extension = $image->getClientOriginalExtension();
+        // if ($request->hasFile('images')) {
+        //     $i = 1;
+        //     foreach ($request->file('images') as $image) {
+        //         $extension = $image->getClientOriginalExtension();
 
-                // Nome personalizado: vehicles_brand_model_version_id_numeração
-                $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}." . $extension;
+        //         // Nome personalizado: vehicles_brand_model_version_id_numeração
+        //         $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}." . $extension;
 
-                // Guardar com o nome personalizado
-                $path = $image->storeAs(
-                    "vehicles/{$vehicle->id}", // Pasta
-                    $fileName,                 // Nome
-                    'public'                   // Disco
-                );
+        //         // Guardar com o nome personalizado
+        //         $path = $image->storeAs(
+        //             "vehicles/{$vehicle->id}", // Pasta
+        //             $fileName,                 // Nome
+        //             'public'                   // Disco
+        //         );
 
-                // Gravar no banco de dados
-                $vehicle->images()->create(['image_path' => $path]);
+        //         // Gravar no banco de dados
+        //         $vehicle->images()->create(['image_path' => $path]);
 
-                $i++;
-            }
+        //         $i++;
+        //     }
+        // }
+
+        $imagesNew = $request->input('images_new', []);
+
+
+        $images = explode(',', $imagesNew);
+
+        foreach ($images as $imagePath) {
+            // Gravar no banco de dados
+            $vehicle->images()->create(['image_path' => $imagePath]);
         }
 
 

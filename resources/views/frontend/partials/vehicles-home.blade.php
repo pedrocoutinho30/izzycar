@@ -17,7 +17,7 @@
                                     'id' => $vehicle->reference
                                 ]) }}" class="text-decoration-none text-dark">
                             <div class="image-wrapper mb-3">
-                                <img src="{{ $vehicle->images->isNotEmpty() ? asset('storage/' . $vehicle->images->first()->image_path) : asset('images/default-car.jpg') }}" class="img-fluid " loading="lazy" alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}" style="max-width: 100%; max-height: 300px;">
+                                <img src="{{  $vehicle->images->first()->image_path }}" class="img-fluid " loading="lazy" alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}" style="max-width: 100%; max-height: 300px;">
                             </div>
                             <h5 class="mb-2 text-accent" style="min-height: 3.5em; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                 {{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->version }}

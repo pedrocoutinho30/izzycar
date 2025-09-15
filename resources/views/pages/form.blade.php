@@ -140,6 +140,9 @@
                         <input type="hidden" name="fields_existing[${field.label}]" value="${value ?? ''}">
                         <img src="${imageUrl}" alt="Preview" style="max-width: 200px; margin-top: 10px; ${imageUrl ? 'display:block' : 'display:none'}" class="preview-image">
                     `;
+
+                    
+                    
                     break;
 
                 case 'gallery':

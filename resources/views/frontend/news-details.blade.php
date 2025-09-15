@@ -124,7 +124,7 @@
                                 ]) }}" class="list-group-item mb-2 d-flex align-items-center">
 
                             {{-- Imagem pequena --}}
-                            <img src="{{ $vehicle->images->isNotEmpty() ? asset('storage/' . $vehicle->images->first()->image_path) : asset('images/default-car.jpg') }}"
+                            <img src="{{  $vehicle->images->first()->image_path }}"
                                 alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
                                 class="img-fluid rounded me-2"
                                 style="width: 60px; height: 60px; object-fit: cover;" loading="lazy">

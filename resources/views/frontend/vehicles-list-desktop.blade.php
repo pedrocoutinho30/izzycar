@@ -68,7 +68,7 @@
                             <div class="carousel-inner">
                                 @foreach($vehicle->images as $key => $image)
                                 <div class="carousel-item {{ $key === 0 ? 'active' : '' }} image-wrapper">
-                                    <img src="{{ asset('storage/' . $image->image_path) }}"
+                                    <img src="{{  $image->image_path }}"
                                         class="d-block img-fluid" loading="lazy"
                                         alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}">
                                 </div>
@@ -85,7 +85,7 @@
                             </button>
                         </div>
                         @else
-                        <img src="{{ $vehicle->images->isNotEmpty() ? asset('storage/' . $vehicle->images->first()->image_path) : asset('images/default-car.jpg') }}"
+                        <img src="{{  $vehicle->images->first()->image_path  }}"
                             class="custom-block-image img-fluid" loading="lazy"
                             alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}">
                         @endif
@@ -99,15 +99,15 @@
                                     @if(!empty($vehicle->year))
                                     <span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;&nbsp;
                                     <span class="text-dark">{{ $vehicle->year }} </span>&nbsp;&nbsp;
-                                @endif
+                                    @endif
 
-                                @if(!empty($vehicle->fuel) )
-                                <span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;<span class="text-dark">{{ $vehicle->fuel }}</span>&nbsp;&nbsp;
-                                @endif
+                                    @if(!empty($vehicle->fuel) )
+                                    <span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;<span class="text-dark">{{ $vehicle->fuel }}</span>&nbsp;&nbsp;
+                                    @endif
 
-                                @if(!empty($vehicle->kilometers))
-                                <span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;<span class="text-dark">{{ $vehicle->kilometers   }} KM</span>
-                                @endif
+                                    @if(!empty($vehicle->kilometers))
+                                    <span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;<span class="text-dark">{{ $vehicle->kilometers   }} KM</span>
+                                    @endif
                                 </p>
 
                             </div>
@@ -307,7 +307,7 @@
             <div class="carousel-inner">
                 ${vehicle.images.map((image, index) => `
                     <div class="carousel-item ${index === 0 ? 'active' : ''} image-wrapper">
-                        <img src="/storage/${image.image_path}" 
+                        <img src="${image.image_path}" 
                              class="d-block img-fluid" loading="lazy"
                              alt="Imagem ${vehicle.brand} ${vehicle.model}">
                     </div>
@@ -324,7 +324,7 @@
         </div>`;
             } else {
                 imagesHtml = `
-        <img src="${vehicle.images.length > 0 ? '/storage/' + vehicle.images[0].image_path : '/images/default-car.jpg'}"
+        <img src="${ vehicle.images[0].image_path }"
              class="custom-block-image img-fluid" loading="lazy"
              alt="Imagem ${vehicle.brand} ${vehicle.model}">`;
             }
