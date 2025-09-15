@@ -6,7 +6,7 @@
 @php
 $home = App\Models\Page::where('slug', 'homepage')->first();
 @endphp
-@include('frontend.partials.hero-section', ['title' => 'Izzycar', 'subtitle' => $home['contents']->where('field_name', 'title')->first()->field_value ])
+@include('frontend.partials.hero-section', ['title' => 'Izzycar', 'subtitle' => $home['contents']->where('field_name', 'title')->first()->field_value])
 
 <section class="featured-section">
     <div class="container">
@@ -20,7 +20,6 @@ $home = App\Models\Page::where('slug', 'homepage')->first();
 
 <div class="container mt-4">
 
-    <!-- <h3>{{ $home['contents']->where('field_name', 'title')->first()->field_value   }}</h3> -->
 
 
     <div class="text-center mb-4 text-dark">{!! $home['contents']->where('field_name', 'content')->first()->field_value !!}</div>
@@ -36,7 +35,7 @@ $home = App\Models\Page::where('slug', 'homepage')->first();
 
 
 
-    <div class="text-center">
+    <div class="text-center mb-4">
         <a href="{{ route('frontend.form-import') }}" class="btn btn-warning btn-lg mt-4">
             Quero importar
         </a>
@@ -45,11 +44,7 @@ $home = App\Models\Page::where('slug', 'homepage')->first();
 </section>
 
 
-<section class="explore-section">
 
-
-
-</section>
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 @endpush
@@ -81,55 +76,9 @@ $home = App\Models\Page::where('slug', 'homepage')->first();
 </script>
 @endpush
 
-<!-- 
-            <div class="col-lg-4 col-12 mb-4 mb-lg-0">
-                <div class="custom-block bg-white shadow-lg">
-                    <a href="topics-detail.html">
-                        <div class="d-flex">
-                            <div>
-                                <h5 class="mb-2">O que fazemos</h5>
-                                <p class="mb-0">Somos uma consultora especializada na importação chave na mão. </p>
-                            </div>
-                        </div>
-                        <img src="images/topics/undraw_Remote_design_team_re_urdx.png" class="custom-block-image img-fluid" alt="">
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-lg-6 col-12">
-                <div class="custom-block custom-block-overlay">
-                    <div class="d-flex flex-column h-100">
-                        <img src="images/mercedes-home.jpeg" class="custom-block-image img-fluid" alt="" style="max-width: 100%; max-height: 500px;">
-
-                        <div class="custom-block-overlay-text d-flex">
-                            <div>
-                                <h5 class="text-white mb-2">Os nossos carros</h5>
-
-                                <p class="text-white">E como não só de importações nos fazemos, aqui vamos ter um acesso direto aos nossos carros </p>
-
-                                <a href="{{ route('vehicles.list') }}" class="btn custom-btn mt-2 mt-lg-3">Ver todos</a>
-                            </div>
-
-                            <span class="badge bg-finance  rounded-pill ms-auto">{{ $vehicles_count }}</span>
-                        </div>
 
 
 
-                        <div class="section-overlay"></div>
-                    </div>
-                </div>
-            </div> -->
-
-
-
-
-<?php
-// $servicos = $navItems->where('url', 'servicos')->first()->page;
-
-// 
-?>
-<!-- 
-@include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles]) -->
 
 
 @endsection

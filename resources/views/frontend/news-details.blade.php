@@ -7,7 +7,8 @@
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row g-5">
-            <div class="col-lg-8 ">
+            <div class="col-lg-8 h-100">
+                {{-- Notícia detalhada --}}
                 <div class="news-box">
                     <h4 class="text-accent"> {{$news['contents']['title']}}</h4>
                     <p class="news-content-white"> {!!$news['contents']['subtitle']!!}</p>
@@ -113,38 +114,7 @@
                     </div>
                 </div>
                 {{-- Bloco Carros à Venda --}}
-                <!-- <div class="recent-news-box p-3 mt-4 ">
-                    <div class="group-badge-stylish">Carros à Venda</div>
-                    <div class="list-group mt-3">
-                        @foreach($vehicles as $vehicle)
-                        <a href="{{ route('vehicles.details', [
-                                    'brand' => Str::slug($vehicle->brand),
-                                    'model' => Str::slug($vehicle->model),
-                                    'id' => $vehicle->reference
-                                ]) }}" class="list-group-item mb-2 d-flex align-items-center">
-
-                            {{-- Imagem pequena --}}
-                            <img src="{{  $vehicle->images->first()->image_path }}"
-                                alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
-                                class="img-fluid rounded me-2"
-                                style="width: 60px; height: 60px; object-fit: cover;" loading="lazy">
-
-                            {{-- Info lateral --}}
-                            <div class="vehicle-info ">
-                                <p class="mb-1 text-white" style="font-size: 0.9rem;">
-                                    <strong>{{ $vehicle->brand }} {{ $vehicle->model }}</strong> {{ $vehicle->version }}
-                                </p>
-                                <small class="text-dark" style="font-size: 0.8rem;">
-                                    {{ $vehicle->year ?? '-' }} | {{ number_format($vehicle->kilometers ?? 0, 0, ',', '.') }} KM
-                                </small>
-                                <p class="mb-0 text-accent " style="font-size: 1.1rem;">
-                                    € {{ number_format($vehicle->sell_price ?? 0, 0, ',', '.') }}
-                                </p>
-                            </div>
-                        </a>
-                        @endforeach
-                    </div>
-                </div> -->
+               
                 <div class="recent-news-box p-3 mt-4 ">
                     <div class="group-badge-stylish">Notícias Recentes</div>
                     <div class="list-group mt-3">

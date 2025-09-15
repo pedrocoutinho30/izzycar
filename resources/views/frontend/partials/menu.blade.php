@@ -11,7 +11,6 @@
         }
         }
         @endphp
-
         @if(!$hasChildren)
         <li class="nav-item">
             <a class="nav-link {{ $active ? 'active' : '' }}"

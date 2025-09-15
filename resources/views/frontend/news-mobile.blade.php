@@ -46,9 +46,7 @@
               @endforeach
           </div>
 
-          <!-- <div class="row g-5">
-              @include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles])
-          </div> -->
+        
       </div>
 
       <style>
