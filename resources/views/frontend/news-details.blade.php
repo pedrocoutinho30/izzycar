@@ -113,7 +113,7 @@
                     </div>
                 </div>
                 {{-- Bloco Carros à Venda --}}
-                <div class="recent-news-box p-3 mt-4 ">
+                <!-- <div class="recent-news-box p-3 mt-4 ">
                     <div class="group-badge-stylish">Carros à Venda</div>
                     <div class="list-group mt-3">
                         @foreach($vehicles as $vehicle)
@@ -144,7 +144,7 @@
                         </a>
                         @endforeach
                     </div>
-                </div>
+                </div> -->
                 <div class="recent-news-box p-3 mt-4 ">
                     <div class="group-badge-stylish">Notícias Recentes</div>
                     <div class="list-group mt-3">

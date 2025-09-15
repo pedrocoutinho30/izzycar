@@ -23,11 +23,11 @@
                 </a>
             </div>
 
-            <div class="col-12 col-lg-12">
+            <!-- <div class="col-12 col-lg-12">
                 <a href="{{ route('vehicles.list') }}">
                     <h6 class="site-footer-title mb-0">Usados</h6>
                 </a>
-            </div>
+            </div> -->
             <div class="col-12 col-lg-12">
                 <div class="text-center mb-3">
                     <a href="{{ route('frontend.form-import') }}" class="btn btn-warning btn-lg mt-4">

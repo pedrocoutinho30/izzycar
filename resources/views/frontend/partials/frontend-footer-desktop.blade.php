@@ -11,7 +11,7 @@
                 </a>
             </div>
 
-            <div class="col-6 col-lg-3">
+            <!-- <div class="col-6 col-lg-3">
                 <h6 class="site-footer-title mb-3">Serviços</h6>
                 <ul class="site-footer-links">
                     <li class="site-footer-link-item">
@@ -21,13 +21,22 @@
                         <a href="{{ route('frontend.legalization') }}" class="site-footer-link">Legalização</a>
                     </li>
                 </ul>
-            </div>
-
+            </div> -->
             <div class="col-6 col-lg-3">
+                <a href="{{ route('frontend.legalization') }}">
+                    <h6 class="site-footer-title mb-3">Legalização</h6>
+                </a>
+            </div>
+            <div class="col-6 col-lg-3">
+                <a href="{{ route('frontend.import') }}">
+                    <h6 class="site-footer-title mb-3">Importação</h6>
+                </a>
+            </div>
+            <!-- <div class="col-6 col-lg-3">
                 <a href="{{ route('vehicles.list') }}">
                     <h6 class="site-footer-title mb-3">Usados</h6>
                 </a>
-            </div>
+            </div> -->
 
             <div class="col-6 col-lg-3">
                 <h6 class="site-footer-title mb-3">Contactos</h6>
@@ -53,7 +62,7 @@
             </div>
         </div>
         <div class="text-center">
-            <a href="{{ route('frontend.form-import') }}" class="btn btn-warning btn-lg mt-4" >
+            <a href="{{ route('frontend.form-import') }}" class="btn btn-warning btn-lg mt-4">
                 Quero importar
             </a>
         </div>

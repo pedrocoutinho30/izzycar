@@ -128,8 +128,8 @@ $home = App\Models\Page::where('slug', 'homepage')->first();
 
 // 
 ?>
-
-@include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles])
+<!-- 
+@include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles]) -->
 
 
 @endsection

@@ -110,9 +110,9 @@
         @endforeach
 
         <!-- Veículos recentes -->
-        <div class="row g-3">
+        <!-- <div class="row g-3">
             @include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles])
-        </div>
+        </div> -->
     </div>
 </section>
 

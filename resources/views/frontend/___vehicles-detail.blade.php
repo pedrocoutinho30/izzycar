@@ -150,7 +150,7 @@
 
     </div>
 </section>
-
+<!-- 
 <section class="py-5 bg-light">
     <div class="container">
 
@@ -158,7 +158,7 @@
             @include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles])
         </div>
     </div>
-</section>
+</section> -->
 @endsection
 
 @push('styles')
