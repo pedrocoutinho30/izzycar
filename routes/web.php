@@ -138,7 +138,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
 
     //frontend routes
-    Route::get('/anuncios-frontend', [FrontendAnuncioController::class, 'index'])->name('anuncios-frontend.index');
+    // Route::get('/anuncios-frontend', [FrontendAnuncioController::class, 'index'])->name('anuncios-frontend.index');
 
 
 
