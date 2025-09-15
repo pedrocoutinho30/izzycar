@@ -12,6 +12,13 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
+        if (app()->environment(['local', 'devop'])) {
+            auth()->loginUsingId(
+            \App\Models\User::where('email', 'izzycarpt@gmail.com')->first()->id
+            );
+        }
+
+       
         return $request->expectsJson() ? null : route('login');
     }
 }

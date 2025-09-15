@@ -17,7 +17,7 @@
                     </p>
                     @endif
                     @if($news['contents']['image'])
-                    <img src="{{  asset('storage/' . $news['contents']['image'])  }}"
+                    <img src="{{  asset('storage/' . $news['contents']['image'])  }}" loading="lazy"
                         class="img-fluid mb-3 rounded image-news"
                         alt="Imagem ilustrativa"
                         alt="Imagem da notícia: {{ $news['contents']['title'] }}">
@@ -32,7 +32,7 @@
                         <div class="carousel-inner">
                             @foreach(json_decode($news['contents']['gallery']) as $index => $image)
                             <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                <img src="{{ asset('storage/' . $image) }}"
+                                <img src="{{ asset('storage/' . $image) }}" loading="lazy"
                                     class="d-block w-100 img-fluid rounded" style=" max-height: 500px; width: auto; object-fit: cover;"
                                     alt="Imagem da notícia: {{ $news['contents']['title'] }}">
                             </div>
@@ -127,7 +127,7 @@
                             <img src="{{ $vehicle->images->isNotEmpty() ? asset('storage/' . $vehicle->images->first()->image_path) : asset('images/default-car.jpg') }}"
                                 alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
                                 class="img-fluid rounded me-2"
-                                style="width: 60px; height: 60px; object-fit: cover;">
+                                style="width: 60px; height: 60px; object-fit: cover;" loading="lazy">
 
                             {{-- Info lateral --}}
                             <div class="vehicle-info ">

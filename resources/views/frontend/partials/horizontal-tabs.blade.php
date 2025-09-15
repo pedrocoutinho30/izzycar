@@ -42,7 +42,7 @@
                             {!! $tab['content'] ?? '' !!}
                         </p>
                         @if (!empty($tab['image']))
-                            <img src="{{ asset('storage/' . $tab['image']) }}"
+                            <img src="{{ asset('storage/' . $tab['image']) }}" loading="lazy"
                                 style="width: 300px; height: 300px; object-fit: cover; border: 3px solid #7f1f1fff;"
                                 class="img-fluid rounded shadow-sm mt-3"
                                 alt="{{ $tab['title'] }}">

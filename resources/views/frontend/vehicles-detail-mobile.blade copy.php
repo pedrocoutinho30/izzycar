@@ -8,7 +8,7 @@
                 <div class="swiper-wrapper">
                     @foreach ($vehicle->images as $key => $image)
                     <div class="swiper-slide">
-                        <img src="{{ asset('storage/' . $image->image_path) }}"
+                        <img src="{{ asset('storage/' . $image->image_path) }}" loading="lazy"
                             class="img-fluid  d-block w-100  object-cover rounded" style="height: 200px; width: 100%;"
                             alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
                     </div>
@@ -24,7 +24,7 @@
                 <div class="swiper-wrapper">
                     @foreach ($vehicle->images as $key => $image)
                     <div class="swiper-slide" style="width: 60px;">
-                        <img src="{{ asset('storage/' . $image->image_path) }}"
+                        <img src="{{ asset('storage/' . $image->image_path) }}" loading="lazy"
                             class="img-fluid rounded"
                             alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
                     </div>

@@ -3,8 +3,10 @@
 @section('title', 'Importação, Legalização e Venda de Carros Usados em Portugal | IzzyCar')
 @section('meta_description', 'Descubra a IzzyCar: especialistas em importação de carros, legalização de veículos e venda de carros usados em Portugal. Faça a escolha certa para o seu próximo carro.')
 @section('content')
-
-@include('frontend.partials.hero-section', ['title' => 'Izzycar', 'subtitle' => 'Importação de Veículos na Mão'])
+@php
+$home = App\Models\Page::where('slug', 'homepage')->first();
+@endphp
+@include('frontend.partials.hero-section', ['title' => 'Izzycar', 'subtitle' => $home['contents']->where('field_name', 'title')->first()->field_value ])
 
 <section class="featured-section">
     <div class="container">
@@ -14,9 +16,7 @@
         </div>
     </div>
 </section>
-@php
-$home = App\Models\Page::where('slug', 'homepage')->first();
-@endphp
+
 
 <div class="container mt-4">
 

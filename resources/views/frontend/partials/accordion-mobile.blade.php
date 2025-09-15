@@ -28,7 +28,7 @@
                     {!! $item['content'] !!}
                     @if(!empty($item['image']))
                     <div class="text-center">
-                        <img src="{{ asset('storage/' . $item['image']) }}"
+                        <img src="{{ asset('storage/' . $item['image']) }}" loading="lazy"
                             style="width: 150px; height: 150px; object-fit: cover;"
                             class="img-fluid rounded shadow-sm mt-3"
                             alt="{{ $item['title'] }}">

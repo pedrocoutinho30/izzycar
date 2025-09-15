@@ -63,7 +63,7 @@
                       <div class="carousel-inner" style="height: 200px;"> <!-- altura fixa -->
                           @foreach($vehicle->images as $key => $image)
                           <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
-                              <img src="{{ asset('storage/' . $image->image_path) }}"
+                              <img src="{{ asset('storage/' . $image->image_path) }}" loading="lazy"
                                   class="d-block w-100  object-cover rounded" style="height: 200px; width: 100%;"
                                   alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}">
                           </div>
@@ -80,7 +80,7 @@
                   </div>
                   @else
                   <img src="{{ $vehicle->images->isNotEmpty() ? asset('storage/' . $vehicle->images->first()->image_path) : asset('images/default-car.jpg') }}"
-                      class="img-fluid mb-2 object-cover rounded" style="height: 200px; width: 100%;"
+                      class="img-fluid mb-2 object-cover rounded" style="height: 200px; width: 100%;" loading="lazy"
                       alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}">
                   @endif
 
@@ -254,7 +254,7 @@
             <div class="carousel-inner">
                 ${vehicle.images.map((image, index) => `
                     <div class="carousel-item ${index === 0 ? 'active' : ''} image-wrapper">
-                        <img src="/storage/${image.image_path}" 
+                        <img src="/storage/${image.image_path}" loading="lazy"
                              class="d-block img-fluid" 
                              alt="Imagem ${vehicle.brand} ${vehicle.model}">
                     </div>
@@ -272,7 +272,7 @@
               } else {
                   imagesHtml = `
         <img src="${vehicle.images.length > 0 ? '/storage/' + vehicle.images[0].image_path : '/images/default-car.jpg'}"
-             class="custom-block-image img-fluid"
+             class="custom-block-image img-fluid" loading="lazy"
              alt="Imagem ${vehicle.brand} ${vehicle.model}">`;
               }
 
@@ -330,7 +330,7 @@
                           imagesHtml += `
                 <div class="carousel-item ${index === 0 ? 'active' : ''}">
                     <img src="/storage/${image.image_path}" class="d-block w-100 object-cover rounded" style="height:200px; width:100%;" 
-                    alt="Imagem ${vehicle.brand} ${vehicle.model}">
+                    alt="Imagem ${vehicle.brand} ${vehicle.model}" loading="lazy">
                 </div>`;
                       });
 

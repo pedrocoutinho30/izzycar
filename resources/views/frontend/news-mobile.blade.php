@@ -14,7 +14,7 @@
                                   @if($new['contents']['image'])
                                   <img src="{{  asset('storage/' .$new['contents']['image']) }}"
                                       class="d-block w-100  object-cover rounded" style="height: auto; "
-                                      alt="Imagem da notícia: {{ $new->title }}">
+                                      alt="Imagem da notícia: {{ $new->title }}" loading="lazy">
                                   @endif
                                   <p class="mb-1 list">
                                       @if(!empty($new['contents']['date']))

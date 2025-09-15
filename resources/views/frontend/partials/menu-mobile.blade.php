@@ -4,7 +4,7 @@
 
         {{-- Logo --}}
         <a class="navbar-brand" href="{{ route('frontend.home') }}">
-            <img src="{{ asset($logotipo) }}" alt="Logo" class="navbar-logo">
+            <img src="{{ asset($logotipo) }}" alt="Logo" class="navbar-logo" loading="lazy">
         </a>
 
 

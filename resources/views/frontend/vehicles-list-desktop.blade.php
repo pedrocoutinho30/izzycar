@@ -69,7 +69,7 @@
                                 @foreach($vehicle->images as $key => $image)
                                 <div class="carousel-item {{ $key === 0 ? 'active' : '' }} image-wrapper">
                                     <img src="{{ asset('storage/' . $image->image_path) }}"
-                                        class="d-block img-fluid"
+                                        class="d-block img-fluid" loading="lazy"
                                         alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}">
                                 </div>
                                 @endforeach
@@ -86,7 +86,7 @@
                         </div>
                         @else
                         <img src="{{ $vehicle->images->isNotEmpty() ? asset('storage/' . $vehicle->images->first()->image_path) : asset('images/default-car.jpg') }}"
-                            class="custom-block-image img-fluid"
+                            class="custom-block-image img-fluid" loading="lazy"
                             alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}">
                         @endif
                         {{-- Info lateral --}}
@@ -308,7 +308,7 @@
                 ${vehicle.images.map((image, index) => `
                     <div class="carousel-item ${index === 0 ? 'active' : ''} image-wrapper">
                         <img src="/storage/${image.image_path}" 
-                             class="d-block img-fluid" 
+                             class="d-block img-fluid" loading="lazy"
                              alt="Imagem ${vehicle.brand} ${vehicle.model}">
                     </div>
                 `).join("")}
@@ -325,7 +325,7 @@
             } else {
                 imagesHtml = `
         <img src="${vehicle.images.length > 0 ? '/storage/' + vehicle.images[0].image_path : '/images/default-car.jpg'}"
-             class="custom-block-image img-fluid"
+             class="custom-block-image img-fluid" loading="lazy"
              alt="Imagem ${vehicle.brand} ${vehicle.model}">`;
             }
 

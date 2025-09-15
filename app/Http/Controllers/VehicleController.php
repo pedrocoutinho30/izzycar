@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\VehicleAttribute;
 use App\Models\VehicleAttributeValue;
 use App\Models\Partner;
+use Intervention\Image\ImageManager;
+
 
 class VehicleController extends Controller
 {
@@ -217,23 +219,48 @@ class VehicleController extends Controller
         // Update - adicionar novas imagens sem apagar as antigas
         if ($request->hasFile('images')) {
             // Descobrir quantas imagens já existem para continuar a numeração
+            // $i = $vehicle->images()->count() + 1;
+
+            // foreach ($request->file('images') as $image) {
+            //     $extension = $image->getClientOriginalExtension();
+
+            //     // Nome personalizado
+            //     $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}." . $extension;
+
+            //     // Guardar com nome personalizado
+            //     $path = $image->storeAs(
+            //         "vehicles/{$vehicle->id}", // Pasta
+            //         $fileName,                 // Nome
+            //         'public'                   // Disco
+            //     );
+
+            //     // Gravar no banco de dados
+            //     $vehicle->images()->create(['image_path' => $path]);
+
+            //     $i++;
+            // }
+
             $i = $vehicle->images()->count() + 1;
 
             foreach ($request->file('images') as $image) {
+                // Criar instância da imagem
+                $manager = new ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
+
+                $img = $manager->read($image->getPathname())
+                    ->cover(850, 650, 'center'); // corta e centra
+                // Nome do arquivo
                 $extension = $image->getClientOriginalExtension();
+                $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}.{$extension}";
 
-                // Nome personalizado
-                $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}." . $extension;
+                // Salvar imagem processada
+                $path = storage_path("app/public/vehicles/{$vehicle->id}/");
+                if (!file_exists($path)) {
+                    mkdir($path, 0755, true);
+                }
+                $img->save($path . $fileName, 85); // 85% de qualidade
 
-                // Guardar com nome personalizado
-                $path = $image->storeAs(
-                    "vehicles/{$vehicle->id}", // Pasta
-                    $fileName,                 // Nome
-                    'public'                   // Disco
-                );
-
-                // Gravar no banco de dados
-                $vehicle->images()->create(['image_path' => $path]);
+                // Gravar no banco
+                $vehicle->images()->create(['image_path' => "vehicles/{$vehicle->id}/" . $fileName]);
 
                 $i++;
             }

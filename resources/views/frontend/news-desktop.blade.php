@@ -11,7 +11,7 @@
                                 @if(isset($new['contents']['image']) && !empty($new['contents']['image']) )
                                 <img src="{{ asset('storage/' . $new['contents']['image']) }}"
                                     class="custom-block-image img-fluid"
-                                    alt="Imagem da notícia: {{ $new->title }}">
+                                    alt="Imagem da notícia: {{ $new->title }}" loading="lazy">
                                 @endif
                             </div>
 

@@ -132,7 +132,7 @@
                                         <p class="mb-0">${page.description}</p>
                                     </div>
                                 </div>
-                                <img src="${page.image}" class="custom-block-image img-fluid" alt="">
+                                <img src="${page.image}" class="custom-block-image img-fluid" alt="" loading="lazy">
                             </a>
                         </div>
                     </div>
