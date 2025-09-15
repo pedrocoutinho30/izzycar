@@ -218,12 +218,12 @@
 
             <!-- Outros campos do formulário -->
 
-            <div class="form-group col-md-6 mt-4">
+            <!-- <div class="form-group col-md-6 mt-4">
                 <label for="images">Imagens</label>
                 <input type="file" name="images[]" id="images" class="form-control rounded shadow-sm" multiple>
             </div>
 
-            <!-- Exibir imagens existentes (apenas no modo de edição) -->
+
             @if (isset($vehicle) && $vehicle->images->count() > 0)
             <div class="form-group col-md-6 mt-4">
                 <label>Imagens Existentes:</label>
@@ -235,123 +235,126 @@
                     @endforeach
                 </div>
             </div>
-            @endif
-        </div>
+            @endif -->
 
-
-        <div class="row g-3 mt-2">
-
-            @foreach($attributes as $groupName => $groupAttributes)
-            <div class="col-12 mt-4">
-                <h4 class="border-bottom pb-2 color-info">{{ $groupName }}</h4>
+            <div class="form-group col-md-6 mt-4">
+              
+                <x-image-manager :label="'Imagens do Veículo'" :images="$existingImages" name="images" :multi="true" id="vehicleImages" />
             </div>
 
-            @foreach($groupAttributes as $attr)
-            @php
-            $fieldName = 'attributes[' . $attr->id . ']';
-            $existingValue = old($fieldName, $attributeValues[$attr->id]->value ?? null);
-            @endphp
 
-            <div class="form-group col-md-4 mt-2">
-                @if($attr->type === 'boolean')
+            <div class="row g-3 mt-2">
+
+                @foreach($attributes as $groupName => $groupAttributes)
+                <div class="col-12 mt-4">
+                    <h4 class="border-bottom pb-2 color-info">{{ $groupName }}</h4>
+                </div>
+
+                @foreach($groupAttributes as $attr)
                 @php
-                $isChecked = $existingValue ? 'checked' : '';
+                $fieldName = 'attributes[' . $attr->id . ']';
+                $existingValue = old($fieldName, $attributeValues[$attr->id]->value ?? null);
                 @endphp
 
-                <label class="form-label d-block">{{ $attr->name }}</label>
-                <div class="form-switch-toggle">
-                    <input type="checkbox"
-                        id="{{ $fieldName }}"
+                <div class="form-group col-md-4 mt-2">
+                    @if($attr->type === 'boolean')
+                    @php
+                    $isChecked = $existingValue ? 'checked' : '';
+                    @endphp
+
+                    <label class="form-label d-block">{{ $attr->name }}</label>
+                    <div class="form-switch-toggle">
+                        <input type="checkbox"
+                            id="{{ $fieldName }}"
+                            name="{{ $fieldName }}"
+                            value="1"
+                            class="d-none"
+                            {{ $isChecked }}>
+                        <label for="{{ $fieldName }}" class="toggle-switch-label"></label>
+                    </div>
+                    @else
+                    <label for="{{ $fieldName }}">{{ $attr->name }}</label>
+
+                    @if($attr->type === 'text' || $attr->type === 'number')
+                    <input type="{{ $attr->type }}"
                         name="{{ $fieldName }}"
-                        value="1"
-                        class="d-none"
-                        {{ $isChecked }}>
-                    <label for="{{ $fieldName }}" class="toggle-switch-label"></label>
+                        id="{{ $fieldName }}"
+                        value="{{ $existingValue }}"
+                        class="form-control rounded shadow-sm">
+                    @elseif($attr->type === 'select')
+                    <select name="{{ $fieldName }}"
+                        id="{{ $fieldName }}"
+                        class="form-control rounded shadow-sm">
+                        <option value="">Selecione</option>
+                        @foreach($attr->options as $option)
+                        <option value="{{ $option }}" {{ $existingValue == $option ? 'selected' : '' }}>
+                            {{ $option }}
+                        </option>
+                        @endforeach
+                    </select>
+                    @endif
+                    @endif
                 </div>
-                @else
-                <label for="{{ $fieldName }}">{{ $attr->name }}</label>
-
-                @if($attr->type === 'text' || $attr->type === 'number')
-                <input type="{{ $attr->type }}"
-                    name="{{ $fieldName }}"
-                    id="{{ $fieldName }}"
-                    value="{{ $existingValue }}"
-                    class="form-control rounded shadow-sm">
-                @elseif($attr->type === 'select')
-                <select name="{{ $fieldName }}"
-                    id="{{ $fieldName }}"
-                    class="form-control rounded shadow-sm">
-                    <option value="">Selecione</option>
-                    @foreach($attr->options as $option)
-                    <option value="{{ $option }}" {{ $existingValue == $option ? 'selected' : '' }}>
-                        {{ $option }}
-                    </option>
-                    @endforeach
-                </select>
-                @endif
-                @endif
+                @endforeach
+                @endforeach
             </div>
-            @endforeach
-            @endforeach
-        </div>
 
 
-        <div class="col-12">
-            <h4 class="border-bottom color-info">Despesas</h4> <a
-                href="{{ route('expenses.create', ['vehicle_id' => $vehicle->id]) }}"
-                target="_blank"
-                class="btn btn-outline-primary mt-4">
-                Adicionar Despesa
-            </a>
-        </div>
+            <div class="col-12">
+                <h4 class="border-bottom color-info">Despesas</h4> <a
+                    href="{{ route('expenses.create', ['vehicle_id' => $vehicle->id]) }}"
+                    target="_blank"
+                    class="btn btn-outline-primary mt-4">
+                    Adicionar Despesa
+                </a>
+            </div>
 
-        @if(isset($vehicle) && $vehicle->expenses->count() > 0)
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Título</th>
-                        <th scope="col">Valor</th>
-                        <th scope="col">Taxa de IVA</th>
-                        <th scope="col">Data da Despesa</th>
-                        <th scope="col">Parceiro</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($expenses as $expense)
+            @if(isset($vehicle) && $vehicle->expenses->count() > 0)
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Título</th>
+                            <th scope="col">Valor</th>
+                            <th scope="col">Taxa de IVA</th>
+                            <th scope="col">Data da Despesa</th>
+                            <th scope="col">Parceiro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($expenses as $expense)
 
-                    <tr>
-                        <th scope="row">{{ $expense->id }}</th>
-                        <td>{{ $expense->title }}</td>
-                        <td>{{ number_format($expense->amount, 2, ',', '.') }}€</td>
-                        <td>{{ $expense->vat_rate }}</td>
-                        <td>{{ \Carbon\Carbon::parse($expense->expense_date)->format('d/m/Y') }}</td>
-                        <td>{{ $expense->partner ? $expense->partner->name : 'N/A' }}</td>
+                        <tr>
+                            <th scope="row">{{ $expense->id }}</th>
+                            <td>{{ $expense->title }}</td>
+                            <td>{{ number_format($expense->amount, 2, ',', '.') }}€</td>
+                            <td>{{ $expense->vat_rate }}</td>
+                            <td>{{ \Carbon\Carbon::parse($expense->expense_date)->format('d/m/Y') }}</td>
+                            <td>{{ $expense->partner ? $expense->partner->name : 'N/A' }}</td>
 
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        @else
-        <p class="text-muted">Nenhuma despesa registrada para este veículo.</p>
-        @endif
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <p class="text-muted">Nenhuma despesa registrada para este veículo.</p>
+            @endif
 
 
-        <div class="mt-4 d-flex justify-content-between">
-            <a href="{{ route('vehicles.index') }}" class="btn btn-danger px-4 py-2 rounded-pill shadow">Voltar</a>
-            <button type="submit" class="btn btn-success px-4 py-2 rounded-pill shadow">
-                <i class="bi bi-check-circle me-1"></i> Salvar
-            </button>
-        </div>
+            <div class="mt-4 d-flex justify-content-between">
+                <a href="{{ route('vehicles.index') }}" class="btn btn-danger px-4 py-2 rounded-pill shadow">Voltar</a>
+                <button type="submit" class="btn btn-success px-4 py-2 rounded-pill shadow">
+                    <i class="bi bi-check-circle me-1"></i> Salvar
+                </button>
+            </div>
     </form>
 
 </div>
 
 
 
-</div>
 @endsection
 
 <style>
@@ -394,6 +397,7 @@
         transform: translateX(30px);
     }
 </style>
+
 <script>
     window.brands = @json($brands);
 </script>
@@ -435,4 +439,5 @@
         // Atualiza ao mudar a marca
         brandSelect.addEventListener('change', updateModels);
     });
+
 </script>

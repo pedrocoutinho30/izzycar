@@ -141,6 +141,12 @@
             line-height: 1.2;
         }
     </style>
+
+    <!-- jQuery primeiro -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- LFM -->
+
 </head>
 
 <body id="page-top">
@@ -174,7 +180,7 @@
         ['route' => 'ad-searches.index', 'icon' => 'fa-chart-line', 'label' => __('Análise de Mercado'), 'permission' => 'analisar mercado'],
         ];
 
-        
+
 
         $menuItemsCMS = [
         ['route' => 'pages.homepage', 'icon' => 'fa-file', 'label' => __('Homepage'), 'permission' => 'gerir paginas'],
@@ -413,6 +419,19 @@
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
     <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+    <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
+
+    <!-- Script personalizado -->
+    <script>
+        $(function() {
+            console.log('DOM ready');
+            if ($.fn.filemanager) {
+                $('.lfm').filemanager('image');
+            } else {
+                console.error('filemanager não está disponível');
+            }
+        });
+    </script>
 </body>
 
 </html>

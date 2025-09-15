@@ -165,7 +165,13 @@ class VehicleController extends Controller
 
         $expenses = $vehicle->expenses()->get();
         $partners = Partner::all();
-        return view('vehicles.form', compact('vehicle', 'suppliers', 'attributes', 'attributeValues', 'brands', 'expenses', 'partners'));
+
+        $existingImages = '';
+        foreach ($vehicle->images as $img) {
+            $existingImages .= $existingImages ? ',' . $img->image_path :  $img->image_path;
+        }
+
+        return view('vehicles.form', compact('vehicle', 'suppliers', 'attributes', 'attributeValues', 'brands', 'expenses', 'partners', 'existingImages'));
     }
 
     /**
@@ -173,6 +179,7 @@ class VehicleController extends Controller
      */
     public function update(Request $request, Vehicle $vehicle)
     {
+
         // Validar dados do formulário
         $validatedData = $request->validate([
             'show_online' => 'nullable|boolean',
@@ -197,7 +204,7 @@ class VehicleController extends Controller
             'available_to_sell_date' => 'nullable|date',
             'registration' => 'nullable|string|max:255',
             'purchase_type' => 'nullable|in:Margem,Geral,Sem Iva',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // Validação para imagens
+            'images.*' => 'string', // cada item é uma string (path)
         ]);
 
         // Atualizar o veículo com os dados validados
@@ -215,56 +222,62 @@ class VehicleController extends Controller
                 'value' => is_array($value) ? json_encode($value) : $value,
             ]);
         }
+
+        // Obter arrays das imagens
+        $imagesNew = $request->input('images_new', []);
+        $imagesExisting = $request->input('images_existing', '');
+        $imagesRemoved = $request->input('images_removed', []);
+
+        // Converter imagens existentes para array
+        $existingArray = $imagesExisting ? explode(',', $imagesExisting) : [];
+        $removedArray = $imagesRemoved ? explode(',', $imagesRemoved) : [];
+        // Filtrar imagens existentes removendo as que estão em imagesRemoved
+        $filteredExisting = array_diff($existingArray, $removedArray);
+
+        $filteredExistingString = $filteredExisting ? implode(',', $filteredExisting) : '';
+        // Concatenar novas imagens e existentes filtradas
+        $imagesNew .=  $filteredExistingString ? ", " . $filteredExistingString : '';
+        $images = explode(',', $imagesNew);
+        $vehicle->images()->delete();
+
+        foreach ($images as $imagePath) {
+            // Gravar no banco de dados
+            $vehicle->images()->create(['image_path' => $imagePath]);
+        }
+        // Criar string final separada por vírgula
+
+
+        // if ($request->input('images_existing')) {
+        //     // Remove as antigas
+
+        // }
         // Salvar novas imagens
         // Update - adicionar novas imagens sem apagar as antigas
-        if ($request->hasFile('images')) {
-            // Descobrir quantas imagens já existem para continuar a numeração
-            // $i = $vehicle->images()->count() + 1;
+        // if ($request->hasFile('images')) {
+        // Descobrir quantas imagens já existem para continuar a numeração
+        // $i = $vehicle->images()->count() + 1;
 
-            // foreach ($request->file('images') as $image) {
-            //     $extension = $image->getClientOriginalExtension();
+        // foreach ($request->file('images') as $image) {
+        //     $extension = $image->getClientOriginalExtension();
 
-            //     // Nome personalizado
-            //     $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}." . $extension;
+        //     // Nome personalizado
+        //     $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}." . $extension;
 
-            //     // Guardar com nome personalizado
-            //     $path = $image->storeAs(
-            //         "vehicles/{$vehicle->id}", // Pasta
-            //         $fileName,                 // Nome
-            //         'public'                   // Disco
-            //     );
+        //     // Guardar com nome personalizado
+        //     $path = $image->storeAs(
+        //         "vehicles/{$vehicle->id}", // Pasta
+        //         $fileName,                 // Nome
+        //         'public'                   // Disco
+        //     );
 
-            //     // Gravar no banco de dados
-            //     $vehicle->images()->create(['image_path' => $path]);
+        //     // Gravar no banco de dados
+        //     $vehicle->images()->create(['image_path' => $path]);
 
-            //     $i++;
-            // }
+        //     $i++;
+        // }
 
-            $i = $vehicle->images()->count() + 1;
 
-            foreach ($request->file('images') as $image) {
-                // Criar instância da imagem
-                $manager = new ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
-
-                $img = $manager->read($image->getPathname())
-                    ->cover(850, 650, 'center'); // corta e centra
-                // Nome do arquivo
-                $extension = $image->getClientOriginalExtension();
-                $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}.{$extension}";
-
-                // Salvar imagem processada
-                $path = storage_path("app/public/vehicles/{$vehicle->id}/");
-                if (!file_exists($path)) {
-                    mkdir($path, 0755, true);
-                }
-                $img->save($path . $fileName, 85); // 85% de qualidade
-
-                // Gravar no banco
-                $vehicle->images()->create(['image_path' => "vehicles/{$vehicle->id}/" . $fileName]);
-
-                $i++;
-            }
-        }
+        // }
 
         return redirect()->route('vehicles.index')->with('success', 'Veículo atualizado com sucesso!');
     }
