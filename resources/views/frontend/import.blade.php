@@ -1,7 +1,7 @@
 @extends('frontend.partials.layout')
 
 @include('frontend.partials.seo', [
-'seo' => $page->seo
+'seo' => $data->seo
 ])
 @section('content')
 
