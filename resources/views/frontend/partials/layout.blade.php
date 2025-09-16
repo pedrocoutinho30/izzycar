@@ -18,8 +18,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>@yield('title', 'Izzycar')</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('img/logo-arredondado.png') }}">
 
     <!-- CSS FILES -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

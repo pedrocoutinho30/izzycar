@@ -47,7 +47,22 @@ class NewsController extends Controller
 
         $last_vehicles = Vehicle::where('show_online', true)->get()->take(5)->sortByDesc('created_at');
 
-        return view('frontend.news', compact('news', 'last_vehicles'));
+        $seo = [
+            'title' => 'Notícias Automóveis em Portugal | Izzycar',
+            'meta_description' => 'Fique atualizado com as últimas notícias do mercado automóvel em Portugal. Tendências, novidades, dicas e tudo sobre carros importados e usados.',
+            'meta_keywords' => 'notícias automóveis, mercado automóvel Portugal, carros importados e usados',
+            'meta_secundary_keywords' => 'dicas carros, novidades automóveis, tendências carros Portugal',
+            'meta_image' => "https://izzycar.pt/storage/photos/1/seo/noticias.png",
+            'canonical_url' => url()->current(),
+            'og_title' => 'Notícias Automóveis em Portugal | Izzycar',
+            'og_description' => 'Fique atualizado com as últimas notícias do mercado automóvel em Portugal. Tendências, novidades, dicas e tudo sobre carros importados e usados.',
+            'og_image' => "https://izzycar.pt/storage/photos/1/seo/noticias.png",
+            'og_url' => url()->current(),
+            'og_type' => 'website',
+        ];
+        $seo = (object) $seo;
+
+        return view('frontend.news', compact('news', 'last_vehicles', 'seo'));
     }
 
     public function getNewsPageBySlug($slug)

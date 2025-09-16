@@ -1,8 +1,9 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Notícias Automóveis em Portugal | Izzycar')
-@section('meta_description', 'Fique atualizado com as últimas notícias do mercado automóvel em Portugal. Tendências, novidades, dicas e tudo sobre carros importados e usados.')
 
+@include('frontend.partials.seo', [
+'seo' => $seo
+])
 @section('content')
 
 @include('frontend.partials.hero-section', ['title' => 'Notícias', 'subtitle' => 'Fique por dentro das novidades do mundo automotivo e da Izzycar'])

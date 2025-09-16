@@ -1,7 +1,9 @@
 @extends('frontend.partials.layout')
 @section('title', $news['contents']['title'] . ' | Izzycar')
 @section('meta_description', 'Leia a notícia completa: {{$news["contents"]["subtitle"]}} - mantenha-se informado sobre o mercado automóvel, importação, legalização e novidades de carros usados.')
-
+@include('frontend.partials.seo', [
+'seo' => $news['seo'] ?? null,
+])
 
 @section('content')
 <section class="py-5 bg-light">

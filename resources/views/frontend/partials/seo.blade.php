@@ -2,13 +2,11 @@
 
  @section('title',  $seo->title ?? config('app.name') )
 @section('meta_description',  $seo->meta_description ?? '' )
-
 <meta name="title" content="{{ $seo->title ?? config('app.name') }}">
 <meta name="description" content="{{ $seo->meta_description ?? '' }}">
 <meta name="image" content="{{ $seo->meta_image ?? '' }}">
 <meta name="keywords" content="{{ $seo->meta_keywords ?? '' }}">
 <meta name="keywords" content="{{ $seo->meta_secundary_keywords ?? '' }}">
-
 @if(!empty($seo->canonical_url))
 <link rel="canonical" href="{{ $seo->canonical_url }}">
 @endif
