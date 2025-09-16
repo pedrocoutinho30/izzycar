@@ -11,8 +11,6 @@ $settings = App\Models\Setting::get();
 ])
 @section('content')
 
-
-
 <meta name="robots" content="noindex, nofollow">
 @php
 $image = null;

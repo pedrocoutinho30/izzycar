@@ -383,7 +383,7 @@
             @endforeach
         </div>
         @endif
-        @include('partials.seo_form', ['model' => $proposal])
+        @include('partials.seo_form', ['model' => $proposal ?? null])
 
         <div class="mt-4 d-flex justify-content-between">
             <a href="{{ route('proposals.index') }}" class="btn btn-danger px-4 py-2 rounded-pill shadow">Voltar</a>
