@@ -15,6 +15,8 @@
 <meta property="og:title" content="{{ $seo->og_title ?? $seo->title ?? config('app.name') }}" />
 <meta property="og:description" content="{{ $seo->og_description ?? $seo->meta_description ?? '' }}" />
 <meta property="og:image" content="{{ $seo->og_image ?? $seo->meta_image ?? '' }}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 <meta property="og:url" content="{{ $seo->og_url ?? url()->current() }}" />
 <meta property="og:type" content="{{ $seo->og_type ?? 'website' }}" />
 <meta property="fb:admins" content="61572831810539" />
