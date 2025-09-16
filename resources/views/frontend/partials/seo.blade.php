@@ -5,6 +5,7 @@
 
 <meta name="title" content="{{ $seo->title ?? config('app.name') }}">
 <meta name="description" content="{{ $seo->meta_description ?? '' }}">
+<meta name="image" content="{{ $seo->meta_image ?? '' }}">
 <meta name="keywords" content="{{ $seo->meta_keywords ?? '' }}">
 <meta name="keywords" content="{{ $seo->meta_secundary_keywords ?? '' }}">
 

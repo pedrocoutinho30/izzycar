@@ -1,8 +1,8 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Legalização de Veículos | Izzycar')
-@section('meta_description', 'Legalize o seu carro importado sem complicações. A IzzyCar cuida de todo o processo de documentação, inspeções e registos automóveis em Portugal.')
-
+@include('frontend.partials.seo', [
+'seo' => $data->seo
+])
 @section('content')
 
 @include('frontend.partials.hero-section', ['title' => $data->contents['title'], 'subtitle' => $data->contents['subtitle']])
