@@ -1,8 +1,8 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Importação de Veículos | Izzycar')
-@section('meta_description', 'Importe o seu carro de forma simples e descomplicada. A IzzyCar ajuda com todo o processo de importação de veículos, documentação e transporte para Portugal.')
-
+@include('frontend.partials.seo', [
+'seo' => $page->seo
+])
 @section('content')
 
 @include('frontend.partials.hero-section', ['title' => $data->process_import['title'], 'subtitle' => $data->process_import['subtitle']])
