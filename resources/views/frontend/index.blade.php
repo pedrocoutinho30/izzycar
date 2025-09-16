@@ -4,7 +4,7 @@
 @section('meta_description', 'Descubra a IzzyCar: especialistas em importação de carros, legalização de veículos e venda de carros usados em Portugal. Faça a escolha certa para o seu próximo carro.')
 
 @include('frontend.partials.seo', [
-'seo' => $seo
+'seo' => $page->seo
 ])
 
 @section('content')
