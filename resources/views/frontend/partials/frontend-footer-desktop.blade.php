@@ -6,7 +6,7 @@
         <div class="row g-3 align-items-start">
 
             <div class="col-6 col-lg-3">
-                <a href="{{ route('vehicles.list') }}">
+                <a href="{{ route('frontend.home') }}">
                     <h6 class="site-footer-title mb-3">Home</h6>
                 </a>
             </div>
