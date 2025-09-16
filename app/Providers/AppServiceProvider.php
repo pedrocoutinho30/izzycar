@@ -24,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        
         Page::observe(SeoObserver::class);
         View::composer('*', function ($view) {
             $menus = Menu::orderBy('order')
