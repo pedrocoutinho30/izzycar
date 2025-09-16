@@ -8,6 +8,7 @@ use App\Models\Menu;
 use Illuminate\Support\Facades\View;
 use App\Observers\SeoObserver;
 use App\Models\Page;
+use App\Models\Proposal;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,8 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        
+
         Page::observe(SeoObserver::class);
+        Proposal::observe(SeoObserver::class);
         View::composer('*', function ($view) {
             $menus = Menu::orderBy('order')
                 ->where('show_online', 1)

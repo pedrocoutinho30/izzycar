@@ -6,22 +6,26 @@ $settings = App\Models\Setting::get();
 @extends('frontend.partials.layout')
 
 @section('title', 'Proposta de Importação | Izzycar')
-
+@include('frontend.partials.seo', [
+'seo' => $proposal->seo
+])
 @section('content')
 
-<meta name="robots" content="noindex, nofollow">
-  @php
-    $image = null;
-    if ($proposal->images) {
-    $image = asset('storage/' . (json_decode($proposal->images, true)[0] ?? ''));
-    }
-    @endphp
 
-    @if($image)
-    <meta property="og:image" content="{{ $image }}" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    @endif
+
+<meta name="robots" content="noindex, nofollow">
+@php
+$image = null;
+if ($proposal->images) {
+$image = asset('storage/' . (json_decode($proposal->images, true)[0] ?? ''));
+}
+@endphp
+
+@if($image)
+<meta property="og:image" content="{{ $image }}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+@endif
 <main>
 
     <section class="hero-section d-flex justify-content-center align-items-center" id="section_home_import">

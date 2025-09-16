@@ -1,18 +1,17 @@
 <?php
 // App/Models/Proposal.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-// App/Models/Proposal.php
-namespace App\Models;
+use App\Traits\HasSeo;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class Proposal extends Model
 {
     use HasFactory;
+    use HasSeo;
 
     protected $fillable = [
         'client_id',
@@ -53,8 +52,12 @@ class Proposal extends Model
         return $this->belongsTo(Client::class);
     }
 
-        public function attributeValues()
+    public function attributeValues()
     {
         return $this->hasMany(ProposalAttributeValue::class);
+    }
+    public function seo()
+    {
+        return $this->morphOne(SeoMeta::class, 'seoable');
     }
 }
