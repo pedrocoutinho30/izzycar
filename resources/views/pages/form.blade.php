@@ -69,6 +69,7 @@
 
         <div id="dynamic-fields"></div>
 
+        @include('partials.seo_form', ['model' => $page])
         <div class="mt-4">
             <a href="{{ route('pages.index') }}" class="btn btn-danger">Cancelar</a>
             <button type="submit" class="btn btn-success">
@@ -141,8 +142,8 @@
                         <img src="${imageUrl}" alt="Preview" style="max-width: 200px; margin-top: 10px; ${imageUrl ? 'display:block' : 'display:none'}" class="preview-image">
                     `;
 
-                    
-                    
+
+
                     break;
 
                 case 'gallery':

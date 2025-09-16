@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasSeo;
 
 class Page extends Model
 {
-    protected $fillable = ['page_type_id', 'title', 'slug', 'menu_id' , 'parent_id'];
+
+    use HasSeo;
+    
+    protected $fillable = ['page_type_id', 'title', 'slug', 'menu_id', 'parent_id'];
 
     public function pageType()
     {
@@ -21,16 +25,20 @@ class Page extends Model
     public function menu()
     {
         return $this->belongsTo(Menu::class, 'page_id');
-    
     }
 
     public function parent()
-{
-    return $this->belongsTo(Page::class, 'parent_id');
-}
+    {
+        return $this->belongsTo(Page::class, 'parent_id');
+    }
 
-public function children()
-{
-    return $this->hasMany(Page::class, 'parent_id');
-}
+    public function children()
+    {
+        return $this->hasMany(Page::class, 'parent_id');
+    }
+
+    public function seo()
+    {
+        return $this->morphOne(SeoMeta::class, 'seoable');
+    }
 }

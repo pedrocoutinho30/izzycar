@@ -2,13 +2,15 @@
 'label' => 'Imagens',
 'images' => '', // string separada por vírgula
 'multi' => true,
+'name' => 'images', // recebe o name do atributo
+'id' => ''
 ])
 
 <div class="form-group image-manager" data-multiselect="{{ $multi ? 'true' : 'false' }}">
     <label>{{ $label }}</label>
 
     {{-- Imagens existentes --}}
-    <div class="d-flex flex-wrap mb-2" id="existing-images-preview">
+    <div class="d-flex flex-wrap mb-2" id="existing-images-preview-{{ $id }}">
         @if(!empty($images))
         @foreach(explode(',', $images) as $img)
         <div class="img-thumb me-2 mb-2">
@@ -20,15 +22,20 @@
     </div>
 
     {{-- Novas imagens --}}
-    <div class="d-flex flex-wrap mb-2" id="new-images-preview"></div>
+    <div class="d-flex flex-wrap mb-2" id="new-images-preview-{{ $id }}"></div>
 
     {{-- Inputs hidden para enviar ao backend --}}
-    <input type="hidden" name="images_existing" value="{{ $images ?? '' }}">
-    <input type="hidden" id="images_new_input" name="images_new" value="">
-    <input type="hidden" name="images_removed" value="">
+    <input type="hidden" name="images_existing-{{ $id }}" value="{{ $images ?? '' }}">
+    <!-- <input type="hidden" id="images_new_input" name="images_new" value=""> -->
+    <input
+        type="hidden"
+        id="images_new_input-{{ $id }}"
+        name="{{ $name }}"
+        value="">
+    <input type="hidden" name="images_removed-{{ $id }}" value="">
 
     <div class="input-group mt-2">
-        <button data-input="images_new_input" data-preview="new-images-preview" class="btn btn-primary lfm" type="button">Escolher Imagens</button>
+        <button data-input="images_new_input-{{ $id }}" data-preview="new-images-preview-{{ $id }}" class="btn btn-primary lfm" type="button">Escolher Imagens</button>
     </div>
 </div>
 
@@ -37,12 +44,12 @@
     document.addEventListener('DOMContentLoaded', function() {
         const manager = document.querySelector('.image-manager');
         const multi = manager.dataset.multiselect === 'true';
-        const existingPreview = manager.querySelector('#existing-images-preview');
-        const newPreview = manager.querySelector('#new-images-preview');
+        const existingPreview = manager.querySelector('#existing-images-preview-{{ $id }}');
+        const newPreview = manager.querySelector('#new-images-preview-{{ $id }}');
 
-        const inputExisting = manager.querySelector('input[name="images_existing"]');
-        const inputNew = manager.querySelector('input[name="images_new"]');
-        const inputRemoved = manager.querySelector('input[name="images_removed"]');
+        const inputExisting = manager.querySelector('input[name="images_existing-{{ $id }}"]');
+        const inputNew = manager.querySelector('input[name="{{ $name }}"]');
+        const inputRemoved = manager.querySelector('input[name="images_removed-{{ $id }}"]');
 
         let existingImages = inputExisting.value.split(',').map(i => i.trim()).filter(i => i);
         let newImages = [];
