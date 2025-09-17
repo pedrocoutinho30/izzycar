@@ -57,7 +57,7 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
     Lfm::routes();
 });
 
-Route::prefix('admin')->middleware(['auth'])->group(function () {
+Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
 
     Route::resource('users', UserController::class);
