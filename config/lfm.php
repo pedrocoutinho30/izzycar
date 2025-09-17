@@ -17,6 +17,8 @@ return [
 
     'use_package_routes'       => true,
 
+    // Forçar a pasta base única:
+    'base_directory' => 'uploads',
     /*
     |--------------------------------------------------------------------------
     | Shared folder / Private folder

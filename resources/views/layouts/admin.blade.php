@@ -344,7 +344,7 @@
                 </div>
             </li>
             @endhasanyrole
-            <a class="nav-link" href="{{ url('/laravel-filemanager') }}" target="_blank">
+            <a class="nav-link" href="{{ url('/laravel-filemanager?type=image') }}" target="_blank">
                 <i class="fas fa-fw fa-file"></i>
                 <span>File Manager</span>
             </a>
