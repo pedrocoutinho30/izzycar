@@ -15,7 +15,7 @@
         </div>
 
         <div class="mb-3">
-            <x-image-manager :label="'Meta Image'" :images="$model->seo->meta_image ?? ''" name="seo[meta_image]" :multi="false" id="meta_image" />
+            <x-image-manager :label="'Meta Image'" :images="$model->seo->meta_image ?? ''" name="seo[meta_image]" :multi="true" id="meta_image" />
 
 
         </div>
@@ -47,7 +47,7 @@
         </div>
         <div class="mb-3">
             <!-- <label for="og_image" class="form-label">OG Image URL</label> -->
-            <x-image-manager :label="'OG Image'" :images="$model->seo->og_image ?? ''" name="seo[og_image]" :multi="false" id="ogImage" />
+            <x-image-manager :label="'OG Image'" :images="$model->seo->og_image ?? ''" name="seo[og_image]" :multi="true" id="ogImage" />
             <!-- <input type="text" class="form-control" id="og_image" name="seo[og_image]" value="{{ old('seo.og_image', $model->seo->og_image ?? '') }}"> -->
         </div>
         <div class="mb-3">
@@ -84,7 +84,7 @@
             <textarea class="form-control" id="twitter_description" name="seo[twitter_description]" rows="3">{{ old('seo.twitter_description', $model->seo->twitter_description ?? '') }}</textarea>
         </div>
         <div class="mb-3">
-            <x-image-manager :label="'Twitter Image'" :images="$model->seo->twitter_image ?? ''" name="seo[twitter_image]" :multi="false" id="twitter_image" />
+            <x-image-manager :label="'Twitter Image'" :images="$model->seo->twitter_image ?? ''" name="seo[twitter_image]" :multi="true" id="twitter_image" />
             <!-- <label for="twitter_image" class="form-label">Image URL</label>
             <input type="text" class="form-control" id="twitter_image" name="seo[twitter_image]" value="{{ old('seo.twitter_image', $model->seo->twitter_image ?? '') }}"> -->
         </div>

@@ -43,9 +43,7 @@ use UniSharp\LaravelFilemanager\Lfm;
 // });
 
 
-Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
-    Lfm::routes();
-});
+
 
 Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');
 Route::post('/proposals/{proposal}/accept', [ProposalController::class, 'accept'])
@@ -55,7 +53,13 @@ Route::get('/proposta/{brand}/{model}/{version}/{id}/timeline', [ConvertedPropos
 
 Auth::routes();
 
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+    Lfm::routes();
+});
+
 Route::prefix('admin')->middleware(['auth'])->group(function () {
+
+
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
     Route::resource('settings', SettingController::class);
