@@ -170,6 +170,7 @@
         @php
         $menuItemsGestao = [
         ['route' => 'clients.index', 'icon' => 'fa-users', 'label' => __('Clientes'), 'permission' => 'gerir clientes'],
+        ['route' => 'form_proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Formulários de Propostas'), 'permission' => 'gerir propostas'],
         ['route' => 'proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas'), 'permission' => 'gerir propostas'],
         ['route' => 'converted-proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas Convertidas'), 'permission' => 'gerir propostas'],
         ['route' => 'vehicles.index', 'icon' => 'fa-car-side', 'label' => __('Veículos'), 'permission' => 'gerir veiculos'],

@@ -69,7 +69,7 @@
 
         <div id="dynamic-fields"></div>
 
-        @include('partials.seo_form', ['model' => $page])
+        @include('partials.seo_form', ['model' => $page ?? null])
         <div class="mt-4">
             <a href="{{ route('pages.index') }}" class="btn btn-danger">Cancelar</a>
             <button type="submit" class="btn btn-success">

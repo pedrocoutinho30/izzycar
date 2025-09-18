@@ -47,7 +47,6 @@ $home = App\Models\Page::where('slug', 'homepage')->first();
 </section>
 
 
-
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 @endpush

@@ -93,11 +93,12 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
 
     Route::resource('proposals', ProposalController::class);
+    Route::post('/proposals/create_by_form', [ProposalController::class, 'create_by_form'])->name('proposals.create_by_form');
     Route::get('proposals/{id}/download-pdf', [ProposalController::class, 'generatePdf'])->name('proposals.downloadPdf');
     Route::get('proposals/{id}/sent-whatsapp', [ProposalController::class, 'sentWhatsapp'])->name('proposals.sent-whatsapp');
 
 
-
+    Route::resource('form_proposals', \App\Http\Controllers\FormProposalController::class)->names('form_proposals');
 
     Route::post('/proposals/{proposal}/duplicate', [ProposalController::class, 'duplicate'])->name('proposals.duplicate');
 

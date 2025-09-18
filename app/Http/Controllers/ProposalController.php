@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Mpdf;
 use App\Models\Brand;
 use App\Models\ConvertedProposal;
+use App\Models\FormProposal;
 use App\Models\VehicleAttribute;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\Browsershot\Browsershot;
@@ -731,5 +732,41 @@ class ProposalController extends Controller
     public function sentWhatsapp($id)
     {
         dd($id);
+    }
+
+
+    public function create_by_form(Request $request)
+    {
+
+
+        $form = $request->all()['form'];
+        $proposal = new Proposal();
+        $proposal->client_id = $form['client_id'] ?? null;
+        $proposal->brand = $form['brand'] ?? null;
+        $proposal->model = $form['model'] ?? null;
+        $proposal->version = $form['version'] ?? null;
+        $proposal->fuel = $form['fuel'] ?? null;
+        $proposal->year = $form['year_min'] ?? null;
+        $proposal->mileage = $form['km_max'] ?? null;
+        $proposal->status = 'Pendente';
+        $proposal->notes = "Orçamento via formulário: \n" . ($form['budget'] ?? '') . "\nCor: " . ($form['color'] ?? '') . "\nCaixa: " . ($form['gearbox'] ?? '') . "\nExtras: " . ($form['extras'] ?? '');
+        $proposal->engine_capacity = 0;
+        $proposal->co2 = 0;
+        $proposal->transport_cost = 1250;
+        $proposal->ipo_cost = 100;
+        $proposal->imt_cost = 65;
+        $proposal->registration_cost = 55;
+        $proposal->isv_cost = 0;
+        $proposal->license_plate_cost = 40;
+        $proposal->inspection_commission_cost = 350;
+        $proposal->commission_cost = 861;
+        $proposal->proposed_car_mileage = 0;
+        $proposal->proposed_car_year_month = 0;
+        $proposal->proposed_car_value = 0;
+        $proposal->save();
+        $formProposal = FormProposal::findOrFail($form['id']); // Create the Form
+        $formProposal->proposal_id = $proposal->id;
+        $formProposal->save();
+        return $proposal;
     }
 }

@@ -25,19 +25,24 @@ class ImportController extends Controller
         ]);
 
         // Aqui podes gravar na BD
-        $proposal = FormProposal::create($request->all());
 
-        $clientExist = Client::where('email', $proposal->email)->where('phone', $proposal->phone)->first();
+        $formPropposalData = $request->all();
+        $clientExist = Client::where('email', $formPropposalData['email'])->where('phone', $formPropposalData['phone'])->first();
 
         if (!$clientExist) {
 
-            $client = Client::create([
-                'name' => $proposal->name,
-                'phone' => $proposal->phone,
-                'email' => $proposal->email,
-                'origin' => $proposal->source,
+            $clientExist = Client::create([
+                'name' => $formPropposalData['name'],
+                'phone' => $formPropposalData['phone'],
+                'email' => $formPropposalData['email'],
+                'origin' => $formPropposalData['source'],
             ]);
         }
+        $formPropposalData['client_id'] = $clientExist->id;
+        $formPropposalData['status'] = 'novo';
+        $formPropposalData['version'] = $formPropposalData['submodel'];
+        //Guardar o formulário de proposta
+        $proposal = FormProposal::create($formPropposalData);
 
         //TO DO:enviar email para cliente
 
@@ -140,6 +145,15 @@ class ImportController extends Controller
             }
             return [];
         });
+
+        $items = $faq['enum'] ?? [];
+        usort($items, function ($a, $b) {
+            return (int)$a['order'] <=> (int)$b['order'];
+        });
+
+        $faq['enum'] = $items;
+
+
 
         // $data_custos = Page::where('slug', 'custos-do-processo-de-importacao')
         //     ->with('contents')

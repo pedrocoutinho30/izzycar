@@ -23,5 +23,9 @@ class FormProposal extends Model
         'budget',
         'gearbox',
         'extras',
+        'client_id',
+        'status',
+        'version',
+        'proposal_id'
     ];
 }

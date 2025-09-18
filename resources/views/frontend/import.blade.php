@@ -23,8 +23,29 @@
 
 <section class="section-padding" id="section_description_import">
     <div class="container">
-        <p class="text-center text-black">{!!$data->process_import['description']!!} </p>
-        <p class="text-center text-black">{!!$data->process_import['content']!!}</p>
+        <p class="text-center text-black mb-8">{!!$data->process_import['description']!!} </p>
+        <!-- <img src="{{ asset('storage/' . $data->process_import['image']) }}" class="img-fluid mb-4" style="object-fit: cover; height: 300px; width: 100%; max-width: 100%;" alt="Car being imported, possibly being loaded or unloaded from a transport vehicle, set in a professional and organized environment related to vehicle importation. If present, visible text in the image is transcribed here. The overall tone is informative and trustworthy." /> -->
+        <style>
+            #section_description_import ul {
+                list-style-type: disc;
+                color: black;
+                padding-left: 1.5em;
+            }
+
+            #section_description_import ul li {
+                color: black;
+            }
+
+            #section_description_import ul {
+                /* Custom black bullet */
+                list-style: disc inside;
+            }
+
+            #section_description_import ul li::marker {
+                color: #000;
+            }
+        </style>
+        <!-- <p class="text-center text-black">{!!$data->process_import['content']!!}</p> -->
 
 
 
@@ -122,7 +143,7 @@
                         data-bs-target="#collapse-faq-{{ $loop->index }}"
                         aria-expanded="false"
                         aria-controls="collapse-faq-{{ $loop->index }}">
-                        {{ strip_tags($faqItem['question']) }}
+                        {{$faqItem['order']}}. {{ strip_tags($faqItem['question']) }}
                     </button>
                 </h2>
                 <div id="collapse-faq-{{ $loop->index }}" class="accordion-collapse collapse"

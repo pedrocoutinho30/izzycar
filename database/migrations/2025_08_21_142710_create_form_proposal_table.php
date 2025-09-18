@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone');
             $table->string('email');
-
+            $table->string('client_id')->nullable(); // se existir na BD
+            $table->string('status')->default('novo'); // novo, em_processo, concluido
             // Como conheceu
             $table->string('source')->nullable();
 
@@ -32,6 +33,7 @@ return new class extends Migration
             // Preferências caso "nao_sei"
             $table->string('brand')->nullable();
             $table->string('model')->nullable();
+            $table->string('version')->nullable();
             $table->string('fuel')->nullable();
             $table->integer('year_min')->nullable();
             $table->integer('km_max')->nullable();
@@ -39,6 +41,7 @@ return new class extends Migration
             $table->string('budget')->nullable();
             $table->enum('gearbox', ['indiferente', 'automatica', 'manual'])->nullable();
             $table->text('extras')->nullable();
+            $table->integer('proposal_id')->nullable(); // FK para proposals.id se convertido
 
             $table->timestamps();
         });
