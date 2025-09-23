@@ -65,7 +65,7 @@ class ImportController extends Controller
             --- Preferências --- \n
             Marca: {$proposal->brand} \n
             Modelo: {$proposal->model} \n
-            Sub-modelo: {$proposal->submodel} \n
+            Sub-modelo: {$proposal->version} \n
             Combustível: {$proposal->fuel} \n
             Ano mínimo: {$proposal->year_min} \n
             KM máximo: {$proposal->km_max} \n
