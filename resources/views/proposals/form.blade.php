@@ -278,7 +278,7 @@
 
                 <div class="form-group">
                     <label for="inspection_commission_cost">Comissão Vistoria</label>
-                    <input type="number" id="inspection_commission_cost" name="inspection_commission_cost" value="{{ old('inspection_commission_cost', isset($proposal) ? $proposal->inspection_commission_cost : '350') }}" placeholder="350" class="form-control rounded shadow-sm">
+                    <input type="number" id="inspection_commission_cost" name="inspection_commission_cost" value="{{ old('inspection_commission_cost', isset($proposal) ? $proposal->inspection_commission_cost : $inspection_commission_cost) }}" placeholder="{{$inspection_commission_cost}}" oninput="calculateTotal()" class="form-control rounded shadow-sm">
                     @error('inspection_commission_cost')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -287,7 +287,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="commission_cost">Comissão venda</label>
-                    <input type="number" id="commission_cost" name="commission_cost" value="{{ old('commission_cost', isset($proposal) ? $proposal->commission_cost : '') }}" class="form-control rounded shadow-sm" placeholder="861" oninput="calculateTotal()">
+                    <input type="number" id="commission_cost" name="commission_cost" value="{{ old('commission_cost', isset($proposal) ? $proposal->commission_cost : $commission_cost) }}" class="form-control rounded shadow-sm" placeholder="{{$commission_cost}}" oninput="calculateTotal()">
                     @error('commission_cost')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -412,7 +412,7 @@
             let proposedValue = parseFloat(document.getElementById("proposed_car_value").value) || 0;
 
             // Calcula as comissões
-            let commissionCost = 700; //(proposedValue * myCommision).toFixed(2);
+            let commissionCost = {{ $commission_cost  }}; //(proposedValue * myCommision).toFixed(2);
             // let inspectionCommissionCost = (proposedValue * inspectionCommision).toFixed(2);
 
             // Atualiza os inputs

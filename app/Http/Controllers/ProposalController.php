@@ -60,7 +60,11 @@ class ProposalController extends Controller
         $brands = Brand::with(['models' => function ($query) {
             $query->orderBy('name');
         }])->get();
-        return view('proposals.form', compact('clients', 'brands', 'attributes'));
+
+        $commission_cost = Setting::where('label', 'commission_cost')->first()->value;
+         $inspection_commission_cost = Setting::where('label', 'inspection_commission_cost')->first()->value;
+
+        return view('proposals.form', compact('clients', 'brands', 'attributes', 'commission_cost', 'inspection_commission_cost'));
     }
 
     public function store(Request $request)
@@ -179,7 +183,9 @@ class ProposalController extends Controller
         $brands = Brand::with(['models' => function ($query) {
             $query->orderBy('name');
         }])->get();
-        return view('proposals.form', compact('proposal', 'clients', 'images', 'brands', 'attributes', 'attributeValues'));
+         $commission_cost = Setting::where('label', 'commission_cost')->first()->value;
+         $inspection_commission_cost = Setting::where('label', 'inspection_commission_cost')->first()->value;
+        return view('proposals.form', compact('proposal', 'clients', 'images', 'brands', 'attributes', 'attributeValues', 'commission_cost', 'inspection_commission_cost'));
     }
 
     public function updateStatus(Request $request, Proposal $proposal)
