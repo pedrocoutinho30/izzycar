@@ -18,16 +18,19 @@ class ImportSimulatorController extends Controller
 
     public function calcular(Request $request)
     {
-        $co2 =49;
-        $cilindrada = 1968;
-        $combustivel = 'gasoleo';
-        $tipo_combustivel = 'gasoleo'; // 'gasolina', 'gasoleo', 'hibrido', 'hibrido-plug-in', 'gas-natural'
-        $tipo_veiculo = 'uso-misto'; // 'passageiros', 'uso-misto', 'mercadorias', 'autocaravana'
-        $tipo_medicao = 'WLTP';
-        $data_matricula = '2023-01-01';
-        $autonomiaEletrica = 60;
-        $emissao_particulas = '>0.0001';
 
+        $estado_veiculo = $request->estado_viatura; // 'novo' ou 'usado'
+        $co2 = $request->co2;
+        $cilindrada = $request->cilindrada;
+        $combustivel = $request->combustivel;
+        $tipo_combustivel = $request->tipo_combustivel; // 'gasolina', 'diesel', 'hibrido', 'hibrido_plug_in', 'gas-natural'
+        $tipo_veiculo = $request->tipo_veiculo; // 'passageiros', 'uso-misto', 'mercadorias', 'autocaravana'
+        $tipo_medicao = $request->tipo_medicao;
+
+
+        $data_matricula = $request->data_matricula;
+        $autonomiaEletrica = $request->autonomia == 'igual_superior' ? 60 : 40; // km
+        $emissao_particulas = $request->combustivel === 'diesel' ?  $request->emissao_particulas : '0'; // '>0.0001' ou '0'
         $peso = 0;           // kg
         $lotacao = 0;        // nº de lugares
         $alturaCaixa = 0;    // cm
@@ -37,7 +40,11 @@ class ImportSimulatorController extends Controller
 
         if ($combustivel === 'eletrico') {
             $isv = 0;
-            dd("ISV:> " . $isv);
+            if ($request->ajax()) {
+                return response()->json([
+                    'isv' => $isv
+                ]);
+            }
         }
         //01. Componente cilindrada
         $componente_cc =  $this->calculo_componente_cc($cilindrada, $tabela = 'A');
@@ -50,7 +57,7 @@ class ImportSimulatorController extends Controller
         $taxa_reduzida = $this->taxa_intermedia_reduzida(
             $tabela = 'A',
             $tipo_veiculo,
-            $tipo_combustivel,
+            $combustivel,
             $co2,
             $autonomiaEletrica,
             $peso,
@@ -76,31 +83,23 @@ class ImportSimulatorController extends Controller
 
         $reducao_particulas =  round($particulas * $reducao, 2);
         $isv = $taxa_aplicavel - $componente_cc_reduzido - $componente_ambiental_reduzido + $particulas - $reducao_particulas;
-        dump("componente_cc:> " . $componente_cc);
-        dump("componente_ambiental:> " . $componente_ambiental);
-        dump("reducao:> " . $reducao);
-        dump("taxa_aplicavel:> " . $taxa_aplicavel);
-        dump("taxa_reduzida:> " . $taxa_reduzida);
-        dump("componente_cc_reduzido:> " . $componente_cc_reduzido);
-        dump("componente_ambiental_reduzido:> " . $componente_ambiental_reduzido);
-        dump("particulas:> " . $particulas);
-        dump("reducao_particulas:> " . $reducao_particulas);
-        dump($taxa_aplicavel . "-" . $componente_cc_reduzido . "-" . $componente_ambiental_reduzido . "+" . $particulas . "-" . $reducao_particulas);
+        if ($isv < 100) $isv = 100;
+        if ($request->ajax()) {
+            return response()->json([
+                'isv' => $isv
+            ]);
+        }
 
-        dd("ISV:> " . $isv);
-        $request->validate([
-            'data_matricula' => 'required|date|before_or_equal:today',
-        ]);
-        $dataMatricula = Carbon::parse($request->data_matricula);
-        [$faixa, $reducao] = $this->calcularIdade($dataMatricula);
+        // $dataMatricula = Carbon::parse($request->data_matricula);
+        // [$faixa, $reducao] = $this->calcularIdade($dataMatricula);
 
-        return view('isv.form', compact('faixa', 'reducao', 'dataMatricula'));
+        return view('isv.form', compact('isv'));
     }
 
-    public function agravamentoParticulas($particulas, $combustivel)
+    public function agravamentoParticulas($particulas, $combustivel,)
     {
 
-        if ($particulas === '>0.0001' && $combustivel === 'gasoleo') {
+        if ($particulas === '>0.0001' && $combustivel === 'diesel') {
             return 500; // 30% de agravamento
         }
         return 0; // Sem agravamento
@@ -110,7 +109,7 @@ class ImportSimulatorController extends Controller
     function taxa_intermedia_reduzida(
         $tabela,             // 'A' ou 'B'
         $tipoVeiculo = 'passageiros',        // 'passageiros', 'uso-misto', 'mercadorias', 'autocaravana'
-        $combustivel,        // 'gasolina', 'gasoleo', 'hibrido', 'hibrido-plug-in', 'gas-natural'
+        $combustivel,        // 'gasolina', 'diesel', 'hibrido', 'hibrido_plug_in', 'gas-natural'
         $co2 = 0,            // Em g/km
         $autonomiaEletrica = 0, // km
         $peso = 0,           // kg
@@ -122,12 +121,19 @@ class ImportSimulatorController extends Controller
     ) {
         if ($tabela === 'A') {
             // Tabela A
-            if ($tipoVeiculo === 'passageiros') {
-                if ($combustivel === 'hibrido' && $autonomiaEletrica > 50 && $co2 < 50) return 0.60;
-                if ($combustivel === 'hibrido-plug-in' && $autonomiaEletrica >= 50 && $co2 < 50) return 0.25;
-                if ($combustivel === 'hibrido-plug-in' && $anoMatriculaUE >= 2015 && $anoMatriculaUE <= 2020 && $autonomiaEletrica >= 25) return 0.25;
-                if ($combustivel === 'gas-natural') return 0.40;
+
+            if ($combustivel === 'gasolina' || $combustivel === 'diesel') {
+                if ($tipoVeiculo === 'hibrido' && $autonomiaEletrica > 50 && $co2 < 50) return 0.60;
+                if ($tipoVeiculo === 'hibrido_plug_in' && $autonomiaEletrica >= 50 && $co2 < 50) return 0.25;
+                if ($tipoVeiculo === 'hibrido_plug_in' && $anoMatriculaUE >= 2015 && $anoMatriculaUE <= 2020 && $autonomiaEletrica >= 25) return 0.25;
+                if ($tipoVeiculo === 'gas-natural') return 0.40;
             }
+            // if ($tipoVeiculo === 'passageiros') {
+            //     if ($combustivel === 'hibrido' && $autonomiaEletrica > 50 && $co2 < 50) return 0.60;
+            //     if ($combustivel === 'hibrido_plug_in' && $autonomiaEletrica >= 50 && $co2 < 50) return 0.25;
+            //     if ($combustivel === 'hibrido_plug_in' && $anoMatriculaUE >= 2015 && $anoMatriculaUE <= 2020 && $autonomiaEletrica >= 25) return 0.25;
+            //     if ($combustivel === 'gas-natural') return 0.40;
+            // }
             if ($tipoVeiculo === 'uso-misto' && $peso > 2500 && $lotacao >= 7) return 0.40;
             return 1.0; // caso não se aplique nenhuma taxa
         } elseif ($tabela === 'B') {
@@ -213,7 +219,7 @@ class ImportSimulatorController extends Controller
         }
 
         // Gasóleo
-        elseif ($combustivel === 'gasoleo') {
+        elseif ($combustivel === 'diesel') {
             if ($tipoMedicao === 'NEDC') {
                 if ($co2 <= 79) {
                     $taxa = 5.78;
@@ -262,7 +268,7 @@ class ImportSimulatorController extends Controller
                 }
             }
         } else {
-            throw new \Exception("Combustível inválido. Use 'gasolina' ou 'gasoleo'.");
+            throw new \Exception("Combustível inválido. Use 'gasolina' ou 'diesel'.");
         }
 
         // Componente ambiental
@@ -379,7 +385,7 @@ class ImportSimulatorController extends Controller
                     [201, 999, 35]
                 ]
             ],
-            'gasoleo' => [
+            'diesel' => [
                 'NEDC' => [
                     [0, 100, 10],
                     [101, 160, 20],
