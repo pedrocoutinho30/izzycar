@@ -24,7 +24,10 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ConvertedProposalController;
+use App\Http\Controllers\Frontend\ImportController;
+use App\Http\Controllers\Frontend\ImportSimulatorController;
 use App\Models\ConvertedProposal;
+use Sabberworm\CSS\Property\Import;
 use UniSharp\LaravelFilemanager\Lfm;
 
 /*
@@ -44,6 +47,9 @@ use UniSharp\LaravelFilemanager\Lfm;
 
 
 
+// Route::get('simulador-importacao', [ImportSimulatorController::class, 'importSimulator'])->name('import-simulator');
+Route::get('/simulador-isv', [ImportSimulatorController::class, 'index'])->name('isv.form');
+Route::post('/simulador-isv', [ImportSimulatorController::class, 'calcular'])->name('isv.calcular');
 
 Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');
 Route::post('/proposals/{proposal}/accept', [ProposalController::class, 'accept'])
