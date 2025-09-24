@@ -69,6 +69,8 @@ class ProposalController extends Controller
 
     public function store(Request $request)
     {
+
+
         $request->validate([
             'client_id' => 'required',
             'brand' => 'required',
@@ -88,7 +90,7 @@ class ProposalController extends Controller
             'proposed_car_mileage' => 'required|integer',
             'proposed_car_year_month' => 'required',
             'proposed_car_value' => 'required|numeric',
-            'images' => 'nullable|array',
+            'images' => 'nullable',
             'images.*' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg,avif|max:2048',
             'fuel' => 'nullable|in:Gasolina,Diesel,Híbrido Plug-in/Gasolina,Híbrido Plug-in/Diesel,Elétrico',
             'value' => 'nullable|numeric',
@@ -98,6 +100,7 @@ class ProposalController extends Controller
             'status' => 'nullable|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta',
             'proposed_car_features' => 'nullable|string'
         ]);
+        
         $proposal = Proposal::create([
             'url' => $request->url,
             'status' => $request->status,
@@ -124,7 +127,8 @@ class ProposalController extends Controller
             'value' => $request->value,
             'notes' => $request->notes,
             'proposed_car_notes' => $request->proposed_car_notes,
-            'proposed_car_features' => $request->proposed_car_features
+            'proposed_car_features' => $request->proposed_car_features,
+            'images' => $request->images,
         ]);
 
 
@@ -137,33 +141,33 @@ class ProposalController extends Controller
         }
 
         // Salvar as imagens
-        if ($request->hasFile('images')) {
-            $images = $request->file('images');
-            $imagePaths = [];
-            $i = 1;
+        // if ($request->hasFile('images')) {
+        //     $images = $request->file('images');
+        //     $imagePaths = [];
+        //     $i = 1;
 
-            foreach ($images as $image) {
-                // Garante extensão original
-                $extension = $image->getClientOriginalExtension();
+        //     foreach ($images as $image) {
+        //         // Garante extensão original
+        //         $extension = $image->getClientOriginalExtension();
 
-                // Nome personalizado
-                $fileName = "{$proposal->brand}_{$proposal->model}_{$proposal->version}_{$proposal->proposed_car_year_month}_{$proposal->id}_{$i}." . $extension;
+        //         // Nome personalizado
+        //         $fileName = "{$proposal->brand}_{$proposal->model}_{$proposal->version}_{$proposal->proposed_car_year_month}_{$proposal->id}_{$i}." . $extension;
 
-                // Caminho
-                $path = $image->storeAs(
-                    "proposals/{$proposal->client_id}/{$proposal->id}", // diretório
-                    $fileName,                                         // nome do ficheiro
-                    'public'                                           // disco
-                );
+        //         // Caminho
+        //         $path = $image->storeAs(
+        //             "proposals/{$proposal->client_id}/{$proposal->id}", // diretório
+        //             $fileName,                                         // nome do ficheiro
+        //             'public'                                           // disco
+        //         );
 
-                $imagePaths[] = $path;
-                $i++;
-            }
+        //         $imagePaths[] = $path;
+        //         $i++;
+        //     }
 
-            // Salvar os caminhos das imagens no banco
-            $proposal->images = json_encode($imagePaths);
-            $proposal->save();
-        }
+        //     // Salvar os caminhos das imagens no banco
+        //     $proposal->images = json_encode($imagePaths);
+        //     $proposal->save();
+        // }
 
 
         return redirect()->route('proposals.index')->with('success', 'Proposal created successfully.');
@@ -174,9 +178,8 @@ class ProposalController extends Controller
         $clients = Client::all(); // To select a client
         $images = [];
         if ($proposal->images) {
-            $images = json_decode($proposal->images);
+            $images = $proposal->images;
         }
-
         $attributes = VehicleAttribute::orderByRaw("FIELD(type, 'text', 'number', 'select', 'checkbox')")->get()->groupBy('attribute_group');
 
         $attributeValues = $proposal->attributeValues->keyBy('attribute_id');
@@ -221,7 +224,7 @@ class ProposalController extends Controller
             'proposed_car_mileage' => 'required|integer',
             'proposed_car_year_month' => 'required',
             'proposed_car_value' => 'required|numeric',
-            'images' => 'nullable|array',
+            'images' => 'nullable',
             'images.*' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg,avif|max:16000',
             'fuel' => 'nullable|in:Gasolina,Diesel,Híbrido Plug-in/Gasolina,Híbrido Plug-in/Diesel,Elétrico',
             'value' => 'nullable|numeric',
@@ -256,7 +259,8 @@ class ProposalController extends Controller
             'value' => $request->value,
             'notes' => $request->notes,
             'proposed_car_notes' => $request->proposed_car_notes,
-            'proposed_car_features' => $request->proposed_car_features
+            'proposed_car_features' => $request->proposed_car_features,
+            'images' => $request->images,
         ]);
 
 
@@ -274,47 +278,47 @@ class ProposalController extends Controller
         }
 
         // Excluir as imagens selecionadas para remoção
-        if ($request->has('delete_images')) {
-            foreach ($request->delete_images as $imageToDelete) {
-                if (Storage::exists('public/' . $imageToDelete)) {
-                    Storage::delete('public/' . $imageToDelete);
-                }
-            }
-        }
+        // if ($request->has('delete_images')) {
+        //     foreach ($request->delete_images as $imageToDelete) {
+        //         if (Storage::exists('public/' . $imageToDelete)) {
+        //             Storage::delete('public/' . $imageToDelete);
+        //         }
+        //     }
+        // }
 
         // Adicionar novas imagens no update
-        if ($request->hasFile('images')) {
-            $images = $request->file('images');
+        // if ($request->hasFile('images')) {
+        //     $images = $request->file('images');
 
-            // Pegar as imagens já existentes
-            $existingImages = $proposal->images ? json_decode($proposal->images, true) : [];
-            $imagePaths = $existingImages;
+        //     // Pegar as imagens já existentes
+        //     $existingImages = $proposal->images ? json_decode($proposal->images, true) : [];
+        //     $imagePaths = $existingImages;
 
-            // Descobrir quantas já existem para continuar a numeração
-            $i = count($existingImages) + 1;
+        //     // Descobrir quantas já existem para continuar a numeração
+        //     $i = count($existingImages) + 1;
 
-            foreach ($images as $image) {
-                // Extensão do ficheiro original
-                $extension = $image->getClientOriginalExtension();
+        //     foreach ($images as $image) {
+        //         // Extensão do ficheiro original
+        //         $extension = $image->getClientOriginalExtension();
 
-                // Nome personalizado: brand_model_version_id_numeração
-                $fileName = "{$proposal->brand}_{$proposal->model}_{$proposal->version}_{$proposal->proposed_car_year_month}_{$proposal->id}_{$i}." . $extension;
+        //         // Nome personalizado: brand_model_version_id_numeração
+        //         $fileName = "{$proposal->brand}_{$proposal->model}_{$proposal->version}_{$proposal->proposed_car_year_month}_{$proposal->id}_{$i}." . $extension;
 
-                // Guardar na pasta correta
-                $path = $image->storeAs(
-                    "proposals/{$request->client_id}/{$proposal->id}",
-                    $fileName,
-                    'public'
-                );
+        //         // Guardar na pasta correta
+        //         $path = $image->storeAs(
+        //             "proposals/{$request->client_id}/{$proposal->id}",
+        //             $fileName,
+        //             'public'
+        //         );
 
-                $imagePaths[] = $path;
-                $i++;
-            }
+        //         $imagePaths[] = $path;
+        //         $i++;
+        //     }
 
-            // Atualizar as imagens no banco de dados
-            $proposal->images = json_encode($imagePaths);
-            $proposal->save();
-        }
+        //     // Atualizar as imagens no banco de dados
+        //     $proposal->images = json_encode($imagePaths);
+        //     $proposal->save();
+        // }
         return redirect()->route('proposals.index')->with('success', 'Proposal updated successfully.');
     }
 
@@ -421,7 +425,6 @@ class ProposalController extends Controller
 
     public function detail($brand, $model, $version, $id)
     {
-
         $proposal = Proposal::where('id', $id)
             ->firstOrFail();
 

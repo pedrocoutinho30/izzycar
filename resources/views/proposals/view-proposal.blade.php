@@ -15,7 +15,7 @@ $settings = App\Models\Setting::get();
 @php
 $image = null;
 if ($proposal->images) {
-$image = asset('storage/' . (json_decode($proposal->images, true)[0] ?? ''));
+$image = $proposal->images;
 }
 @endphp
 

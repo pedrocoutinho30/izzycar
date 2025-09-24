@@ -12,12 +12,19 @@
     {{-- Imagens existentes --}}
     <div class="d-flex flex-wrap mb-2" id="existing-images-preview-{{ $id }}">
         @if(!empty($images))
-        @foreach(explode(',', $images) as $img)
+        @if(is_array($images))
+        @foreach($images as $img)
         <div class="img-thumb me-2 mb-2">
             <img src="{{ $img }}" style="width:100px;height:100px;object-fit:cover;border-radius:6px;">
             <button type="button" class="btn btn-sm btn-danger mt-1 w-100 remove-image">Remover</button>
         </div>
         @endforeach
+        @else
+        <div class="img-thumb me-2 mb-2">
+            <img src="{{ $images }}" style="width:100px;height:100px;object-fit:cover;border-radius:6px;">
+            <button type="button" class="btn btn-sm btn-danger mt-1 w-100 remove-image">Remover</button>
+        </div>
+        @endif
         @endif
     </div>
 

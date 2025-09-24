@@ -266,13 +266,16 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <label for="images">Imagens</label>
-            <input type="file" name="images[]" accept="image/*" multiple class="form-control rounded shadow-sm">
-            @error('images')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
+
+
+         <x-image-manager :label="'Imagem'" :images="$images ?? ''" name="images" :multi="true" id="images" />
+
+       
+
+       
+
+
+
         <div class="row">
             <div class="col-md-4">
 
@@ -372,17 +375,7 @@
             @endforeach
         </div>
         <!-- Exibir imagens existentes -->
-        @if(isset($images) && count($images) > 0)
-        <div>
-            <h3>Imagens atuais:</h3>
-            @foreach($images as $image)
-            <div>
-                <img src="{{ Storage::url($image) }}" alt="Imagem proposta" width="100" height="100">
-                <input type="checkbox" name="delete_images[]" value="{{ $image }}"> Apagar imagem
-            </div>
-            @endforeach
-        </div>
-        @endif
+
         @include('partials.seo_form', ['model' => $proposal ?? null])
 
         <div class="mt-4 d-flex justify-content-between">
@@ -412,7 +405,7 @@
             let proposedValue = parseFloat(document.getElementById("proposed_car_value").value) || 0;
 
             // Calcula as comissões
-            let commissionCost = {{ $commission_cost  }}; //(proposedValue * myCommision).toFixed(2);
+            let commissionCost = {{ $commission_cost }}; //(proposedValue * myCommision).toFixed(2);
             // let inspectionCommissionCost = (proposedValue * inspectionCommision).toFixed(2);
 
             // Atualiza os inputs
