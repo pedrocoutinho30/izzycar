@@ -431,8 +431,8 @@
     <!-- Script personalizado -->
     <script>
         $(function() {
-            console.log('DOM ready');
             if ($.fn.filemanager) {
+                console.log('DOM ready');
                 $('.lfm').filemanager('image');
             } else {
                 console.error('filemanager não está disponível');

@@ -85,6 +85,10 @@
 <!-- Tom Select -->
 <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+<!-- Template invisível do image manager para clonar -->
+<div id="image-manager-template" style="display:none;">
+    <x-image-manager images="IMAGE_MANAGER_OLD_IMAGES" multi="false" label="IMAGE_MANAGER_TITLE" id="IMAGE_MANAGER_PLACEHOLDER" name="fields[IMAGE_MANAGER_PLACEHOLDER]" />
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -120,8 +124,10 @@
         const contents = @json($contents ?? []);
         const allPages = @json($allPages);
         const storageBaseUrl = "{{ asset('storage') }}/";
+        let imageManagerCounter = 0;
 
         function createInputField(field, value = null) {
+
             let inputHTML = '';
             const label = `<label class="form-label">${field.name}</label>`;
 
@@ -135,14 +141,23 @@
                     break;
 
                 case 'image':
-                    const imageUrl = value ? storageBaseUrl + value : '';
-                    inputHTML = `
-                        <input type="file" name="fields[${field.label}]" accept="image/*" class="form-control" ${field.is_required ? 'required' : ''} onchange="previewImage(this)">
-                        <input type="hidden" name="fields_existing[${field.label}]" value="${value ?? ''}">
-                        <img src="${imageUrl}" alt="Preview" style="max-width: 200px; margin-top: 10px; ${imageUrl ? 'display:block' : 'display:none'}" class="preview-image">
-                    `;
+                    console.log("field=> ", value);
+
+                    const imgId = field.label;
+                    let template = document.getElementById('image-manager-template').innerHTML;
+                    template = template.replace(/IMAGE_MANAGER_PLACEHOLDER/g, imgId).replace(/IMAGE_MANAGER_TITLE/g, label);
 
 
+                    let imagesValue = [];
+                    if (Array.isArray(value)) {
+                        imagesValue = value; // já é array
+                    } else if (value) {
+                        imagesValue = value.split(',').map(v => v.trim()); // transforma string em array
+                    }
+                    template = template.replace(/IMAGE_MANAGER_OLD_IMAGES/g, imagesValue);
+
+
+                    return `<div class="mb-3">${template}</div>`;
 
                     break;
 

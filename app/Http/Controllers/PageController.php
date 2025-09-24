@@ -49,6 +49,8 @@ class PageController extends Controller
             'page_type_id' => 'required|exists:page_types,id',
         ]);
 
+        
+
         $page = Page::create([
             'title' => $request->title,
             'slug' => $request->slug ? Str::slug($request->slug) : Str::slug($request->title),
@@ -163,6 +165,8 @@ class PageController extends Controller
         // Carregar conteúdos já salvos da página
         $contents = $page->contents->pluck('field_value', 'field_name')->toArray();
         $page_type_id = $page->page_type_id;
+
+       
         return view('pages.form', compact('page', 'pageTypes', 'contents', 'allPages', 'page_type_id'));
     }
 
