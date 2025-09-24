@@ -32,7 +32,9 @@
     <div class="d-flex flex-wrap mb-2" id="new-images-preview-{{ $id }}"></div>
 
     {{-- Inputs hidden para enviar ao backend --}}
+    @if($images )
     <input type="hidden" name="images_existing-{{ $id }}" value="{{ $images ?? '' }}">
+    @endif
     <!-- <input type="hidden" id="images_new_input" name="images_new" value=""> -->
     <input
         type="hidden"
