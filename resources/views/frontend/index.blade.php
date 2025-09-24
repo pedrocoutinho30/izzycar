@@ -24,7 +24,7 @@ $home = App\Models\Page::where('slug', 'homepage')->first();
 <div class="container mt-4">
 
 
-
+s
     <div class="text-center mb-4 text-dark">{!! $home['contents']->where('field_name', 'content')->first()->field_value !!}</div>
 
     <div class="text-center text-dark">{!! $home['contents']->where('field_name', 'nossa_missao')->first()->field_value !!}</div>
