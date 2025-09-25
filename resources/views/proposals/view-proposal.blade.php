@@ -4,11 +4,6 @@ $settings = App\Models\Setting::get();
 
 
 @extends('frontend.partials.layout')
-
-@section('title', 'Proposta de Importação | Izzycar')
-
-@section('content')
-
 <meta name="robots" content="noindex, nofollow">
 @php
 $image = null;
@@ -24,6 +19,11 @@ $image = $proposal->images;
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 @endif
+@section('title', 'Proposta de Importação | Izzycar')
+
+@section('content')
+
+
 <main>
 
     <section class="hero-section d-flex justify-content-center align-items-center" id="section_home_import">
