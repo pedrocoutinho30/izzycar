@@ -6,9 +6,7 @@ $settings = App\Models\Setting::get();
 @extends('frontend.partials.layout')
 
 @section('title', 'Proposta de Importação | Izzycar')
-@include('frontend.partials.seo', [
-'seo' => $proposal->seo
-])
+
 @section('content')
 
 <meta name="robots" content="noindex, nofollow">
@@ -20,6 +18,8 @@ $image = $proposal->images;
 @endphp
 
 @if($image)
+
+<meta name="image" content="{{$image}}">
 <meta property="og:image" content="{{ $image }}" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -313,8 +313,8 @@ $image = $proposal->images;
                     <h4 class="fw-bold mb-3 text-accent">Pagamentos</h4>
                     <p><strong>Serviço da Izzycar:</strong></p>
                     <ul>
-                        <li>{{Setting::where('label', 'init_payment')->first()->value()}} na adjudicação do serviço (após assinatura do contrato).</li>
-                        <li>{{Setting::where('label', 'final_payment')->first()->value()}} na entrega do automóvel em Portugal.</li>
+                        <li>{{$settings->where('label', 'init_payment')->first()->value}} na adjudicação do serviço (após assinatura do contrato).</li>
+                        <li>{{$settings->where('label', 'final_payment')->first()->value}} na entrega do automóvel em Portugal.</li>
                     </ul>
                     <p><strong>Aquisição do Automóvel:</strong> O pagamento é feito diretamente ao stand, por transferência bancária.</p>
                 </div>
