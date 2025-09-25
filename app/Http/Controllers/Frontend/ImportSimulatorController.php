@@ -58,6 +58,12 @@ class ImportSimulatorController extends Controller
             $reducao = 0;
         }
 
+        if ($co2 > 50 && $tipo_veiculo === 'hibrido_plug_in' && $anoMatriculaUE > 2020) {
+            $reducao = 0;
+        } else if ($co2 > 20 && $tipo_veiculo === 'hibrido_plug_in' && $anoMatriculaUE >= 2015 && $anoMatriculaUE <= 2020) {
+            $reducao = 0;
+        }
+
         $taxa_reduzida = $this->taxa_intermedia_reduzida(
             $tabela = 'A',
             $tipo_veiculo,
