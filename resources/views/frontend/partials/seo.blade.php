@@ -1,5 +1,6 @@
 {{-- Meta padrão --}}
 
+
  @section('title',  $seo->title ?? config('app.name') )
 @section('meta_description',  $seo->meta_description ?? '' )
 <meta name="title" content="{{ $seo->title ?? config('app.name') }}">

@@ -1,24 +1,23 @@
 @php
 $settings = App\Models\Setting::get();
-@endphp
-
-
-@extends('frontend.partials.layout')
-<meta name="robots" content="noindex, nofollow">
-@php
 $image = null;
 if ($proposal->images) {
 $image = $proposal->images;
 }
 @endphp
 
-@if($image)
+@include('frontend.partials.seo', [
+'seo' => (object)[
+'meta_image' => $image,
+'title' => 'Proposta de importação do veículo ' . $proposal->brand . ' ' . $proposal->model . ' ' . $proposal->version . ' - Izzycar',
+'meta_description' => 'Proposta detalhada para a importação do veículo ' . $proposal->brand . ' ' . $proposal->model . ' ' . $proposal->version . '. Preço chave na mão, custos, processo e muito mais.',
+]
+])
 
-<meta name="image" content="{{$image}}">
-<meta property="og:image" content="{{ $image }}" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-@endif
+@extends('frontend.partials.layout')
+<meta name="robots" content="noindex, nofollow">
+
+
 @section('title', 'Proposta de Importação | Izzycar')
 
 @section('content')
