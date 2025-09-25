@@ -62,7 +62,7 @@ class ProposalController extends Controller
         }])->get();
 
         $commission_cost = Setting::where('label', 'commission_cost')->first()->value;
-         $inspection_commission_cost = Setting::where('label', 'inspection_commission_cost')->first()->value;
+        $inspection_commission_cost = Setting::where('label', 'inspection_commission_cost')->first()->value;
 
         return view('proposals.form', compact('clients', 'brands', 'attributes', 'commission_cost', 'inspection_commission_cost'));
     }

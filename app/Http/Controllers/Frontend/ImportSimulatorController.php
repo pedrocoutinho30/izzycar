@@ -20,6 +20,7 @@ class ImportSimulatorController extends Controller
     public function calcular(Request $request)
     {
 
+        $pais_matricula = $request->pais_matricula; // uniao-europeia ou outro
         $estado_veiculo = $request->estado_viatura; // 'novo' ou 'usado'
         $co2 = $request->co2;
         $cilindrada = $request->cilindrada;
@@ -42,7 +43,8 @@ class ImportSimulatorController extends Controller
         if ($combustivel === 'eletrico') {
             $isv = 0;
             return response()->json([
-                'html' => "<h3>ISV: 0 € (Veículo Elétrico)</h3>"
+                'html' => "",
+                'isv' => $isv
             ]);
         }
         //01. Componente cilindrada
@@ -52,6 +54,9 @@ class ImportSimulatorController extends Controller
         $componente_ambiental = $this->calculo_componente_ambiental($co2, $combustivel, $tipo_medicao);
 
         [$faixa, $reducao] = $this->calcularIdade(Carbon::parse($data_matricula));
+        if ($pais_matricula !== 'uniao-europeia') {
+            $reducao = 0;
+        }
 
         $taxa_reduzida = $this->taxa_intermedia_reduzida(
             $tabela = 'A',
@@ -132,7 +137,8 @@ class ImportSimulatorController extends Controller
         // $dataMatricula = Carbon::parse($request->data_matricula);
         // [$faixa, $reducao] = $this->calcularIdade($dataMatricula);
         return response()->json([
-            'html' => $html
+            'html' => $html,
+            'isv' => $isv
         ]);
         return view('isv.form', compact('isv'));
     }
