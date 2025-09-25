@@ -48,8 +48,6 @@ use UniSharp\LaravelFilemanager\Lfm;
 
 
 // Route::get('simulador-importacao', [ImportSimulatorController::class, 'importSimulator'])->name('import-simulator');
-Route::get('/simulador-isv', [ImportSimulatorController::class, 'index'])->name('isv.form');
-Route::post('/simulador-isv', [ImportSimulatorController::class, 'calcular'])->name('isv.calcular');
 
 Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');
 Route::post('/proposals/{proposal}/accept', [ProposalController::class, 'accept'])
@@ -65,6 +63,8 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
 
 Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
+    Route::get('/simulador-isv', [ImportSimulatorController::class, 'index'])->name('isv.simulator');
+    Route::post('/simulador-isv', [ImportSimulatorController::class, 'calcular'])->name('isv.calcular');
 
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);

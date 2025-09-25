@@ -8,12 +8,13 @@ use Carbon\Carbon;
 
 class ImportSimulatorController extends Controller
 {
+
+
+
+
     public function index()
     {
-
-
-
-        return view('isv.form');
+        return view('isv.simulator');
     }
 
     public function calcular(Request $request)
@@ -40,11 +41,9 @@ class ImportSimulatorController extends Controller
 
         if ($combustivel === 'eletrico') {
             $isv = 0;
-            if ($request->ajax()) {
-                return response()->json([
-                    'isv' => $isv
-                ]);
-            }
+            return response()->json([
+                'html' => "<h3>ISV: 0 € (Veículo Elétrico)</h3>"
+            ]);
         }
         //01. Componente cilindrada
         $componente_cc =  $this->calculo_componente_cc($cilindrada, $tabela = 'A');
@@ -77,29 +76,71 @@ class ImportSimulatorController extends Controller
         $componente_cc_reduzido = round(($componente_cc * $taxa_reduzida) * $reducao, 2);
         //04b. Redução de Anos de Uso (Componente Ambiental)
         $componente_ambiental_reduzido = round(($componente_ambiental * $taxa_reduzida) * $reducao, 2);
+        $componente_ambiental_reduzido_tabela = round(($componente_ambiental * $taxa_reduzida) * $reducao, 2);
         if ($componente_ambiental_reduzido < 0) $componente_ambiental_reduzido = 0;
         //05. Agravamento Partículas
-        $particulas = $this->agravamentoParticulas($emissao_particulas = '>0.0001', $combustivel);
+        $particulas = $this->agravamentoParticulas($emissao_particulas, $combustivel);
 
         $reducao_particulas =  round($particulas * $reducao, 2);
         $isv = $taxa_aplicavel - $componente_cc_reduzido - $componente_ambiental_reduzido + $particulas - $reducao_particulas;
         if ($isv < 100) $isv = 100;
-        if ($request->ajax()) {
-            return response()->json([
-                'isv' => $isv
-            ]);
-        }
 
+        $html = "
+        <table class='table table-bordered'>
+            <tr><th colspan='3'>Tabela ISV aplicável: A</th></tr>
+            <tr>
+                <td>01. Componente cilindrada</td>
+                <td>{$cilindrada} cc</td>
+                <td>" . number_format($componente_cc, 2, ',', '.') . " €</td>
+            </tr>
+            <tr>
+                <td>02. Componente ambiental</td>
+                <td>{$co2} g/km</td>
+                <td>" . number_format($componente_ambiental, 2, ',', '.') . " €</td>
+            </tr>
+            <tr>
+                <td>03. Taxa aplicável da tabela</td>
+                <td>" . ($taxa_reduzida * 100) . "%</td>
+                <td>" . number_format($taxa_aplicavel, 2, ',', '.') . " €</td>
+            </tr>
+            <tr>
+                <td>04a. Redução de Anos de Uso (Cilindrada) {$faixa}</td>
+                <td>" . ($reducao * 100) . "%</td>
+                <td>" . number_format($componente_cc_reduzido, 2, ',', '.') . " €</td>
+            </tr>
+            <tr>
+                <td>04b. Redução de Anos de Uso (Ambiental) {$faixa}</td>
+                <td>" . ($reducao * 100) . "%</td>
+                <td>" . number_format($componente_ambiental_reduzido_tabela, 2, ',', '.') . " €</td>
+            </tr>
+            <tr>
+                <td>05. Agravamento Partículas</td>
+                <td>-</td>
+                <td>" . number_format($particulas, 2, ',', '.') . " €</td>
+            </tr>
+            <tr>
+                <td>05a. Redução de Anos de Uso (Partículas) {$faixa}</td>
+                <td>" . ($particulas == 0 ? '-' : ($reducao * 100) . "%") . "</td>
+                <td>" . number_format($reducao_particulas, 2, ',', '.') . " €</td>
+            </tr>
+            <tr>
+                <th colspan='2'>06. Total ISV</th>
+                <th>" . number_format($isv, 2, ',', '.') . " €</th>
+            </tr>
+        </table>
+    "; // Fim da construção da tabela HTML
         // $dataMatricula = Carbon::parse($request->data_matricula);
         // [$faixa, $reducao] = $this->calcularIdade($dataMatricula);
-
+        return response()->json([
+            'html' => $html
+        ]);
         return view('isv.form', compact('isv'));
     }
 
     public function agravamentoParticulas($particulas, $combustivel,)
     {
 
-        if ($particulas === '>0.0001' && $combustivel === 'diesel') {
+        if ($particulas === '+0.0001' && $combustivel === 'diesel') {
             return 500; // 30% de agravamento
         }
         return 0; // Sem agravamento
@@ -163,7 +204,8 @@ class ImportSimulatorController extends Controller
         $parcelaAbater = 0;
 
         $co2 = floatval($co2);
-
+        if ($combustivel === 'gas-natural') $combustivel = 'gasolina';
+        if ($combustivel === 'eletrico') return 0;
         // Gasolina
         if ($combustivel === 'gasolina') {
             if ($tipoMedicao === 'NEDC') {
