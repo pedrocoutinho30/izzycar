@@ -170,9 +170,10 @@
         @php
         $menuItemsGestao = [
         ['route' => 'clients.index', 'icon' => 'fa-users', 'label' => __('Clientes'), 'permission' => 'gerir clientes'],
-        ['route' => 'form_proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Formulários de Propostas'), 'permission' => 'gerir propostas'],
+        ['route' => 'isv.simulator', 'icon' => 'fa-calculator', 'label' => __('Simuldor ISV'), 'permission' => 'gerir propostas'],
+        ['route' => 'form_proposals.index', 'icon' => 'fa-briefcase', 'label' => __('Formulários de Propostas'), 'permission' => 'gerir propostas'],
         ['route' => 'proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas'), 'permission' => 'gerir propostas'],
-        ['route' => 'converted-proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas Convertidas'), 'permission' => 'gerir propostas'],
+        ['route' => 'converted-proposals.index', 'icon' => 'fa-check-square', 'label' => __('Propostas Convertidas'), 'permission' => 'gerir propostas'],
         ['route' => 'vehicles.index', 'icon' => 'fa-car-side', 'label' => __('Veículos'), 'permission' => 'gerir veiculos'],
         ['route' => 'expenses.index', 'icon' => 'fa-file-invoice-dollar','label' => __('Despesas'), 'permission' => 'gerir despesas'],
         ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'label' => __('Vendas'), 'permission' => 'gerir vendas'],
@@ -180,7 +181,6 @@
         ['route' => 'partners.index', 'icon' => 'fa-handshake', 'label' => __('Parceiros'), 'permission' => 'gerir parceiros'],
         ['route' => 'ad-searches.index', 'icon' => 'fa-chart-line', 'label' => __('Análise de Mercado'), 'permission' => 'analisar mercado'],
         ];
-
 
 
         $menuItemsCMS = [
@@ -197,11 +197,11 @@
         ['route' => 'vehicle-attributes.index', 'icon' => 'fa-cog', 'label' => __('Atributos de Veículo'), 'permission' => 'gerir atributos veiculos'],
         ['route' => 'page-types.index', 'icon' => 'fa-file', 'label' => __('Tipos de Página'), 'permission' => 'gerir tipos de pagina'],
         ['route' => 'pages.index', 'icon' => 'fa-file', 'label' => __('Páginas'), 'permission' => 'gerir paginas'],
-        ['route' => 'menus.index', 'icon' => 'fa-file', 'label' => __('Menus'), 'permission' => 'gerir menus'],
-        ['route' => 'settings.index', 'icon' => 'fa-tags', 'label' => __('Configurações'), 'permission' => 'gerir configuracoes'],
-        ['route' => 'users.index', 'icon' => 'fa-person', 'label' => __('Utilizadores'), 'permission' => 'gerir utilizadores'],
-        ['route' => 'permissions.index', 'icon' => 'fa-tags', 'label' => __('Permissões'), 'permission' => 'gerir permissoes'],
-        ['route' => 'roles.index', 'icon' => 'fa-tags', 'label' => __('Perfis'), 'permission' => 'gerir perfis'],
+        ['route' => 'menus.index', 'icon' => 'fa-bars', 'label' => __('Menus'), 'permission' => 'gerir menus'],
+        ['route' => 'settings.index', 'icon' => 'fa-cogs', 'label' => __('Configurações'), 'permission' => 'gerir configuracoes'],
+        ['route' => 'users.index', 'icon' => 'fa-user', 'label' => __('Utilizadores'), 'permission' => 'gerir utilizadores'],
+        ['route' => 'permissions.index', 'icon' => 'fa-users', 'label' => __('Permissões'), 'permission' => 'gerir permissoes'],
+        ['route' => 'roles.index', 'icon' => 'fa-users', 'label' => __('Perfis'), 'permission' => 'gerir perfis'],
         ];
         @endphp
         <!-- Menu Dropdown Mobile -->

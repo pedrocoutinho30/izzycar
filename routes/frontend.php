@@ -9,7 +9,7 @@ use App\Http\Controllers\Frontend\ImportController;
 use App\Http\Controllers\Frontend\SellingController;
 use App\Http\Controllers\Frontend\VehiclesController;
 use App\Http\Controllers\Frontend\NewsController;
-
+use App\Http\Controllers\Frontend\CostSimulatorController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,8 +26,8 @@ use App\Http\Controllers\Frontend\NewsController;
 
 Route::post('/formulario-importacao', [ImportController::class, 'submitFormImport'])->name('frontend.import-submit');
 Route::get('/formulario-importacao', [ContactController::class, 'importForm'])->name('frontend.form-import');
-
-
+Route::get('/simulador-custos', [CostSimulatorController::class, 'index'])->name('frontend.cost-simulator');
+Route::post('/simulador-custos', [CostSimulatorController::class, 'calculate'])->name('frontend.cost-simulator.calculate');
 Route::get('teste', function () {
 
     $convertedProposal = \App\Models\ConvertedProposal::first();
