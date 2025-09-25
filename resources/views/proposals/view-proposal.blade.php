@@ -313,8 +313,8 @@ $image = $proposal->images;
                     <h4 class="fw-bold mb-3 text-accent">Pagamentos</h4>
                     <p><strong>Serviço da Izzycar:</strong></p>
                     <ul>
-                        <li>50% na adjudicação do serviço (após assinatura do contrato).</li>
-                        <li>50% na entrega do automóvel em Portugal.</li>
+                        <li>{{Setting::where('label', 'init_payment')->first()->value()}} na adjudicação do serviço (após assinatura do contrato).</li>
+                        <li>{{Setting::where('label', 'final_payment')->first()->value()}} na entrega do automóvel em Portugal.</li>
                     </ul>
                     <p><strong>Aquisição do Automóvel:</strong> O pagamento é feito diretamente ao stand, por transferência bancária.</p>
                 </div>
