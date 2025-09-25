@@ -183,7 +183,6 @@
         ];
 
 
-
         $menuItemsCMS = [
         ['route' => 'pages.homepage', 'icon' => 'fa-file', 'label' => __('Homepage'), 'permission' => 'gerir paginas'],
         ['route' => 'pages.imports', 'icon' => 'fa-file', 'label' => __('Importações'), 'permission' => 'gerir importacoes'],
