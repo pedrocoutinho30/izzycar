@@ -6,54 +6,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0NT5HLTZ2J"></script>
 
         <!-- Outros meta tags -->
-        <script type="application/ld+json">
-            {
-                "@context": "https://schema.org",
-                "@type": "AutoDealer",
-                "name": "Izzycar",
-                "url": "https://izzycar.pt",
-                "logo": "https://izzycar.pt/storage/settings/logo_redondo.png",
-                "description": "Izzycar é especialista em importação automóvel chave na mão, venda de carros nacionais e previamente importados preparados para entrega imediata. Ajudamos clientes a trazer carros da Alemanha e outros países para Portugal, cuidando de todo o processo de importação, inspeção e registo. Também fazemos legalização automóvel e venda de consignados.",
-                "address": {
-                    "@type": "PostalAddress",
-                    "addressCountry": "PT"
-                },
-                "hasOfferCatalog": {
-                    "@type": "OfferCatalog",
-                    "name": "Serviços de automóvel Izzycar",
-                    "itemListElement": [{
-                            "@type": "Offer",
-                            "name": "Importação de carros da Alemanha",
-                            "description": "Serviço completo de importação de veículos da Alemanha, incluindo transporte, inspeção e registo em Portugal."
-                        },
-                        {
-                            "@type": "Offer",
-                            "name": "Importação de carros de outros países",
-                            "description": "Serviço de importação automóvel de qualquer país da União Europeia, com acompanhamento total do processo."
-                        },
-                        {
-                            "@type": "Offer",
-                            "name": "Venda de carros nacionais e previamente importados",
-                            "description": "Carros prontos para entrega imediata, nacionais ou previamente importados e preparados para o cliente."
-                        },
-                        {
-                            "@type": "Offer",
-                            "name": "Legalização automóvel",
-                            "description": "Serviço completo de legalização de veículos, incluindo inspeção e registo em Portugal."
-                        },
-                        {
-                            "@type": "Offer",
-                            "name": "Venda de carros em consignação",
-                            "description": "Gerimos a venda do seu carro em consignação, cuidando de todo o processo de venda."
-                        }
-                    ]
-                },
-                "sameAs": [
-                    "https://www.facebook.com/profile.php?id=61572831810539",
-                    "https://www.instagram.com/izzycarpt/"
-                ]
-            }
-        </script>
+       
 
 
         <meta charset="utf-8">
