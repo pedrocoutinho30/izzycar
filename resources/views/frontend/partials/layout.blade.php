@@ -5,7 +5,6 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0NT5HLTZ2J"></script>
 
-    <head>
         <!-- Outros meta tags -->
         <script type="application/ld+json">
             {
