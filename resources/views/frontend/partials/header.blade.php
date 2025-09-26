@@ -162,7 +162,7 @@
   }
 
   .navbar .nav-link:hover {
-    color: var(--secondary-color);
+    color: #fcc106 !important;
   }
 
   .navbar .nav-link.active {
