@@ -18,7 +18,7 @@ $image = $proposal->images;
 <meta name="robots" content="noindex, nofollow">
 
 
-@section('title', 'Proposta de Importação | Izzycar')
+@section('title', 'Proposta de Importação')
 
 @section('content')
 

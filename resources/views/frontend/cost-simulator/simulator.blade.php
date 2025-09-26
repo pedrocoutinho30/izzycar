@@ -3,7 +3,7 @@
 @include('frontend.partials.seo', [
 'seo' => (object)[
 'meta_image' => "",
-'title' => 'Simulador de Custos de Importação | Izzycar',
+'title' => 'Simulador de Custos de Importação ',
 'meta_description' => 'Simule os custos de importar o seu carro para Portugal. Obtenha uma estimativa detalhada e transparente, incluindo ISV, transporte e outros encargos. Planeie a sua importação com confiança e sem surpresas.',
 ]
 ])
