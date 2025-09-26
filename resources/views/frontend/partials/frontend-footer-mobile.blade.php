@@ -4,8 +4,16 @@
         $settings = \App\Models\Setting::all();
         @endphp
         <div class="row g-1 align-items-center text-center">
-
+            @foreach($menus->where('parent_id', null) as $menu)
+            @if( $menu->title !== 'Notícias')
             <div class="col-12 col-lg-12">
+                <a href="{{ $menu->url }}">
+                    <h6 class="site-footer-title mb-0">{{ $menu->title }}</h6>
+                </a>
+            </div>
+            @endif
+            @endforeach
+            <!-- <div class="col-12 col-lg-12">
                 <a href="{{ route('frontend.home') }}">
                     <h6 class="site-footer-title mb-0">Home</h6>
                 </a>
@@ -21,7 +29,7 @@
                 <a href="{{ route('frontend.legalization') }}">
                     <h6 class="site-footer-title mb-0">Legalização</h6>
                 </a>
-            </div>
+            </div> -->
 
             <!-- <div class="col-12 col-lg-12">
                 <a href="{{ route('vehicles.list') }}">

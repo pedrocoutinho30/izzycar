@@ -1,9 +1,21 @@
 @extends('frontend.partials.layout')
 
+@include('frontend.partials.seo', [
+'seo' => (object)[
+'meta_image' => "",
+'title' => 'Simulador de Custos de Importação | Izzycar',
+'meta_description' => 'Simule os custos de importar o seu carro para Portugal. Obtenha uma estimativa detalhada e transparente, incluindo ISV, transporte e outros encargos. Planeie a sua importação com confiança e sem surpresas.',
+]
+])
+
+
+
 
 @section('content')
 
 @include('frontend.partials.hero-section', ['title' => "Simulador de Custos", 'subtitle' => ""])
+
+
 
 <section class="featured-section">
     <div class="container">

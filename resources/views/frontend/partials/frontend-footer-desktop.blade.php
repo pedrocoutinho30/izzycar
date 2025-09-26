@@ -3,13 +3,26 @@
         @php
         $settings = \App\Models\Setting::all();
         @endphp
-        <div class="row g-3 align-items-start">
 
-            <div class="col-6 col-lg-3">
+
+
+        <div class="row g-3 align-items-start text-center text-lg-start">
+            <div class="col-lg-1"></div>
+            @foreach($menus->where('parent_id', null) as $menu)
+
+            @if( $menu->title !== 'Notícias')
+            <div class="col-3 col-lg-2">
+                <a href="{{ $menu->url }}">
+                    <h6 class="site-footer-title mb-0">{{ $menu->title }}</h6>
+                </a>
+            </div>
+            @endif
+            @endforeach
+            <!-- <div class="col-6 col-lg-3">
                 <a href="{{ route('frontend.home') }}">
                     <h6 class="site-footer-title mb-3">Home</h6>
                 </a>
-            </div>
+            </div> -->
 
             <!-- <div class="col-6 col-lg-3">
                 <h6 class="site-footer-title mb-3">Serviços</h6>
@@ -22,7 +35,7 @@
                     </li>
                 </ul>
             </div> -->
-            <div class="col-6 col-lg-3">
+            <!-- <div class="col-6 col-lg-3">
                 <a href="{{ route('frontend.legalization') }}">
                     <h6 class="site-footer-title mb-3">Legalização</h6>
                 </a>
@@ -31,14 +44,14 @@
                 <a href="{{ route('frontend.import') }}">
                     <h6 class="site-footer-title mb-3">Importação</h6>
                 </a>
-            </div>
+            </div> -->
             <!-- <div class="col-6 col-lg-3">
                 <a href="{{ route('vehicles.list') }}">
                     <h6 class="site-footer-title mb-3">Usados</h6>
                 </a>
             </div> -->
 
-            <div class="col-6 col-lg-3">
+            <div class="col-4 col-lg-3">
                 <h6 class="site-footer-title mb-3">Contactos</h6>
                 <p class="mb-1">
                     <a href="tel:{{$settings->where('label', 'phone')->first()->value}}" class="site-footer-link">

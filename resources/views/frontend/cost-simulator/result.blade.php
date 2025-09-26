@@ -5,6 +5,8 @@
 
 @include('frontend.partials.hero-section', ['title' => "Simulador de Custos", 'subtitle' => ""])
 
+
+
 <section class="featured-section">
     <div class="container">
         <div class="row justify-content-center">
