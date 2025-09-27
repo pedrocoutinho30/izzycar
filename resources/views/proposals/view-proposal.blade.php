@@ -220,14 +220,14 @@ $image = $proposal->images;
                                     <small class="text-white">Preço chave na mão</small>
                                 </div>
                             </div>
-
+                            @if($proposal->fuel == 'Elétrico' || $proposal->fuel == 'Híbrido Plug-in/Gasolina' || $proposal->fuel == 'Híbrido Plug-in/Diesel')
                             <div class="col-sm-12 col-md-2 mb-3 d-flex">
                                 <div class="p-3 bg-dark rounded shadow-sm flex-fill d-flex flex-column">
                                     <h5 class="fw-bold text-accent">{{ round($totalCostWithoutIva, 0) }} €</h5>
                                     <small class="text-white">Preço chave na mão sem iva (empresas)</small>
                                 </div>
                             </div>
-
+                            @endif
                             <!-- Ver Anúncio -->
                             <div class="col-sm-12 col-md-2 mb-3 d-flex">
                                 <a href="{{ $proposal->url }}" target="_blank" class="flex-fill d-flex ">
