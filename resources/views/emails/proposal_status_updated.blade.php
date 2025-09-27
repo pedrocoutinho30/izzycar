@@ -28,8 +28,8 @@
 
         <div style="  text-align: center;
             margin-bottom: 20px;">
-            <img src="{{ url($logotipo) }}" alt="Izzycar Logo" style="max-height: 60px; margin-bottom: 10px;">
-            <div class="title" style="font-size: 24px; font-weight: bold; color: #990000;">Atualização do Estado da Proposta </div>
+            <img src="https://izzycar.pt/storage/settings/logo_redondo.png" alt="Izzycar Logo" style="max-height: 60px; max-width: 60px; margin-bottom: 10px;">
+            <div class="title" style="font-size: 24px; font-weight: bold; color: #fff;">Atualização do Estado da Proposta </div>
         </div>
 
         <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Olá <b>{{ $client_name }}</b>,</p>

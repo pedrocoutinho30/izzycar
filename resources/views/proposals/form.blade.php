@@ -83,26 +83,26 @@
         </div>
 
         <div class="row">
-            <div class="col-md-2">
-                <!-- Ano -->
-                <div class="form-group">
+            <!-- <div class="col-md-2"> -->
+            <!-- Ano -->
+            <!-- <div class="form-group">
                     <label for="year">Ano</label>
                     <input type="number" name="year" value="{{ old('year', isset($proposal) ? $proposal->year : '') }}" class="form-control rounded shadow-sm">
                     @error('year')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
-                </div>
-            </div>
-            <div class="col-md-2">
-                <!-- Quilometragem -->
-                <div class="form-group">
+                </div> -->
+            <!-- </div> -->
+            <!-- <div class="col-md-2"> -->
+            <!-- Quilometragem -->
+            <!-- <div class="form-group">
                     <label for="mileage">Quilometragem</label>
                     <input type="number" name="mileage" value="{{ old('mileage', isset($proposal) ? $proposal->mileage : '') }}" class="form-control rounded shadow-sm">
                     @error('mileage')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
-                </div>
-            </div>
+                </div> -->
+            <!-- </div> -->
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="engine_capacity">Cilindrada</label>
@@ -137,7 +137,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-2">
+            <!-- <div class="col-md-2">
                 <div class="form-group">
                     <label for="value">Valor disponivel</label>
                     <input type="number" step="0.01" name="value" value="{{ old('value', isset($proposal) ? $proposal->value : '') }}" class="form-control rounded shadow-sm">
@@ -145,7 +145,7 @@
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="form-group">
@@ -205,6 +205,7 @@
                 <!-- Custo ISV -->
                 <div class="form-group">
                     <label for="isv_cost">Custo ISV</label>
+                    <a href="https://www.izzycar.pt/gestao/simulador-isv" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                     <input type="number" step="0.01" name="isv_cost" id="isv_cost" oninput="calculateCommission()" value="{{ old('isv_cost', isset($proposal) ? $proposal->isv_cost : '') }}" class="form-control rounded shadow-sm">
                     @error('isv_cost')
                     <div class="text-danger">{{ $message }}</div>
@@ -232,6 +233,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="url">Url</label>
+                    <a href="{{ old('url', isset($proposal) ? $proposal->url : '') }}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                     <input type="text" name="url" value="{{ old('url', isset($proposal) ? $proposal->url : '') }}" class="form-control rounded shadow-sm">
                     @error('url')
                     <div class="text-danger">{{ $message }}</div>
@@ -268,11 +270,11 @@
         </div>
 
 
-         <x-image-manager :label="'Imagem'" :images="$images ?? ''" name="images" :multi="true" id="images" />
+        <x-image-manager :label="'Imagem'" :images="$images ?? ''" name="images" :multi="true" id="images" />
 
-       
 
-       
+
+
 
 
 
@@ -405,7 +407,11 @@
             let proposedValue = parseFloat(document.getElementById("proposed_car_value").value) || 0;
 
             // Calcula as comissões
-            let commissionCost = {{ $commission_cost }}; //(proposedValue * myCommision).toFixed(2);
+            let commissionCost = {
+                {
+                    $commission_cost
+                }
+            }; //(proposedValue * myCommision).toFixed(2);
             // let inspectionCommissionCost = (proposedValue * inspectionCommision).toFixed(2);
 
             // Atualiza os inputs

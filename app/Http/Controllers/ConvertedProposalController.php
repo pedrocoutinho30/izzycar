@@ -95,7 +95,7 @@ class ConvertedProposalController extends Controller
 
         $convertedProposal->save();
         // Enviar email para o cliente
-        Mail::to('geral@izzycar.pt')->send(
+        Mail::to($client->email)->send(
             new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $newStatus, $client_name,  $convertedProposal->matricula_destino)
         );
 

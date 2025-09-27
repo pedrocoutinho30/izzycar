@@ -117,8 +117,7 @@
                     name="matricula_destino"
                     class="form-control"
                     value="{{ $convertedProposal->matricula_destino }}"
-                    style="text-transform: uppercase;"
-                    >
+                    style="text-transform: uppercase;">
             </div>
         </div>
 
@@ -282,7 +281,7 @@
             const newStatus = this.value;
             const id = this.dataset.id;
 
-            fetch(`/admin/converted-proposals/${id}/update-status`, {
+            fetch(`/gestao/converted-proposals/${id}/update-status`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',

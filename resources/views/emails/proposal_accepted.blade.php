@@ -19,8 +19,8 @@
         <div class="container">
             <div style="  text-align: center;
             margin-bottom: 20px;">
-                <img src="{{ url($logotipo) }}" alt="Izzycar Logo" style="max-height: 60px; margin-bottom: 10px;">
-                <div class="title" style="font-size: 24px; font-weight: bold; color: #990000;">Aceitação de Proposta </div>
+                <img src="https://izzycar.pt/storage/settings/logo_redondo.png" alt="Izzycar Logo" style="max-height: 60px; max-width: 60px; margin-bottom: 10px;">
+                <div class="title" style="font-size: 24px; font-weight: bold; color: #fff;">Aceitação de Proposta </div>
             </div>
 
             <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Olá <b>{{ $data['client_name']}}</b>,</p>
@@ -29,7 +29,7 @@
             <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Acabou de aceitar a proposta feita pela <b>Izzycar</b> para a importação do seu novo carro.</p>
 
             <div>
-                <p><b>Detalhes do carro:</b></p>
+                <p style="font-size: 16px; margin-bottom: 20px; color: #fff;"><b>Detalhes do carro:</b></p>
                 <ul>
                     <li style="font-size: 16px; margin-bottom: 20px; color: #fff;"><b>Marca:</b> {{ $data['brand'] }}</li>
                     <li style="font-size: 16px; margin-bottom: 20px; color: #fff;"><b>Modelo:</b> {{ $data['model'] }}</li>
@@ -41,20 +41,11 @@
             </div>
 
             <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Em anexo encontra-se o contrato que deverá ser <b>assinado e devolvido</b> à Izzycar.</p>
+            <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Uma cópia do cartão de cidadão do comprador deverá ser enviada junto com o contrato.</p>
+
             <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Pode enviá-lo por <b>email</b> ou via <b>WhatsApp</b>, como lhe for mais conveniente.</p>
 
-            <p style="font-size: 16px; margin-bottom: 20px; color: #fff;"><b>Nota Importante:</b> Assim que a transferência de <b>50% do valor do serviço</b> for recebida, o processo será iniciado com a maior brevidade possível.</p>
-
-            <a href="mailto:geral@izzycar.pt" style="
-      display: inline-block;
-      background-color: #28a745; /* verde */
-      color: #fff;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      font-family: Arial, sans-serif;
-   ">Enviar por Email</a>
+            <p style="font-size: 16px; margin-bottom: 20px; color: #fff;"><b>Nota Importante:</b> Assim que a transferência de <b>60% do valor do serviço</b> for recebida, o processo será iniciado com a maior brevidade possível.</p>
 
             <div class="footer">
                 <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Obrigado pela confiança na Izzycar! 🚀</p>
