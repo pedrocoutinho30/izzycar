@@ -74,9 +74,9 @@ class ProposalController extends Controller
     public function getDataFromUrl($url, $proposalId)
     {
 
-        $python = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/venv/bin/python';
+        // $python = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/venv/bin/python';
 
-        // $python = '/usr/bin/python3';
+        $python = '/usr/bin/python3';
         // Caminho do script Python
         $scriptPath = base_path('scripts/process_link.py');
 
