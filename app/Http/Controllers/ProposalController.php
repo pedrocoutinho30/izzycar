@@ -20,6 +20,9 @@ use App\Models\Setting;
 use App\Models\StatusProposalHistory;
 use App\Services\ContractService;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
+
 class ProposalController extends Controller
 {
     // public function __construct()
@@ -67,6 +70,71 @@ class ProposalController extends Controller
         return view('proposals.form', compact('clients', 'brands', 'attributes', 'commission_cost', 'inspection_commission_cost'));
     }
 
+
+    public function getDataFromUrl($url, $proposalId)
+    {
+
+        // $python = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/venv/bin/python';
+
+        $python = '/usr/bin/python3';
+        // Caminho do script Python
+        $scriptPath = base_path('scripts/process_link.py');
+
+        $command = escapeshellcmd($python) . ' ' . escapeshellarg($scriptPath) . ' ' . escapeshellarg($url);
+
+        exec($command . ' 2>&1', $output, $return_var);
+
+        if ($return_var !== 0) {
+            dd($output); // Mostrar erro se houver
+        }
+
+        $html = implode("\n", $output);
+
+
+        //obter todos os atributos
+        $attributes = VehicleAttribute::where('field_name_autoscout', '!=', '')->get();
+
+
+        $existAttributes = ProposalAttributeValue::where('proposal_id', $proposalId)->get();
+        $existes = [];
+        foreach ($attributes as $attribute) {
+            //TODO:  verificar os que ja possam estar preenchidos na proposta
+
+            if ($existAttributes->contains('attribute_id', $attribute->id)) continue;
+            //depois de obter o html da pagina, fazer o parse e obter os valores dos atributos
+
+            //verificar se o atributo existe no html
+
+            if (strpos($html, $attribute->field_name_autoscout) !== false) {
+                ProposalAttributeValue::create([
+                    'proposal_id' => $proposalId,
+                    'attribute_id' => $attribute->id,
+                    'value' => 1
+                ]);
+            } else {
+                continue; //atributo não existe na pagina
+            }
+
+
+
+            // if ($attribute->key == 'apple_carplay') {
+            //     ProposalAttributeValue::create([
+            //         'proposal_id' => $proposalId,
+            //         'attribute_id' => $attribute->id,
+            //         'value' => 1
+            //     ]);
+            // }
+        }
+
+        // vamos imaginar que apple_carplay =true
+
+        // ProposalAttributeValue::create([
+        //     'proposal_id' => $proposalId,
+        //     'attribute_id' => $attribute->id,
+        //     'value' => 'apple_carplay'
+        // ]);
+    }
+
     public function store(Request $request)
     {
 
@@ -100,7 +168,7 @@ class ProposalController extends Controller
             'status' => 'nullable|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta',
             'proposed_car_features' => 'nullable|string'
         ]);
-        
+
         $proposal = Proposal::create([
             'url' => $request->url,
             'status' => $request->status,
@@ -143,6 +211,21 @@ class ProposalController extends Controller
             ]);
         }
 
+        ProposalAttributeValue::create([
+            'proposal_id' => $proposal->id,
+            'attribute_id' => 1,
+            'value' => 0
+        ]);
+        if ($request->getDataFromUrl == 1) {
+
+
+            /**
+             * IDEIA: ISTO SÓ aparece se o campo url tiver preenchido e na criação! 
+             * Pegar em todos os atributos, verificar se existe o correspondente no anuncio e em caso afirmativo guardar esse valor de atributo com a proposta correspondente
+             */
+            $this->getDataFromUrl($request->url, $proposal->id);
+        }
+
         // Salvar as imagens
         // if ($request->hasFile('images')) {
         //     $images = $request->file('images');
@@ -172,7 +255,9 @@ class ProposalController extends Controller
         //     $proposal->save();
         // }
 
-
+        return redirect()
+            ->route('proposals.edit', $proposal->id)
+            ->with('success', 'Proposta salva! Pode continuar a editar.');
         return redirect()->route('proposals.index')->with('success', 'Proposal created successfully.');
     }
 

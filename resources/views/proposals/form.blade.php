@@ -233,11 +233,25 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="url">Url</label>
+
                     <a href="{{ old('url', isset($proposal) ? $proposal->url : '') }}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                     <input type="text" name="url" value="{{ old('url', isset($proposal) ? $proposal->url : '') }}" class="form-control rounded shadow-sm">
                     @error('url')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label class="form-label d-block">Obter dados</label>
+                    <div class="form-switch-toggle">
+                        <input type="checkbox"
+                            id="getDataFromUrl"
+                            name="getDataFromUrl"
+                            value="1"
+                            class="d-none">
+                        <label for="getDataFromUrl" class="toggle-switch-label"></label>
+                    </div>
                 </div>
             </div>
             <div class="col-md-2">
