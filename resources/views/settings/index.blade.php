@@ -36,10 +36,10 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('settings.edit', $setting) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
+                                <a href="{{ route('settings.edit', $setting) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil"></i></a>
                                 <form action="{{ route('settings.destroy', $setting) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')"><i class="bi bi-trash"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza?')"><i class="bi bi-trash"></i></button>
                                 </form>
                             </td>
                         </tr>

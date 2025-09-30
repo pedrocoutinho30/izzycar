@@ -261,13 +261,13 @@
                                         <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-sm btn-info" title="Ver">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                        <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" onsubmit="return confirm('Tem certeza?')" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>

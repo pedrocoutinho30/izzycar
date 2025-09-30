@@ -36,7 +36,7 @@
                         <td>{{ $page->created_at->format('d/m/Y H:i') }}</td>
                         <td>
                             <div class="btn-group" role="group" aria-label="Ações">
-                                <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('pages.destroy', $page->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
@@ -44,7 +44,7 @@
                                     @method('DELETE')
 
 
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -60,14 +60,14 @@
                         <td>{{ $child->created_at->format('d/m/Y H:i') }}</td>
                         <td>
                             <div class="btn-group" role="group" aria-label="Ações">
-                                <a href="{{ route('pages.edit', $child->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                <a href="{{ route('pages.edit', $child->id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('pages.destroy', $child->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
                                     @csrf
                                     @method('DELETE')
 
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>

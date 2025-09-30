@@ -68,9 +68,16 @@
         <input type="number" name="order" value="{{ old('order', $vehicleAttribute->order ?? '') }}" class="form-control rounded shadow-sm">
       </div>
     </div>
-
-
-
+    <div class="row g-3">
+      <div class="form-group col-md-6 mt-4">
+        <label>Campo AutoScout24</label>
+        <input type="text" name="field_name_autoscout" value="{{ old('field_name_autoscout', $vehicleAttribute->field_name_autoscout ?? '') }}" class="form-control rounded shadow-sm">
+      </div>
+      <div class="form-group col-md-6 mt-4">
+        <label>Campo Mobile.de</label>
+        <input type="text" name="field_name_mobile" value="{{ old('field_name_mobile', $vehicleAttribute->field_name_mobile ?? '') }}" class="form-control rounded shadow-sm">
+      </div>
+    </div>
     <div class="mt-4 d-flex justify-content-between">
       <a href="{{ route('vehicles.index') }}" class="btn btn-danger px-4 py-2 rounded-pill shadow">Voltar</a>
       <button type="submit" class="btn btn-success px-4 py-2 rounded-pill shadow">

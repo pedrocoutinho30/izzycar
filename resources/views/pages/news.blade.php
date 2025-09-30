@@ -38,7 +38,7 @@
                         <td>{{ $page->contents->where('field_name', 'published_at')->first()->field_value ?? '' }}</td>
                         <td>
                             <div class="btn-group" role="group" aria-label="Ações">
-                                <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <a href="{{ url('/noticias/' . $page->slug) }}" class="btn btn-sm btn-info" title="Ver">
@@ -49,7 +49,7 @@
                                     @method('DELETE')
 
                                     
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>

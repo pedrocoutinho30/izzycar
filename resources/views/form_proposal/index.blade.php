@@ -31,7 +31,7 @@
                             <td>{{ $form->status ?? 'N/A' }}</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Ações">
-                                    <a href="{{ route('form_proposals.show', $form->id) }}" class="btn btn-sm btn-warning" title="Ver detalhes">
+                                    <a href="{{ route('form_proposals.show', $form->id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Ver detalhes">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </div>

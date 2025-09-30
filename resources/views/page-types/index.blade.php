@@ -31,14 +31,14 @@
                             <td>{{ $pageType->name }}</td>
                             <td>{{ $pageType->fields->count() }}</td>
                             <td>
-                                <a href="{{ route('page-types.edit', $pageType) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                                <a href="{{ route('page-types.edit', $pageType) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="fas fa-edit"></i></a>
                                 <form action="{{ route('page-types.destroy', $pageType) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja eliminar este tipo de página?');">
                                     @csrf
                                     @method('DELETE')
                                     @if($pageType->pages->count() > 0)
-                                    <button type="button" class="btn btn-sm btn-danger" disabled title="Existem páginas associadas"> <i class="fas fa-trash"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Existem páginas associadas"> <i class="fas fa-trash"></i></button>
                                     @else
-                                    <button type="submit" class="btn btn-sm btn-danger"> <i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"> <i class="fas fa-trash"></i></button>
                                     @endif
                                 </form>
                                 <form action="{{ route('page-types.duplicate', $pageType->id) }}" method="POST" style="display:inline;">

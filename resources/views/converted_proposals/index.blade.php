@@ -37,7 +37,7 @@
                             <td>{{ number_format($proposal->valor_carro, 2, ',', '.') }} €</td>
                             <td>{{ $proposal->carro_pago ? 'Sim' : 'Não' }}</td>
                             <td>
-                                <a href="{{ route('converted-proposals.edit', $proposal->id) }}" class="btn btn-sm btn-warning">
+                                <a href="{{ route('converted-proposals.edit', $proposal->id) }}" class="btn btn-sm btn-outline-secondary me-2">
                                     <li class="fas fa-edit"></li>
                                 </a>
                                 <a href="{{ route('converted-proposals.timeline', [$proposal->brand, $proposal->modelCar, $proposal->version, $proposal->id]) }}" class="btn btn-sm btn-info">

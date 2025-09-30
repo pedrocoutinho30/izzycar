@@ -76,9 +76,9 @@ class ProposalController extends Controller
             'brand' => 'required',
             'model' => 'required',
             'year' => 'integer',
-            'mileage' => 'integer',
-            'engine_capacity' => 'required',
-            'co2' => 'required',
+            // 'mileage' => 'integer',
+            //  'engine_capacity' => 'integer',
+            //  'co2' => 'integer',
             'transport_cost' => 'required|numeric',
             'ipo_cost' => 'required|numeric',
             'imt_cost' => 'required|numeric',
@@ -87,9 +87,9 @@ class ProposalController extends Controller
             'license_plate_cost' => 'required|numeric',
             'inspection_commission_cost' => 'required|numeric',
             'commission_cost' => 'required|numeric',
-            'proposed_car_mileage' => 'required|integer',
-            'proposed_car_year_month' => 'required',
-            'proposed_car_value' => 'required|numeric',
+            // 'proposed_car_mileage' => 'integer',
+            // 'proposed_car_year_month' => 'required',
+            // 'proposed_car_value' => 'required|numeric',
             'images' => 'nullable',
             'images.*' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg,avif|max:2048',
             'fuel' => 'nullable|in:Gasolina,Diesel,Híbrido Plug-in/Gasolina,Híbrido Plug-in/Diesel,Elétrico',
@@ -133,6 +133,9 @@ class ProposalController extends Controller
 
 
         foreach ($request->input('attributes', []) as $attributeId => $value) {
+            if ($value === null) {
+                continue; // Ignorar valores nulos
+            }
             ProposalAttributeValue::create([
                 'proposal_id' => $proposal->id,
                 'attribute_id' => $attributeId,
@@ -186,8 +189,8 @@ class ProposalController extends Controller
         $brands = Brand::with(['models' => function ($query) {
             $query->orderBy('name');
         }])->get();
-         $commission_cost = Setting::where('label', 'commission_cost')->first()->value;
-         $inspection_commission_cost = Setting::where('label', 'inspection_commission_cost')->first()->value;
+        $commission_cost = Setting::where('label', 'commission_cost')->first()->value;
+        $inspection_commission_cost = Setting::where('label', 'inspection_commission_cost')->first()->value;
         return view('proposals.form', compact('proposal', 'clients', 'images', 'brands', 'attributes', 'attributeValues', 'commission_cost', 'inspection_commission_cost'));
     }
 
@@ -203,6 +206,7 @@ class ProposalController extends Controller
     }
     public function update(Request $request, Proposal $proposal)
     {
+
         $request->validate([
             'url' => 'nullable|url',
             'status' => 'nullable|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta',
@@ -277,6 +281,9 @@ class ProposalController extends Controller
             ]);
         }
 
+
+
+
         // Excluir as imagens selecionadas para remoção
         // if ($request->has('delete_images')) {
         //     foreach ($request->delete_images as $imageToDelete) {
@@ -319,6 +326,12 @@ class ProposalController extends Controller
         //     $proposal->images = json_encode($imagePaths);
         //     $proposal->save();
         // }
+
+        if ($request->input('action') === 'save_continue') {
+            return redirect()
+                ->route('proposals.edit', $proposal->id)
+                ->with('success', 'Proposta salva! Pode continuar a editar.');
+        }
         return redirect()->route('proposals.index')->with('success', 'Proposal updated successfully.');
     }
 

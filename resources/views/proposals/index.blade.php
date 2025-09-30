@@ -66,11 +66,11 @@
                         </p>
                         <p class="card-text mb-2"><strong>Combustível:</strong> {{ $proposal->fuel }}</p>
                         <div class="d-flex flex-wrap gap-2">
-                            <a href="{{ route('proposals.edit', $proposal) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                            <a href="{{ route('proposals.edit', $proposal) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="fas fa-edit"></i></a>
                             <form action="{{ route('proposals.destroy', $proposal) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta proposta?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
                             </form>
                             <a href="{{ route('proposals.downloadPdf', $proposal->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-download"></i></a>
                             <a href="{{ route('proposals.detail', [
@@ -125,13 +125,13 @@
                             <td>{{ $proposal->fuel }}</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Ações">
-                                    <a href="{{ route('proposals.edit', $proposal) }}" class="btn btn-sm btn-warning" title="Editar">
+                                    <a href="{{ route('proposals.edit', $proposal) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('proposals.destroy', $proposal) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta proposta?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>

@@ -43,14 +43,14 @@
                         </td>
                         <td>
 
-                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </a>
 
                             <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja eliminar este usuário?')">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                <button class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
                             </form>
                         </td>
                     </tr>

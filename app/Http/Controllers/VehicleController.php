@@ -135,7 +135,7 @@ class VehicleController extends Controller
         //     }
         // }
 
-        $imagesNew = $request->input('images_new', []);
+        $imagesNew = $request->input('images', []);
 
 
         $images = explode(',', $imagesNew);
@@ -190,6 +190,8 @@ class VehicleController extends Controller
     public function update(Request $request, Vehicle $vehicle)
     {
 
+
+
         // Validar dados do formulário
         $validatedData = $request->validate([
             'show_online' => 'nullable|boolean',
@@ -233,61 +235,16 @@ class VehicleController extends Controller
             ]);
         }
 
-        // Obter arrays das imagens
-        $imagesNew = $request->input('images_new', []);
-        $imagesExisting = $request->input('images_existing', '');
-        $imagesRemoved = $request->input('images_removed', []);
+        // Salvar novas imagens
+        $imagesNew = $request->input('images', []);
 
-        // Converter imagens existentes para array
-        $existingArray = $imagesExisting ? explode(',', $imagesExisting) : [];
-        $removedArray = $imagesRemoved ? explode(',', $imagesRemoved) : [];
-        // Filtrar imagens existentes removendo as que estão em imagesRemoved
-        $filteredExisting = array_diff($existingArray, $removedArray);
-
-        $filteredExistingString = $filteredExisting ? implode(',', $filteredExisting) : '';
-        // Concatenar novas imagens e existentes filtradas
-        $imagesNew .=  $filteredExistingString ? ", " . $filteredExistingString : '';
-        $images = explode(',', $imagesNew);
+        // Remove as antigas que foram apagadas
         $vehicle->images()->delete();
-
+        $images = $imagesNew ? explode(',', $imagesNew) : [];
         foreach ($images as $imagePath) {
             // Gravar no banco de dados
             $vehicle->images()->create(['image_path' => $imagePath]);
         }
-        // Criar string final separada por vírgula
-
-
-        // if ($request->input('images_existing')) {
-        //     // Remove as antigas
-
-        // }
-        // Salvar novas imagens
-        // Update - adicionar novas imagens sem apagar as antigas
-        // if ($request->hasFile('images')) {
-        // Descobrir quantas imagens já existem para continuar a numeração
-        // $i = $vehicle->images()->count() + 1;
-
-        // foreach ($request->file('images') as $image) {
-        //     $extension = $image->getClientOriginalExtension();
-
-        //     // Nome personalizado
-        //     $fileName = "vehicles_{$vehicle->brand}_{$vehicle->model}_{$vehicle->version}_{$vehicle->year}_{$vehicle->id}_{$i}." . $extension;
-
-        //     // Guardar com nome personalizado
-        //     $path = $image->storeAs(
-        //         "vehicles/{$vehicle->id}", // Pasta
-        //         $fileName,                 // Nome
-        //         'public'                   // Disco
-        //     );
-
-        //     // Gravar no banco de dados
-        //     $vehicle->images()->create(['image_path' => $path]);
-
-        //     $i++;
-        // }
-
-
-        // }
 
         return redirect()->route('vehicles.index')->with('success', 'Veículo atualizado com sucesso!');
     }

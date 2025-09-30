@@ -31,6 +31,8 @@ class VehicleAttributeController extends Controller
             'options' => 'nullable|string',
             'attribute_group' => 'nullable|string|max:255',
             'order' => 'nullable|integer',
+            'field_name_autoscout' => 'nullable|string|max:255',
+            'field_name_mobile' => 'nullable|string|max:255',
         ]);
 
         $validated['options'] = $request->type === 'select'
@@ -56,6 +58,8 @@ class VehicleAttributeController extends Controller
             'options' => 'nullable|string',
             'attribute_group' => 'nullable|string|max:255',
             'order' => 'nullable|integer',
+            'field_name_autoscout' => 'nullable|string|max:255',
+            'field_name_mobile' => 'nullable|string|max:255',
         ]);
 
         $validated['options'] = $request->type === 'select' ? json_encode(explode(',', $request->options)) : null;

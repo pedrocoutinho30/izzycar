@@ -30,10 +30,10 @@
                         <tr>
                             <td>{{ $permission->name }}</td>
                             <td>
-                                <a href="{{ route('permissions.edit',$permission) }}" class="btn btn-sm btn-warning"> <i class="fas fa-edit"></i></a>
+                                <a href="{{ route('permissions.edit',$permission) }}" class="btn btn-sm btn-outline-secondary me-2"> <i class="fas fa-edit"></i></a>
                                 <form method="POST" action="{{ route('permissions.destroy',$permission) }}" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Apagar?')"> <i class="fas fa-trash"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Apagar?')"> <i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                         </tr>

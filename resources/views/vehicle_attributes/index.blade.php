@@ -21,7 +21,10 @@
               <th>Nome</th>
               <th>Chave</th>
               <th>Tipo</th>
+              <th>Campo AutoScout24</th>
+              <th>Campo Mobile.de</th>
               <th>Grupo de Atributos</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody id="sortable-{{ \Illuminate\Support\Str::slug($group) }}">
@@ -33,6 +36,9 @@
               <td>{{ $attr->name }}</td>
               <td>{{ $attr->key }}</td>
               <td>{{ $attr->type }}</td>
+              <td>{{ $attr->field_name_autoscout }}</td>
+              <td>{{ $attr->field_name_mobile }}</td>
+
               <td>
                 <form action="{{ route('vehicle-attributes.update-group', $attr->id) }}" method="POST" class="d-flex align-items-center">
                   @csrf
@@ -46,7 +52,19 @@
                   </select>
                 </form>
               </td>
+              <td>
+                <a href="{{ route('vehicle-attributes.edit', $attr->id) }}" class="btn btn-sm btn-outline-secondary me-2">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form action="{{ route('vehicle-attributes.destroy', $attr->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem a certeza que deseja eliminar este atributo?');">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-sm btn-outline-danger ">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
             </tr>
+
             @endforeach
           </tbody>
         </table>

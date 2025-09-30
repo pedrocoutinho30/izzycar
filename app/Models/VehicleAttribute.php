@@ -14,10 +14,11 @@ class VehicleAttribute extends Model
         'options',
         'order',
         'attribute_group',
+        'field_name_autoscout',
+        'field_name_mobile',
     ];
 
     protected $casts = [
         'options' => 'array',
     ];
-    
 }

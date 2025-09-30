@@ -34,13 +34,13 @@
                             <td>{{ $partner->address }}</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Ações">
-                                    <a href="{{ route('partners.edit', $partner->id) }}" class="btn btn-sm btn-warning" title="Editar parceiro">
+                                    <a href="{{ route('partners.edit', $partner->id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar parceiro">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('partners.destroy', $partner->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem a certeza que deseja excluir este parceiro?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar parceiro">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar parceiro">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>

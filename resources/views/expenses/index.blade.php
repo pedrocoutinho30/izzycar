@@ -89,13 +89,13 @@
                         <td>{{ $expense->partner ? $expense->partner->name : 'N/A' }}</td>
                         <td>
                             <div class="btn-group" role="group" aria-label="Ações">
-                                <a href="{{ route('expenses.edit', $expense->id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                <a href="{{ route('expenses.edit', $expense->id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('expenses.destroy', $expense->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>

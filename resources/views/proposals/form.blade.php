@@ -382,7 +382,10 @@
 
         <div class="mt-4 d-flex justify-content-between">
             <a href="{{ route('proposals.index') }}" class="btn btn-danger px-4 py-2 rounded-pill shadow">Voltar</a>
-            <button type="submit" class="btn btn-success px-4 py-2 rounded-pill shadow">
+            <button type="submit" name="action" value="save_continue" class="btn btn-primary px-4 py-2 rounded-pill shadow me-2">
+                <i class="bi bi-arrow-right-circle me-1"></i> Salvar e Continuar
+            </button>
+            <button type="submit" value="save" class="btn btn-success px-4 py-2 rounded-pill shadow">
                 <i class="bi bi-check-circle me-1"></i> Salvar
             </button>
         </div>
@@ -407,11 +410,7 @@
             let proposedValue = parseFloat(document.getElementById("proposed_car_value").value) || 0;
 
             // Calcula as comissões
-            let commissionCost = {
-                {
-                    $commission_cost
-                }
-            }; //(proposedValue * myCommision).toFixed(2);
+            let commissionCost = {{$commission_cost}}; //(proposedValue * myCommision).toFixed(2);
             // let inspectionCommissionCost = (proposedValue * inspectionCommision).toFixed(2);
 
             // Atualiza os inputs

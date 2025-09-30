@@ -19,8 +19,12 @@ return new class extends Migration
             $table->json('options')->nullable(); // only used for select
             $table->integer('order')->default(0); // order of display
             $table->string('attribute_group')->nullable(); // group for categorization (e.g
+            $table->string('field_name_autoscout')->nullable(); // field name in AutoScout24
+            $table->string('field_name_mobile')->nullable(); // field name in Mobile.de
             $table->timestamps();
         });
+
+       
     }
 
     /**

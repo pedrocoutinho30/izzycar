@@ -35,13 +35,13 @@
                         <td>{{ $supplier->country }}</td>
                         <td>
                             <div class="btn-group" role="group" aria-label="Ações">
-                                <a href="{{ route('suppliers.edit', $supplier->id) }}" class="btn btn-sm btn-warning" title="Editar fornecedor">
+                                <a href="{{ route('suppliers.edit', $supplier->id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar fornecedor">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('suppliers.destroy', $supplier->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este fornecedor?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar fornecedor">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar fornecedor">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
