@@ -74,21 +74,21 @@ class ProposalController extends Controller
     public function getDataFromUrl($url, $proposalId)
     {
 
-        // $python = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/venv/bin/python';
+        $python = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/venv/bin/python';
 
-        $python = '/usr/bin/python3';
+        // $python = '/usr/bin/python3';
         // Caminho do script Python
         $scriptPath = base_path('scripts/process_link.py');
 
-        $command = escapeshellcmd($python) . ' ' . escapeshellarg($scriptPath) . ' ' . escapeshellarg($url);
+       $process = new Process([$python, $scriptPath, $url]);
+$process->run();
 
-        exec($command . ' 2>&1', $output, $return_var);
+if (!$process->isSuccessful()) {
+    throw new ProcessFailedException($process);
+}
 
-        if ($return_var !== 0) {
-            dd($output); // Mostrar erro se houver
-        }
-
-        $html = implode("\n", $output);
+$html = $process->getOutput();
+        // $html = implode("\n", $output);
 
 
         //obter todos os atributos
