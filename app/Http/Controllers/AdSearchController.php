@@ -389,9 +389,10 @@ class AdSearchController extends Controller
 
     public function submit(Request $request)
     {
-        $python = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/venv/bin/python';
-        $script = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/scripts/getFromStandVirtual.py';
-
+        // $python = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/venv/bin/python';
+        $python = '/usr/bin/python3';
+        // $script = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/scripts/getFromStandVirtual.py';
+        $scriptPath = base_path('scripts/getFromStandVirtual.py');
         $data = $request->only(['brand', 'model', 'submodelo', 'ano_init', 'ano_fin', 'combustivel', 'descricao', 'url']);
         // Prepara os argumentos
         $args = [
