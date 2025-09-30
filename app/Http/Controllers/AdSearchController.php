@@ -406,17 +406,32 @@ class AdSearchController extends Controller
             $data['url'],
         ];
 
-        $command = escapeshellcmd($python) . ' ' . escapeshellarg($script);
+        // $command = escapeshellcmd($python) . ' ' . escapeshellarg($script);
 
-        foreach ($args as $arg) {
-            $command .= ' ' . escapeshellarg($arg);
-        }
+        // foreach ($args as $arg) {
+        //     $command .= ' ' . escapeshellarg($arg);
+        // }
 
-        exec($command . ' 2>&1', $output, $return_var);
+        // exec($command . ' 2>&1', $output, $return_var);
 
-        if ($return_var !== 0) {
-            // Mostra o erro
-            dd($output);
+        // if ($return_var !== 0) {
+        //     // Mostra o erro
+        //     dd($output);
+        // }
+
+
+        // Monta o comando completo
+        $command = array_merge([$python, $scriptPath], $args);
+
+        // Cria o Process
+        $process = new Process($command);
+        $process->setTimeout(300); // Timeout em segundos, se quiseres
+
+        try {
+            $process->mustRun(); // Executa e lança exceção se falhar
+            $output = $process->getOutput();
+        } catch (ProcessFailedException $exception) {
+            dd($exception->getMessage(), $exception->getProcess()->getErrorOutput());
         }
 
         return redirect()->route('ad-searches.index')->with('success', 'Pesquisa de anúncios iniciada com sucesso!');
