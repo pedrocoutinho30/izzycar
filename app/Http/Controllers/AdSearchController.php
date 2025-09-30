@@ -392,7 +392,7 @@ class AdSearchController extends Controller
         // $python = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/venv/bin/python';
         $python = '/usr/bin/python3';
         // $script = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/scripts/getFromStandVirtual.py';
-        $scriptPath = base_path('scripts/getFromStandVirtual.py');
+        $script = base_path('scripts/getFromStandVirtual.py');
         $data = $request->only(['brand', 'model', 'submodelo', 'ano_init', 'ano_fin', 'combustivel', 'descricao', 'url']);
 
         // Prepara os argumentos
