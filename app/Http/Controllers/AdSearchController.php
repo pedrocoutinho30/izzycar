@@ -394,6 +394,7 @@ class AdSearchController extends Controller
         // $script = '/Users/pedrocoutinho/projects/pessoais/novo_izzycar_app/scripts/getFromStandVirtual.py';
         $scriptPath = base_path('scripts/getFromStandVirtual.py');
         $data = $request->only(['brand', 'model', 'submodelo', 'ano_init', 'ano_fin', 'combustivel', 'descricao', 'url']);
+
         // Prepara os argumentos
         $args = [
             $data['brand'] ?? '',
@@ -403,37 +404,24 @@ class AdSearchController extends Controller
             $data['ano_fin'] ?? '',
             $data['combustivel'] ?? '',
             $data['descricao'] ?? '',
-            $data['url'],
+            $data['url'] ?? '',
         ];
 
-        // $command = escapeshellcmd($python) . ' ' . escapeshellarg($script);
-
-        // foreach ($args as $arg) {
-        //     $command .= ' ' . escapeshellarg($arg);
-        // }
-
-        // exec($command . ' 2>&1', $output, $return_var);
-
-        // if ($return_var !== 0) {
-        //     // Mostra o erro
-        //     dd($output);
-        // }
-
-
         // Monta o comando completo
-        $command = array_merge([$python, $scriptPath], $args);
+        $command = array_merge([$python, $script], $args);
 
         // Cria o Process
         $process = new Process($command);
-        $process->setTimeout(300); // Timeout em segundos, se quiseres
+        $process->setTimeout(300); // 5 minutos, podes ajustar
 
         try {
-            $process->mustRun(); // Executa e lança exceção se falhar
-            $output = $process->getOutput();
+            $process->mustRun(); // Executa o script
+            $output = $process->getOutput(); // Aqui tens o HTML ou output do Python
         } catch (ProcessFailedException $exception) {
-            dd($exception->getMessage(), $exception->getProcess()->getErrorOutput());
+            dd('Erro no Python:', $exception->getMessage(), $exception->getProcess()->getErrorOutput());
         }
 
+        // Usa o output do Python
         return redirect()->route('ad-searches.index')->with('success', 'Pesquisa de anúncios iniciada com sucesso!');
     }
 
