@@ -58,8 +58,33 @@ class ProposalController extends Controller
 
     public function create()
     {
+
+
+
         $clients = Client::all(); // To select a client
-        $attributes = VehicleAttribute::all()->groupBy('attribute_group');
+        // Definir a ordem desejada dos grupos
+        $groupOrder = [
+            'Dados do Veículo',
+            'Características Técnicas',
+            'Segurança',
+            'Desempenho',
+            'Conforto',
+            'Multimédia',
+            'Equipamento Exterior',
+            'Equipamento Interior'
+        ];
+
+        // Pegar os atributos e agrupar
+        $attributes = VehicleAttribute::orderBy('order')->get()
+            ->groupBy('attribute_group')
+            ->sortBy(function ($group, $key) use ($groupOrder) {
+                // Retorna a posição do grupo no array definido
+                return array_search($key, $groupOrder);
+            });
+
+
+
+        // ordena os grupos alfabeticamente
         $brands = Brand::with(['models' => function ($query) {
             $query->orderBy('name');
         }])->get();
@@ -80,14 +105,14 @@ class ProposalController extends Controller
         // Caminho do script Python
         $scriptPath = base_path('scripts/process_link.py');
 
-       $process = new Process([$python, $scriptPath, $url]);
-$process->run();
+        $process = new Process([$python, $scriptPath, $url]);
+        $process->run();
 
-if (!$process->isSuccessful()) {
-    throw new ProcessFailedException($process);
-}
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
 
-$html = $process->getOutput();
+        $html = $process->getOutput();
         // $html = implode("\n", $output);
 
 
@@ -268,7 +293,25 @@ $html = $process->getOutput();
         if ($proposal->images) {
             $images = $proposal->images;
         }
-        $attributes = VehicleAttribute::orderByRaw("FIELD(type, 'text', 'number', 'select', 'checkbox')")->get()->groupBy('attribute_group');
+        // Definir a ordem desejada dos grupos
+        $groupOrder = [
+            'Dados do Veículo',
+            'Características Técnicas',
+            'Segurança',
+            'Desempenho',
+            'Conforto',
+            'Multimédia',
+            'Equipamento Exterior',
+            'Equipamento Interior'
+        ];
+
+        // Pegar os atributos e agrupar
+        $attributes = VehicleAttribute::orderBy('order')->get()
+            ->groupBy('attribute_group')
+            ->sortBy(function ($group, $key) use ($groupOrder) {
+                // Retorna a posição do grupo no array definido
+                return array_search($key, $groupOrder);
+            });
 
         $attributeValues = $proposal->attributeValues->keyBy('attribute_id');
         $brands = Brand::with(['models' => function ($query) {
