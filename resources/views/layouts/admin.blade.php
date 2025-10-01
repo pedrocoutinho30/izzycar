@@ -195,6 +195,8 @@
         $menuItemsAdmin = [
         ['route' => 'brands.index', 'icon' => 'fa-tags', 'label' => __('Marcas'), 'permission' => 'gerir marcas'],
         ['route' => 'vehicle-attributes.index', 'icon' => 'fa-cog', 'label' => __('Atributos de Veículo'), 'permission' => 'gerir atributos veiculos'],
+        ['route' => 'attribute-groups.index', 'icon' => 'fa-tags', 'label' => __('Grupos de Atributos'), 'permission' => 'gerir atributos veiculos'],
+
         ['route' => 'page-types.index', 'icon' => 'fa-file', 'label' => __('Tipos de Página'), 'permission' => 'gerir tipos de pagina'],
         ['route' => 'pages.index', 'icon' => 'fa-file', 'label' => __('Páginas'), 'permission' => 'gerir paginas'],
         ['route' => 'menus.index', 'icon' => 'fa-bars', 'label' => __('Menus'), 'permission' => 'gerir menus'],

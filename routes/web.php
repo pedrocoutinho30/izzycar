@@ -29,7 +29,7 @@ use App\Http\Controllers\Frontend\ImportSimulatorController;
 use App\Models\ConvertedProposal;
 use Sabberworm\CSS\Property\Import;
 use UniSharp\LaravelFilemanager\Lfm;
-
+use App\Http\Controllers\AttributeGroupController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -97,6 +97,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
     Route::resource('sales', SaleController::class);
 
+    Route::resource('attribute-groups', AttributeGroupController::class);
 
     Route::resource('proposals', ProposalController::class);
     Route::post('/proposals/create_by_form', [ProposalController::class, 'create_by_form'])->name('proposals.create_by_form');

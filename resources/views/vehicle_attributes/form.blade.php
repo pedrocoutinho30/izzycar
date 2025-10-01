@@ -54,11 +54,11 @@
       </div>
 
       <div class="form-group col-md-2 mt-4">
-        <label>Grupo de Atributos</label>Dados da Viatura
+        <label>Grupo de Atributos</label>
         <select name="attribute_group" id="attribute_group" class="form-control rounded shadow-sm">
           <option value="">Selecione o Grupo</option>
-          @foreach(['Dados do Veículo', 'Características Técnicas', 'Segurança', 'Desempenho', 'Conforto', 'Multimédia', 'Equipamento Exterior', ' Equipamento Interior', 'Segurança & Desempenho',   'Conforto & Multimédia', 'Outros Extras'] as $attribute_group)
-          <option value="{{ $attribute_group }}" {{ old('attribute_group', $vehicleAttribute->attribute_group ?? '') == $attribute_group ? 'selected' : '' }}>{{ ucfirst($attribute_group) }}</option>
+          @foreach($attributeGroups as $attribute_group)
+          <option value="{{ $attribute_group->name }}" {{ old('attribute_group', $vehicleAttribute->attribute_group ?? '') == $attribute_group->name ? 'selected' : '' }}>{{ ucfirst($attribute_group->name) }}</option>
           @endforeach
         </select>
       </div>

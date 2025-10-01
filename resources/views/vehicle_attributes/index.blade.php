@@ -44,9 +44,9 @@
                   @csrf
                   @method('PATCH')
                   <select name="attribute_group" class="form-select form-select-sm me-2" onchange="this.form.submit()">
-          @foreach(['Dados do Veículo', 'Características Técnicas', 'Segurança', 'Desempenho', 'Conforto', 'Multimédia', 'Equipamento Exterior', ' Equipamento Interior', 'Segurança & Desempenho',   'Conforto & Multimédia', 'Outros Extras'] as $attribute_group)
-                    <option value="{{ $attribute_group }}" {{ $attr->attribute_group == $attribute_group ? 'selected' : '' }}>
-                      {{ ucfirst($attribute_group) }}
+          @foreach($attributeGroups as $attribute_group)
+                    <option value="{{ $attribute_group->name}}" {{ $attr->attribute_group == $attribute_group ? 'selected' : '' }}>
+                      {{ ucfirst($attribute_group->name) }}
                     </option>
                     @endforeach
                   </select>

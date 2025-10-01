@@ -19,6 +19,7 @@ use App\Mail\ProposalAcceptedMail;
 use App\Models\Setting;
 use App\Models\StatusProposalHistory;
 use App\Services\ContractService;
+use App\Models\AttributeGroup;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -63,16 +64,9 @@ class ProposalController extends Controller
 
         $clients = Client::all(); // To select a client
         // Definir a ordem desejada dos grupos
-        $groupOrder = [
-            'Dados do Veículo',
-            'Características Técnicas',
-            'Segurança',
-            'Desempenho',
-            'Conforto',
-            'Multimédia',
-            'Equipamento Exterior',
-            'Equipamento Interior'
-        ];
+
+
+        $groupOrder = AttributeGroup::orderBy('order')->get()->pluck('name')->toArray();
 
         // Pegar os atributos e agrupar
         $attributes = VehicleAttribute::orderBy('order')->get()
@@ -294,17 +288,8 @@ class ProposalController extends Controller
             $images = $proposal->images;
         }
         // Definir a ordem desejada dos grupos
-        $groupOrder = [
-            'Dados do Veículo',
-            'Características Técnicas',
-            'Segurança',
-            'Desempenho',
-            'Conforto',
-            'Multimédia',
-            'Equipamento Exterior',
-            'Equipamento Interior'
-        ];
 
+        $groupOrder = AttributeGroup::orderBy('order')->get()->pluck('name')->toArray();
         // Pegar os atributos e agrupar
         $attributes = VehicleAttribute::orderBy('order')->get()
             ->groupBy('attribute_group')
@@ -519,12 +504,16 @@ class ProposalController extends Controller
         $order = [
             'Dados do Veículo',
             'Características Técnicas',
-            'Segurança & Desempenho',
-            'Conforto & Multimédia',
-            'Equipamento Interior',
+            'Segurança',
+            'Desempenho',
+            'Conforto',
+            'Multimédia',
             'Equipamento Exterior',
-            'Outros Extras'
+            'Equipamento Interior'
         ];
+
+
+
 
         // Função para ordenar o array associativo $attributes
         uksort($attributes, function ($a, $b) use ($order) {
@@ -610,15 +599,8 @@ class ProposalController extends Controller
             $attributes[$group][$name] = $attributeValue->value;
         }
 
-        $order = [
-            'Dados do Veículo',
-            'Características Técnicas',
-            'Segurança & Desempenho',
-            'Conforto & Multimédia',
-            'Equipamento Interior',
-            'Equipamento Exterior',
-            'Outros Extras'
-        ];
+        $order = AttributeGroup::orderBy('order')->get()->pluck('name')->toArray();
+
 
         // Função para ordenar o array associativo $attributes
         uksort($attributes, function ($a, $b) use ($order) {

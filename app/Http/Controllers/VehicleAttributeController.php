@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VehicleAttribute;
 use Illuminate\Http\Request;
+use App\Models\AttributeGroup;
 
 class VehicleAttributeController extends Controller
 {
@@ -14,12 +15,15 @@ class VehicleAttributeController extends Controller
             ->get()
             ->groupBy('attribute_group');
 
-        return view('vehicle_attributes.index', compact('attributes'));
+        $attributeGroups = AttributeGroup::all();
+
+        return view('vehicle_attributes.index', compact('attributes', 'attributeGroups'));
     }
 
     public function create()
     {
-        return view('vehicle_attributes.form');
+        $attributeGroups = AttributeGroup::all();
+        return view('vehicle_attributes.form', compact('attributeGroups'));
     }
 
     public function store(Request $request)
@@ -46,7 +50,8 @@ class VehicleAttributeController extends Controller
 
     public function edit(VehicleAttribute $vehicleAttribute)
     {
-        return view('vehicle_attributes.form', compact('vehicleAttribute'));
+        $attributeGroups = AttributeGroup::all();
+        return view('vehicle_attributes.form', compact('vehicleAttribute', 'attributeGroups'));
     }
 
     public function update(Request $request, VehicleAttribute $vehicleAttribute)
