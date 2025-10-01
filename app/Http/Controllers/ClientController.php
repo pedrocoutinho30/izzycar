@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Setting;
+
 class ClientController extends Controller
 {
     public function __construct()
@@ -43,7 +45,15 @@ class ClientController extends Controller
             'observation' => 'nullable|string',
         ]);
 
-        Client::create($validated);
+       $client = Client::create($validated);
+
+
+        // Caminho base do LFM, ajusta conforme a tua config (storage ou public)
+        $path = "photos/1/propostas/{$client->id}_{$client->name}";
+        // Verifica se já existe
+        if (!Storage::disk('public')->exists($path)) {
+         Storage::disk('public')->makeDirectory($path);
+        }
         return redirect()->route('clients.index')->with('success', 'Cliente criado com sucesso!');
     }
 
