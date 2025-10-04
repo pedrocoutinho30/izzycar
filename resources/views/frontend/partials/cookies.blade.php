@@ -73,14 +73,14 @@
     const cookieModal = document.getElementById("cookieModal");
     const acceptAllBtn = document.getElementById("acceptAll");
     const rejectAllBtn = document.getElementById("rejectAll");
-
+    loadAnalytics();
     // Verifica se já aceitou ou rejeitou cookies
     if (localStorage.getItem("cookies_choice")) {
         cookieModal.style.display = "none";
 
         // Se aceitou, carrega os scripts
         if (localStorage.getItem("cookies_choice") === "all") {
-            loadAnalytics();
+             loadAnalytics();
         }
     }
 
