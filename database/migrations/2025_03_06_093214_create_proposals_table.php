@@ -39,6 +39,7 @@ class CreateProposalsTable extends Migration
             $table->json('images')->nullable(); // To store multiple images
             $table->string('url')->nullable(); // To store the URL of the proposal
             $table->enum('status', ['', 'Pendente', 'Enviada', 'Aprovada', 'Reprovada', 'Sem resposta'])->nullable();
+            $table->string('other_links')->nullable();
             $table->timestamps();
         });
     }

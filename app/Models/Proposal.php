@@ -41,6 +41,7 @@ class Proposal extends Model
         'status',
         'url',
         'proposed_car_features',
+        'other_links'
     ];
 
     protected $casts = [

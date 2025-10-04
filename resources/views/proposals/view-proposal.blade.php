@@ -272,6 +272,21 @@ $image = $proposal->images;
                 @endforeach
             </div>
         </div>
+
+        @if($proposal->other_links && is_array(json_decode($proposal->other_links)))
+        <div class="container my-5">
+            <div class="card shadow-sm mb-4 bg-black text-white">
+                <div class="card-body">
+                    <h4 class="fw-bold mb-3 text-accent">Outras opções</h4>
+                    <ul>
+                        @foreach (json_decode($proposal->other_links) as $link)
+                            <li><a href="{{ $link }}" target="_blank" class="text-white">Opção {{ $loop->iteration + 1 }}</a></li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>  
+        </div>
+        @endif
         <!-- Processo -->
         <div class="container my-5">
             <div class="card shadow-sm mb-4 bg-black text-white">

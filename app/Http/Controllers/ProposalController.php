@@ -187,7 +187,7 @@ class ProposalController extends Controller
             'status' => 'nullable|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta',
             'proposed_car_features' => 'nullable|string'
         ]);
-
+        $data['other_links'] = json_encode($request->input('other_links', []));
         $proposal = Proposal::create([
             'url' => $request->url,
             'status' => $request->status,
@@ -216,6 +216,7 @@ class ProposalController extends Controller
             'proposed_car_notes' => $request->proposed_car_notes,
             'proposed_car_features' => $request->proposed_car_features,
             'images' => $request->images,
+            'other_links' => $data['other_links'] ?? null,
         ]);
 
 
@@ -349,7 +350,7 @@ class ProposalController extends Controller
             'proposed_car_notes' => 'nullable|string',
             'proposed_car_features' => 'nullable|string'
         ]);
-
+        $data['other_links'] = json_encode($request->input('other_links', []));
         $proposal->update([
             'url' => $request->url,
             'status' => $request->status,
@@ -378,6 +379,7 @@ class ProposalController extends Controller
             'proposed_car_notes' => $request->proposed_car_notes,
             'proposed_car_features' => $request->proposed_car_features,
             'images' => $request->images,
+            'other_links' => $data['other_links'] ?? null,
         ]);
 
 

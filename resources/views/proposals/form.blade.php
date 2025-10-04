@@ -286,12 +286,6 @@
 
         <x-image-manager :label="'Imagem'" :images="$images ?? ''" name="images" :multi="true" id="images" />
 
-
-
-
-
-
-
         <div class="row">
             <div class="col-md-4">
 
@@ -332,6 +326,26 @@
             <label for="proposed_car_features">Características </label>
             <textarea name="proposed_car_features" rows="10" class="form-control rounded shadow-sm">{{ old('proposed_car_features', isset($proposal) ? $proposal->proposed_car_features : '') }}</textarea>
             @error('proposed_car_features')
+            <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group">
+            <label for="other_links">Links</label>
+            <div id="links-wrapper">
+                @php
+                $links = old('other_links', isset($proposal) ? json_decode($proposal->other_links, true) : []);
+                @endphp
+
+                @if(!empty($links))
+                @foreach($links as $link)
+                <input type="text" name="other_links[]" value="{{ $link }}" class="form-control mb-2 rounded shadow-sm">
+                @endforeach
+                @else
+                <input type="text" name="other_links[]" class="form-control mb-2 rounded shadow-sm">
+                @endif
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addLinkInput()">+ Adicionar link</button>
+            @error('other_links')
             <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
@@ -406,6 +420,15 @@
     </form>
     @endsection
     <script>
+        function addLinkInput() {
+            let wrapper = document.getElementById('links-wrapper');
+            let input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'other_links[]';
+            input.classList.add('form-control', 'mb-2', 'rounded', 'shadow-sm');
+            wrapper.appendChild(input);
+        }
+
         function calculateCommission() {
 
             let myCommision = 0.035;
