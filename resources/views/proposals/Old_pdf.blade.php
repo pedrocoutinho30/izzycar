@@ -242,7 +242,7 @@
         <p>
             Pedro Coutinho |
             <a href="mailto:geral@izzycar.pt">geral@izzycar.pt</a> |
-            <a href="tel:+351914250947">914250947</a>
+            <a href="tel:+351928459346">928 459 346</a>
         </p>
         <p class="social-icons">
             <a href="https://www.facebook.com/profile.php?id=61572831810539" target="_blank">

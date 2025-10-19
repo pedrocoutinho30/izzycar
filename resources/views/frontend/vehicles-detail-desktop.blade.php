@@ -93,7 +93,7 @@
                                 <button type="button" class="btn btn-outline-form" data-bs-toggle="modal" data-bs-target="#shareModal">
                                     <i class="bi bi-share-fill text-dark"></i>
                                 </button>
-                                <a href="https://wa.me/351914250947?text=Olá, gostaria de saber mais informações sobre o veículo {{$vehicle->brand}} {{$vehicle->model}} {{$vehicle->version}} ({{ $vehicle->reference }})
+                                <a href="https://wa.me/351928459346?text=Olá, gostaria de saber mais informações sobre o veículo {{$vehicle->brand}} {{$vehicle->model}} {{$vehicle->version}} ({{ $vehicle->reference }})
                                 Link: {{ route('vehicles.details',  ['brand' => Str::slug($vehicle->brand),
                                     'model' => Str::slug($vehicle->model),
                                     'id' => $vehicle->reference]) }}"

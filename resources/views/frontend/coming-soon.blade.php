@@ -198,14 +198,14 @@
         <h3>Em breve teremos novidades</h3>
         <p class="contact-title">CONTACTOS</p>
         <div class="contact-icons">
-            <a href="tel:+351914250947" title="Ligar">
+            <a href="tel:+351928459346" title="Ligar">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <path
                         d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.14A19.51 19.51 0 0 1 3.11 9.8 19.86 19.86 0 0 1 0 1.37 2 2 0 0 1 2 0h3a2 2 0 0 1 2 1.72 12.44 12.44 0 0 0 .66 2.83 2 2 0 0 1-.45 2.11L5.91 8a16 16 0 0 0 6.09 6.09l1.32-1.32a2 2 0 0 1 2.11-.45 12.44 12.44 0 0 0 2.83.66A2 2 0 0 1 22 16.92z">
                     </path>
                 </svg>
-                +351 914 250 947
+                +351 928 459 346
             </a>
             <a href="mailto:izzycarpt@gmail" title="Enviar E-mail">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
