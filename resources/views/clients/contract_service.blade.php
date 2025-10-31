@@ -81,10 +81,10 @@
     <div class="section">
         <h2>4. Condições de Pagamento</h2>
         <p><b>Serviço Izzycar:</b><br>
-            • 50% na adjudicação do serviço.<br>
-            • 50% na entrega do automóvel.<br>
+             •{{App\Models\Setting::where('label', 'init_payment')->pluck('value')->first()}} na adjudicação do serviço.<br>
+            • {{App\Models\Setting::where('label', 'final_payment')->pluck('value')->first()}} na entrega do automóvel.<br>
             • Pagamento via transferência ou MB Way:<br>
-            
+
             IBAN: <b></b><br>
             MB Way: <b></b></p>
 
