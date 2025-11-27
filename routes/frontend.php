@@ -10,6 +10,8 @@ use App\Http\Controllers\Frontend\SellingController;
 use App\Http\Controllers\Frontend\VehiclesController;
 use App\Http\Controllers\Frontend\NewsController;
 use App\Http\Controllers\Frontend\CostSimulatorController;
+use App\Http\Controllers\Frontend\TradeInController;
+use App\Http\Controllers\Api\ExtrasController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,6 +30,9 @@ Route::post('/formulario-importacao', [ImportController::class, 'submitFormImpor
 Route::get('/formulario-importacao', [ContactController::class, 'importForm'])->name('frontend.form-import');
 Route::get('/simulador-custos', [CostSimulatorController::class, 'index'])->name('frontend.cost-simulator');
 Route::post('/simulador-custos', [CostSimulatorController::class, 'calculate'])->name('frontend.cost-simulator.calculate');
+
+// API pública
+Route::get('/extras', [ExtrasController::class, 'index'])->name('api.extras');
 Route::get('teste', function () {
 
     $convertedProposal = \App\Models\ConvertedProposal::first();
@@ -63,6 +68,8 @@ Route::middleware(['blockInProd'])->group(function () {
 
     Route::get('/legalizacao', [LegalizationController::class, 'getLegalizationPage'])->name('frontend.legalization');
     Route::get('/importacao', [ImportController::class, 'getImportPage'])->name('frontend.import');
+    Route::get('/retomas', [TradeInController::class, 'getTradeInPage'])->name('frontend.trade-in');
+    Route::post('/retomas', [TradeInController::class, 'submitTradeInForm'])->name('frontend.trade-in-submit');
 
     Route::get('/venda', [SellingController::class, 'getSellingPage'])->name('frontend.selling');
 

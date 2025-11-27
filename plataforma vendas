@@ -1,0 +1,260 @@
+📌 Plataforma de Vendas Automóvel em Consignação
+1️⃣ Objetivo da Plataforma
+
+Criar um portal onde proprietários de carros possam colocá-los à venda sem esforço, escolhendo:
+
+Venda para particulares, para obter o maior valor possível.
+
+Venda para profissionais/stands, para uma venda rápida e garantida.
+
+A plataforma faz a intermediação, trata da parte burocrática e conecta os veículos com compradores adequados.
+
+2️⃣ Perfis de Utilizadores
+👤 Proprietário do veículo
+
+Pretende vender o carro com o melhor retorno ou de forma rápida.
+
+Pode:
+
+Preencher um formulário completo sobre o carro.
+
+Escolher o tipo de venda (particulares ou profissionais).
+
+Acompanhar o estado da venda (opcional em versões futuras).
+
+🚗 Compradores particulares
+
+Vêm carros com fotos, descrição e preço final.
+
+Podem solicitar contacto ou visita/agendamento.
+
+🧰 Profissionais (stands)
+
+Registam-se na plataforma.
+
+Recebem alertas/notificações sempre que um novo carro chega para venda profissional.
+
+Podem entrar em contacto para fazer proposta, compra ou recolha.
+
+3️⃣ Páginas principais da plataforma
+1️⃣ Página Inicial
+
+Explica o serviço de consignação.
+
+Destaca vantagens:
+
+Venda facilitada.
+
+Processo transparente.
+
+Possibilidade de ganhar mais (particulares) ou vender rápido (profissionais).
+
+CTA: “Registar o meu carro para venda”
+
+2️⃣ Página “Vender o meu carro”
+
+Simples e orientada para conversão, com:
+
+Formulário completo sobre o carro
+
+Dados gerais:
+
+Marca, modelo, ano, quilómetros, combustível, potência, caixa, etc.
+
+Estado do carro:
+
+Interiores, exteriores, manutenção, avarias, inspeção, histórico.
+
+Documentação disponível:
+
+Livro de revisões, COC, manuais, chave suplente…
+
+Fotos:
+
+Upload multi-imagem.
+
+Preço desejado.
+
+Escolha de Tipo de Venda:
+
+Venda ao particular (ganha mais)
+
+Venda a profissionais (vende rápido)
+
+Dados do proprietário:
+
+Nome, telefone, email, concelho/distrito.
+
+Depois do envio
+
+A plataforma recebe os dados e inicia o processo de:
+
+Validação do veículo.
+
+Avaliação de preço de mercado.
+
+Apresentação ao canal escolhido.
+
+3️⃣ Área “Para Profissionais / Outros Stands”
+
+Página explicando:
+
+Como funciona o programa profissional.
+
+Que tipo de carros podem receber.
+
+Como é feita a comunicação/processo.
+
+Vantagens:
+
+Chegada de leads filtrados e prontos para analisar.
+
+Possibilidade de compra rápida.
+
+Crescente fluxo de veículos no futuro.
+
+Registo para Stands
+
+Formulário com:
+
+Nome do stand
+
+Localização
+
+Email
+
+Telefone
+
+Pessoa de contacto
+
+Tipos de carros que aceitam (opcional)
+
+Intervalo de valores que compram
+
+Documentos opcionais para validação
+
+Uma vez registados:
+
+Os stands entram numa base de dados.
+
+Sempre que um carro é publicado para venda profissional, recebem:
+
+Notificação via email (ou painel numa fase posterior).
+
+Informação do veículo para fazer proposta.
+
+4️⃣ Página de Carros à Venda
+
+Visível ao público, com:
+
+Listagem dos carros disponíveis para venda a particulares.
+
+Filtros:
+
+Marca, modelo, preço, ano, quilómetros, localização…
+
+Página individual do carro com:
+
+Fotos
+
+Descrição completa
+
+Preço
+
+Formulário de contacto / agendamento.
+
+4️⃣ Modelo de Negócio
+Venda em consignação (para o proprietário)
+
+O cliente não paga nada antecipadamente.
+
+Só paga comissão se o carro for vendido com sucesso.
+
+A comissão pode depender do tipo de venda:
+
+Particular → comissão menor por valorização maior.
+
+Profissional → comissão fixa pela venda acelerada.
+
+Para stands
+
+Possibilidades:
+
+Registo gratuito.
+
+Futuramente planos premium:
+
+Receber carros primeiro.
+
+Acesso a mais detalhes.
+
+Filtros avançados.
+
+5️⃣ Funcionalidades Futuras (Escaláveis)
+
+Área de dashboard para proprietários acompanharem o estado da venda.
+
+Sistema interno de propostas para stands.
+
+Estatísticas automáticas:
+
+Dias no mercado
+
+Variação do preço médio
+
+Valor de venda estimado
+
+Integrações com OLX, Standvirtual, Custo Justo, Facebook Marketplace, etc.
+
+Sistema automatizado de scoring do carro.
+
+Aplicação móvel (eventualmente).
+
+6️⃣ Tecnologia sugerida
+
+Frontend:
+
+Laravel Blade, Vue.js, React ou Next.js.
+
+Backend:
+
+Laravel (ideal para o teu perfil).
+
+Base de dados:
+
+MySQL/MariaDB.
+
+Autenticação:
+
+Laravel Breeze ou Jetstream.
+
+Upload de imagens:
+
+MediaLibrary ou S3 se quiser escalar.
+
+Notificações para stands:
+
+Email + opcionalmente Telegram/WhatsApp API no futuro.
+
+🎯 Resumo Final
+
+A plataforma funciona como um “intermediário digital” que facilita a venda de automóveis:
+
+Donos de carros enviam toda a informação e escolhem como querem vender.
+
+A plataforma trata do processo, valida, anuncia e direciona para o canal certo.
+
+Stands podem registar-se para receber carros a preço profissional.
+
+O proprietário só paga comissão se o carro for vendido.
+
+Se quiser, posso agora:
+
+✔ Montar o fluxo de páginas com wireframes
+✔ Criar o banco de dados e relações
+✔ Gerar um backlog de tarefas para desenvolvimento
+✔ Criar o plano em forma de pitch para investidores
+✔ Gerar mockups básicos
+✔ Criar textos comerciais para cada página
+
+O que prefere para o próximo passo?

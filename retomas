@@ -1,0 +1,46 @@
+Tabela: vehicles
+Campo	Tipo	Observações
+id	BIGINT / PK	Auto-increment
+brand	VARCHAR(50)	Marca do carro
+model	VARCHAR(50)	Modelo
+submodel	VARCHAR(50)	Versão/submodelo (opcional)
+year	YEAR	Ano de matrícula
+kilometers	INT	Quilómetros
+fuel_type	ENUM('Gasolina','Diesel','Híbrido','Elétrico')	Tipo de combustível
+power_cv	INT	Potência em CV
+transmission	ENUM('Manual','Automática','DSG','CVT')	Caixa de velocidades
+doors	TINYINT	Número de portas
+seats	TINYINT	Número de lugares
+color_exterior	VARCHAR(30)	Cor exterior
+color_interior	VARCHAR(30)	Cor interior
+general_condition	ENUM('Excelente','Bom','Aceitável')	Estado geral do carro
+paint_condition	ENUM('Excelente','Bom','Aceitável')	Estado da pintura
+interior_condition	ENUM('Excelente','Bom','Aceitável')	Estado interior
+tires_condition	VARCHAR(50)	Estado/marca dos pneus
+accident_history	BOOLEAN	Histórico de acidentes (Sim/Não)
+inspection_date	DATE	Última inspeção periódica
+inspection_result	VARCHAR(50)	Resultado da inspeção
+maintenance_history	TEXT	Observações de manutenção/revisões
+registration_doc	BOOLEAN	Documento do carro disponível (Sim/Não)
+revision_book	BOOLEAN	Livro de revisões disponível
+manuals_keys	BOOLEAN	Manuais e chave suplente disponíveis
+insurance_active	BOOLEAN	Seguro ativo
+price_desired	DECIMAL(10,2)	Preço desejado pelo proprietário
+sale_type	ENUM('Particular','Profissional')	Tipo de venda pretendida
+owner_name	VARCHAR(100)	Nome do proprietário
+owner_phone	VARCHAR(20)	Telefone
+owner_email	VARCHAR(100)	Email
+owner_location	VARCHAR(100)	Concelho / localidade
+created_at	TIMESTAMP	Laravel default
+updated_at	TIMESTAMP	Laravel default
+Tabela adicional: vehicle_photos
+
+Como queres obrigar fotos específicas, podes criar uma tabela de fotos ligada ao veículo:
+
+Campo	Tipo	Observações
+id	BIGINT / PK	Auto-increment
+vehicle_id	BIGINT / FK	Relaciona com vehicles.id
+photo_type	ENUM('frente','lado_esquerdo','lado_direito','trás','interior_frente','interior_trás','bagageira','motor')	Tipo da foto
+file_path	VARCHAR(255)	Caminho do ficheiro ou URL
+created_at	TIMESTAMP	Laravel default
+updated_at	TIMESTAMP	Laravel default
