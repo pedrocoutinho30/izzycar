@@ -12,6 +12,7 @@ use App\Http\Controllers\Frontend\NewsController;
 use App\Http\Controllers\Frontend\CostSimulatorController;
 use App\Http\Controllers\Frontend\TradeInController;
 use App\Http\Controllers\Api\ExtrasController;
+use App\Http\Controllers\Api\BrandsModelsController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,6 +34,7 @@ Route::post('/simulador-custos', [CostSimulatorController::class, 'calculate'])-
 
 // API pública
 Route::get('/extras', [ExtrasController::class, 'index'])->name('api.extras');
+Route::get('/brands-models', [BrandsModelsController::class, 'index'])->name('api.brands-models');
 Route::get('teste', function () {
 
     $convertedProposal = \App\Models\ConvertedProposal::first();
