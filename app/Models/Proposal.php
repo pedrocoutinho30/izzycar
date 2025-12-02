@@ -41,11 +41,13 @@ class Proposal extends Model
         'status',
         'url',
         'proposed_car_features',
-        'other_links'
+        'other_links',
+        'proposal_code'
     ];
 
     protected $casts = [
         'images' => 'array', // To store images as an array
+       
     ];
 
     public function client()

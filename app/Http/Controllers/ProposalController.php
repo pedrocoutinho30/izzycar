@@ -23,6 +23,7 @@ use App\Models\AttributeGroup;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Str;
 
 class ProposalController extends Controller
 {
@@ -187,8 +188,12 @@ class ProposalController extends Controller
             'status' => 'nullable|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta',
             'proposed_car_features' => 'nullable|string'
         ]);
-        $data['other_links'] = json_encode($request->input('other_links', []));
+        $data['other_links'] = $request->input('other_links') ? json_encode($request->input('other_links')) : null;
         $proposal = Proposal::create([
+            'proposal_code' => 
+                strtoupper(substr($request->brand, 0, 1)) .
+                strtoupper(substr($request->model, 0, 1)) .
+                Str::random(8),
             'url' => $request->url,
             'status' => $request->status,
             'client_id' => $request->client_id,
@@ -555,9 +560,9 @@ class ProposalController extends Controller
         return $mpdf->Output('Proposta' . ' Izzycar ' . $proposal->brand . '_' . $proposal->model  . '.pdf', 'I'); // 'I' mostra no navegador
     }
 
-    public function detail($brand, $model, $version, $id)
+    public function detail($proposal_code)
     {
-        $proposal = Proposal::where('id', $id)
+        $proposal = Proposal::where('proposal_code', $proposal_code)
             ->firstOrFail();
 
         $attributes = [];
@@ -644,6 +649,10 @@ class ProposalController extends Controller
 
         // Criar uma nova instância apenas com os campos desejados
         $newProposal = Proposal::create([
+            'proposal_code' => //primeiro caracter da marca, seguido do primeiro caracter do modelo, seguido de 8 caracteres aleatórios
+                strtoupper(substr($originalProposal->brand, 0, 1)) .
+                strtoupper(substr($originalProposal->model, 0, 1)) .
+                Str::random(8),
             'client_id'      => $originalProposal->client_id,
             'brand'          => $originalProposal->brand,
             'model'          => $originalProposal->model,
@@ -875,6 +884,10 @@ class ProposalController extends Controller
 
         $form = $request->all()['form'];
         $proposal = new Proposal();
+        $proposal->proposal_code = 
+                strtoupper(substr($$form['brand'], 0, 1)) .
+                strtoupper(substr($form['model'], 0, 1)) .
+                Str::random(8);
         $proposal->client_id = $form['client_id'] ?? null;
         $proposal->brand = $form['brand'] ?? null;
         $proposal->model = $form['model'] ?? null;

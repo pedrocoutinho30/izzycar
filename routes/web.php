@@ -49,7 +49,8 @@ use App\Http\Controllers\AttributeGroupController;
 
 // Route::get('simulador-importacao', [ImportSimulatorController::class, 'importSimulator'])->name('import-simulator');
 
-Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');
+// Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');
+Route::get('proposta/{proposal_code}', [ProposalController::class, 'detail'])->name('proposals.detail');
 Route::post('/proposals/{proposal}/accept', [ProposalController::class, 'accept'])
     ->name('proposals.accept');
 Route::get('/proposta/{brand}/{model}/{version}/{id}/timeline', [ConvertedProposalController::class, 'detailTimeline'])

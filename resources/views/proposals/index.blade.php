@@ -55,7 +55,7 @@
                         <h5 class="card-title">{{ $proposal->brand }} {{ $proposal->model }}</h5>
                         <p class="card-text mb-1"><strong>Cliente:</strong> {{ $proposal ? $proposal->client->name : '' }}</p>
                         <p class="card-text mb-1"><strong>Versão:</strong> {{ $proposal ? $proposal->version : '' }}</p>
-                        <p class="card-text mb-1"><strong>Estado:</strong> 
+                        <p class="card-text mb-1"><strong>Estado:</strong>
                             <select class="form-select form-select-sm status-dropdown" data-id="{{ $proposal->id }}">
                                 <option value="Pendente" {{ $proposal->status == 'Pendente' ? 'selected' : '' }}>Pendente</option>
                                 <option value="Aprovada" {{ $proposal->status == 'Aprovada' ? 'selected' : '' }}>Aprovada</option>
@@ -74,10 +74,7 @@
                             </form>
                             <a href="{{ route('proposals.downloadPdf', $proposal->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-download"></i></a>
                             <a href="{{ route('proposals.detail', [
-                                'brand' => Str::slug($proposal->brand),
-                                'model' => Str::slug($proposal->model),
-                                'version' => Str::slug($proposal->version),
-                                'id' => $proposal->id
+                                'proposal_code' => $proposal->proposal_code
                             ]) }}" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
                             <form action="{{ route('proposals.duplicate', $proposal->id) }}" method="POST">
                                 @csrf
@@ -139,10 +136,7 @@
                                         <i class="fas fa-download"></i>
                                     </a>
                                     <a href="{{ route('proposals.detail', [
-    'brand' => Str::slug($proposal->brand),
-    'model' => Str::slug($proposal->model),
-    'version' => Str::slug($proposal->version),
-    'id' => $proposal->id
+    'proposal_code' => $proposal->proposal_code
 ]) }}" class="btn btn-sm btn-primary" title="Ver Proposta">
                                         <i class="fas fa-eye"></i>
                                     </a>
