@@ -4,131 +4,178 @@
 ])
 
 @section('content')
-<section class="py-5 bg-light">
-    <div class="container">
+<section class="py-5">
+
+    <div class="container mt-2">
+        <div class="container">
+            <a href="{{ route('frontend.news') }}" class="btn btn-outline-dark btn-back-news d-inline-flex align-items-center mb-0 mt-4" style="gap:8px; border-radius: 50px; font-weight: 600;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Voltar à listagem de notícias
+            </a>
+        </div>
         <div class="row g-5">
             <div class="col-lg-8 h-100">
                 {{-- Notícia detalhada --}}
-                <div class="news-box">
-                    <h4 class="text-accent"> {{$news['contents']['title']}}</h4>
-                    <p class="news-content-white"> {!!$news['contents']['subtitle']!!}</p>
-                    @if(!empty($news['contents']['date']))
-                    <p class="text-muted mb-1" style="font-size: 0.8rem !important;">
-                        {{ \Carbon\Carbon::parse($news['contents']['date'])->format('d.m.Y') }}
-                    </p>
-                    @endif
+                <article class="news-detail-card">
+                    <div class="news-detail-header">
+                        @if(!empty($news['contents']['date']))
+                        <div class="news-detail-meta">
+                            <span class="news-detail-date">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                {{ \Carbon\Carbon::parse($news['contents']['date'])->format('d/m/Y') }}
+                            </span>
+                        </div>
+                        @endif
+
+                        <h1 class="news-detail-title">{{$news['contents']['title']}}</h1>
+
+                        @if(isset($news['contents']['categories']) && is_array(json_decode($news['contents']['categories'])))
+                        <div class="news-detail-categories">
+                            @foreach(json_decode($news['contents']['categories']) as $category)
+                            @php $categoryName = App\Models\Page::find($category); @endphp
+                            <span class="news-detail-category">{{ $categoryName['contents'][0]['field_value'] }}</span>
+                            @endforeach
+                        </div>
+                        @endif
+
+                        <div class="news-detail-subtitle">
+                            {!!$news['contents']['subtitle']!!}
+                        </div>
+                    </div>
+
                     @if($news['contents']['image'])
-                    <img src="{{  asset('storage/' . $news['contents']['image'])  }}" loading="lazy"
-                        class="img-fluid mb-3 rounded image-news"
-                        alt="Imagem ilustrativa"
-                        alt="Imagem da notícia: {{ $news['contents']['title'] }}">
+                    <div class="news-detail-image-wrapper">
+                        <img src="{{  asset('storage/' . $news['contents']['image'])  }}" loading="lazy"
+                            class="news-detail-image"
+                            alt="Imagem da notícia: {{ $news['contents']['title'] }}">
+                    </div>
                     @endif
-                    <div class="text-dark">
+
+                    <div class="news-detail-content">
                         {!! $news['contents']['content'] !!}
                     </div>
 
-                    @if(!empty($news['contents']['gallery']) )
-
-                    <div id="newsGalleryCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            @foreach(json_decode($news['contents']['gallery']) as $index => $image)
-                            <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                <img src="{{ asset('storage/' . $image) }}" loading="lazy"
-                                    class="d-block w-100 img-fluid rounded" style=" max-height: 500px; width: auto; object-fit: cover;"
-                                    alt="Imagem da notícia: {{ $news['contents']['title'] }}">
+                    @if(!empty($news['contents']['gallery']))
+                    <div class="news-detail-gallery">
+                        <div id="newsGalleryCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                @foreach(json_decode($news['contents']['gallery']) as $index => $image)
+                                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                    <img src="{{ asset('storage/' . $image) }}" loading="lazy"
+                                        class="gallery-image"
+                                        alt="Imagem da notícia: {{ $news['contents']['title'] }}">
+                                </div>
+                                @endforeach
                             </div>
-                            @endforeach
-                        </div>
 
-                        <!-- Controles -->
-                        <button class="carousel-control-prev" type="button" data-bs-target="#newsGalleryCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Anterior</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#newsGalleryCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Próximo</span>
-                        </button>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#newsGalleryCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#newsGalleryCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Próximo</span>
+                            </button>
 
-                        <!-- Indicadores -->
-                        <div class="carousel-indicators">
-                            @foreach(json_decode($news['contents']['gallery']) as $index => $image)
-                            <button type="button"
-                                data-bs-target="#newsGalleryCarousel"
-                                data-bs-slide-to="{{ $index }}"
-                                class="{{ $index === 0 ? 'active' : '' }}"
-                                aria-current="{{ $index === 0 ? 'true' : 'false' }}"
-                                aria-label="Slide {{ $index + 1 }}"></button>
-                            @endforeach
+                            <div class="carousel-indicators">
+                                @foreach(json_decode($news['contents']['gallery']) as $index => $image)
+                                <button type="button"
+                                    data-bs-target="#newsGalleryCarousel"
+                                    data-bs-slide-to="{{ $index }}"
+                                    class="{{ $index === 0 ? 'active' : '' }}"
+                                    aria-current="{{ $index === 0 ? 'true' : 'false' }}"
+                                    aria-label="Slide {{ $index + 1 }}"></button>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
-
                     @endif
-                    <div class="text-dark">
+
+                    @if(!empty($news['contents']['summary']))
+                    <div class="news-detail-summary">
                         {!! $news['contents']['summary'] !!}
                     </div>
-                    @if(isset($news['contents']['categories']) && is_array(json_decode($news['contents']['categories'])))
-                    <div class="tags mt-2">
-                        @foreach(json_decode($news['contents']['categories']) as $category)
-                        @php $categoryName = App\Models\Page::find($category); @endphp
-                        <span class="badge-category">{{ $categoryName['contents'][0]['field_value'] }}</span>
-                        @endforeach
-                    </div>
                     @endif
-
-                </div>
+                </article>
 
 
 
             </div>
 
-            <div class="col-lg-4 ">
+            <div class="col-lg-4">
+                <div class="sidebar-sticky">
+                    {{-- Os nossos serviços --}}
+                    <div class="sidebar-card">
+                        <div class="sidebar-card-header">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                            </svg>
+                            <h5>Serviços</h5>
+                        </div>
+                        <div class="sidebar-list">
+                            <a href="{{ route('frontend.import') }}" class="sidebar-item">
+                                <div class="sidebar-item-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                    </svg>
+                                </div>
+                                <span>Importação</span>
+                                <svg class="sidebar-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </a>
 
-                {{-- Os nossos serviços --}}
-                <div class="recent-news-box p-3 mt-4 ">
-                    <div class="group-badge-stylish">Serviços</div>
-                    <div class="list-group mt-3">
-                        <a href="{{ route('frontend.import') }}" class="list-group-item mb-2 d-flex align-items-center">
-                            <div class="vehicle-info">
-                                <p class="mb-1 text-white" style="font-size: 0.9rem;">
-                                    <strong>Importação</strong>
-                                </p>
-                            </div>
-                        </a>
-
-                        <a href="{{ route('frontend.legalization') }}" class="list-group-item mb-2 d-flex align-items-center">
-                            <div class="vehicle-info">
-                                <p class="mb-1 text-white" style="font-size: 0.9rem;">
-                                    <strong>Legalização</strong>
-                                </p>
-                            </div>
-                        </a>
-
-                        <!-- <a href="{{ route('frontend.selling') }}" class="list-group-item mb-2 d-flex align-items-center">
-                            <div class="vehicle-info">
-                                <p class="mb-1 text-white" style="font-size: 0.9rem;">
-                                    <strong>Venda</strong>
-                                </p>
-                            </div>
-                        </a> -->
+                            <a href="{{ route('frontend.legalization') }}" class="sidebar-item">
+                                <div class="sidebar-item-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    </svg>
+                                </div>
+                                <span>Legalização</span>
+                                <svg class="sidebar-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
-                </div>
-                {{-- Bloco Carros à Venda --}}
-               
-                <div class="recent-news-box p-3 mt-4 ">
-                    <div class="group-badge-stylish">Notícias Recentes</div>
-                    <div class="list-group mt-3">
-                        @foreach($recentNews as $recent)
-                        <a href="{{ route('frontend.news-details', $recent->slug) }}"
-                            class="list-group-item  mb-2">
-                            <p class="mb-1 text-white">{{ $recent['contents']['title'] }}</p>
-                            <small class="text-muted " style="font-size: 0.8rem !important;">
-                                @if(!empty($recent['contents']['date']))
-                                {{ \Carbon\Carbon::parse($recent['contents']['date'])->format('d.m.Y') }}
-                                @endif
-                            </small>
-                        </a>
-                        @endforeach
+
+                    {{-- Notícias Recentes --}}
+                    <div class="sidebar-card">
+                        <div class="sidebar-card-header">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 3h18v18H3zM8 3v18M16 8h-5M16 12h-5M16 16h-5"></path>
+                            </svg>
+                            <h5>Notícias Recentes</h5>
+                        </div>
+                        <div class="sidebar-list">
+                            @foreach($recentNews as $recent)
+                            <a href="{{ route('frontend.news-details', $recent->slug) }}" class="sidebar-news-item">
+                                <div class="sidebar-news-content">
+                                    <p class="sidebar-news-title">{{ $recent['contents']['title'] }}</p>
+                                    @if(!empty($recent['contents']['date']))
+                                    <span class="sidebar-news-date">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        {{ \Carbon\Carbon::parse($recent['contents']['date'])->format('d.m.Y') }}
+                                    </span>
+                                    @endif
+                                </div>
+                            </a>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -138,112 +185,291 @@
 @endsection
 @push('styles')
 <style>
-    .news-content-white h1,
-    .news-content-white h2,
-    .news-content-white h3,
-    .news-content-white h4,
-    .news-content-white h5,
-    .news-content-white h6 {
-        color: var(--text-muted-color);
+    /* News Detail Card */
+    .news-detail-card {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        background: white;
+        border-radius: 24px;
+        padding: 3rem;
+        box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.08);
     }
 
-    .news-content-white *:not([style*="color"]) {
-        color: var(--primary-color) !important;
+    .news-detail-header {
+        margin-bottom: 2.5rem;
     }
 
-    .news-box {
-        border: 1px solid var(--accent-color);
-        background-color: transparent;
-        /* quadrado preto */
-        border-radius: 10px;
-        /* cantos arredondados (opcional) */
-        padding: 10px;
-        /* espaço interno */
-
-        /* texto branco */
+    .news-detail-meta {
+        margin-bottom: 1.5rem;
     }
 
-    .image-news {
+    .news-detail-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #6c757d;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 8px 16px;
+        background: #f8f9fa;
+        border-radius: 50px;
+    }
+
+    .news-detail-date svg {
+        color: var(--accent-color);
+    }
+
+    .news-detail-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #111;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+    }
+
+    .news-detail-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .news-detail-category {
+        display: inline-block;
+        padding: 8px 18px;
+        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+        color: white;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .news-detail-subtitle {
+        font-size: 1.2rem;
+        color: #495057;
+        line-height: 1.6;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-left: 4px solid var(--accent-color);
+        border-radius: 8px;
+    }
+
+    .news-detail-image-wrapper {
+        margin: 2.5rem 0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .news-detail-image {
         width: 100%;
         height: auto;
-        max-height: 400px;
+        display: block;
+    }
+
+    .news-detail-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #333;
+    }
+
+    .news-detail-content h2,
+    .news-detail-content h3,
+    .news-detail-content h4 {
+        color: #111;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .news-detail-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    .news-detail-content ul,
+    .news-detail-content ol {
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+    }
+
+    .news-detail-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    .news-detail-gallery {
+        margin: 2.5rem 0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-image {
+        width: 100%;
+        height: auto;
+        max-height: 500px;
         object-fit: cover;
-        border-radius: 10px;
     }
 
-
-    .recent-news-box {
-        background: var(--muted-color);
-        /* fundo preto */
-        color: #fff;
-        /* texto branco */
-        border-radius: 8px;
-        position: relative;
+    .news-detail-summary {
+        margin-top: 2.5rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 16px;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #495057;
     }
 
-    .recent-news-box .list-group-item {
-        background: transparent;
-        /* fundo do item transparente */
+    /* Sidebar */
+    .sidebar-sticky {
+        position: sticky;
+        top: 120px;
+    }
+
+    .sidebar-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .sidebar-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f1f3f5;
+    }
+
+    .sidebar-card-header svg {
         color: var(--accent-color);
-        /* texto branco */
-        border: 1px solid var(--accent-color);
-        /* separador suave */
     }
 
-    .recent-news-box .list-group-item:hover {
-        background: var(--accent-color);
-        /* efeito hover */
+    .sidebar-card-header h5 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111;
     }
 
-    .recent-news-box .list-group-item:hover .text-accent {
-        background: var(--accent-color);
-        color: var(--primary-color);
-        /* efeito hover */
+    .sidebar-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
     }
 
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #111;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
 
-
-
-    .group-badge-stylish {
+    .sidebar-item:hover {
         background: var(--accent-color);
         color: white;
-        font-weight: bold;
-        padding: 14px 20px;
-        font-size: 1rem;
-        border-top-right-radius: 12px;
-        border-bottom-left-radius: 12px;
-        position: relative;
-        /* deixa de ser absolute */
-        display: inline-block;
+        transform: translateX(5px);
+        border-color: var(--accent-color);
     }
 
-    .sticky-sidebar {
-        position: sticky;
-        top: 110px;
-        /* distância do topo ao fazer scroll */
-        z-index: 10;
+    .sidebar-item-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .sticky-sidebar-services {
-        position: sticky;
-        top: 110px;
-        /* distância do topo ao fazer scroll */
-        z-index: 10;
+    .sidebar-item:hover .sidebar-item-icon svg,
+    .sidebar-item:hover .sidebar-arrow {
+        color: white;
     }
 
-    .sticky-sidebar-vehicles {
-        position: sticky;
-        top: 450px;
-        /* distância do topo ao fazer scroll */
-        z-index: 10;
+    .sidebar-arrow {
+        margin-left: auto;
+        transition: transform 0.3s ease;
     }
 
-    .vehicle-info p,
-    .vehicle-info small {
-        margin: 0;
+    .sidebar-item:hover .sidebar-arrow {
+        transform: translateX(3px);
     }
 
-    .vehicle-info:hover {
-        color: var(--primary-color);
+    .sidebar-news-item {
+        display: block;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .sidebar-news-item:hover {
+        background: white;
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .sidebar-news-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #111;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+
+    .sidebar-news-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #6c757d;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .sidebar-news-date svg {
+        color: var(--accent-color);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .news-detail-card {
+            padding: 2rem;
+        }
+
+        .news-detail-title {
+            font-size: 2rem;
+        }
+
+        .sidebar-sticky {
+            position: relative;
+            top: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .news-detail-card {
+            padding: 1.5rem;
+        }
+
+        .news-detail-title {
+            font-size: 1.75rem;
+        }
+
+        .news-detail-content {
+            font-size: 1rem;
+        }
+
+        .sidebar-card {
+            padding: 1.5rem;
+        }
     }
 </style>
