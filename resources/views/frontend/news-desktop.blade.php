@@ -9,6 +9,7 @@
                     <div class="news-image-wrapper">
                         <img src="{{ asset('storage/' . $new['contents']['image']) }}"
                             class="news-image"
+                            onerror="this.src='{{ asset('img/logo-simples.png') }}';"
                             alt="Imagem da notícia: {{ $new->title }}" loading="lazy">
                         <div class="news-image-overlay"></div>
                     </div>

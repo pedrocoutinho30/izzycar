@@ -183,7 +183,10 @@ $image = $proposal->images;
                     <div class="col-lg-5">
                         @if($proposal->images)
                         <div class="vehicle-image-wrapper">
-                            <img src="{{ $image }}" alt="{{ $proposal->brand }} {{ $proposal->model }}" class="vehicle-image">
+                            <img src="{{ $image }}" 
+                                onerror="this.src='{{ asset('img/logo-simples.png') }}';"
+                                alt="{{ $proposal->brand }} {{ $proposal->model }}" 
+                                class="vehicle-image">
                             <div class="image-overlay">
                                 <a href="{{ $proposal->url }}" target="_blank" class="view-ad-btn">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

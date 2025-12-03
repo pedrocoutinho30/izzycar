@@ -7,6 +7,7 @@
                       <div class="news-image-wrapper-mobile">
                           <img src="{{ asset('storage/' .$new['contents']['image']) }}"
                               class="news-image-mobile"
+                              onerror="this.src='{{ asset('img/logo-simples.png') }}';"
                               alt="Imagem da notícia: {{ $new->title }}" loading="lazy">
                       </div>
                       @endif

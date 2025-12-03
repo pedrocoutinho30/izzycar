@@ -46,7 +46,10 @@
                         </div>
 
                         <div class="vehicle-image-wrapper">
-                            <img src="{{ $convertedProposal->proposal->images }}" alt="{{ $convertedProposal->brand }} {{ $convertedProposal->model }}" class="vehicle-image">
+                            <img src="{{ $convertedProposal->proposal->images }}" 
+                                onerror="this.src='{{ asset('img/logo-simples.png') }}';"
+                                alt="{{ $convertedProposal->brand }} {{ $convertedProposal->model }}" 
+                                class="vehicle-image">
                             <div class="image-overlay">
                                 <a href="{{ route('proposals.detail', ['proposal_code' => $convertedProposal->proposal->proposal_code]) }}" target="_blank" class="view-ad-btn">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

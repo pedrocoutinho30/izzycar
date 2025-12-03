@@ -197,7 +197,7 @@ $settings = \App\Models\Setting::all();
     .legal-section-content {
         font-size: 1.05rem;
         line-height: 1.8;
-        color: #333;
+        color: #111;
     }
 
     .legal-section-content p {

@@ -1,22 +1,38 @@
-      <form id="importForm" class="row g-3">
+      <form id="importForm" class="row g-4">
           @csrf
+
+          <div class="col-12">
+              <div class="form-section-header">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <span>Informações Pessoais</span>
+              </div>
+          </div>
 
           {{-- Nome --}}
           <div class="col-md-6">
-              <label for="name" class="form-label">Nome completo<span class="required-star">*</span></label>
-              <input type="text" name="name" id="name" class="form-control" required>
+              <label for="name" class="form-label">
+                  Nome completo<span class="required-star">*</span>
+              </label>
+              <input type="text" name="name" id="name" class="form-control" placeholder="João Silva" required>
           </div>
 
           {{-- Telemóvel --}}
           <div class="col-md-6">
-              <label for="phone" class="form-label">Telemóvel<span class="required-star">*</span></label>
-              <input type="text" name="phone" id="phone" class="form-control" required>
+              <label for="phone" class="form-label">
+                  Telemóvel<span class="required-star">*</span>
+              </label>
+              <input type="text" name="phone" id="phone" class="form-control" placeholder="+351 912 345 678" required>
           </div>
 
           {{-- Email --}}
           <div class="col-md-6">
-              <label for="email" class="form-label">E-mail<span class="required-star">*</span></label>
-              <input type="email" name="email" id="email" class="form-control" required>
+              <label for="email" class="form-label">
+                  E-mail<span class="required-star">*</span>
+              </label>
+              <input type="email" name="email" id="email" class="form-control" placeholder="joao@exemplo.com" required>
           </div>
 
           {{-- Como conheceu --}}
@@ -35,8 +51,24 @@
 
           {{-- Mensagem --}}
           <div class="col-12">
-              <label for="message" class="form-label">Mensagem</label>
-              <textarea name="message" id="message" class="form-control" rows="3"></textarea>
+              <label for="message" class="form-label">Mensagem adicional</label>
+              <textarea name="message" id="message" class="form-control" rows="3" placeholder="Deixe aqui informações adicionais que considere relevantes..."></textarea>
+          </div>
+
+          <div class="col-12">
+              <div class="form-divider"></div>
+          </div>
+
+          <div class="col-12">
+              <div class="form-section-header">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="1" y="3" width="15" height="13"></rect>
+                      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                      <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                      <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                  </svg>
+                  <span>Detalhes do Veículo</span>
+              </div>
           </div>
 
           {{-- Tem algum anúncio identificado? --}}
@@ -234,80 +266,244 @@
 
       @push('styles')
       <style>
-          #budgetSlider::-webkit-slider-thumb {
-              background-color: var(--accent-color);
-              /* cor da bola */
-              border: none;
-              border-radius: 50%;
-              border-color: var(--accent-color);
-              cursor: pointer;
-              height: 20px;
-              width: 20px;
-              margin-top: -7px;
-              /* ajusta verticalmente a thumb */
+          /* Form Section Header */
+          .form-section-header {
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              padding: 1rem 0 0.5rem;
+              border-bottom: 2px solid var(--accent-color);
+              font-size: 1.1rem;
+              font-weight: 700;
+              color: #111;
+              margin-bottom: 0.5rem;
           }
 
-          /* Firefox */
-          #budgetSlider::-moz-range-thumb {
-              background-color: var(--accent-color);
-              border: none;
-              border-radius: 50%;
-              border-color: var(--accent-color);
-              cursor: pointer;
-              height: 20px;
-              width: 20px;
+          .form-section-header svg {
+              color: var(--accent-color);
           }
 
-          /* Opera */
-          #budgetSlider::-o-range-thumb {
-              background-color: var(--accent-color);
-                      border-color: var(--accent-color);
-              border: none;
-              border-radius: 50%;
-              cursor: pointer;
-              height: 20px;
-              width: 20px;
+          .form-divider {
+              height: 1px;
+              background: linear-gradient(to right, transparent, #dee2e6, transparent);
+              margin: 1rem 0;
+          }
+
+          /* Form Labels */
+          #importForm .form-label {
+              font-weight: 600;
+              color: #111;
+              margin-bottom: 0.5rem;
+              font-size: 0.95rem;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
           }
 
           .required-star {
               color: var(--accent-color);
-              margin-left: 2px;
-              margin-right: 2px;
+              font-weight: 700;
           }
 
-          #formPropostaModal .modal-content {
-              background-color: var(--primary-color);
-              color: white;
-              /* para texto ficar legível */
+          /* Form Controls */
+          #importForm .form-control,
+          #importForm .form-select {
+              border: 2px solid #e9ecef;
+              border-radius: 12px;
+              padding: 0.75rem 1rem;
+              font-size: 0.95rem;
+              transition: all 0.3s ease;
+              background: #f8f9fa;
           }
 
-          #formPropostaModal .form-label {
-              color: white;
-              /* labels em branco */
-          }
-
-          .modal-backdrop.show {
-              backdrop-filter: blur(20px);
-              /* Ajuste a intensidade aqui */
-              background-color: rgba(0, 0, 0, 0.8);
-              /* mantém escurecimento */
-          }
-
-          #formPropostaModal .form-control {
-              background-color: var(--secondary-color);
-              border: 1px solid var(--accent-color);
-              color: white;
-          }
-
-          #formPropostaModal .form-control:focus {
-              background-color: rgba(255, 255, 255, 0.15);
+          #importForm .form-control:focus,
+          #importForm .form-select:focus {
               border-color: var(--accent-color);
+              box-shadow: 0 0 0 4px rgba(110, 7, 7, 0.1);
+              background: white;
+              outline: none;
+          }
+
+          #importForm .form-control:hover,
+          #importForm .form-select:hover {
+              border-color: #ced4da;
+              background: white;
+          }
+
+          #importForm textarea.form-control {
+              resize: vertical;
+              min-height: 100px;
+          }
+
+          /* Select Styling */
+          #importForm select.form-control {
+              background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236e0707' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+              background-repeat: no-repeat;
+              background-position: right 1rem center;
+              background-size: 16px;
+              padding-right: 3rem;
+              appearance: none;
+          }
+
+          /* Budget Slider */
+          #budgetSlider {
+              width: 100%;
+              height: 8px;
+              background: linear-gradient(to right, #e9ecef 0%, var(--accent-color) 0%);
+              border-radius: 10px;
+              outline: none;
+              transition: background 0.3s ease;
+          }
+
+          #budgetSlider::-webkit-slider-thumb {
+              appearance: none;
+              width: 24px;
+              height: 24px;
+              background: white;
+              border: 3px solid var(--accent-color);
+              border-radius: 50%;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              box-shadow: 0 2px 8px rgba(110, 7, 7, 0.3);
+          }
+
+          #budgetSlider::-webkit-slider-thumb:hover {
+              transform: scale(1.2);
+              box-shadow: 0 4px 12px rgba(110, 7, 7, 0.4);
+          }
+
+          #budgetSlider::-moz-range-thumb {
+              width: 24px;
+              height: 24px;
+              background: white;
+              border: 3px solid var(--accent-color);
+              border-radius: 50%;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              box-shadow: 0 2px 8px rgba(110, 7, 7, 0.3);
+          }
+
+          #budgetValue {
+              display: inline-block;
+              padding: 0.5rem 1rem;
+              background: var(--accent-color);
+              color: white;
+              border-radius: 8px;
+              font-weight: 700;
+              font-size: 1rem;
+              box-shadow: 0 2px 8px rgba(110, 7, 7, 0.3);
+              transition: all 0.3s ease;
+          }
+
+          /* Radio Buttons */
+          #importForm .form-check-input {
+              width: 20px;
+              height: 20px;
+              border: 2px solid #ced4da;
+              cursor: pointer;
+              transition: all 0.3s ease;
+          }
+
+          #importForm .form-check-input:checked {
+              background-color: var(--accent-color);
+              border-color: var(--accent-color);
+          }
+
+          #importForm .form-check-label {
+              cursor: pointer;
+              font-size: 0.95rem;
+              color: #495057;
+              margin-left: 0.5rem;
+          }
+
+          /* Info Icon */
+          .bi-info-circle {
+              color: var(--accent-color);
+              cursor: help;
+              font-size: 1rem;
+          }
+
+          /* Conditional Boxes */
+          #ad_links_box,
+          #preferences_box {
+              background: #f8f9fa;
+              border-radius: 16px;
+              padding: 1.5rem;
+              border: 2px dashed #dee2e6;
+          }
+
+          /* Submit Button */
+          #contactSubmitProposalBtn {
+              background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+              color: white;
+              border: none;
+              border-radius: 50px;
+              padding: 1rem 3rem;
+              font-size: 1.1rem;
+              font-weight: 700;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              box-shadow: 0 4px 15px rgba(110, 7, 7, 0.3);
+          }
+
+          #contactSubmitProposalBtn:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 6px 20px rgba(110, 7, 7, 0.4);
+          }
+
+          #contactSubmitProposalBtn:disabled {
+              opacity: 0.6;
+              cursor: not-allowed;
+              transform: none;
+          }
+
+          /* Form Response */
+          #formResponse {
+              border-radius: 12px;
+              padding: 1rem;
+              margin-top: 1rem;
+          }
+
+          #formResponse .alert {
+              border-radius: 12px;
+              border: none;
+              font-weight: 600;
+          }
+
+          #formResponse .alert-success {
+              background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
               color: white;
           }
 
-          #formPropostaModal .btn-primary {
-              background-color: var(--accent-color);
-              border: none;
+          #formResponse .alert-danger {
+              background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+              color: white;
+          }
+
+          /* Small Text */
+          .text-accent {
+              color: var(--accent-color) !important;
+              font-size: 0.85rem;
+              display: block;
+              margin-top: 0.5rem;
+          }
+
+          /* Responsive */
+          @media (max-width: 768px) {
+              #importForm .form-control,
+              #importForm .form-select {
+                  font-size: 16px; /* Prevent zoom on iOS */
+              }
+
+              #contactSubmitProposalBtn {
+                  width: 100%;
+                  padding: 1rem 2rem;
+              }
+
+              #budgetValue {
+                  font-size: 0.9rem;
+                  padding: 0.4rem 0.8rem;
+              }
           }
       </style>
       @endpush

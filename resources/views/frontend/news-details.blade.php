@@ -54,6 +54,7 @@
                     <div class="news-detail-image-wrapper">
                         <img src="{{  asset('storage/' . $news['contents']['image'])  }}" loading="lazy"
                             class="news-detail-image"
+                            onerror="this.src='{{ asset('img/logo-simples.png') }}';"
                             alt="Imagem da notícia: {{ $news['contents']['title'] }}">
                     </div>
                     @endif
@@ -70,6 +71,7 @@
                                 <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
                                     <img src="{{ asset('storage/' . $image) }}" loading="lazy"
                                         class="gallery-image"
+                                        onerror="this.src='{{ asset('img/logo-simples.png') }}';"
                                         alt="Imagem da notícia: {{ $news['contents']['title'] }}">
                                 </div>
                                 @endforeach

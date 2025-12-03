@@ -61,7 +61,7 @@ class CostSimulatorController extends Controller
 
 
         // enviar email com resultados
-        \Mail::to($request->input('email'))->send(new \App\Mail\CostSimulatorResultMail($valorCarro, $isv, $servicos, $custoTotal,));
+        //\Mail::to($request->input('email'))->send(new \App\Mail\CostSimulatorResultMail($valorCarro, $isv, $servicos, $custoTotal,));
         return view('frontend.cost-simulator.result', [
             'valorCarro' => $valorCarro,
             'tableIsv' => $tableIsv,
