@@ -421,7 +421,7 @@
             <div class="phone-content" id="phoneContent">
             <!-- Mobile Status Bar -->
             <div class="mobile-status-bar">
-                <div class="status-time">12:12</div>
+                <div class="status-time">10:10</div>
                 <div class="status-icons">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="1" y="5" width="22" height="14" rx="2" ry="2"></rect>
