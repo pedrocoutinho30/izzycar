@@ -156,11 +156,11 @@
 @push('styles')
 <style>
     .border-gallery {
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 10px;
-        background-color: var(--secondary-color);
-        border-radius: 8px;
+        background: var(--white-color);
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: none;
     }
 
     .group-badge-stylish {
@@ -194,7 +194,7 @@
 
     .swiper-slide img {
         width: 100%;
-        border-radius: 10px;
+        border-radius: 12px;
     }
 
     /* Imagem principal */
@@ -202,23 +202,117 @@
         width: 100%;
         max-height: 500px;
         object-fit: cover;
-        border-radius: 10px;
+        border-radius: 12px;
     }
 
     /* Miniaturas */
     .mySwiperThumbs .swiper-slide img {
-        border-radius: 6px;
+        border-radius: 8px;
         border: 2px solid transparent;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .mySwiperThumbs .swiper-slide img:hover {
+        border-color: rgba(110, 7, 7, 0.3);
     }
 
     .mySwiperThumbs .swiper-slide-thumb-active img {
         border-color: var(--accent-color);
+        box-shadow: 0 4px 12px rgba(110, 7, 7, 0.3);
+    }
+
+    /* Modern Info Card */
+    .custom-block-transparent {
+        background: var(--white-color) !important;
+        border-radius: 12px;
+        border: 1px solid rgba(110, 7, 7, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .custom-block-transparent:hover {
+        box-shadow: 0 8px 30px rgba(110, 7, 7, 0.15) !important;
+    }
+
+    .custom-block-transparent h3 {
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    .custom-block-transparent h5 {
+        font-size: 1.2rem;
+        font-weight: 400;
+        opacity: 0.9;
+    }
+
+    .icon-colored {
+        color: var(--accent-color);
+        font-size: 1.2rem;
+    }
+
+    /* Buttons Modern */
+    .btn-outline-form {
+        background: var(--white-color);
+        border: 2px solid var(--accent-color);
+        color: var(--accent-color);
+        border-radius: 50px;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-outline-form:hover {
+        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(110, 7, 7, 0.3);
+    }
+
+    /* Equipment Card Modern */
+    .news-listing {
+        background: var(--white-color) !important;
+        border-radius: 12px;
+        border: 1px solid rgba(110, 7, 7, 0.1);
+    }
+
+    .news-listing h5 {
+        color: var(--accent-color);
+        font-weight: 600;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(110, 7, 7, 0.2);
+    }
+
+    .bi-check-circle-fill {
+        color: var(--accent-color);
+        font-size: 1.1rem;
+    }
+
+    /* Swiper Navigation */
+    .swiper-button-next,
+    .swiper-button-prev {
+        background-color: rgba(110, 7, 7, 0.9);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+        background-color: rgba(110, 7, 7, 1);
+        transform: scale(1.1);
+    }
+
+    .swiper-button-next::after,
+    .swiper-button-prev::after {
+        font-size: 18px;
+        color: white;
     }
 
     /* Mobile */
     @media (max-width: 768px) {
         .border-gallery {
-            padding: 5px;
+            padding: 10px;
         }
 
         /* Reduz altura da imagem principal */
@@ -234,15 +328,13 @@
         /* Botões de navegação menores */
         .swiper-button-next,
         .swiper-button-prev {
-            width: 30px;
-            height: 30px;
-            background-color: rgba(0, 0, 0, 0.4);
-            border-radius: 50%;
+            width: 35px;
+            height: 35px;
         }
 
         .swiper-button-next::after,
         .swiper-button-prev::after {
-            font-size: 14px;
+            font-size: 16px;
         }
     }
 </style>

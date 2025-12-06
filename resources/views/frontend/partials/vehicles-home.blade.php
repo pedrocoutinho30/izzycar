@@ -54,6 +54,7 @@
     </div>
 </section>
 <style>
+    /* Modern Vehicle Swiper Styles */
     .swiper {
         padding-bottom: 50px;
         background-color: transparent !important;
@@ -66,39 +67,94 @@
         height: auto;
         overflow: visible !important;
         padding-top: 10px;
-        /* espaço extra em cima */
         box-sizing: border-box;
     }
 
     .custom-block {
         width: 100%;
         max-width: 360px;
-        background-color: transparent !important;
+        background-color: var(--white-color) !important;
+        border-radius: 12px;
+        border: 1px solid rgba(110, 7, 7, 0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
     }
 
+    .custom-block:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(110, 7, 7, 0.2) !important;
+    }
+
+    .custom-block a {
+        text-decoration: none;
+    }
+
+    .custom-block h5 {
+        font-weight: 600;
+        color: var(--accent-color);
+    }
+
+    .custom-block h3 {
+        color: var(--accent-color);
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+
+    .icon-colored {
+        color: var(--accent-color);
+    }
+
+    /* Swiper Navigation */
     .swiper-button-next,
     .swiper-button-prev {
-        color: #000;
+        background-color: rgba(110, 7, 7, 0.9);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
     }
 
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+        background-color: rgba(110, 7, 7, 1);
+        transform: scale(1.1);
+    }
+
+    .swiper-button-next::after,
+    .swiper-button-prev::after {
+        font-size: 18px;
+        color: white;
+    }
+
+    /* Image Wrapper */
     .image-wrapper {
-        width: auto !important;
-        /* largura desejada */
-        height: 200px;
-        /* altura desejada */
+        width: 100% !important;
+        height: 220px;
         overflow: hidden;
-        border-radius: 8px;
-        /* opcional */
+        border-radius: 12px 12px 0 0;
     }
 
     .image-wrapper img {
         width: 100%;
-        height: 200px;
+        height: 220px;
         object-fit: cover;
-        /* recorta e preenche */
         object-position: center;
-        /* foca no centro */
         display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .custom-block:hover .image-wrapper img {
+        transform: scale(1.05);
+    }
+
+    /* Pagination */
+    .swiper-pagination-bullet {
+        background: var(--accent-color);
+        opacity: 0.5;
+    }
+
+    .swiper-pagination-bullet-active {
+        opacity: 1;
     }
 </style>
 

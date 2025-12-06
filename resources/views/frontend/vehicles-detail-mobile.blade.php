@@ -118,43 +118,132 @@
 
 
 <style>
+    /* Modern Mobile Gallery */
+    .border-gallery {
+        background: var(--white-color);
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+    }
+
     .object-cover {
         object-fit: cover;
     }
 
+    .swiper-slide img {
+        border-radius: 12px;
+    }
+
+    .mySwiperThumbsMobile .swiper-slide img {
+        border: 2px solid transparent;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .mySwiperThumbsMobile .swiper-slide-thumb-active img {
+        border-color: var(--accent-color);
+        box-shadow: 0 4px 12px rgba(110, 7, 7, 0.3);
+    }
+
+    /* Modern Card */
+    .news-listing {
+        background: var(--white-color) !important;
+        border-radius: 12px;
+        border: 1px solid rgba(110, 7, 7, 0.1);
+    }
+
+    .news-listing h3,
+    .news-listing h5 {
+        color: var(--accent-color);
+        font-weight: 600;
+    }
+
+    .news-listing h5.card-title {
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(110, 7, 7, 0.2);
+    }
+
+    .icon-colored {
+        color: var(--accent-color);
+        font-size: 1.2rem;
+    }
+
+    /* Buttons Modern */
+    .btn-outline-form {
+        background: var(--white-color);
+        border: 2px solid var(--accent-color);
+        color: var(--accent-color);
+        border-radius: 50px;
+        padding: 10px 16px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-outline-form:hover {
+        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(110, 7, 7, 0.3);
+    }
+
+    /* Navigation Buttons */
+    .swiper-button-next-mobile,
+    .swiper-button-prev-mobile {
+        background-color: rgba(110, 7, 7, 0.9);
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+    }
+
+    .swiper-button-next-mobile::after,
+    .swiper-button-prev-mobile::after {
+        font-size: 16px;
+        color: white;
+    }
+
+    /* Check icons */
+    .bi-check-circle-fill {
+        color: var(--accent-color);
+        font-size: 1.1rem;
+    }
+
+    /* Modal Styles */
     #contactModalMobile .modal-content {
         background-color: var(--primary-color);
         color: white;
-        /* para texto ficar legível */
+        border-radius: 12px;
     }
 
     #contactModalMobile .form-label {
         color: white;
-        /* labels em branco */
     }
 
     .modal-backdrop.show {
         backdrop-filter: blur(20px);
-        /* Ajuste a intensidade aqui */
         background-color: rgba(0, 0, 0, 0.8);
-        /* mantém escurecimento */
     }
 
     #contactModalMobile .form-control {
         background-color: var(--secondary-color);
         border: 1px solid var(--accent-color);
         color: white;
+        border-radius: 8px;
     }
 
     #contactModalMobile .form-control:focus {
         background-color: rgba(255, 255, 255, 0.15);
         border-color: var(--accent-color);
         color: white;
+        box-shadow: 0 0 0 3px rgba(110, 7, 7, 0.2);
     }
 
     #contactModalMobile .btn-primary {
-        background-color: var(--accent-color);
+        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
         border: none;
+        border-radius: 50px;
+        padding: 12px 24px;
+        font-weight: 500;
     }
 </style>
 

@@ -130,62 +130,156 @@
 </div>
 
 <style>
+    /* Vehicle Card Modern Styles */
+    .custom-block {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(110, 7, 7, 0.1);
+    }
+
+    .custom-block:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(110, 7, 7, 0.2) !important;
+    }
+
+    .custom-block a {
+        text-decoration: none;
+    }
+
     .custom-block-image {
-        width: 200px;
-        height: auto;
+        width: 280px;
+        min-width: 280px;
+        height: 200px;
         object-fit: cover;
-        border-radius: 8px;
+        border-radius: 12px 0 0 12px;
     }
 
     .custom-block-topics-listing-info {
-        padding-left: 20px;
+        padding: 20px;
         width: 100%;
         align-items: center;
-    }
-
-    .badge.bg-success {
-        font-size: 1rem;
-        padding: 10px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .image-wrapper {
-        width: 200px !important;
-        /* largura desejada */
+        width: 280px !important;
+        min-width: 280px;
         height: 200px;
-        /* altura desejada */
         overflow: hidden;
-        border-radius: 8px;
-        /* opcional */
+        border-radius: 12px 0 0 12px;
     }
 
     .image-wrapper img {
         width: 100%;
         height: 200px;
         object-fit: cover;
-        /* recorta e preenche */
         object-position: center;
-        /* foca no centro */
         display: block;
+        transition: transform 0.3s ease;
     }
 
+    .custom-block:hover .image-wrapper img {
+        transform: scale(1.05);
+    }
+
+    .custom-block h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .custom-block h6 {
+        font-size: 1.1rem;
+        font-weight: 400;
+        opacity: 0.9;
+    }
+
+    .price {
+        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        color: white !important;
+        border-radius: 50px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(110, 7, 7, 0.3);
+        white-space: nowrap;
+    }
+
+    /* Filter Sidebar Modern Styles */
     .sticky-top {
         z-index: 100;
     }
 
+    .sticky-top h4 {
+        color: var(--primary-color);
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(110, 7, 7, 0.2);
+    }
+
+    #filter-form {
+        background: var(--white-color);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
     #filter-form select {
-        background-color: var(--section-bg-color);
-        /* fundo escuro */
-        color: var(--white-color);
-        border: 1px solid var(--border-color);
+        background-color: #f8f9fa;
+        color: var(--primary-color);
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    #filter-form select:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(110, 7, 7, 0.1);
+        outline: none;
     }
 
     #filter-form select:disabled {
         opacity: 0.5;
+        cursor: not-allowed;
     }
 
     #clear-filters-btn {
-        background-color: var(--custom-btn-bg-color);
+        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
         color: var(--white-color);
+        border: none;
+        border-radius: 50px;
+        padding: 12px 24px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    #clear-filters-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(110, 7, 7, 0.3);
+    }
+
+    /* Icon Styles */
+    .icon-colored {
+        color: var(--accent-color);
+    }
+
+    .list {
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* Carousel Controls */
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: rgba(110, 7, 7, 0.8);
+        border-radius: 50%;
+        padding: 10px;
     }
 </style>
 <script>

@@ -124,6 +124,127 @@
   </div>
 
 
+  <style>
+      /* Mobile Filter Modern Styles */
+      .sticky-top h4 {
+          color: var(--primary-color);
+          font-weight: 600;
+          cursor: pointer;
+          padding: 15px;
+          background: linear-gradient(135deg, rgba(110, 7, 7, 0.05) 0%, rgba(153, 0, 0, 0.05) 100%);
+          border-radius: 12px;
+          transition: all 0.3s ease;
+      }
+
+      .sticky-top h4:hover {
+          background: linear-gradient(135deg, rgba(110, 7, 7, 0.1) 0%, rgba(153, 0, 0, 0.1) 100%);
+      }
+
+      #toggle-icon {
+          color: var(--accent-color);
+          transition: transform 0.3s ease;
+      }
+
+      .custom-form {
+          background: var(--white-color);
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .form-select {
+          background-color: #f8f9fa;
+          color: var(--primary-color);
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          padding: 12px 16px;
+          font-size: 0.95rem;
+          transition: all 0.3s ease;
+      }
+
+      .form-select:focus {
+          border-color: var(--accent-color);
+          box-shadow: 0 0 0 3px rgba(110, 7, 7, 0.1);
+          outline: none;
+      }
+
+      /* Mobile Vehicle Card Modern Styles */
+      .custom-block {
+          border-radius: 12px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          border: 1px solid rgba(110, 7, 7, 0.1);
+      }
+
+      .custom-block:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 30px rgba(110, 7, 7, 0.2) !important;
+      }
+
+      .custom-block a {
+          text-decoration: none;
+      }
+
+      .custom-block img {
+          border-radius: 12px 12px 0 0;
+          transition: transform 0.3s ease;
+      }
+
+      .custom-block:hover img {
+          transform: scale(1.05);
+      }
+
+      .custom-block h3 {
+          font-size: 1.4rem;
+          font-weight: 600;
+      }
+
+      .custom-block h6 {
+          font-size: 1rem;
+          font-weight: 400;
+          opacity: 0.9;
+      }
+
+      .price {
+          background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+          color: white !important;
+          border-radius: 50px;
+          font-weight: 600;
+          box-shadow: 0 4px 15px rgba(110, 7, 7, 0.3);
+      }
+
+      .icon-colored {
+          color: var(--accent-color);
+      }
+
+      .object-cover {
+          object-fit: cover;
+      }
+
+      #clear-filters-btn-mobile {
+          background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+          color: var(--white-color);
+          border: none;
+          border-radius: 50px;
+          padding: 12px 24px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+      }
+
+      #clear-filters-btn-mobile:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(110, 7, 7, 0.3);
+      }
+
+      /* Carousel Controls for Mobile */
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+          background-color: rgba(110, 7, 7, 0.8);
+          border-radius: 50%;
+          padding: 8px;
+      }
+  </style>
+
   <script>
       document.addEventListener("DOMContentLoaded", () => {
           const collapse = document.getElementById("filtersCollapse");
@@ -424,13 +545,3 @@
           updateVehicles();
       });
   </script>
-  <style>
-      .object-cover {
-          object-fit: cover;
-      }
-
-      #clear-filters-btn-mobile {
-          background-color: var(--custom-btn-bg-color);
-          color: var(--white-color);
-      }
-  </style>
