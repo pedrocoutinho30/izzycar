@@ -39,13 +39,13 @@
 
     .process-nav-item:hover {
         border-color: var(--accent-color);
-        box-shadow: 0 4px 15px rgba(110, 7, 7, 0.15);
+        /* box-shadow: 0 4px 15px rgba(110, 7, 7, 0.15); */
     }
 
     .process-nav-item.active {
         background: linear-gradient(135deg, rgba(110, 7, 7, 0.05) 0%, rgba(153, 0, 0, 0.05) 100%);
         border-color: var(--accent-color);
-        box-shadow: 0 8px 25px rgba(110, 7, 7, 0.2);
+        /* box-shadow: 0 8px 25px rgba(110, 7, 7, 0.2); */
     }
 
     .process-nav-item.active::before {
@@ -91,7 +91,8 @@
         background: white;
         border-radius: 24px;
         padding: 3rem;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        border: 2px solid #990000;
+        /* box-shadow: 0 10px 40px rgba(0,0,0,0.08); */
         min-height: 400px;
     }
 

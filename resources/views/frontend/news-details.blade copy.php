@@ -4,21 +4,17 @@
 ])
 
 @section('content')
-
-<!-- Hero Breadcrumb -->
-<!-- <section class="news-detail-hero">
-    <div class="container mt-5">
-        <a href="{{ route('frontend.news') }}" class="btn-back-modern">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-            <span>Voltar às notícias</span>
-        </a>
-    </div>
-</section> -->
-
 <section class="py-5">
+
     <div class="container mt-2">
+        <div class="container">
+            <a href="{{ route('frontend.news') }}" class="btn btn-outline-dark btn-back-news d-inline-flex align-items-center mb-0 mt-4" style="gap:8px; border-radius: 50px; font-weight: 600;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Voltar à listagem de notícias
+            </a>
+        </div>
         <div class="row g-5">
             <div class="col-lg-8 h-100">
                 {{-- Notícia detalhada --}}
@@ -191,41 +187,6 @@
 @endsection
 @push('styles')
 <style>
-    /* News Detail Hero */
-    .news-detail-hero {
-        padding: 2rem 0;
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    }
-
-    .btn-back-modern {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 24px;
-        background: white;
-        color: #111;
-        border: 2px solid #e9ecef;
-        border-radius: 50px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-    .btn-back-modern:hover {
-        background: var(--accent-color);
-        color: white;
-        border-color: var(--accent-color);
-        transform: translateX(-5px);
-    }
-
-    .btn-back-modern svg {
-        transition: transform 0.3s ease;
-    }
-
-    .btn-back-modern:hover svg {
-        transform: translateX(-3px);
-    }
-
     /* News Detail Card */
     .news-detail-card {
         margin-top: 2rem;

@@ -5,90 +5,7 @@
 ])
 @section('content')
 
-<!-- Hero Section Import -->
-<section class="hero-import-section">
-    <div class="hero-overlay"></div>
-    <div class="container">
-        <div class="row align-items-center min-vh-50 py-5">
-            <div class="col-lg-7">
-                <div class="hero-content">
-                    <span class="hero-badge fade-in-up">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                        </svg>
-                        Importação Chave na Mão
-                    </span>
-                    <h1 class="hero-title fade-in-up" data-delay="100">
-                        {{ $data->process_import['title'] }}
-                    </h1>
-                    <p class="hero-description fade-in-up" data-delay="200">
-                        {{ $data->process_import['subtitle'] }}
-                    </p>
-                    <div class="hero-actions fade-in-up" data-delay="300">
-                        <a href="#form-proposta" class="btn-hero-primary" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
-                            <span>Pedir Proposta</span>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
-                        </a>
-                        <a href="{{ route('frontend.cost-simulator') }}" class="btn-hero-secondary">
-                            <span>€</span>
-                            <span>Simular Custos</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Trust Badges -->
-<section class="trust-badges-section">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="trust-badge-item fade-in-up">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        <polyline points="9 12 11 14 15 10"></polyline>
-                    </svg>
-                    <h4>Processo Seguro</h4>
-                    <p>100% Transparente</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="trust-badge-item fade-in-up" data-delay="100">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    <h4>3-6 Semanas</h4>
-                    <p>Entrega Média</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="trust-badge-item fade-in-up" data-delay="200">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
-                    <h4>Zero Preocupações</h4>
-                    <p>Tratamos de Tudo</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="trust-badge-item fade-in-up" data-delay="300">
-                    <span style="font-size:48px; color:var(--accent-color); font-weight:700;">€</span>
-
-                    <h4>Até 30% Poupança</h4>
-                    <p>Melhor Preço</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+@include('frontend.partials.hero-section', ['title' => $data->process_import['title'], 'subtitle' => $data->process_import['subtitle']])
 
 <section class="cta-section-modern">
     <div class="container">
@@ -116,11 +33,7 @@
 
 <section class="section-padding" id="section_description_import">
     <div class="container">
-        <div class="section-header text-center mb-5">
-            <span class="section-badge fade-in-up">Como Funciona</span>
-            <h2 class="section-title fade-in-up" data-delay="100">Importação Simplificada</h2>
-        </div>
-        <div class="import-description-card fade-in-up" data-delay="200">
+        <div class="import-description-card">
             <div class="import-description-content">
                 {!!$data->process_import['description']!!}
             </div>
@@ -130,10 +43,9 @@
 
 <section class="section-padding bg-light" id="section_why_import">
     <div class="container">
-        <div class="section-header text-center mb-5">
-            <span class="section-badge fade-in-up">Nossas Vantagens</span>
-            <h2 class="section-title fade-in-up" data-delay="100">Porque Importar com a Izzycar?</h2>
-            <p class="section-description fade-in-up" data-delay="200">Vantagens que fazem a diferença na sua importação</p>
+        <div class="section-header-import">
+            <h2 class="section-title-import">Porque Importar com a Izzycar?</h2>
+            <p class="section-subtitle-import">Vantagens que fazem a diferença</p>
         </div>
 
         <div class="row g-4">
@@ -169,11 +81,7 @@
 
 <section class="section-padding" id="section_import">
     <div class="container">
-        <div class="section-header text-center mb-5">
 
-            <h2 class="section-title fade-in-up" data-delay="100">Como Importamos o Seu Carro</h2>
-            <p class="section-description fade-in-up" data-delay="200">Processo detalhado do início ao fim</p>
-        </div>
 
         <div id="desktop-content">
             @include('frontend.partials.vertical-tabs', [
@@ -211,10 +119,9 @@
 @if(!empty($data_custos))
 <section class="section-padding bg-light" id="section_import_costs">
     <div class="container">
-        <div class="section-header text-center mb-5">
-            <span class="section-badge fade-in-up">Preços Transparentes</span>
-            <h2 class="section-title fade-in-up" data-delay="100">Custos de Importação</h2>
-            <p class="section-description fade-in-up" data-delay="200">Transparência total em cada etapa do processo</p>
+        <div class="section-header-import">
+            <h2 class="section-title-import">Custos de Importação</h2>
+            <p class="section-subtitle-import">Transparência total em cada etapa do processo</p>
         </div>
 
         <div class="row g-4">
@@ -296,10 +203,9 @@
 
 <section class="section-padding" id="section_faq">
     <div class="container">
-        <div class="section-header text-center mb-5">
-            <span class="section-badge fade-in-up">FAQ</span>
-            <h2 class="section-title fade-in-up" data-delay="100">Perguntas Frequentes</h2>
-            <p class="section-description fade-in-up" data-delay="200">Tire as suas dúvidas sobre importação</p>
+        <div class="section-header-import">
+            <h2 class="section-title-import">Perguntas Frequentes</h2>
+            <p class="section-subtitle-import">Tire as suas dúvidas sobre importação</p>
         </div>
 
         <div class="faq-wrapper-modern">
@@ -346,199 +252,6 @@
 
 @push('styles')
 <style>
-    /* Hero Import Section */
-    .hero-import-section {
-        position: relative;
-        background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #111111 100%);
-        overflow: hidden;
-        padding: 4rem 0 2rem;
-    }
-
-    .hero-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236e0707' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        opacity: 0.3;
-    }
-
-    .min-vh-75 {
-        min-height: 75vh;
-    }
-    .min-vh-50 {
-        min-height: 50vh;
-    }
-
-    .hero-content {
-        position: relative;
-        z-index: 2;
-    }
-
-    .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: rgba(110, 7, 7, 0.2);
-        border: 1px solid rgba(110, 7, 7, 0.3);
-        border-radius: 50px;
-        color: #fff;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 2rem;
-    }
-
-    .hero-title {
-        font-size: 3rem;
-        font-weight: 900;
-        color: #fff;
-        line-height: 1.2;
-        margin-bottom: 1.5rem;
-    }
-
-    .hero-description {
-        font-size: 1.2rem;
-        color: rgba(255,255,255,0.8);
-        line-height: 1.8;
-        margin-bottom: 2.5rem;
-        max-width: 600px;
-    }
-
-    .hero-actions {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .btn-hero-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 40px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
-        color: white;
-        border-radius: 50px;
-        font-size: 1.1rem;
-        font-weight: 700;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(153, 0, 0, 0.4);
-    }
-
-    .btn-hero-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(153, 0, 0, 0.5);
-        color: white;
-    }
-
-    .btn-hero-secondary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 40px;
-        background: transparent;
-        color: white;
-        border: 2px solid rgba(255,255,255,0.3);
-        border-radius: 50px;
-        font-size: 1.1rem;
-        font-weight: 700;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-    .btn-hero-secondary:hover {
-        background: rgba(255,255,255,0.1);
-        border-color: white;
-        color: white;
-    }
-
-    /* Trust Badges */
-    .trust-badges-section {
-        padding: 3rem 0;
-        background: white;
-    }
-
-    .trust-badge-item {
-        text-align: center;
-        padding: 2rem 1.5rem;
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border-radius: 16px;
-        height: 100%;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-    }
-
-    .trust-badge-item:hover {
-        border-color: #990000;
-        transform: translateY(-5px);
-    }
-
-    .trust-badge-item svg {
-        color: #990000;
-        margin-bottom: 1rem;
-    }
-
-    .trust-badge-item h4 {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #111;
-        margin-bottom: 0.5rem;
-    }
-
-    .trust-badge-item p {
-        font-size: 0.9rem;
-        color: #6c757d;
-        margin: 0;
-    }
-
-    /* Section Headers */
-    .section-badge {
-        display: inline-block;
-        padding: 8px 20px;
-        background: rgba(110, 7, 7, 0.1);
-        color: #990000;
-        border-radius: 50px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 1rem;
-    }
-
-    .section-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #111;
-        margin-bottom: 1rem;
-    }
-
-    .section-description {
-        font-size: 1.1rem;
-        color: #6c757d;
-        max-width: 700px;
-        margin: 0 auto;
-    }
-
-    /* Animations */
-    .fade-in-up {
-        opacity: 0;
-        transform: translateY(30px);
-        animation: fadeInUp 0.8s ease forwards;
-    }
-
-    .fade-in-up[data-delay="100"] { animation-delay: 0.1s; }
-    .fade-in-up[data-delay="200"] { animation-delay: 0.2s; }
-    .fade-in-up[data-delay="300"] { animation-delay: 0.3s; }
-
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
     /* CTA Section Modern */
     .cta-section-modern {
         padding: 3rem 0;
@@ -1145,25 +858,6 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
 <script>
-    // Intersection Observer for scroll animations
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animationPlayState = 'running';
-            }
-        });
-    }, observerOptions);
-
-    document.querySelectorAll('.fade-in-up').forEach(el => {
-        el.style.animationPlayState = 'paused';
-        observer.observe(el);
-    });
-
     function handleResponsiveTabs() {
         const desktopDivPassos = document.getElementById('desktop-content');
         const mobileDivPassos = document.getElementById('mobile-content');

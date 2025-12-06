@@ -7,25 +7,7 @@
 $settings = \App\Models\Setting::all();
 @endphp
 
-<!-- Hero Section -->
-<section class="hero-legal-section">
-    <div class="hero-overlay"></div>
-    <div class="container">
-        <div class="row align-items-center min-vh-60 py-5">
-            <div class="col-lg-8 mx-auto text-center">
-                <span class="hero-badge fade-in-up">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
-                    Termos de Utilização
-                </span>
-                <h1 class="hero-title fade-in-up" data-delay="100">Termos e Condições</h1>
-                <p class="hero-description fade-in-up" data-delay="200">Regras de utilização do nosso website</p>
-            </div>
-        </div>
-    </div>
-</section>
+@include('frontend.partials.hero-section', ['title' => 'Termos e Condições', 'subtitle' => 'Regras de utilização do nosso website'])
 
 <section class="section-padding">
     <div class="container">
@@ -107,74 +89,6 @@ $settings = \App\Models\Setting::all();
 
 @push('styles')
 <style>
-    /* Hero Section */
-    .hero-legal-section {
-        position: relative;
-        background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #111111 100%);
-        overflow: hidden;
-        padding: 3rem 0;
-    }
-
-    .hero-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236e0707' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        opacity: 0.3;
-    }
-
-    .min-vh-60 {
-        min-height: 60vh;
-    }
-
-    .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: rgba(110, 7, 7, 0.2);
-        border: 1px solid rgba(110, 7, 7, 0.3);
-        border-radius: 50px;
-        color: #fff;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 2rem;
-    }
-
-    .hero-title {
-        font-size: 3rem;
-        font-weight: 900;
-        color: #fff;
-        line-height: 1.2;
-        margin-bottom: 1.5rem;
-    }
-
-    .hero-description {
-        font-size: 1.2rem;
-        color: rgba(255,255,255,0.8);
-        line-height: 1.8;
-        max-width: 700px;
-        margin: 0 auto;
-    }
-
-    .fade-in-up {
-        opacity: 0;
-        transform: translateY(30px);
-        animation: fadeInUp 0.8s ease forwards;
-    }
-
-    .fade-in-up[data-delay="100"] { animation-delay: 0.1s; }
-    .fade-in-up[data-delay="200"] { animation-delay: 0.2s; }
-
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
     .legal-intro-card {
         background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
         border-radius: 24px;
@@ -302,31 +216,6 @@ $settings = \App\Models\Setting::all();
         .legal-section-content {
             font-size: 1rem;
         }
-
-        .hero-title { font-size: 2rem; }
-        .hero-description { font-size: 1rem; }
     }
 </style>
-@endpush
-
-@push('scripts')
-<script>
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animationPlayState = 'running';
-            }
-        });
-    }, observerOptions);
-
-    document.querySelectorAll('.fade-in-up').forEach(el => {
-        el.style.animationPlayState = 'paused';
-        observer.observe(el);
-    });
-</script>
 @endpush

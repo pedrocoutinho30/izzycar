@@ -1579,7 +1579,7 @@ blockquote {
     .proposal-vehicle-card {
         background: white;
         border-radius: 24px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        /* box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1); */
         overflow: hidden;
         margin-bottom: 3rem;
         max-width: 100%;
@@ -1938,7 +1938,7 @@ blockquote {
         background: white;
         padding: 3rem;
         border-radius: 24px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        /* box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); */
         margin-bottom: 3rem;
     }
 
@@ -2011,7 +2011,8 @@ blockquote {
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 15px rgba(153, 0, 0, 0.3);
+        /* box-shadow: 0 4px 15px rgba(153, 0, 0, 0.3); */
+        border: 2px solid rgba(153, 0, 0, 0.3);
         z-index: 2;
     }
 
@@ -2081,7 +2082,7 @@ blockquote {
         background: white;
         padding: 2.5rem;
         border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        /* box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); */
         transition: all 0.3s ease;
         opacity: 0;
         transform: translateY(20px);
