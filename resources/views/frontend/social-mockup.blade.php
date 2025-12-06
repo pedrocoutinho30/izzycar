@@ -414,10 +414,7 @@
 <body>
 
     <!-- Announcement Badge -->
-    <div class="announcement-badge">
-        <span class="emoji">🎉</span>
-        NOVO WEBSITE<br>
-    </div>
+
 
     <div class="mockup-container">
         <div class="mockup-wrapper">
