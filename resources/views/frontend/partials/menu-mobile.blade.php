@@ -73,7 +73,7 @@
 }
 
 .navbar-logo-mobile {
-    height: 40px;
+    height: 80px;
     width: auto;
 }
 

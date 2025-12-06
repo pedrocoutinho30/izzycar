@@ -30,83 +30,108 @@
         }
 
         .mockup-container {
-            max-width: 1400px;
+            max-width: 430px;
             width: 100%;
             perspective: 1500px;
         }
 
         .mockup-wrapper {
-            background: #fff;
-            border-radius: 30px;
+            background: #1a1a1a;
+            border-radius: 50px;
             box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
             overflow: hidden;
-            transform: rotateY(-5deg) rotateX(5deg);
+            transform: rotateY(0deg) rotateX(0deg);
             transition: transform 0.6s ease;
-            animation: float 6s ease-in-out infinite;
+            border: 12px solid #1a1a1a;
+            position: relative;
+            height: 932px;
+            max-height: 90vh;
+        }
+
+        /* Notch do iPhone */
+        .mockup-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #1a1a1a;
+            border-radius: 0 0 20px 20px;
+            z-index: 1000;
+        }
+
+        /* Content scroll container */
+        .phone-content {
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .phone-content::-webkit-scrollbar {
+            display: none;
         }
 
         .mockup-wrapper:hover {
             transform: rotateY(0deg) rotateX(0deg) scale(1.02);
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: rotateY(-5deg) rotateX(5deg) translateY(0px);
+        @keyframes autoScroll {
+            0% {
+                scroll-behavior: smooth;
             }
-            50% {
-                transform: rotateY(-5deg) rotateX(5deg) translateY(-20px);
+            20% {
+                scroll-behavior: smooth;
+            }
+            80% {
+                scroll-behavior: smooth;
+            }
+            100% {
+                scroll-behavior: smooth;
             }
         }
 
-        /* Browser Chrome */
-        .browser-chrome {
-            background: #e8e8e8;
-            padding: 1rem;
+        /* Mobile Status Bar */
+        .mobile-status-bar {
+            background: rgba(17, 17, 17, 0.95);
+            padding: 0.5rem 1.5rem;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.75rem;
-            border-bottom: 1px solid #ddd;
+            font-size: 0.75rem;
+            color: #fff;
+            position: relative;
+            z-index: 999;
         }
 
-        .browser-dots {
+        .status-time {
+            font-weight: 600;
+        }
+
+        .status-icons {
             display: flex;
             gap: 0.5rem;
-        }
-
-        .browser-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .dot-red { background: #ff5f56; }
-        .dot-yellow { background: #ffbd2e; }
-        .dot-green { background: #27c93f; }
-
-        .browser-url {
-            flex: 1;
-            background: #fff;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            color: #666;
-            display: flex;
             align-items: center;
-            gap: 0.5rem;
         }
 
-        .browser-url svg {
-            width: 16px;
-            height: 16px;
-            color: #27c93f;
+        .status-icons svg {
+            width: 14px;
+            height: 14px;
         }
 
         /* Hero Section Mockup */
         .hero-mockup {
             background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
-            padding: 2.5rem 2rem;
+            padding: 3rem 1.5rem;
             position: relative;
             overflow: hidden;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
         }
 
         .hero-mockup::before {
@@ -124,24 +149,36 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.75rem 1.5rem;
             background: rgba(17, 17, 17, 0.95);
             position: relative;
             z-index: 10;
             border-bottom: 1px solid rgba(110, 7, 7, 0.2);
         }
 
+        .hamburger-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .hamburger-icon span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: #fff;
+            border-radius: 2px;
+        }
+
         .logo-mockup {
-            height: 70px;
+            height: 45px;
             filter: brightness(1.2);
         }
 
         .nav-items {
-            display: flex;
-            gap: 2rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.95rem;
-            font-weight: 600;
+            display: none;
         }
 
         .hero-content-mockup {
@@ -166,10 +203,10 @@
         }
 
         .hero-title-mockup {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: 800;
             color: #fff;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
             line-height: 1.2;
         }
 
@@ -181,10 +218,10 @@
         }
 
         .hero-description-mockup {
-            font-size: 1.05rem;
+            font-size: 1rem;
             color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 1.8rem;
-            max-width: 700px;
+            margin-bottom: 2rem;
+            max-width: 100%;
             margin-left: auto;
             margin-right: auto;
             line-height: 1.6;
@@ -192,43 +229,46 @@
 
         .hero-buttons {
             display: flex;
-            gap: 1rem;
+            flex-direction: column;
+            gap: 0.75rem;
             justify-content: center;
-            flex-wrap: wrap;
         }
 
         .btn-primary-mockup {
             background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
             color: #fff;
-            padding: 0.85rem 2rem;
+            padding: 0.85rem 1.5rem;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             border: none;
             box-shadow: 0 10px 30px rgba(110, 7, 7, 0.4);
             transition: all 0.3s ease;
+            width: 100%;
         }
 
         .btn-secondary-mockup {
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
-            padding: 0.85rem 2rem;
+            padding: 0.85rem 1.5rem;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             border: 2px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
+            width: 100%;
         }
 
         /* Services Section */
         .services-mockup {
-            padding: 2rem;
+            padding: 2.5rem 1.5rem;
             background: #fff;
+            min-height: 500px;
         }
 
         .section-title-mockup {
             text-align: center;
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: #111;
             margin-bottom: 2rem;
@@ -236,15 +276,15 @@
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: 1fr;
             gap: 1.5rem;
         }
 
         .service-card-mockup {
             background: #fff;
             border: 1px solid rgba(110, 7, 7, 0.1);
-            border-radius: 20px;
-            padding: 1.5rem;
+            border-radius: 15px;
+            padding: 1.75rem;
             text-align: center;
             transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -381,33 +421,30 @@
 
     <div class="mockup-container">
         <div class="mockup-wrapper">
-            <!-- Browser Chrome -->
-            <div class="browser-chrome">
-                <div class="browser-dots">
-                    <div class="browser-dot dot-red"></div>
-                    <div class="browser-dot dot-yellow"></div>
-                    <div class="browser-dot dot-green"></div>
-                </div>
-                <div class="browser-url">
+            <div class="phone-content" id="phoneContent">
+            <!-- Mobile Status Bar -->
+            <div class="mobile-status-bar">
+                <div class="status-time">9:41</div>
+                <div class="status-icons">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="11" width="6" height="11" rx="2"></rect>
-                        <path d="M12 11V7a2 2 0 0 1 2-2h2"></path>
-                        <circle cx="12" cy="12" r="10"></circle>
+                        <rect x="1" y="5" width="22" height="14" rx="2" ry="2"></rect>
+                        <line x1="23" y1="13" x2="23" y2="11"></line>
                     </svg>
-                    www.izzycar.pt
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"></path>
+                    </svg>
                 </div>
             </div>
 
             <!-- Navbar -->
             <div class="navbar-mockup">
-                <img src="{{ asset('img/logo-izzycar-branco.png') }}" alt="IzzyCar" class="logo-mockup">
-                <div class="nav-items">
-                    <span>Início</span>
-                    <span>Importação</span>
-                    <span>Viaturas</span>
-                    <span>Legalização</span>
-                    <span>Contacto</span>
+                <div class="hamburger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
+                <img src="{{ asset('img/logo-transparente.png') }}" alt="IzzyCar" class="logo-mockup">
+                <div style="width: 24px;"></div>
             </div>
 
             <!-- Hero Section -->
@@ -462,8 +499,66 @@
                    
                 </div>
             </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Auto-scroll realista
+        function autoScroll() {
+            const phoneContent = document.getElementById('phoneContent');
+            const scrollHeight = phoneContent.scrollHeight - phoneContent.clientHeight;
+            let currentScroll = 0;
+            let direction = 1; // 1 para baixo, -1 para cima
+            
+            function scroll() {
+                // Pausa no topo
+                if (currentScroll === 0 && direction === 1) {
+                    setTimeout(() => {
+                        startScrolling();
+                    }, 2000);
+                    return;
+                }
+                
+                // Pausa no fundo
+                if (currentScroll >= scrollHeight && direction === 1) {
+                    setTimeout(() => {
+                        direction = -1;
+                        startScrolling();
+                    }, 3000);
+                    return;
+                }
+                
+                // Pausa quando volta ao topo
+                if (currentScroll <= 0 && direction === -1) {
+                    currentScroll = 0;
+                    phoneContent.scrollTop = 0;
+                    setTimeout(() => {
+                        direction = 1;
+                        startScrolling();
+                    }, 2000);
+                    return;
+                }
+                
+                currentScroll += direction * 2;
+                phoneContent.scrollTop = currentScroll;
+                
+                requestAnimationFrame(scroll);
+            }
+            
+            function startScrolling() {
+                scroll();
+            }
+            
+            // Iniciar após 1 segundo
+            setTimeout(() => {
+                startScrolling();
+            }, 1000);
+        }
+        
+        // Iniciar quando a página carregar
+        window.addEventListener('load', autoScroll);
+    </script>
 
     <script>
         // Animation on scroll
