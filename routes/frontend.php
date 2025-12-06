@@ -114,4 +114,7 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::get('/anos-por-marca', [VehiclesController::class, 'yearsByBrand']);
     Route::get('/anos-por-marca-modelo', [VehiclesController::class, 'yearsByBrandModel']);
     Route::get('/combustiveis-por-marca-modelo-ano', [VehiclesController::class, 'fuelsByBrandModelYear']);
+    
+    // Página para mockup redes sociais
+    Route::get('/para-redes', [PageController::class, 'socialMediaMockup'])->name('frontend.social-mockup');
 });

@@ -38,4 +38,9 @@ class PageController extends Controller
 
         return $result;
     }
+
+    public function socialMediaMockup()
+    {
+        return view('frontend.social-mockup');
+    }
 }
