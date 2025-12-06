@@ -71,7 +71,7 @@
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('css/layout.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/no-shadows.css') }}" rel="stylesheet">
+    <!-- <link href="{{ asset('css/no-shadows.css') }}" rel="stylesheet"> -->
     <link rel="icon" href="https://izzycar.pt/storage/settings/logo_redondo2.png" type="image/png" sizes="48x48">
     <link rel="icon" type="image/png" sizes="32x32" href="https://izzycar.pt/storage/settings/logo_redondo2.png">
     <link rel="icon" type="image/png" sizes="192x192" href="https://izzycar.pt/storage/settings/logo_redondo2.png">
