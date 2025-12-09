@@ -47,7 +47,6 @@ class ImportAdListings extends Command
         }
 
         [$brand, $model, $submodel, $year_start, $year_end, $fuel, $description] = $parts;
-
         $searchParams = [
             'brand' => ucfirst($brand),
             'model' => $model,
@@ -72,6 +71,7 @@ class ImportAdListings extends Command
 
         try {
             foreach ($csv as $row) {
+                
                 $data = array_combine($headers, $row);
                 $externalId = trim($data['ID']);
                 $csvExternalIds[] = $externalId;
@@ -79,7 +79,10 @@ class ImportAdListings extends Command
                 [$listing, $created] = AdListing::updateOrCreate(
                     [
                         'ad_search_id' => $search->id,
-                        'external_id' => $externalId,
+                        'title' => $data['Título'],
+                        'price' => floatval(str_replace([' ', '€'], '', $data['Preço'])),
+                        'year' => (int) $data['Ano'],
+                        'mileage' => (int) str_replace([' ', 'km'], '', $data['Quilometragem']),
                     ],
                     [
                         'title' => $data['Título'],
