@@ -5,7 +5,7 @@
 <meta name="description" content="{{ $seo->meta_description ?? '' }}">
 <meta name="image" content="{{ $seo->meta_image ?? '' }}">
 <meta name="keywords" content="{{ ($seo->meta_keywords ?? '') . ', ' . ($seo->meta_secundary_keywords ?? '') }}">
-<link rel="canonical" href="{{ $seo->canonical_url ?? url()->current() }} ">
+<link rel="canonical" href="{{ $seo->canonical_url ?? '' }} ">
 
 {{-- Open Graph --}}
 <meta property="og:title" content="{{ $seo->og_title ?? $seo->title ?? config('app.name') }} | Izzycar - Especialistas em Importação de Veículos" />

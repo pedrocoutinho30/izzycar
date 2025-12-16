@@ -64,6 +64,11 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
 
 Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
+    // ============================================================
+    // ADMIN DASHBOARD V2
+    // ============================================================
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'index'])->name('admin.v2.dashboard');
+
     Route::get('/simulador-isv', [ImportSimulatorController::class, 'index'])->name('isv.simulator');
     Route::post('/simulador-isv', [ImportSimulatorController::class, 'calcular'])->name('isv.calcular');
 
@@ -100,17 +105,123 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
     Route::resource('attribute-groups', AttributeGroupController::class);
 
+    // ============================================================
+    // PROPOSALS V1 (Sistema Antigo - Manter para compatibilidade)
+    // ============================================================
     Route::resource('proposals', ProposalController::class);
     Route::post('/proposals/create_by_form', [ProposalController::class, 'create_by_form'])->name('proposals.create_by_form');
     Route::get('proposals/{id}/download-pdf', [ProposalController::class, 'generatePdf'])->name('proposals.downloadPdf');
     Route::get('proposals/{id}/sent-whatsapp', [ProposalController::class, 'sentWhatsapp'])->name('proposals.sent-whatsapp');
+    Route::post('/proposals/{proposal}/duplicate', [ProposalController::class, 'duplicate'])->name('proposals.duplicate');
+    Route::patch('proposals/{proposal}/update-status', [ProposalController::class, 'updateStatus'])->name('proposals.updateStatus');
+
+    // ============================================================
+    // PROPOSALS V2 (Sistema Novo - Moderno e Mobile-First)
+    // ============================================================
+    Route::prefix('v2/proposals')->name('admin.v2.proposals.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // CLIENTES V2
+    // ============================================================
+    Route::prefix('v2/clients')->name('admin.v2.clients.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ClientV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\ClientV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\ClientV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\ClientV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\ClientV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\ClientV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // FORMULÁRIOS DE PROPOSTA V2
+    // ============================================================
+    Route::prefix('v2/form-proposals')->name('admin.v2.form-proposals.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'index'])->name('index');
+        Route::get('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'show'])->name('show');
+        Route::patch('/{id}/status', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'updateStatus'])->name('update-status');
+    });
+
+    // ============================================================
+    // VEÍCULOS V2
+    // ============================================================
+    Route::prefix('v2/vehicles')->name('admin.v2.vehicles.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // VENDAS V2
+    // ============================================================
+    Route::prefix('v2/sales')->name('admin.v2.sales.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\SaleV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\SaleV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\SaleV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\SaleV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\SaleV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\SaleV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // DESPESAS V2
+    // ============================================================
+    Route::prefix('v2/expenses')->name('admin.v2.expenses.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // FORNECEDORES V2
+    // ============================================================
+    Route::prefix('v2/suppliers')->name('admin.v2.suppliers.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\SupplierV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\SupplierV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\SupplierV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\SupplierV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\SupplierV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\SupplierV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // PARCEIROS V2
+    // ============================================================
+    Route::prefix('v2/partners')->name('admin.v2.partners.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\PartnerV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\PartnerV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\PartnerV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\PartnerV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\PartnerV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\PartnerV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // PROPOSTAS CONVERTIDAS V2
+    // ============================================================
+    Route::prefix('v2/converted-proposals')->name('admin.v2.converted-proposals.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'destroy'])->name('destroy');
+    });
 
 
     Route::resource('form_proposals', \App\Http\Controllers\FormProposalController::class)->names('form_proposals');
-
-    Route::post('/proposals/{proposal}/duplicate', [ProposalController::class, 'duplicate'])->name('proposals.duplicate');
-
-    Route::patch('proposals/{proposal}/update-status', [ProposalController::class, 'updateStatus'])->name('proposals.updateStatus');
 
     Route::patch('/converted-proposals/{id}/update-status', [ConvertedProposalController::class, 'updateStatus'])->name('converted-proposals.updateStatus');
 

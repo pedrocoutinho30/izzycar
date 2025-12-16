@@ -37,6 +37,11 @@ class Vehicle extends Model
         'available_to_sell_date',
         'registration',
         'show_online',
+        'warranty_price',
+        'warranty_start_date',
+        'warranty_end_date',
+        'warranty_type',
+        'payment_type',
     ];
 
 
@@ -58,5 +63,10 @@ class Vehicle extends Model
     public function expenses()
     {
         return $this->hasMany(Expense::class, 'vehicle_id');
+    }
+
+    public function sale()
+    {
+        return $this->hasOne(Sale::class, 'vehicle_id');
     }
 }

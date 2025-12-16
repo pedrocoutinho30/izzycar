@@ -9,7 +9,7 @@ class VehicleImage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['vehicle_id', 'image_path'];
+    protected $fillable = ['vehicle_id', 'path', 'order'];
 
     public function vehicle()
     {

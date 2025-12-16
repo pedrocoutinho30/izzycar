@@ -1,18 +1,8 @@
 @php
 $settings = App\Models\Setting::get();
-$image = null;
-if ($proposal->images) {
-$image = $proposal->images;
-}
+
 @endphp
 
-@include('frontend.partials.seo', [
-'seo' => (object)[
-'meta_image' => $image,
-'title' => 'Proposta de importação do veículo ' . $proposal->brand . ' ' . $proposal->model . ' ' . $proposal->version . ' - Izzycar',
-'meta_description' => 'Proposta detalhada para a importação do veículo ' . $proposal->brand . ' ' . $proposal->model . ' ' . $proposal->version . '. Preço chave na mão, custos, processo e muito mais.',
-]
-])
 
 @extends('frontend.partials.layout')
 <?php $no_footer = true; ?>
@@ -183,7 +173,7 @@ $image = $proposal->images;
                     <div class="col-lg-5">
                         @if($proposal->images)
                         <div class="vehicle-image-wrapper">
-                            <img src="{{ $image }}" 
+                            <img src="{{ asset('storage/' . $proposal->images) }}" 
                                 onerror="this.src='{{ asset('img/logo-simples.png') }}';"
                                 alt="{{ $proposal->brand }} {{ $proposal->model }}" 
                                 class="vehicle-image">
