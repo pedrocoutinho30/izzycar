@@ -64,10 +64,6 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
 
 Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
-    // ============================================================
-    // ADMIN DASHBOARD V2
-    // ============================================================
-    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'index'])->name('admin.v2.dashboard');
 
     Route::get('/simulador-isv', [ImportSimulatorController::class, 'index'])->name('isv.simulator');
     Route::post('/simulador-isv', [ImportSimulatorController::class, 'calcular'])->name('isv.calcular');
@@ -118,6 +114,11 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     // ============================================================
     // PROPOSALS V2 (Sistema Novo - Moderno e Mobile-First)
     // ============================================================
+    // ============================================================
+    // ADMIN DASHBOARD V2
+    // ============================================================
+    Route::get('v2/dashboard', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'index'])->name('admin.v2.dashboard');
+
     Route::prefix('v2/proposals')->name('admin.v2.proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'create'])->name('create');

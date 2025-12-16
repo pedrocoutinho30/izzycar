@@ -61,8 +61,7 @@ class DashboardV2Controller extends Controller
 
         // Vendas este mês
         $salesThisMonth = Sale::whereMonth('created_at', now()->month)->count();
-        $salesRevenueThisMonth = Sale::whereMonth('created_at', now()->month)->sum('sell_price');
-
+        $salesRevenueThisMonth = Sale::whereMonth('created_at', now()->month)->sum('sale_price');
         // ============================================================
         // CARDS DE ESTATÍSTICAS
         // ============================================================

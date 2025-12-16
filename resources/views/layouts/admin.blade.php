@@ -169,6 +169,7 @@
         </nav>
         @php
         $menuItemsGestao = [
+        ['route' => 'admin.v2.dashboard', 'icon' => 'fa-tachometer-alt', 'label' => __('Dashboard V2'), 'permission' => 'gerir propostas'],
         ['route' => 'clients.index', 'icon' => 'fa-users', 'label' => __('Clientes'), 'permission' => 'gerir clientes'],
         ['route' => 'isv.simulator', 'icon' => 'fa-calculator', 'label' => __('Simuldor ISV'), 'permission' => 'gerir propostas'],
         ['route' => 'form_proposals.index', 'icon' => 'fa-briefcase', 'label' => __('Formulários de Propostas'), 'permission' => 'gerir propostas'],
