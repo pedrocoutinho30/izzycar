@@ -32,11 +32,11 @@ class FormProposalV2Controller extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('brand', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('brand', 'like', "%{$search}%");
             });
         }
 
@@ -62,9 +62,9 @@ class FormProposalV2Controller extends Controller
     public function updateStatus(Request $request, $id)
     {
         $formProposal = FormProposal::findOrFail($id);
-        
+
         $request->validate([
-            'status' => 'required|in:novo,em_analise,convertido,rejeitado'
+            'status' => 'required|in:novo,em_analise,convertido,rejeitado,arquivado',
         ]);
 
         $formProposal->update(['status' => $request->status]);

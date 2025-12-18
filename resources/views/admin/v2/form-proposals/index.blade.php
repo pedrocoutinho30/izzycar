@@ -3,15 +3,19 @@
 @section('title', 'Formulários de Proposta')
 
 @section('content')
-<div class="admin-content">
-    <!-- HEADER -->
-    <div class="content-header">
-        <div>
-            <h1 class="content-title">Formulários de Proposta</h1>
-            <p class="content-subtitle">Pedidos recebidos através do website</p>
-        </div>
-    </div>
 
+
+<!-- Page Header -->
+@include('components.admin.page-header', [
+'breadcrumbs' => [
+['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
+['icon' => 'bi bi-file-earmark-text', 'label' => 'Formulários de Proposta', 'href' => ''],
+],
+'title' => 'Formulários de Proposta',
+'subtitle' => 'Pedidos recebidos através do website',
+'actionHref' => '',
+'actionLabel' => ''
+])
     <!-- STATS CARDS -->
     @include('components.admin.stats-cards', ['stats' => $stats])
 
@@ -32,7 +36,6 @@
                 'placeholder' => 'Estado',
                 'value' => request('status'),
                 'options' => [
-                    '' => 'Todos os Estados',
                     'novo' => 'Novo',
                     'em_analise' => 'Em Análise',
                     'convertido' => 'Convertido',
@@ -43,7 +46,15 @@
     ])
 
     <!-- LISTA DE FORMULÁRIOS -->
-    <div class="content-grid">
+<div class="modern-card">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title">
+            <i class="bi bi-list-ul"></i>
+            Lista de Formulários de Proposta
+        </h5>
+        <span class="badge bg-secondary rounded-pill">{{ $formProposals->total() }} total</span>
+    </div>
+
         @forelse($formProposals as $form)
             @php
                 $statusColors = [

@@ -10,7 +10,7 @@ $existAction = isset($expense) ? 'Editar' : 'Criar';
 <!-- Page Header -->
 @include('components.admin.page-header', [
 'breadcrumbs' => [
-['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => ''],
+['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
 ['icon' => 'bi bi-people', 'label' => 'Despesas', 'href' => route('admin.v2.expenses.index')],
 ['icon' => '', 'label' => $existAction]
 ],

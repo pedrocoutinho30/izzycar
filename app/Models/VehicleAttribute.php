@@ -21,4 +21,9 @@ class VehicleAttribute extends Model
     protected $casts = [
         'options' => 'array',
     ];
+
+    public function attributeGroup()
+    {
+        return $this->belongsTo(AttributeGroup::class, 'attribute_group', 'name');
+    }
 }

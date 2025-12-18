@@ -7,7 +7,7 @@
     <!-- Page Header -->
     @include('components.admin.page-header', [
     'breadcrumbs' => [
-    ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => ''],
+    ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
     ['icon' => 'bi bi-receipt', 'label' => 'Despesas', 'href' => ''],
     ],
     'title' => 'Despesas',

@@ -11,7 +11,7 @@
     <!-- Page Header -->
     @include('components.admin.page-header', [
     'breadcrumbs' => [
-    ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => ''],
+    ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
     ['icon' => 'bi bi-people', 'label' => 'Clientes', 'href' => route('admin.v2.clients.index')],
     ['icon' => '', 'label' => $existAction]
     ],

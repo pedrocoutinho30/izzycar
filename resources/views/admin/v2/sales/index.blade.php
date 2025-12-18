@@ -8,7 +8,7 @@
 <!-- PAGE HEADER -->
 @include('components.admin.page-header', [
 'breadcrumbs' => [
-['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => ''],
+['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
 ['icon' => 'bi bi-cash-coin', 'label' => 'Vendas', 'href' => ''],
 ],
 'title' => 'Vendas',
@@ -93,7 +93,7 @@
     'color' => 'info'
     ] : null,
     $sale->gross_margin ? [
-    'text' => 'Margem: ' . number_format($sale->gross_margin, 1) . '%',
+    'text' => 'Margem: ' . number_format($sale->gross_margin, 1) . '€',
     'color' => $sale->gross_margin > 15 ? 'success' : 'warning'
     ] : null
     ]),

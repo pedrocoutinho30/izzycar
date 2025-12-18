@@ -371,4 +371,14 @@ class VehicleV2Controller extends Controller
             }
         }
     }
+
+    public function list()
+    {
+        $vehicles = Vehicle::doesntHave('sale')
+            ->select('id', 'reference', 'brand', 'model', 'year')
+            ->orderBy('reference')
+            ->get();
+
+        return view('admin.v2.vehicles.list', compact('vehicles'));
+    }
 }

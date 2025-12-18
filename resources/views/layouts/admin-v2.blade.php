@@ -713,33 +713,59 @@
             <div class="nav-group-title">Sistema V1 (Antigo)</div>
             
             <div class="nav-item">
-                <a href="{{ route('proposals.index') }}" class="nav-link">
+                <a href="{{ route('pages.index') }}" class="nav-link">
                     <i class="bi bi-box-arrow-up-right"></i>
-                    <span>Propostas V1</span>
+                    <span>CMS</span>
                 </a>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('clients.index') }}" class="nav-link">
-                    <i class="bi bi-box-arrow-up-right"></i>
-                    <span>Clientes V1</span>
-                </a>
-            </div>
+           
 
             <!-- Configurações -->
             <div class="nav-group-title">Configurações</div>
             
             <div class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="bi bi-gear"></i>
-                    <span>Definições</span>
+                <a href="{{ route('admin.v2.attribute-groups.index') }}" class="nav-link {{ request()->routeIs('admin.v2.attribute-groups.*') ? 'active' : '' }}">
+                    <i class="bi bi-folder"></i>
+                    <span>Grupos de Atributos</span>
                 </a>
             </div>
 
             <div class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="bi bi-person-badge"></i>
+                <a href="{{ route('admin.v2.vehicle-attributes.index') }}" class="nav-link {{ request()->routeIs('admin.v2.vehicle-attributes.*') ? 'active' : '' }}">
+                    <i class="bi bi-tags"></i>
+                    <span>Atributos de Veículos</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.settings.index') }}" class="nav-link {{ request()->routeIs('admin.v2.settings.*') ? 'active' : '' }}">
+                    <i class="bi bi-gear"></i>
+                    <span>Configurações</span>
+                </a>
+            </div>
+
+            <!-- Sistema -->
+            <div class="nav-group-title">Sistema</div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.users.index') }}" class="nav-link {{ request()->routeIs('admin.v2.users.*') ? 'active' : '' }}">
+                    <i class="bi bi-people"></i>
                     <span>Utilizadores</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.roles.index') }}" class="nav-link {{ request()->routeIs('admin.v2.roles.*') ? 'active' : '' }}">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Perfis</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.permissions.index') }}" class="nav-link {{ request()->routeIs('admin.v2.permissions.*') ? 'active' : '' }}">
+                    <i class="bi bi-key"></i>
+                    <span>Permissões</span>
                 </a>
             </div>
         </nav>

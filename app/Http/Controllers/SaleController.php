@@ -65,7 +65,6 @@ class SaleController extends Controller
             'observation' => 'nullable|string',
         ]);
 
-
         // Verifica se o veículo já está vendido
         $saleExist = Sale::where('vehicle_id', $validatedData['vehicle_id'])->first();
         if ($saleExist) {

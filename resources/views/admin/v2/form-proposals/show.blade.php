@@ -3,19 +3,21 @@
 @section('title', 'Detalhes do Formulário')
 
 @section('content')
-<div class="admin-content">
-    <!-- HEADER -->
-    <div class="content-header">
-        <div>
-            <h1 class="content-title">Detalhes do Formulário</h1>
-            <p class="content-subtitle">Pedido de {{ $formProposal->name }}</p>
-        </div>
-        <div class="content-actions">
-            <a href="{{ route('admin.v2.form-proposals.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Voltar
-            </a>
-        </div>
-    </div>
+
+
+    <!-- Page Header -->
+@include('components.admin.page-header', [
+'breadcrumbs' => [
+['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
+['icon' => 'bi bi-file-earmark-text', 'label' => 'Propostas', 'href' => route('admin.v2.form-proposals.index')],
+['icon' => '', 'label' => 'Detalhes do Formulário']
+],
+'title' => 'Pedido de ' . $formProposal->name,
+'subtitle' => "",
+'actionHref' => "",
+'actionLabel' => ''
+])
+
 
     <div class="row g-4">
         <!-- COLUNA PRINCIPAL -->

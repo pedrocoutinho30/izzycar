@@ -10,7 +10,7 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
 @endphp
 @include('components.admin.page-header', [
 'breadcrumbs' => [
-['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => ''],
+['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
 ['icon' => 'bi bi-front-car', 'label' => 'Veículos', 'href' => route('admin.v2.vehicles.index')],
 ['icon' => '', 'label' => $existAction]
 ],

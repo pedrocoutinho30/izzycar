@@ -159,6 +159,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'destroy'])->name('destroy');
+        Route::get('list', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'list'])->name('list');
     });
 
     // ============================================================
@@ -171,6 +172,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\SaleV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\SaleV2Controller::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\SaleV2Controller::class, 'destroy'])->name('destroy');
+        
     });
 
     // ============================================================
@@ -221,6 +223,78 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::delete('/{id}', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'destroy'])->name('destroy');
     });
 
+    // ============================================================
+    // GRUPOS DE ATRIBUTOS V2
+    // ============================================================
+    Route::prefix('v2/attribute-groups')->name('admin.v2.attribute-groups.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AttributeGroupV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\AttributeGroupV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\AttributeGroupV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\AttributeGroupV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\AttributeGroupV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\AttributeGroupV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // ATRIBUTOS DE VEÍCULOS V2
+    // ============================================================
+    Route::prefix('v2/vehicle-attributes')->name('admin.v2.vehicle-attributes.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'destroy'])->name('destroy');
+        Route::post('/sort', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'sort'])->name('sort');
+    });
+
+    // ============================================================
+    // CONFIGURAÇÕES V2
+    // ============================================================
+    Route::prefix('v2/settings')->name('admin.v2.settings.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\SettingV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\SettingV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\SettingV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\SettingV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\SettingV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\SettingV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // UTILIZADORES V2
+    // ============================================================
+    Route::prefix('v2/users')->name('admin.v2.users.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\UserV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\UserV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\UserV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\UserV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\UserV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\UserV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // PERFIS V2
+    // ============================================================
+    Route::prefix('v2/roles')->name('admin.v2.roles.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\RoleV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\RoleV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\RoleV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\RoleV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\RoleV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\RoleV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // PERMISSÕES V2
+    // ============================================================
+    Route::prefix('v2/permissions')->name('admin.v2.permissions.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\PermissionV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\PermissionV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\PermissionV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\PermissionV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\PermissionV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\PermissionV2Controller::class, 'destroy'])->name('destroy');
+    });
 
     Route::resource('form_proposals', \App\Http\Controllers\FormProposalController::class)->names('form_proposals');
 

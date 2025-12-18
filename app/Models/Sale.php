@@ -26,6 +26,9 @@ class Sale extends Model
         'totalExpenses',
         'net_profitability',
         'gross_profitability',
+        'has_trade_in',
+        'trade_in_vehicle_id',
+        'trade_in_value',
     ];
 
     public function vehicle()
