@@ -33,7 +33,14 @@
 ])
 
 <!-- Lista de Perfis -->
-<div class="content-grid">
+<div class="modern-card">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title">
+            <i class="bi bi-list-ul"></i>
+            Lista de Perfis
+        </h5>
+        <span class="badge bg-secondary rounded-pill">{{ $roles->total() }} total</span>
+    </div>
     @forelse($roles as $role)
         @include('components.admin.item-card', [
             'title' => $role->name,

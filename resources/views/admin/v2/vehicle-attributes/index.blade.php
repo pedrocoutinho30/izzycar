@@ -54,7 +54,14 @@
 ])
 
 <!-- Lista de Atributos -->
-<div class="content-grid">
+<div class="modern-card">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title">
+            <i class="bi bi-list-ul"></i>
+            Lista de Atributos
+        </h5>
+        <span class="badge bg-secondary rounded-pill">{{ $attributes->total() }} total</span>
+    </div>
     @forelse($attributes as $attribute)
         @php
             $typeColors = [

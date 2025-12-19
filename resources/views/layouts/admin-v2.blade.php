@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Izzycar Admin') - Backoffice</title>
-    
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         /**
          * VARIÁVEIS CSS
@@ -33,9 +34,9 @@
             --sidebar-width: 280px;
             --topbar-height: 70px;
             --border-radius: 12px;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -441,11 +442,11 @@
          * RESPONSIVE - MOBILE FIRST
          * Adaptações para diferentes tamanhos de tela
          */
-        
+
         /* Tablets e menores */
         @media (max-width: 992px) {
             :root {
-                --sidebar-width: 0px;
+                --sidebar-width: 280px;
             }
 
             .sidebar-toggle {
@@ -454,10 +455,13 @@
 
             .admin-sidebar {
                 transform: translateX(-100%);
+                width: var(--sidebar-width);
+                z-index: 1021;
             }
 
             .admin-sidebar.show {
                 transform: translateX(0);
+                box-shadow: var(--shadow-lg);
             }
 
             .admin-main {
@@ -505,7 +509,7 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1019;
+            z-index: 1020;
             opacity: 0;
             transition: var(--transition);
         }
@@ -513,6 +517,12 @@
         .sidebar-overlay.show {
             display: block;
             opacity: 1;
+        }
+
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                z-index: 1021;
+            }
         }
 
         /**
@@ -543,7 +553,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Toast notifications placeholder */
@@ -557,8 +569,9 @@
 
     @stack('styles')
 </head>
+
 <body>
-    
+
     <!-- TOPBAR -->
     <div class="admin-topbar">
         <!-- Toggle sidebar (mobile) -->
@@ -567,16 +580,15 @@
         </button>
 
         <!-- Logo -->
-        <a href="" class="admin-logo">
-            <i class="bi bi-car-front-fill"></i>
-            <span>Izzycar</span>
+        <a href="{{ route('admin.v2.dashboard') }}" class="admin-logo">
+            <img src="{{ asset('img/logo_final.png') }}" alt="Izzycar Logo" style="height:80px;">
         </a>
 
         <!-- Search bar -->
-        <div class="topbar-search position-relative d-none d-lg-block">
+        <!-- <div class="topbar-search position-relative d-none d-lg-block">
             <i class="bi bi-search search-icon"></i>
             <input type="text" placeholder="Pesquisar..." id="globalSearch">
-        </div>
+        </div> -->
 
         <!-- Spacer -->
         <div class="flex-grow-1"></div>
@@ -587,9 +599,13 @@
                 <i class="bi bi-bell"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><h6 class="dropdown-header">Notificações</h6></li>
+                <li>
+                    <h6 class="dropdown-header">Notificações</h6>
+                </li>
                 <li><a class="dropdown-item" href="#">Nova proposta recebida</a></li>
-                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
                 <li><a class="dropdown-item text-center" href="#">Ver todas</a></li>
             </ul>
         </div>
@@ -604,7 +620,9 @@
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Perfil</a></li>
                 <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Definições</a></li>
-                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
                 <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -629,33 +647,40 @@
             </div>
 
             <!-- Gestão -->
-            <div class="nav-group-title">Gestão</div>
-            
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i>
-                    <span>Propostas</span>
-                    @php
-                        $pendingCount = \App\Models\Proposal::where('status', 'Pendente')->count();
-                    @endphp
-                    @if($pendingCount > 0)
-                    <span class="nav-badge">{{ $pendingCount }}</span>
-                    @endif
-                </a>
-            </div>
-
+            <div class="nav-group-title">Importação</div>
             <div class="nav-item">
                 <a href="{{ route('admin.v2.form-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
                     <i class="bi bi-envelope"></i>
                     <span>Formulários</span>
                     @php
-                        $newFormsCount = \App\Models\FormProposal::whereIn('status', ['novo', null])->count();
+                    $newFormsCount = \App\Models\FormProposal::whereIn('status', ['novo', null])->count();
                     @endphp
                     @if($newFormsCount > 0)
                     <span class="nav-badge">{{ $newFormsCount }}</span>
                     @endif
                 </a>
             </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Propostas</span>
+                    @php
+                    $pendingCount = \App\Models\Proposal::where('status', 'Pendente')->count();
+                    @endphp
+                    @if($pendingCount > 0)
+                    <span class="nav-badge">{{ $pendingCount }}</span>
+                    @endif
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.converted-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.converted-proposals.*') ? 'active' : '' }}">
+                    <i class="bi bi-check2-circle"></i>
+                    <span>Propostas Convertidas</span>
+                </a>
+            </div>
+
+
+            <div class="nav-group-title">Gestão</div>
 
             <div class="nav-item">
                 <a href="{{ route('admin.v2.clients.index') }}" class="nav-link {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
@@ -697,21 +722,16 @@
 
             <div class="nav-item">
                 <a href="{{ route('admin.v2.partners.index') }}" class="nav-link {{ request()->routeIs('admin.v2.partners.*') ? 'active' : '' }}">
-                    <i class="bi bi-handshake"></i>
+                    <i class="bi bi-phone-vibrate"></i>
                     <span>Parceiros</span>
                 </a>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.converted-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.converted-proposals.*') ? 'active' : '' }}">
-                    <i class="bi bi-check2-circle"></i>
-                    <span>Propostas Convertidas</span>
-                </a>
-            </div>
+
 
             <!-- Sistema Antigo -->
             <div class="nav-group-title">Sistema V1 (Antigo)</div>
-            
+
             <div class="nav-item">
                 <a href="{{ route('pages.index') }}" class="nav-link">
                     <i class="bi bi-box-arrow-up-right"></i>
@@ -719,11 +739,11 @@
                 </a>
             </div>
 
-           
+
 
             <!-- Configurações -->
             <div class="nav-group-title">Configurações</div>
-            
+
             <div class="nav-item">
                 <a href="{{ route('admin.v2.attribute-groups.index') }}" class="nav-link {{ request()->routeIs('admin.v2.attribute-groups.*') ? 'active' : '' }}">
                     <i class="bi bi-folder"></i>
@@ -784,7 +804,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Scripts globais do admin -->
     <script>
         /**
@@ -843,7 +863,7 @@
         function showToast(message, type = 'success') {
             const container = document.querySelector('.toast-container');
             const toastId = 'toast-' + Date.now();
-            
+
             const colors = {
                 success: '#28a745',
                 error: '#dc3545',
@@ -871,9 +891,11 @@
             `;
 
             container.insertAdjacentHTML('beforeend', toastHTML);
-            
+
             const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+            const toast = new bootstrap.Toast(toastElement, {
+                delay: 3000
+            });
             toast.show();
 
             // Remove do DOM após fechar
@@ -888,4 +910,5 @@
 
     @stack('scripts')
 </body>
+
 </html>

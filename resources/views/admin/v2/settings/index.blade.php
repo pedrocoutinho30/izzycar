@@ -46,7 +46,14 @@
 ])
 
 <!-- Lista de Configurações -->
-<div class="content-grid">
+<div class="modern-card">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title">
+            <i class="bi bi-list-ul"></i>
+            Lista de Configurações
+        </h5>
+        <span class="badge bg-secondary rounded-pill">{{ $settings->total() }} total</span>
+    </div>
     @forelse($settings as $setting)
         @php
             $typeColors = [

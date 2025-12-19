@@ -33,7 +33,14 @@
 ])
 
 <!-- Lista de Permissões -->
-<div class="content-grid">
+<div class="modern-card">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title">
+            <i class="bi bi-list-ul"></i>
+            Lista de Permissões
+        </h5>
+        <span class="badge bg-secondary rounded-pill">{{ $permissions->total() }} total</span>
+    </div>
     @forelse($permissions as $permission)
         @include('components.admin.item-card', [
             'title' => $permission->name,
