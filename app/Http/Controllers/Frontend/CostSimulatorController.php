@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Frontend\ImportSimulatorController as ImportSimulator;
 use App\Models\Client;
+use App\Models\CostSimulator;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Mail;
 
@@ -31,7 +32,8 @@ class CostSimulatorController extends Controller
             [
                 'name' => $request->input('name'),  // campos para criar se não existir
                 'email' => $request->input('email'),
-                'phone' => $request->input('phone')
+                'phone' => $request->input('phone'),
+                'origin' => 'Simulador de Custos'
             ]
         );
         // $request->validate([
@@ -47,7 +49,6 @@ class CostSimulatorController extends Controller
         $tableIsv = $dataIsv->html;
         $isv = $dataIsv->isv;
         $valorCarro = $request->input('valor_carro');
-
         $commission_cost = Setting::where('label', 'commission_cost')->first()->value;
         $inspection_commission_cost = Setting::where('label', 'inspection_commission_cost')->first()->value;
         $transporte = Setting::where('label', 'custo_transporte')->first()->value;
@@ -60,8 +61,27 @@ class CostSimulatorController extends Controller
         $custoTotal = $valorCarro + $isv + $servicos;
 
 
+        $costSimulator = CostSimulator::create([
+            'client_id' => $client->id,
+            'car_value' => $valorCarro,
+            'commission_cost' => $commission_cost,
+            'inspection_commission_cost' => $inspection_commission_cost,
+            'transport' => $transporte,
+            'ipo_cost' => $custo_ipo,
+            'imt_cost' => $custo_imt,
+            'registration_cost' => $custo_registo,
+            'plates_cost' => $custo_matriculas,
+            'total_cost' => $custoTotal,
+        ]);
+
+
+
+
         // enviar email com resultados
-        //\Mail::to($request->input('email'))->send(new \App\Mail\CostSimulatorResultMail($valorCarro, $isv, $servicos, $custoTotal,));
+         Mail::raw("Novo Simulador de Custos submetido por {$client->name}, Email: {$client->email}, Telefone: {$client->phone}. Valor do Carro: {$valorCarro}€, ISV: {$isv}€, Custo Total: {$custoTotal}€.", function ($message) {
+             $message->to('geral@izzycar.pt')
+                     ->subject('Novo Simulador de Custos');
+         });
         return view('frontend.cost-simulator.result', [
             'valorCarro' => $valorCarro,
             'tableIsv' => $tableIsv,

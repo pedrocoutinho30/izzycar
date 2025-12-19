@@ -618,11 +618,11 @@
                 <i class="bi bi-chevron-down"></i>
             </div>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Perfil</a></li>
+                <!-- <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Perfil</a></li>
                 <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Definições</a></li>
                 <li>
                     <hr class="dropdown-divider">
-                </li>
+                </li> -->
                 <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -678,6 +678,13 @@
                     <span>Propostas Convertidas</span>
                 </a>
             </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.cost-simulators.index') }}" class="nav-link {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
+                    <i class="bi bi-dollar"></i>
+                    <span>Simulador Custos</span>
+                </a>
+            </div>
+            
 
 
             <div class="nav-group-title">Gestão</div>
