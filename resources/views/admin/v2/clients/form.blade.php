@@ -217,7 +217,86 @@
                 'updated_at' => $client->updated_at
                 ] : null
                 ])
+                <div class="modern-card">
+                    <div class="modern-card-header">
+                        <h5 class="modern-card-title">
+                            <i class="bi bi-info-circle"></i>
+                            Propostas Associadas
+                        </h5>
+                    </div>
+                    <div class="modern-card-body">
+                        @if($client && $client->proposals->count() > 0)
+                        <ul class="list-group">
+                            @foreach($client->proposals as $proposal)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{{ route('admin.v2.proposals.edit', $proposal->id) }}">
+                                    Proposta #{{ $proposal->id }} - {{ $proposal->created_at->format('d/m/Y') }}
+                                </a>
+                                <span class="badge bg-primary rounded-pill">
+                                    {{ $proposal->brand }} {{ $proposal->model }}
+                                </span>
+                            </li>
+                            @endforeach
+                        </ul>
+                        @else
+                        <p class="mb-0">Nenhuma proposta associada a este cliente.</p>
+                        @endif
+                    </div>
+
+                </div>
+                <div class="modern-card">
+                    <div class="modern-card-header">
+                        <h5 class="modern-card-title">
+                            <i class="bi bi-info-circle"></i>
+
+                            Vendas Associadas
+                        </h5>
+                    </div>
+                    <div class="modern-card-body">
+                        @if($client && $client->sale->count() > 0)
+                        <ul class="list-group">
+                            @foreach($client->sale as $sale)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{{ route('admin.v2.sales.edit', ['id' => $sale->id]) }}">
+                                    Venda #{{ $sale->id }} - {{ $sale->created_at->format('d/m/Y H:i') }}
+                                </a>
+                                <span class="badge bg-primary rounded-pill">
+                                    {{ $sale->vehicle->brand }} {{ $sale->vehicle->model }} ({{ $sale->vehicle->reference }})
+                                </span>
+                            </li>
+                            @endforeach
+                        </ul>
+                        @else
+                        <p class="mb-0">Nenhuma simulação de custo associada a este cliente.</p>
+                        @endif
+                    </div>
+                </div>
+                <div class="modern-card">
+                    <div class="modern-card-header">
+                        <h5 class="modern-card-title">
+                            <i class="bi bi-info-circle"></i>
+
+                            Simulações de Custo Associadas
+                        </h5>
+                    </div>
+                    <div class="modern-card-body">
+                        @if($client && $client->costSimulators->count() > 0)
+                        <ul class="list-group">
+                            @foreach($client->costSimulators as $simulator)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{{ route('admin.v2.cost-simulators.index', ['client_id' => $client->id]) }}">
+                                    Simulação #{{ $simulator->id }} - {{ $simulator->created_at->format('d/m/Y H:i') }}
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
+                        @else
+                        <p class="mb-0">Nenhuma simulação de custo associada a este cliente.</p>
+                        @endif
+                    </div>
+                </div>
             </div>
+
 
 
     </form>

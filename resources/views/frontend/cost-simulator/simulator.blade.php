@@ -73,6 +73,23 @@
                         </select>
                     </div>
                     <div class="col-md-4">
+                        <label for="brand" class="form-label-modern">Marca<span class="required-star">*</span></label>
+                        <select name="brand" id="brand" class="form-control-modern" required>
+                            <option value="">Selecione</option>
+                            @foreach($brands as $brand)
+                            <option value="{{ $brand->name }}" data-models="{{ json_encode($brand->models->pluck('name')) }}">
+                                {{ $brand->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="model" class="form-label-modern">Modelo<span class="required-star">*</span></label>
+                        <select name="model" id="model" class="form-control-modern" required disabled>
+                            <option value="">Primeiro selecione a marca</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
                         <label for="data_matricula" class="form-label-modern">Data da matrícula<span class="required-star">*</span></label>
                         <input type="date" name="data_matricula" id="data_matricula" class="form-control-modern" required>
                     </div>
@@ -507,6 +524,31 @@
     document.querySelectorAll('.fade-in-up').forEach(el => {
         el.style.animationPlayState = 'paused';
         observer.observe(el);
+    });
+
+    // Brand/Model Cascade
+    document.addEventListener('DOMContentLoaded', function() {
+        const brandSelect = document.getElementById('brand');
+        const modelSelect = document.getElementById('model');
+
+        brandSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const models = JSON.parse(selectedOption.dataset.models || '[]');
+
+            // Limpar modelos existentes
+            modelSelect.innerHTML = '<option value="">Selecione o modelo</option>';
+
+            // Adicionar novos modelos
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
+
+            // Habilitar select de modelo
+            modelSelect.disabled = models.length === 0;
+        });
     });
 </script>
 @endpush

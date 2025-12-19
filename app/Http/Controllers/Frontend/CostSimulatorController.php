@@ -8,13 +8,15 @@ use App\Http\Controllers\Frontend\ImportSimulatorController as ImportSimulator;
 use App\Models\Client;
 use App\Models\CostSimulator;
 use App\Models\Setting;
+use App\Models\Brand;
 use Illuminate\Support\Facades\Mail;
 
 class CostSimulatorController extends Controller
 {
     public function index()
     {
-        return view('frontend.cost-simulator.simulator');
+        $brands = Brand::with('models')->get();
+        return view('frontend.cost-simulator.simulator', compact('brands'));
     }
 
     public function calculate(Request $request)
@@ -63,6 +65,8 @@ class CostSimulatorController extends Controller
 
         $costSimulator = CostSimulator::create([
             'client_id' => $client->id,
+            'brand' => $request->input('brand'),
+            'model' => $request->input('model'),
             'car_value' => $valorCarro,
             'commission_cost' => $commission_cost,
             'inspection_commission_cost' => $inspection_commission_cost,

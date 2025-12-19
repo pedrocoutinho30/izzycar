@@ -682,6 +682,12 @@
                 <a href="{{ route('admin.v2.cost-simulators.index') }}" class="nav-link {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
                     <i class="bi bi-dollar"></i>
                     <span>Simulador Custos</span>
+                     @php
+                    $newSimulationsCount = \App\Models\CostSimulator::where('read', 0)->count();
+                    @endphp
+                    @if($newSimulationsCount > 0)
+                    <span class="nav-badge">{{ $newSimulationsCount }}</span>
+                    @endif
                 </a>
             </div>
             

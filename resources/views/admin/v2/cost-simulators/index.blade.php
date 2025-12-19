@@ -44,11 +44,11 @@
     @forelse($costSimulators as $costSimulator)
     @php
 
-    $client = App\Models\Client::find($costSimulator->client_id);
+    $client = $costSimulator->client;//App\Models\Client::find($costSimulator->client_id);
     @endphp
     @include('components.admin.item-card', [
     'title' => $client ? $client->name : 'Cliente Removido',
-    'subtitle' => 'Simulação realizada em ' . $costSimulator->created_at->format('d/m/Y H:i'),
+    'subtitle' => $costSimulator->brand . ' ' . $costSimulator->model,
     'image' => null,
     'badges' => [
     [
