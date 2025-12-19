@@ -21,12 +21,12 @@ class HomeController extends Controller
 
     /**
      * Show the application dashboard.
+     * Redireciona para a dashboard V2
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function index()
     {
-       
-        return view('home');
+        return redirect()->route('admin.v2.dashboard');
     }
 }
