@@ -18,5 +18,6 @@ class CostSimulator extends Model
         'registration_cost',
         'plates_cost',
         'total_cost',
+        'isv_cost',
     ];
 }

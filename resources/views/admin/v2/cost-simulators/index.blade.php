@@ -46,7 +46,6 @@
 
     $client = App\Models\Client::find($costSimulator->client_id);
     @endphp
-
     @include('components.admin.item-card', [
     'title' => $client ? $client->name : 'Cliente Removido',
     'subtitle' => 'Simulação realizada em ' . $costSimulator->created_at->format('d/m/Y H:i'),
@@ -54,6 +53,11 @@
     'badges' => [
     [
     'text' => 'Custo do carro: ' . number_format($costSimulator->car_value, 2, ',', '.') . '€',
+    'color' => 'primary',
+    'icon' => 'bi-calculator'
+    ],
+     [
+    'text' => 'ISV: ' . number_format($costSimulator->isv_cost, 2, ',', '.') . '€',
     'color' => 'warning',
     'icon' => 'bi-calculator'
     ],

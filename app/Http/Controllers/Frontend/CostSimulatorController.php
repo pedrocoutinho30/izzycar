@@ -72,6 +72,7 @@ class CostSimulatorController extends Controller
             'registration_cost' => $custo_registo,
             'plates_cost' => $custo_matriculas,
             'total_cost' => $custoTotal,
+            'isv_cost' => $isv,
         ]);
 
 
