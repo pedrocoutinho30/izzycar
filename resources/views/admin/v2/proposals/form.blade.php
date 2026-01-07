@@ -412,7 +412,7 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                             step="0.01">
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label for="inspection_commission_cost" class="form-label">Inspeção na Origem (€)</label>
                         <input
                             type="number"
@@ -424,7 +424,7 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                             step="0.01">
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label for="commission_cost" class="form-label">Comissão Izzycar (€)</label>
                         <input
                             type="number"
