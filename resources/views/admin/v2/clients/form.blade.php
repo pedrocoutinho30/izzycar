@@ -225,7 +225,7 @@
                         </h5>
                     </div>
                     <div class="modern-card-body">
-                        @if($client && $client->proposals->count() > 0)
+                        @if(isset($client) && $client->proposals->count() > 0)
                         <ul class="list-group">
                             @foreach($client->proposals as $proposal)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -253,7 +253,7 @@
                         </h5>
                     </div>
                     <div class="modern-card-body">
-                        @if($client && $client->sale->count() > 0)
+                        @if(isset($client) && $client->sale->count() > 0)
                         <ul class="list-group">
                             @foreach($client->sale as $sale)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -280,7 +280,7 @@
                         </h5>
                     </div>
                     <div class="modern-card-body">
-                        @if($client && $client->costSimulators->count() > 0)
+                        @if(isset($client) && $client->costSimulators->count() > 0)
                         <ul class="list-group">
                             @foreach($client->costSimulators as $simulator)
                             <li class="list-group-item d-flex justify-content-between align-items-center">

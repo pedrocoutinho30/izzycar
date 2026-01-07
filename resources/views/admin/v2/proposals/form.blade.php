@@ -388,6 +388,17 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                             min="0"
                             step="0.01">
                     </div>
+                    <div class="col-md-4">
+                        <label for="iuc_cost" class="form-label">IUC (€)</label>
+                        <input
+                            type="number"
+                            name="iuc_cost"
+                            id="iuc_cost"
+                            class="form-control cost-input @error('iuc_cost') is-invalid @enderror"
+                            value="{{ old('iuc_cost', $proposal->iuc_cost ?? $defaults['iuc_cost'] ?? 0) }}"
+                            min="0"
+                            step="0.01">
+                    </div>
 
                     <div class="col-md-4">
                         <label for="license_plate_cost" class="form-label">Matrícula (€)</label>

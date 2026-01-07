@@ -137,8 +137,8 @@ $settings = App\Models\Setting::get();
         </div>
         @endif
         <?php
-        $totalCostWithoutIva = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost + ($proposal->proposed_car_value / 1.19);
-        $totalCost = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->isv_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost + $proposal->proposed_car_value;
+        $totalCostWithoutIva = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->isv_cost + $proposal->iuc_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost + ($proposal->proposed_car_value / 1.19);
+        $totalCost = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->isv_cost + $proposal->iuc_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost + $proposal->proposed_car_value;
         $serviceCost = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost;
         ?>
 
@@ -173,9 +173,9 @@ $settings = App\Models\Setting::get();
                     <div class="col-lg-5">
                         @if($proposal->images)
                         <div class="vehicle-image-wrapper">
-                            <img src="{{ asset('storage/' . $proposal->images) }}" 
+                            <img src="{{ asset('storage/' . $proposal->images) }}"
                                 onerror="this.src='{{ asset('img/logo-simples.png') }}';"
-                                alt="{{ $proposal->brand }} {{ $proposal->model }}" 
+                                alt="{{ $proposal->brand }} {{ $proposal->model }}"
                                 class="vehicle-image">
                             <div class="image-overlay">
                                 <a href="{{ $proposal->url }}" target="_blank" class="view-ad-btn">
@@ -249,15 +249,27 @@ $settings = App\Models\Setting::get();
                                 </div>
                                 <div class="cost-item">
                                     <div class="cost-label">
-                                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 4.5c-1.5-.9-3.2-1.5-5-1.5C8 3 5 6 5 10s3 7 7 7c1.8 0 3.5-.6 5-1.5"></path>
-                            <line x1="3" y1="9" x2="15" y2="9"></line>
-                            <line x1="3" y1="11" x2="15" y2="11"></line>
-                        </svg>
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M17 4.5c-1.5-.9-3.2-1.5-5-1.5C8 3 5 6 5 10s3 7 7 7c1.8 0 3.5-.6 5-1.5"></path>
+                                            <line x1="3" y1="9" x2="15" y2="9"></line>
+                                            <line x1="3" y1="11" x2="15" y2="11"></line>
+                                        </svg>
                                         ISV (Imposto)
                                     </div>
                                     <div class="cost-value">{{ number_format($proposal->isv_cost, 0, ',', '.') }} €</div>
+                                </div>
+                                <div class="cost-item">
+                                    <div class="cost-label">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M17 4.5c-1.5-.9-3.2-1.5-5-1.5C8 3 5 6 5 10s3 7 7 7c1.8 0 3.5-.6 5-1.5"></path>
+                                            <line x1="3" y1="9" x2="15" y2="9"></line>
+                                            <line x1="3" y1="11" x2="15" y2="11"></line>
+                                        </svg>
+                                        IUC (Imposto)
+                                    </div>
+                                    <div class="cost-value">{{ number_format($proposal->iuc_cost, 0, ',', '.') }} €</div>
                                 </div>
                                 <div class="cost-item">
                                     <div class="cost-label">
@@ -622,5 +634,5 @@ $settings = App\Models\Setting::get();
 @endpush
 
 <style>
-    
+
 </style>

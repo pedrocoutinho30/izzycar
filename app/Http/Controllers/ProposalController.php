@@ -190,8 +190,8 @@ class ProposalController extends Controller
         ]);
         $data['other_links'] = $request->input('other_links') ? json_encode($request->input('other_links')) : null;
         $proposal = Proposal::create([
-            'proposal_code' => 
-                strtoupper(substr($request->brand, 0, 1)) .
+            'proposal_code' =>
+            strtoupper(substr($request->brand, 0, 1)) .
                 strtoupper(substr($request->model, 0, 1)) .
                 Str::random(8),
             'url' => $request->url,
@@ -222,6 +222,7 @@ class ProposalController extends Controller
             'proposed_car_features' => $request->proposed_car_features,
             'images' => $request->images,
             'other_links' => $data['other_links'] ?? null,
+            'iuc_cost' => $request->iuc_cost ?? null
         ]);
 
 
@@ -354,6 +355,7 @@ class ProposalController extends Controller
             'notes' => 'nullable|string',
             'proposed_car_notes' => 'nullable|string',
             'proposed_car_features' => 'nullable|string'
+
         ]);
         $data['other_links'] = json_encode($request->input('other_links', []));
         $proposal->update([
@@ -385,6 +387,7 @@ class ProposalController extends Controller
             'proposed_car_features' => $request->proposed_car_features,
             'images' => $request->images,
             'other_links' => $data['other_links'] ?? null,
+            'iuc_cost' => $request->iuc_cost ?? null
         ]);
 
 
@@ -650,7 +653,7 @@ class ProposalController extends Controller
         // Criar uma nova instância apenas com os campos desejados
         $newProposal = Proposal::create([
             'proposal_code' => //primeiro caracter da marca, seguido do primeiro caracter do modelo, seguido de 8 caracteres aleatórios
-                strtoupper(substr($originalProposal->brand, 0, 1)) .
+            strtoupper(substr($originalProposal->brand, 0, 1)) .
                 strtoupper(substr($originalProposal->model, 0, 1)) .
                 Str::random(8),
             'client_id'      => $originalProposal->client_id,
@@ -884,10 +887,10 @@ class ProposalController extends Controller
 
         $form = $request->all()['form'];
         $proposal = new Proposal();
-        $proposal->proposal_code = 
-                strtoupper(substr($$form['brand'], 0, 1)) .
-                strtoupper(substr($form['model'], 0, 1)) .
-                Str::random(8);
+        $proposal->proposal_code =
+            strtoupper(substr($$form['brand'], 0, 1)) .
+            strtoupper(substr($form['model'], 0, 1)) .
+            Str::random(8);
         $proposal->client_id = $form['client_id'] ?? null;
         $proposal->brand = $form['brand'] ?? null;
         $proposal->model = $form['model'] ?? null;

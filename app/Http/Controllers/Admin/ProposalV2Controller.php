@@ -176,6 +176,7 @@ class ProposalV2Controller extends Controller
             'license_plate_cost' => 40,
             'inspection_commission_cost' => 350,
             'commission_cost' => 861,
+            'iuc_cost' => 0,
         ];
 
         return view('admin.v2.proposals.form', compact('clients', 'brands', 'attributes', 'defaults'));
@@ -223,6 +224,7 @@ class ProposalV2Controller extends Controller
             'proposed_car_features' => 'nullable|string',
             'image' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg,avif|max:16000',
             'other_links' => 'nullable|array',
+            'iuc_cost' => 'nullable|numeric|min:0',
         ]);
 
         // Remover 'image' do validated para não tentar salvar no banco
@@ -370,6 +372,7 @@ class ProposalV2Controller extends Controller
             'proposed_car_features' => 'nullable|string',
             'image' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg,avif|max:16000',
             'other_links' => 'nullable|array',
+            'iuc_cost' => 'nullable|numeric|min:0',
         ]);
 
         // Remover 'image' do validated para não tentar salvar no banco
@@ -465,11 +468,11 @@ class ProposalV2Controller extends Controller
         $extension = $image->getClientOriginalExtension();
 
         // Nome personalizado: brand_model_version_yearmonth_id
-        $fileName = Str::slug($proposal->brand) . '_' . 
-                    Str::slug($proposal->model) . '_' . 
-                    ($proposal->version ? Str::slug($proposal->version) . '_' : '') . 
-                    ($proposal->proposed_car_year_month ?? 'NA') . '_' . 
-                    $proposal->id . '.' . $extension;
+        $fileName = Str::slug($proposal->brand) . '_' .
+            Str::slug($proposal->model) . '_' .
+            ($proposal->version ? Str::slug($proposal->version) . '_' : '') .
+            ($proposal->proposed_car_year_month ?? 'NA') . '_' .
+            $proposal->id . '.' . $extension;
 
         // Guardar na pasta correta
         $path = $image->storeAs(

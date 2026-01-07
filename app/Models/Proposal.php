@@ -42,7 +42,8 @@ class Proposal extends Model
         'url',
         'proposed_car_features',
         'other_links',
-        'proposal_code'
+        'proposal_code',
+        'iuc_cost'
     ];
 
     protected $casts = [
