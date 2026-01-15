@@ -22,6 +22,14 @@ class CostSimulator extends Model
         'total_cost',
         'isv_cost',
         'read',
+        'fuel',
+        'year',
+        'cc',
+        'co2',
+        'emissao_particulas',
+        'tipo_veiculo',
+        'autonomia',
+        'pais_matricula',
     ];
 
     /**
