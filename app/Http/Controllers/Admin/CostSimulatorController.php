@@ -54,6 +54,16 @@ class CostSimulatorController extends Controller
         return view('admin.v2.cost-simulators.index', compact('costSimulators', 'stats'));
     }
 
+    /**
+     * SHOW - Exibir detalhes da simulação
+     */
+    public function show($id)
+    {
+        $costSimulator = CostSimulator::with('client')->findOrFail($id);
+        
+        return view('admin.v2.cost-simulators.show', compact('costSimulator'));
+    }
+
     
     /**
      * DESTROY - Eliminar cliente

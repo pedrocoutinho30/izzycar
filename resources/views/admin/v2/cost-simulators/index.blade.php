@@ -86,11 +86,16 @@
     ],
     'actions' => [
     [
-    'href' => route('admin.v2.clients.edit', $costSimulator->client_id),
+    'href' => route('admin.v2.cost-simulators.show', $costSimulator->id),
     'icon' => 'bi-eye',
-    'label' => 'Ver Detalhe cliente',
+    'label' => 'Ver Detalhes',
     'color' => 'primary',
-
+    ],
+    [
+    'href' => route('admin.v2.clients.edit', $costSimulator->client_id),
+    'icon' => 'bi-person',
+    'label' => 'Ver Cliente',
+    'color' => 'info',
     ],
     [
     'href' => route('admin.v2.cost-simulators.destroy', $costSimulator->id),

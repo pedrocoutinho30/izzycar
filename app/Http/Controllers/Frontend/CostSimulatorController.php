@@ -77,7 +77,18 @@ class CostSimulatorController extends Controller
             'plates_cost' => $custo_matriculas,
             'total_cost' => $custoTotal,
             'isv_cost' => $isv,
+            'fuel' => $request->input('combustivel'),
+            'year' => $request->input('data_matricula'),
+            'cc' => $request->input('cilindrada'),
+            'co2' => $request->input('co2'),
+            'emissao_particulas' => $request->input('emissao_particulas'),
+            'tipo_veiculo' => $request->input('tipo_veiculo'),
+            'autonomia' => $request->input('autonomia'),
+            'pais_matricula' => $request->input('pais_matricula'),
         ]);
+
+
+ 
 
 
 

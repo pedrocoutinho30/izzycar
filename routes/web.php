@@ -151,6 +151,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
     Route::prefix('v2/cost-simulators')->name('admin.v2.cost-simulators.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\CostSimulatorController::class, 'index'])->name('index');
+        Route::get('/{id}', [App\Http\Controllers\Admin\CostSimulatorController::class, 'show'])->name('show');
         // Route::get('/create', [App\Http\Controllers\Admin\CostSimulatorController::class, 'create'])->name('create');
         // Route::post('/', [App\Http\Controllers\Admin\CostSimulatorController::class, 'store'])->name('store');
         // Route::get('/{id}/edit', [App\Http\Controllers\Admin\CostSimulatorController::class, 'edit'])->name('edit');
