@@ -160,6 +160,20 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     });
 
     // ============================================================
+    // TRANSPORTES
+    // ============================================================
+    Route::prefix('v2/transport-quotes')->name('admin.transport-quotes.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\TransportQuoteController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\TransportQuoteController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\TransportQuoteController::class, 'store'])->name('store');
+        Route::get('/map', [App\Http\Controllers\Admin\TransportQuoteController::class, 'map'])->name('map');
+        Route::get('/map-data', [App\Http\Controllers\Admin\TransportQuoteController::class, 'getMapData'])->name('map-data');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\TransportQuoteController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\TransportQuoteController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\TransportQuoteController::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
     // VEÍCULOS V2
     // ============================================================
     Route::prefix('v2/vehicles')->name('admin.v2.vehicles.')->group(function () {

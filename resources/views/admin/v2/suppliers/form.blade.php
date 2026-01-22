@@ -63,6 +63,7 @@ $existAction = isset($supplier) ? 'Editar' : 'Criar';
                             <option value="">Selecione...</option>
                             <option value="Stand" {{ old('type', $supplier->type ?? '') === 'Stand' ? 'selected' : '' }}>Stand</option>
                             <option value="Particular" {{ old('type', $supplier->type ?? '') === 'Particular' ? 'selected' : '' }}>Particular</option>
+                            <option value="Transportadora" {{ old('type', $supplier->type ?? '') === 'Transportadora' ? 'selected' : '' }}>Transportadora</option>
                             <option value="Leilão" {{ old('type', $supplier->type ?? '') === 'Leilão' ? 'selected' : '' }}>Leilão</option>
                             <option value="Outro" {{ old('type', $supplier->type ?? '') === 'Outro' ? 'selected' : '' }}>Outro</option>
                         </select>

@@ -690,6 +690,12 @@
                     @endif
                 </a>
             </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.transport-quotes.index') }}" class="nav-link {{ request()->routeIs('admin.transport-quotes.*') ? 'active' : '' }}">
+                    <i class="bi bi-truck"></i>
+                    <span>Transportes</span>
+                </a>
+            </div>
             
 
 

@@ -11,6 +11,7 @@ use App\Http\Controllers\Frontend\VehiclesController;
 use App\Http\Controllers\Frontend\NewsController;
 use App\Http\Controllers\Frontend\CostSimulatorController;
 use App\Http\Controllers\Frontend\TradeInController;
+use App\Http\Controllers\Frontend\ConsignmentController;
 use App\Http\Controllers\Api\ExtrasController;
 use App\Http\Controllers\Api\BrandsModelsController;
 /*
@@ -74,6 +75,7 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::post('/retomas', [TradeInController::class, 'submitTradeInForm'])->name('frontend.trade-in-submit');
 
     Route::get('/venda', [SellingController::class, 'getSellingPage'])->name('frontend.selling');
+    Route::get('/consignacao', [ConsignmentController::class, 'getConsignmentPage'])->name('frontend.consignment');
 
     Route::get('/noticias', [NewsController::class, 'getNewsPage'])->name('frontend.news');
 
