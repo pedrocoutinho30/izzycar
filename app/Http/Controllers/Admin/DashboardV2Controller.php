@@ -183,4 +183,143 @@ class DashboardV2Controller extends Controller
             'alerts'
         ));
     }
+
+    /**
+     * Retorna dados para os gráficos do dashboard
+     */
+    public function getChartData(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $compareStartDate = $request->input('compare_start_date');
+        $compareEndDate = $request->input('compare_end_date');
+        $mode = $request->input('mode', 'range'); // 'range' ou 'compare'
+
+        if ($mode === 'compare' && $compareStartDate && $compareEndDate) {
+            // Modo comparação de 2 períodos
+            return $this->getComparisonData($startDate, $endDate, $compareStartDate, $compareEndDate);
+        } else {
+            // Modo intervalo de datas
+            return $this->getRangeData($startDate, $endDate);
+        }
+    }
+
+    /**
+     * Dados para modo de intervalo de datas
+     */
+    private function getRangeData($startDate, $endDate)
+    {
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+        
+        $months = [];
+        $clients = [];
+        $proposals = [];
+        $costSimulators = [];
+        $convertedProposals = [];
+
+        $current = $start->copy()->startOfMonth();
+        while ($current->lte($end->endOfMonth())) {
+            $monthLabel = $current->format('M Y');
+            $months[] = $monthLabel;
+
+            // Clientes
+            $clients[] = Client::whereYear('created_at', $current->year)
+                ->whereMonth('created_at', $current->month)
+                ->count();
+
+            // Propostas
+            $proposals[] = Proposal::whereYear('created_at', $current->year)
+                ->whereMonth('created_at', $current->month)
+                ->count();
+
+            // Simulações de Custo
+            $costSimulators[] = \App\Models\CostSimulator::whereYear('created_at', $current->year)
+                ->whereMonth('created_at', $current->month)
+                ->count();
+
+            // Propostas Convertidas
+            $convertedProposals[] = ConvertedProposal::whereYear('created_at', $current->year)
+                ->whereMonth('created_at', $current->month)
+                ->count();
+
+            $current->addMonth();
+        }
+
+        return response()->json([
+            'labels' => $months,
+            'datasets' => [
+                [
+                    'label' => 'Período Selecionado',
+                    'clients' => $clients,
+                    'proposals' => $proposals,
+                    'costSimulators' => $costSimulators,
+                    'convertedProposals' => $convertedProposals,
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * Dados para modo de comparação
+     */
+    private function getComparisonData($startDate1, $endDate1, $startDate2, $endDate2)
+    {
+        $period1Start = Carbon::parse($startDate1);
+        $period1End = Carbon::parse($endDate1);
+        $period2Start = Carbon::parse($startDate2);
+        $period2End = Carbon::parse($endDate2);
+
+        // Para comparação, vamos usar apenas 1 mês de cada período
+        $month1Label = $period1Start->format('M Y');
+        $month2Label = $period2Start->format('M Y');
+
+        // Período 1
+        $clients1 = Client::whereYear('created_at', $period1Start->year)
+            ->whereMonth('created_at', $period1Start->month)
+            ->count();
+        $proposals1 = Proposal::whereYear('created_at', $period1Start->year)
+            ->whereMonth('created_at', $period1Start->month)
+            ->count();
+        $costSimulators1 = \App\Models\CostSimulator::whereYear('created_at', $period1Start->year)
+            ->whereMonth('created_at', $period1Start->month)
+            ->count();
+        $convertedProposals1 = ConvertedProposal::whereYear('created_at', $period1Start->year)
+            ->whereMonth('created_at', $period1Start->month)
+            ->count();
+
+        // Período 2
+        $clients2 = Client::whereYear('created_at', $period2Start->year)
+            ->whereMonth('created_at', $period2Start->month)
+            ->count();
+        $proposals2 = Proposal::whereYear('created_at', $period2Start->year)
+            ->whereMonth('created_at', $period2Start->month)
+            ->count();
+        $costSimulators2 = \App\Models\CostSimulator::whereYear('created_at', $period2Start->year)
+            ->whereMonth('created_at', $period2Start->month)
+            ->count();
+        $convertedProposals2 = ConvertedProposal::whereYear('created_at', $period2Start->year)
+            ->whereMonth('created_at', $period2Start->month)
+            ->count();
+
+        return response()->json([
+            'labels' => [$month1Label, $month2Label],
+            'datasets' => [
+                [
+                    'label' => $month1Label,
+                    'clients' => [$clients1],
+                    'proposals' => [$proposals1],
+                    'costSimulators' => [$costSimulators1],
+                    'convertedProposals' => [$convertedProposals1],
+                ],
+                [
+                    'label' => $month2Label,
+                    'clients' => [$clients2],
+                    'proposals' => [$proposals2],
+                    'costSimulators' => [$costSimulators2],
+                    'convertedProposals' => [$convertedProposals2],
+                ]
+            ]
+        ]);
+    }
 }

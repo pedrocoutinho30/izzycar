@@ -118,6 +118,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     // ADMIN DASHBOARD V2
     // ============================================================
     Route::get('v2/dashboard', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'index'])->name('admin.v2.dashboard');
+    Route::get('v2/dashboard/chart-data', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'getChartData'])->name('admin.v2.dashboard.chart-data');
 
     Route::prefix('v2/proposals')->name('admin.v2.proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'index'])->name('index');
