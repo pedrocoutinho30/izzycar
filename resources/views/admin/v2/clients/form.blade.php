@@ -193,6 +193,30 @@
                             @enderror
                         </div>
 
+                        <div class="col-md-6">
+                            <label class="form-label">Tratamento de Dados</label>
+                            <select name="data_processing_consent" class="form-select @error('data_processing_consent') is-invalid @enderror">
+                                <option value="">Selecione...</option>
+                                <option value="1" {{ old('data_processing_consent', $client->data_processing_consent ?? '') === 1 || old('data_processing_consent', $client->data_processing_consent ?? '') === '1' ? 'selected' : '' }}>Sim</option>
+                                <option value="0" {{ old('data_processing_consent', $client->data_processing_consent ?? '') === 0 || old('data_processing_consent', $client->data_processing_consent ?? '') === '0' ? 'selected' : '' }}>Não</option>
+                            </select>
+                            @error('data_processing_consent')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Newsletter</label>
+                            <select name="newsletter_consent" class="form-select @error('newsletter_consent') is-invalid @enderror">
+                                <option value="">Selecione...</option>
+                                <option value="1" {{ old('newsletter_consent', $client->newsletter_consent ?? '') === 1 || old('newsletter_consent', $client->newsletter_consent ?? '') === '1' ? 'selected' : '' }}>Sim</option>
+                                <option value="0" {{ old('newsletter_consent', $client->newsletter_consent ?? '') === 0 || old('newsletter_consent', $client->newsletter_consent ?? '') === '0' ? 'selected' : '' }}>Não</option>
+                            </select>
+                            @error('newsletter_consent')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="col-12">
                             <label class="form-label">Observações</label>
                             <textarea name="observation" class="form-control @error('observation') is-invalid @enderror"

@@ -15,6 +15,8 @@
                             <th>Marca</th>
                             <th>Modelo</th>
                             <th>Versão</th>
+                            <th>Pagamento</th>
+                            <th>Compra</th>
                             <th>Estado</th>
                             <th>Ações</th>
                         </tr>
@@ -28,6 +30,8 @@
                             <td>{{ $form->brand ?? 'N/A' }}</td>
                             <td>{{ $form->model ?? 'N/A' }}</td>
                             <td>{{ $form->version ?? 'N/A' }}</td>
+                            <td>{{ $form->payment_type ?? 'N/A' }}</td>
+                            <td>{{ $form->estimated_purchase_date ?? 'N/A' }}</td>
                             <td>{{ $form->status ?? 'N/A' }}</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Ações">

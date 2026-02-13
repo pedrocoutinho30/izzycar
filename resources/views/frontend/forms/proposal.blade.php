@@ -57,8 +57,40 @@
         </div>
 
         <div class="col-12">
+            <div class="form-section-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1v22"></path>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span>Preferências de Compra</span>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="payment_type" class="form-label">Tipo de Pagamento<span class="required-star">*</span></label>
+            <select name="payment_type" id="payment_type" class="form-control" required>
+                <option value="">Escolha uma opção</option>
+                <option value="pronto_pagamento">Pronto pagamento</option>
+                <option value="financiamento">Financiamento</option>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="estimated_purchase_date" class="form-label">Data Estimada da Compra<span class="required-star">*</span></label>
+            <select name="estimated_purchase_date" id="estimated_purchase_date" class="form-control" required>
+                <option value="">Escolha uma opção</option>
+                <option value="imediato">Imediato (até 30 dias)</option>
+                <option value="1_3_meses">1-3 meses</option>
+                <option value="3_6_meses">3-6 meses</option>
+                <option value="pesquisar">Apenas a pesquisar</option>
+            </select>
+        </div>
+
+        <div class="col-12">
             <div class="form-divider"></div>
         </div>
+
+        
 
         <div class="col-12">
             <div class="form-section-header">
@@ -226,6 +258,23 @@
             </div>
         </div>
 
+        <div class="col-12">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="data_processing_consent" checked name="data_processing_consent" value="1" required>
+                <label class="form-check-label" for="data_processing_consent">
+                    Li e aceito o tratamento dos meus dados pessoais <span class="required-star">*</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="newsletter_consent" checked name="newsletter_consent" value="1">
+                <label class="form-check-label" for="newsletter_consent">
+                    Quero receber novidades e oportunidades por email
+                </label>
+            </div>
+        </div>
         {{-- Botão --}}
         <div class="col-12 text-center">
             <button type="submit" class="btn bg-finance btn-lg" id="contactSubmitProposalBtn">Enviar Pedido</button>
@@ -659,6 +708,55 @@
                 gearbox.forEach(g => g.setAttribute("required", "required"));
             }
         });
+    });
+</script>
+<script>
+    document.addEventListener("change", function(event) {
+        if (!event.target || event.target.id !== "ad_option") return;
+
+        const adLinksBox = document.getElementById("ad_links_box");
+        const preferencesBox = document.getElementById("preferences_box");
+        const adLinks = document.getElementById("ad_links");
+        const brand = document.getElementById("brand");
+        const model = document.getElementById("model");
+        const submodel = document.getElementById("submodel");
+        const fuel = document.getElementById("fuel");
+        const year_min = document.getElementById("year_min");
+        const km_max = document.getElementById("km_max");
+        const budget = document.getElementById("budget");
+        const gearbox = document.getElementsByName("gearbox");
+
+        if (!adLinksBox || !preferencesBox) return;
+
+        adLinksBox.classList.add("d-none");
+        preferencesBox.classList.add("d-none");
+
+        if (adLinks) adLinks.removeAttribute("required");
+        if (brand) brand.removeAttribute("required");
+        if (model) model.removeAttribute("required");
+        if (submodel) submodel.removeAttribute("required");
+        if (fuel) fuel.removeAttribute("required");
+        if (year_min) year_min.removeAttribute("required");
+        if (km_max) km_max.removeAttribute("required");
+        if (budget) budget.removeAttribute("required");
+        if (gearbox && gearbox.length) gearbox.forEach(g => g.removeAttribute("required"));
+
+        if (event.target.value === "sim") {
+            adLinksBox.classList.remove("d-none");
+            if (adLinks) adLinks.setAttribute("required", "required");
+        }
+
+        if (event.target.value === "nao_sei") {
+            preferencesBox.classList.remove("d-none");
+            if (brand) brand.setAttribute("required", "required");
+            if (model) model.setAttribute("required", "required");
+            if (submodel) submodel.setAttribute("required", "required");
+            if (fuel) fuel.setAttribute("required", "required");
+            if (year_min) year_min.setAttribute("required", "required");
+            if (km_max) km_max.setAttribute("required", "required");
+            if (budget) budget.setAttribute("required", "required");
+            if (gearbox && gearbox.length) gearbox.forEach(g => g.setAttribute("required", "required"));
+        }
     });
 </script>
 @endpush

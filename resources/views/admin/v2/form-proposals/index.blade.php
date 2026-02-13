@@ -69,6 +69,16 @@
                     'convertido' => 'Convertido',
                     'arquivado' => 'Arquivado'
                 ];
+                $paymentLabels = [
+                    'pronto_pagamento' => 'Pronto pagamento',
+                    'financiamento' => 'Financiamento'
+                ];
+                $purchaseLabels = [
+                    'imediato' => 'Imediato (até 30 dias)',
+                    '1_3_meses' => '1-3 meses',
+                    '3_6_meses' => '3-6 meses',
+                    'pesquisar' => 'Apenas a pesquisar'
+                ];
                 $currentStatus = $form->status ?? 'novo';
             @endphp
 
@@ -81,6 +91,14 @@
                         'text' => $statusLabels[$currentStatus] ?? 'Novo',
                         'color' => $statusColors[$currentStatus] ?? 'secondary'
                     ],
+                    $form->payment_type ? [
+                        'text' => $paymentLabels[$form->payment_type] ?? $form->payment_type,
+                        'color' => 'dark'
+                    ] : null,
+                    $form->estimated_purchase_date ? [
+                        'text' => $purchaseLabels[$form->estimated_purchase_date] ?? $form->estimated_purchase_date,
+                        'color' => 'info'
+                    ] : null,
                     $form->brand ? [
                         'text' => $form->brand . ($form->model ? ' ' . $form->model : ''),
                         'color' => 'primary'

@@ -91,6 +91,24 @@
                 </select>
             </div>
 
+            <div class="col-md-6 mt-4">
+                <label for="data_processing_consent" class="form-label">Tratamento de Dados</label>
+                <select name="data_processing_consent" class="form-control rounded shadow-sm">
+                    <option value="">Selecione...</option>
+                    <option value="1" {{ isset($client) && $client->data_processing_consent ? 'selected' : '' }}>Sim</option>
+                    <option value="0" {{ isset($client) && $client->data_processing_consent === false ? 'selected' : '' }}>Não</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 mt-4">
+                <label for="newsletter_consent" class="form-label">Newsletter</label>
+                <select name="newsletter_consent" class="form-control rounded shadow-sm">
+                    <option value="">Selecione...</option>
+                    <option value="1" {{ isset($client) && $client->newsletter_consent ? 'selected' : '' }}>Sim</option>
+                    <option value="0" {{ isset($client) && $client->newsletter_consent === false ? 'selected' : '' }}>Não</option>
+                </select>
+            </div>
+
             <div class="col-12 mt-4">
                 <label for="address" class="form-label">Endereço</label>
                 <textarea name="address" class="form-control rounded shadow-sm">{{ $client->address ?? '' }}</textarea>

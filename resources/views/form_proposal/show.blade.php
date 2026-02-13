@@ -21,6 +21,9 @@
             <div class="col-md-4 mb-4">
                 <h5 class="mb-3">Detalhes da Proposta</h5>
 
+                <p><strong>Tipo de Pagamento:</strong> {{ $form->payment_type ?? 'N/A' }}</p>
+                <p><strong>Tempo Expectável de Compra:</strong> {{ $form->estimated_purchase_date ?? 'N/A' }}</p>
+
                 @if($form->ad_links != null && $form->ad_option == 'sim')
                 <p> <strong>Link:</strong> {{ $form->ad_links }}</p>
                 @endif

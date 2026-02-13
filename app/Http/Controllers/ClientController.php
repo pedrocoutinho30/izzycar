@@ -43,6 +43,8 @@ class ClientController extends Controller
             'client_type' => 'nullable|string|max:255',
             'origin' => 'nullable|string|max:255',
             'observation' => 'nullable|string',
+            'data_processing_consent' => 'nullable|boolean',
+            'newsletter_consent' => 'nullable|boolean',
         ]);
 
        $client = Client::create($validated);
@@ -85,6 +87,8 @@ class ClientController extends Controller
             'client_type' => 'nullable|string|max:255',
             'origin' => 'nullable|string|max:255',
             'observation' => 'nullable|string',
+            'data_processing_consent' => 'nullable|boolean',
+            'newsletter_consent' => 'nullable|boolean',
         ]);
 
         $client->update($validated);

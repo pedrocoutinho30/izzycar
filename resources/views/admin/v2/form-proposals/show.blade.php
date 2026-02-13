@@ -57,6 +57,32 @@
                             <span class="detail-label">Origem</span>
                             <span class="detail-value">{{ $formProposal->source ?? 'Website' }}</span>
                         </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tipo de Pagamento</span>
+                            <span class="detail-value">
+                                @php
+                                    $paymentLabels = [
+                                        'pronto_pagamento' => 'Pronto pagamento',
+                                        'financiamento' => 'Financiamento'
+                                    ];
+                                @endphp
+                                {{ $paymentLabels[$formProposal->payment_type] ?? '-' }}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tempo Expectável de Compra</span>
+                            <span class="detail-value">
+                                @php
+                                    $purchaseLabels = [
+                                        'imediato' => 'Imediato (até 30 dias)',
+                                        '1_3_meses' => '1-3 meses',
+                                        '3_6_meses' => '3-6 meses',
+                                        'pesquisar' => 'Apenas a pesquisar'
+                                    ];
+                                @endphp
+                                {{ $purchaseLabels[$formProposal->estimated_purchase_date] ?? '-' }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

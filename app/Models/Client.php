@@ -25,6 +25,8 @@ class Client extends Model
         'client_type',
         'origin',
         'observation',
+        'data_processing_consent',
+        'newsletter_consent',
     ];
 
     // Definindo os tipos de dados para a tabela

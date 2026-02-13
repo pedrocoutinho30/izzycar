@@ -22,11 +22,17 @@ class ImportController extends Controller
             'phone' => 'required|string|max:50',
             'email' => 'required|email',
             'message' => 'nullable|string',
+            'payment_type' => 'required|in:pronto_pagamento,financiamento',
+            'estimated_purchase_date' => 'required|in:imediato,1_3_meses,3_6_meses,pesquisar',
+            'data_processing_consent' => 'accepted',
+            'newsletter_consent' => 'nullable|boolean',
         ]);
 
         // Aqui podes gravar na BD
 
         $formPropposalData = $request->all();
+        $dataProcessingConsent = $request->boolean('data_processing_consent');
+        $newsletterConsent = $request->boolean('newsletter_consent');
         $clientExist = Client::where('email', $formPropposalData['email'])->where('phone', $formPropposalData['phone'])->first();
 
         if (!$clientExist) {
@@ -36,11 +42,19 @@ class ImportController extends Controller
                 'phone' => $formPropposalData['phone'],
                 'email' => $formPropposalData['email'],
                 'origin' => $formPropposalData['source'],
+                'data_processing_consent' => $dataProcessingConsent,
+                'newsletter_consent' => $newsletterConsent,
+            ]);
+        } else {
+            $clientExist->update([
+                'data_processing_consent' => $dataProcessingConsent,
+                'newsletter_consent' => $newsletterConsent,
             ]);
         }
         $formPropposalData['client_id'] = $clientExist->id;
         $formPropposalData['status'] = 'novo';
         $formPropposalData['version'] = $formPropposalData['submodel'];
+        unset($formPropposalData['data_processing_consent'], $formPropposalData['newsletter_consent']);
         //Guardar o formulário de proposta
         $proposal = FormProposal::create($formPropposalData);
 
@@ -55,9 +69,14 @@ class ImportController extends Controller
         Como conheceu: {$proposal->source} \n
         Mensagem: {$proposal->message} \n
 
-        Opção Anúncio: {$proposal->ad_option} \n
-        Links: {$proposal->ad_links} \n
+        Tipo de Pagamento: {$proposal->payment_type} \n
+        Data Estimada da Compra: {$proposal->estimated_purchase_date} \n
         ";
+
+        $body .= "Consentimento Tratamento de Dados: " . ($dataProcessingConsent ? 'Sim' : 'Não') . " \n";
+        $body .= "Consentimento Newsletter: " . ($newsletterConsent ? 'Sim' : 'Não') . " \n";
+        $body .= "Opção Anúncio: {$proposal->ad_option} \n";
+        $body .= "Links: {$proposal->ad_links} \n";
 
         // Se for 'nao_sei' adiciona as preferências
         if ($proposal->ad_option === 'nao_sei') {
