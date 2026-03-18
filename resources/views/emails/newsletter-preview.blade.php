@@ -48,8 +48,8 @@
 
         .logo {
             position: absolute;
-            /* top: 20px;
-            left: 30px; */
+            top: 20px;
+            left: 30px;
             z-index: 2;
         }
 
@@ -64,7 +64,7 @@
             font-weight: bold;
             position: relative;
             z-index: 1;
-            padding-left: 100px;
+            padding-left: 120px;
         }
 
         .header p {
