@@ -48,8 +48,8 @@
 
         .logo {
             position: absolute;
-            top: 20px;
-            left: 30px;
+            top: 2px;
+            left: 10px;
             z-index: 2;
         }
 
