@@ -6,15 +6,26 @@
 
 <!-- PAGE HEADER -->
 @include('components.admin.page-header', [
-'breadcrumbs' => [
-['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-['icon' => 'bi bi-people', 'label' => 'Clientes', 'href' => ''],
-],
-'title' => 'Clientes',
-'subtitle' => 'Gestão de clientes e contactos',
-'actionHref' => route('admin.v2.clients.create'),
-'actionLabel' => 'Novo Cliente'
-])
+ 'breadcrumbs' => [
+ ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
+ ['icon' => 'bi bi-people', 'label' => 'Clientes', 'href' => ''],
+ ],
+ 'title' => 'Clientes',
+ 'subtitle' => 'Gestão de clientes e contactos',
+ 'actionHref' => route('admin.v2.clients.create'),
+ 'actionLabel' => 'Novo Cliente',
+ 'secondaryAction' => [
+     'label' => 'Enviar Newsletter',
+     'icon' => 'bi bi-envelope-paper',
+     'type' => 'submit',
+     'form' => 'newsletter-send-form'
+ ]
+ ])
+<form id="newsletter-send-form" action="{{ route('admin.v2.newsletter.send') }}" method="POST" >
+    @csrf
+    <input type="hidden" name="headline" value="Izzycar Newsletter">
+    <input type="hidden" name="intro" value="Novidades e oportunidades para si.">
+</form>
 <!-- STATS CARDS -->
 @include('components.admin.stats-cards', ['stats' => $stats])
 

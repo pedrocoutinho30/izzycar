@@ -1,3 +1,9 @@
+@php
+    $actionHref = $actionHref ?? null;
+    $actionLabel = $actionLabel ?? null;
+    $subtitle = $subtitle ?? null;
+@endphp
+
 <div class="page-header">
     <div class="page-breadcrumb">
         @foreach ($breadcrumbs as $index => $breadcrumb)

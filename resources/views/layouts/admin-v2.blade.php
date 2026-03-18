@@ -416,15 +416,26 @@
         .btn-danger-modern {
             background: var(--admin-danger);
             color: white;
+            box-shadow: var(--shadow-sm);
         }
 
         .btn-danger-modern:hover {
             background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
             color: white;
         }
 
         .btn-success-modern {
             background: var(--admin-success);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-success-modern:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
             color: white;
         }
 
@@ -591,7 +602,7 @@
         </div> -->
 
         <!-- Spacer -->
-        <div class="flex-grow-1"></div>
+        
 
         <!-- Notifications -->
         <div class="dropdown me-3">
@@ -726,6 +737,13 @@
                 <a href="{{ route('admin.v2.expenses.index') }}" class="nav-link {{ request()->routeIs('admin.v2.expenses.*') ? 'active' : '' }}">
                     <i class="bi bi-receipt"></i>
                     <span>Despesas</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.newsletter-management.index') }}" class="nav-link {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
+                    <i class="bi bi-newspaper"></i>
+                    <span>Newsletter</span>
                 </a>
             </div>
 

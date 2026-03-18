@@ -58,6 +58,9 @@ Route::get('/proposta/{brand}/{model}/{version}/{id}/timeline', [ConvertedPropos
 
 Auth::routes();
 
+Route::get('/newsletter/unsubscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'unsubscribe'])
+    ->name('newsletter.unsubscribe');
+
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
     Lfm::routes();
 });
@@ -148,6 +151,31 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'index'])->name('index');
         Route::get('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'show'])->name('show');
         Route::patch('/{id}/status', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'updateStatus'])->name('update-status');
+    });
+
+    // ============================================================
+    // NEWSLETTER
+    // ============================================================
+    // Route::post('v2/newsletter/send', [App\Http\Controllers\Admin\NewsletterController::class, 'send'])->name('admin.v2.newsletter.send');
+    
+    // Newsletter Management (Unified)
+    Route::prefix('v2/newsletter-management')->name('admin.v2.newsletter-management.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'store'])->name('store');
+        Route::get('/{id}', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'show'])->name('show');
+        Route::get('/{id}/preview', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'preview'])->name('preview');
+        Route::get('/{id}/send', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'sendNewsletter'])->name('send');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'destroy'])->name('destroy');
+        
+        // Offers within newsletter
+        Route::get('/{newsletterId}/offers/create', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'createOffer'])->name('offers.create');
+        Route::post('/{newsletterId}/offers', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'storeOffer'])->name('offers.store');
+        Route::get('/{newsletterId}/offers/{offerId}/edit', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'editOffer'])->name('offers.edit');
+        Route::put('/{newsletterId}/offers/{offerId}', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'updateOffer'])->name('offers.update');
+        Route::delete('/{newsletterId}/offers/{offerId}', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'destroyOffer'])->name('offers.destroy');
     });
 
     Route::prefix('v2/cost-simulators')->name('admin.v2.cost-simulators.')->group(function () {
