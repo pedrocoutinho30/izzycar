@@ -114,14 +114,14 @@ class NewsletterManagementController extends Controller
                 'email' => 'pedroc_30@hotmail.com',
                 'name' => 'Pedro Coutinho',
             ],
-            // [
-            //     'email' => 'dvpc1993@gmail.com',
-            //     'name' => 'DVPC',
-            // ],
-            // [
-            //     'email' => 'diana_vilar_8488@hotmail.com',  
-            //     'name' => 'Diana Vilar',
-            // ],
+            [
+                'email' => 'dvpc1993@gmail.com',
+                'name' => 'DVPC',
+            ],
+            [
+                'email' => 'diana_vilar_8488@hotmail.com',  
+                'name' => 'Diana Vilar',
+            ],
         ];
 
         foreach ($clients as $client) {
