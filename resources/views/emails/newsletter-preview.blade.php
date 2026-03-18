@@ -48,14 +48,13 @@
 
         .logo {
             position: absolute;
-            height: 100px;
-            top: 20px;
-            left: 30px;
+            /* top: 20px;
+            left: 30px; */
             z-index: 2;
         }
 
         .logo img {
-            height: 40px;
+            height: 80px;
             width: auto;
         }
 
