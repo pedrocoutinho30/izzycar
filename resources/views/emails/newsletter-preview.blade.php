@@ -481,7 +481,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="logo"><img src="{{ asset('path/to/logo.png') }}" alt="IZZYCAR Logo"></div>
+            <div class="logo"><img src="{{ asset($logotipo) ?? '/images/default-logo.png' }}" alt="IZZYCAR Logo"></div>
 
         </div>
 
