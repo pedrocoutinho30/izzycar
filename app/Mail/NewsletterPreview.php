@@ -37,7 +37,7 @@ class NewsletterPreview extends Mailable
     {
         return new Envelope(
             from: new Address('geral@izzycar.pt', 'Izzycar - Importação automóvel'),
-            subject: 'Recomendações de importação semana ' . now()->weekOfYear . ' - Izzycar',
+            subject: 'Recomendações de importação',
         );
     }
 

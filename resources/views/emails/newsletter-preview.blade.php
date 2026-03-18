@@ -481,7 +481,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="logo"><img src="{{ asset($logotipo) ?? '/images/default-logo.png' }}" alt="IZZYCAR Logo"></div>
+             <img src="https://izzycar.pt/storage/settings/logo_redondo.png" alt="Izzycar Logo" style="max-height: 60px; max-width: 60px; margin-bottom: 10px;">
 
         </div>
 
