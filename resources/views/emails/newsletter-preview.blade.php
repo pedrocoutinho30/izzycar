@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $newsletter->title }}</title>
+    <title>Recomendações de importação - Izzycar</title>
     <style>
         * {
             margin: 0;
