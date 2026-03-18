@@ -629,10 +629,12 @@
             <h2 class="cta-title">Pronto para importar o seu próximo carro?</h2>
             <p class="cta-text">Entre em contacto connosco e receba uma proposta personalizada sem compromisso</p>
             <div class="cta-buttons">
-                <a href="https://wa.me/351928459346?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20importação%20de%20veículos" class="cta-button">
+                <a href="https://wa.me/351928459346?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20importação%20de%20veículos" 
+                   style="display: inline-block; background: white; color: #990000; text-decoration: none; padding: 15px 35px; border-radius: 30px; font-weight: bold; font-size: 16px; margin: 5px;">
                     💬 Falar no WhatsApp
                 </a>
-                <a href="https://izzycar.pt/formulario-importacao" class="cta-button cta-button-secondary">
+                <a href="https://izzycar.pt/formulario-importacao" 
+                   style="display: inline-block; background: transparent; color: white; text-decoration: none; padding: 15px 35px; border-radius: 30px; font-weight: bold; font-size: 16px; border: 2px solid white; margin: 5px;">
                     📝 Pedir Proposta
                 </a>
             </div>
