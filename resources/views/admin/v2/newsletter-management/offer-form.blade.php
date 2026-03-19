@@ -112,10 +112,18 @@
 
                     <div class="col-md-12">
                         <label class="form-label">Equipamentos</label>
-                        <textarea name="equipamentos" rows="3" class="form-control @error('equipamentos') is-invalid @enderror">{{ old('equipamentos', isset($offer) ? $offer->equipamentos : '') }}</textarea>
+                        <textarea name="equipamentos" rows="6" class="form-control ckeditor @error('equipamentos') is-invalid @enderror">{{ old('equipamentos', isset($offer) ? $offer->equipamentos : '') }}</textarea>
                         @error('equipamentos')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        @push('scripts')
+                            <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
+                            <script>
+                                CKEDITOR.replace('equipamentos', {
+                                    height: 150
+                                });
+                            </script>
+                        @endpush
                     </div>
 
                     <div class="col-md-12">

@@ -168,6 +168,15 @@
             font-weight: bold;
         }
 
+        @media only screen and (max-width: 600px) {
+            .offer-price {
+            font-size: 14px;
+            }
+            .offer-savings {
+            font-size: 20px;
+            }
+        }
+
         .offer-info {
             font-size: 14px;
             color: #666666;
@@ -515,7 +524,7 @@
                     @if($offer->equipamentos)
                     <div class="offer-info">
                         <strong>✨ Equipamento:</strong><br>
-                        {{ $offer->equipamentos }}
+                        {!! $offer->equipamentos !!}
                     </div>
                     @endif
 

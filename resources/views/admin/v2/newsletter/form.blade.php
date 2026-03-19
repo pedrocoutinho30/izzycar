@@ -70,9 +70,18 @@
                 <input type="date" name="published_at" class="form-control" value="{{ old('published_at', isset($offer->published_at) ? $offer->published_at->format('Y-m-d') : '') }}">
             </div>
             <div class="col-12">
-                <label class="form-label">Equipamentos</label>
-                <textarea name="equipamentos" class="form-control" rows="3">{{ old('equipamentos', $offer->equipamentos ?? '') }}</textarea>
+                <label class="form-label">Equipamentosss</label>
+                <textarea name="equipamentos" class="form-control html-editor" rows="6">{{ old('equipamentos', $offer->equipamentos ?? '') }}</textarea>
             </div>
+            @push('scripts')
+            <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
+            <script>
+                CKEDITOR.replace('equipamentos', {
+                    height: 200,
+                    removeButtons: 'PasteFromWord'
+                });
+            </script>
+            @endpush
         </div>
     </div>
 
