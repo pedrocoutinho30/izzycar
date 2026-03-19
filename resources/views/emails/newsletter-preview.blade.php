@@ -28,7 +28,7 @@
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+            background-color: #990000;
             color: white;
             padding: 40px 30px;
             text-align: center;
@@ -77,7 +77,7 @@
         /* Content */
         .content {
             padding: 40px 30px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            background-color: #f8f9fa;
         }
 
         .text-content {
@@ -148,7 +148,7 @@
         }
 
         .offer-price-section {
-            background: rgba(110, 7, 7, 0.05);
+            background-color: #fff5f5;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
@@ -197,7 +197,7 @@
 
         .offer-cta a {
             display: inline-block;
-            background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+            background-color: #990000;
             color: white;
             text-decoration: none;
             padding: 12px 30px;
@@ -240,7 +240,7 @@
         }
 
         .info-block {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            background-color: #f8f9fa;
             border-left: 4px solid #990000;
             padding: 20px;
             margin-bottom: 20px;
@@ -269,7 +269,7 @@
         }
 
         .info-block-highlight {
-            background: rgba(110, 7, 7, 0.05);
+            background-color: #fff5f5;
             padding: 10px 15px;
             border-radius: 6px;
             margin-top: 10px;
@@ -312,7 +312,7 @@
 
         /* Footer */
         .footer {
-            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            background-color: #1a1a1a;
             color: rgba(255, 255, 255, 0.8);
             padding: 30px;
             text-align: center;
@@ -362,7 +362,7 @@
 
         /* CTA Section */
         .cta-section {
-            background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+            background-color: #990000;
             padding: 40px 30px;
             text-align: center;
             color: white;
@@ -489,14 +489,14 @@
 <body>
     <div class="container">
         <!-- Header -->
-        <div class="header">
+        <div class="header" style="background-color: #990000;">
 
             <div class="logo"> <img src="https://izzycar.pt/storage/settings/logo.png" alt="Izzycar Logo" style="max-height: 80px; max-width: auto; margin-bottom: 10px;"></div>
 
         </div>
 
         <!-- Content -->
-        <div class="content">
+        <div class="content" style="background-color: #f8f9fa;">
 
             @if($newsletter->offers->count() > 0)
 
@@ -634,7 +634,7 @@
         </div>
 
         <!-- CTA Section -->
-        <div class="cta-section">
+        <div class="cta-section" style="background-color: #990000;">
             <h2 class="cta-title">Pronto para importar o seu próximo carro?</h2>
             <p class="cta-text">Entre em contacto connosco e receba uma proposta personalizada sem compromisso</p>
             <div class="cta-buttons">
@@ -650,8 +650,20 @@
         </div>
 
         <!-- Footer -->
-        <div class="footer">
-            <div class="footer-logo">IZZYCAR</div>
+        <div class="footer" style="background-color: #1a1a1a;">
+            <div class="footer-logo">
+                <img src="https://izzycar.pt/storage/settings/logo.png" alt="Izzycar Logo"
+                     style="max-height: 80px; max-width: auto; margin-bottom: 10px;"
+                     class="footer-logo-img">
+            </div>
+            <style>
+                @media only screen and (max-width: 600px) {
+                    .footer-logo-img {
+                        max-height: 80px !important;
+                        max-width: 80px !important;
+                    }
+                }
+            </style>
             <div class="footer-text">
                 Importação de veículos de qualidade com transparência e confiança
             </div>
