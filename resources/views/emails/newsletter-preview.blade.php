@@ -482,7 +482,7 @@
         <!-- Header -->
         <div class="header">
 
-            <div class="logo"> <img src="https://izzycar.pt/storage/settings/logo_redondo.png" alt="Izzycar Logo" style="max-height: 60px; max-width: 60px; margin-bottom: 10px;"></div>
+            <div class="logo"> <img src="https://izzycar.pt/storage/settings/logo.png" alt="Izzycar Logo" style="max-height: 80px; max-width: auto; margin-bottom: 10px;"></div>
 
         </div>
 
