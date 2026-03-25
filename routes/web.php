@@ -71,6 +71,11 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     Route::get('/simulador-isv', [ImportSimulatorController::class, 'index'])->name('isv.simulator');
     Route::post('/simulador-isv', [ImportSimulatorController::class, 'calcular'])->name('isv.calcular');
 
+    // Calculadora de Lucro
+    Route::get('/calculadora-lucro', function () {
+        return view('admin.v2.calculator.profit');
+    })->name('calculator.profit');
+
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
     Route::resource('settings', SettingController::class);

@@ -747,6 +747,16 @@
                 </a>
             </div>
 
+            <!-- Ferramentas -->
+            <div class="nav-group-title">Ferramentas</div>
+
+            <div class="nav-item">
+                <a href="{{ route('calculator.profit') }}" class="nav-link {{ request()->routeIs('calculator.profit') ? 'active' : '' }}">
+                    <i class="bi bi-calculator"></i>
+                    <span>Calculadora de Lucro</span>
+                </a>
+            </div>
+
             <!-- Parceiros -->
             <div class="nav-group-title">Rede</div>
 

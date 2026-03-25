@@ -172,6 +172,7 @@
         ['route' => 'admin.v2.dashboard', 'icon' => 'fa-tachometer-alt', 'label' => __('Dashboard V2'), 'permission' => 'gerir propostas'],
         ['route' => 'clients.index', 'icon' => 'fa-users', 'label' => __('Clientes'), 'permission' => 'gerir clientes'],
         ['route' => 'isv.simulator', 'icon' => 'fa-calculator', 'label' => __('Simuldor ISV'), 'permission' => 'gerir propostas'],
+        ['route' => 'calculator.profit', 'icon' => 'fa-chart-line', 'label' => __('Calculadora de Lucro'), 'permission' => 'gerir vendas'],
         ['route' => 'form_proposals.index', 'icon' => 'fa-briefcase', 'label' => __('Formulários de Propostas'), 'permission' => 'gerir propostas'],
         ['route' => 'proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas'), 'permission' => 'gerir propostas'],
         ['route' => 'converted-proposals.index', 'icon' => 'fa-check-square', 'label' => __('Propostas Convertidas'), 'permission' => 'gerir propostas'],
