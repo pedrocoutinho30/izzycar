@@ -283,4 +283,51 @@ class SaleV2Controller extends Controller
 
         $sale->update($validatedData);
     }
+
+    public function calculateIvaGeral($sellPrice, $purchasePrice, $expenses)
+    {
+
+        //verificar quais as despesas são dedutíveis e calcular o total de valor dedutivel
+        $deductibleExpenses = $expenses->filter(function ($expense) {
+            if ($expense->vat_rate == '23%') {
+                return true;
+            }
+            return false;
+        });
+
+
+        $allDeductibleExpenses = $deductibleExpenses->map(function ($expense) {
+
+            $amount = is_numeric($expense->amount) ? floatval($expense->amount) : 0;
+            $vatRate = $expense->vat_rate == '23%' ? 23 : 0;
+            $valueWithoutVat = $amount / (1 + ($vatRate / 100));
+            $vatValue = $amount - $valueWithoutVat;
+            return [
+                'amount' => number_format($vatValue, 2),
+            ];
+        });
+        $totalDeductibleExpenses = $allDeductibleExpenses->sum('amount'); // iva a deduzir das despesas
+
+
+        //calcular o IVA a liquidar na venda
+        $vat_settle_sale = $sellPrice - ($sellPrice / 1.23);
+        $sell_value_without_vat = $sellPrice / 1.23;
+        $vat_paid = $vat_settle_sale - $totalDeductibleExpenses;
+
+
+        $allExpenses = $purchasePrice + $expenses->sum('amount') + $vat_paid; // valor total de despesas (compra + despesas + iva a pagar)
+        $net_margin = $sellPrice - $allExpenses; // margem de lucro liquido
+        $gross_margin = $sellPrice - $purchasePrice; // margem de lucro bruta
+
+
+
+
+        return [
+            'gross_margin' => $gross_margin,
+            'net_margin' => $net_margin,
+            'vat_paid' => $vat_paid,
+            'vat_deducible_purchase' => null,
+            'vat_settle_sale' => $vat_settle_sale,
+        ];
+    }
 }
