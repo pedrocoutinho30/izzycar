@@ -352,7 +352,7 @@
 </script>
 
 <!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdSTNcEDxm8lSIygiU6n4VOGkQXz8RK-o-YcjN6v0c&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdSTNcEDxm8lSIygiU6n4VOGkQXz8RK-o=initMap" async defer></script>
 
 <!-- Marker Clusterer -->
 <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
