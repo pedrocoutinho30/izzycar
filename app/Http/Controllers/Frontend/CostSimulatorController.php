@@ -21,23 +21,90 @@ class CostSimulatorController extends Controller
 
     public function calculate(Request $request)
     {
+        // Validação rigorosa dos dados do cliente
+        $validated = $request->validate([
+            'name' => 'required|string|min:3|max:255',
+            'email' => [
+                'required',
+                'email:rfc', // Valida formato RFC (removido DNS que pode falhar)
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    // Bloquear emails temporários/descartáveis comuns
+                    $blockedDomains = ['tempmail.com', 'guerrillamail.com', 'mailinator.com', '10minutemail.com', 'throwaway.email', 'trashmail.com'];
+                    $domain = substr(strrchr($value, "@"), 1);
+                    if (in_array(strtolower($domain), $blockedDomains)) {
+                        $fail('Por favor, utilize um email válido.');
+                    }
+                },
+            ],
+            'phone' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    // Normalizar para validação (remover prefixos e espaços)
+                    $phone = preg_replace('/[^0-9]/', '', $value);
+                    if (strlen($phone) > 9) {
+                        $phone = substr($phone, -9);
+                    }
 
-        //guardar dados do cliente
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
+                    // Validar formato português
+                    if (!preg_match('/^9[1236][0-9]{7}$/', $phone)) {
+                        $fail('Por favor, insira um número de telemóvel português válido.');
+                        return;
+                    }
+
+                    // Bloquear números com todos os dígitos iguais (911111111, 922222222, etc)
+                    if (preg_match('/^(\d)\1{8}$/', $phone)) {
+                        $fail('Por favor, insira um número de telemóvel válido (o número inserido não é real).');
+                        return;
+                    }
+
+                    // Bloquear sequências óbvias (912345678, 987654321)
+                    if (in_array($phone, ['911111111', '922222222', '912345678', '987654321', '123456789', '111111111', '222222222', '333333333'])) {
+                        $fail('Por favor, insira um número de telemóvel válido.');
+                        return;
+                    }
+                },
+            ],
+        ], [
+            'name.required' => 'O nome é obrigatório.',
+            'name.min' => 'O nome deve ter pelo menos 3 caracteres.',
+            'email.required' => 'O email é obrigatório.',
+            'email.email' => 'Por favor, insira um email válido.',
+            'phone.required' => 'O telefone é obrigatório.',
         ]);
 
-        $client = Client::firstOrCreate(
-            ['phone' => $request->input('phone')], // condição de procura
-            [
-                'name' => $request->input('name'),  // campos para criar se não existir
+        // Se a validação falhou, Laravel automaticamente redireciona de volta com os erros e old() input
+
+        // Normalizar telefone (remover espaços e prefixos internacionais)
+        $phone = preg_replace('/[^0-9]/', '', $request->input('phone'));
+        if (strlen($phone) > 9) {
+            $phone = substr($phone, -9); // Pegar apenas os últimos 9 dígitos
+        }
+        $normalizedPhone = $phone;
+
+        // Verificar se já existe cliente com este email OU telefone
+        $existingClient = Client::where('email', $request->input('email'))
+            ->orWhere('phone', $normalizedPhone)
+            ->first();
+
+        if ($existingClient) {
+            // Atualizar dados do cliente existente
+            $existingClient->update([
+                'name' => $request->input('name'),
                 'email' => $request->input('email'),
-                'phone' => $request->input('phone'),
+                'phone' => $normalizedPhone,
+            ]);
+            $client = $existingClient;
+        } else {
+            // Criar novo cliente
+            $client = Client::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'phone' => $normalizedPhone,
                 'origin' => 'Simulador de Custos'
-            ]
-        );
+            ]);
+        }
         // $request->validate([
         //     'valor_carro' => 'required|numeric|min:0',
         //     'name' => 'required|string|max:255',
@@ -88,16 +155,16 @@ class CostSimulatorController extends Controller
         ]);
 
 
- 
+
 
 
 
 
         // enviar email com resultados
-         Mail::raw("Novo Simulador de Custos submetido por {$client->name}, Email: {$client->email}, Telefone: {$client->phone}. Valor do Carro: {$valorCarro}€, ISV: {$isv}€, Custo Total: {$custoTotal}€.", function ($message) {
-             $message->to('geral@izzycar.pt')
-                     ->subject('Novo Simulador de Custos');
-         });
+        Mail::raw("Novo Simulador de Custos submetido por {$client->name}, Email: {$client->email}, Telefone: {$client->phone}. Valor do Carro: {$valorCarro}€, ISV: {$isv}€, Custo Total: {$custoTotal}€.", function ($message) {
+            $message->to('geral@izzycar.pt')
+                ->subject('Novo Simulador de Custos');
+        });
         return view('frontend.cost-simulator.result', [
             'valorCarro' => $valorCarro,
             'tableIsv' => $tableIsv,

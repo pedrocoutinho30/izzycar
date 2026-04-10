@@ -61,15 +61,15 @@
                     <div class="col-md-4">
                         <label for="pais_matricula" class="form-label-modern">País da matrícula<span class="required-star">*</span></label>
                         <select name="pais_matricula" id="pais_matricula" class="form-control-modern" required>
-                            <option value="uniao-europeia">Estado-Membro da União Europeia</option>
-                            <option value="outro">Outro</option>
+                            <option value="uniao-europeia" {{ old('pais_matricula', 'uniao-europeia') == 'uniao-europeia' ? 'selected' : '' }}>Estado-Membro da União Europeia</option>
+                            <option value="outro" {{ old('pais_matricula') == 'outro' ? 'selected' : '' }}>Outro</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label for="estado_viatura" class="form-label-modern">Estado da viatura<span class="required-star">*</span></label>
                         <select name="estado_viatura" id="estado_viatura" class="form-control-modern" required>
-                            <option value="usado">Usado</option>
-                            <option value="novo">Novo</option>
+                            <option value="usado" {{ old('estado_viatura', 'usado') == 'usado' ? 'selected' : '' }}>Usado</option>
+                            <option value="novo" {{ old('estado_viatura') == 'novo' ? 'selected' : '' }}>Novo</option>
                         </select>
                     </div>
                     <div class="col-md-4">
@@ -77,7 +77,7 @@
                         <select name="brand" id="brand" class="form-control-modern" required>
                             <option value="">Selecione</option>
                             @foreach($brands as $brand)
-                            <option value="{{ $brand->name }}" data-models="{{ json_encode($brand->models->pluck('name')) }}">
+                            <option value="{{ $brand->name }}" data-models="{{ json_encode($brand->models->pluck('name')) }}" {{ old('brand') == $brand->name ? 'selected' : '' }}>
                                 {{ $brand->name }}
                             </option>
                             @endforeach
@@ -91,56 +91,56 @@
                     </div>
                     <div class="col-md-4">
                         <label for="data_matricula" class="form-label-modern">Data da matrícula<span class="required-star">*</span></label>
-                        <input type="date" name="data_matricula" id="data_matricula" class="form-control-modern" required>
+                        <input type="date" name="data_matricula" id="data_matricula" class="form-control-modern" value="{{ old('data_matricula') }}" required>
                     </div>
                     <div class="col-md-4">
                         <label for="combustivel" class="form-label-modern">Combustível<span class="required-star">*</span></label>
                         <select name="combustivel" id="combustivel" class="form-control-modern" required>
-                            <option value="gasolina">Gasolina</option>
-                            <option value="diesel">Diesel</option>
-                            <option value="eletrico">Elétrico</option>
+                            <option value="gasolina" {{ old('combustivel', 'gasolina') == 'gasolina' ? 'selected' : '' }}>Gasolina</option>
+                            <option value="diesel" {{ old('combustivel') == 'diesel' ? 'selected' : '' }}>Diesel</option>
+                            <option value="eletrico" {{ old('combustivel') == 'eletrico' ? 'selected' : '' }}>Elétrico</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label for="cilindrada" class="form-label-modern">Cilindrada<span class="required-star">*</span></label>
-                        <input type="number" name="cilindrada" id="cilindrada" class="form-control-modern" placeholder="ex: 2000">
+                        <input type="number" name="cilindrada" id="cilindrada" class="form-control-modern" placeholder="ex: 2000" value="{{ old('cilindrada') }}">
                     </div>
                     <div class="col-md-4">
                         <label for="tipo_medicao" class="form-label-modern">Método de homologação CO2<span class="required-star">*</span></label>
                         <select name="tipo_medicao" id="tipo_medicao" class="form-control-modern">
-                            <option value="WLTP">WLTP</option>
-                            <option value="NEDC">NEDC</option>
+                            <option value="WLTP" {{ old('tipo_medicao', 'WLTP') == 'WLTP' ? 'selected' : '' }}>WLTP</option>
+                            <option value="NEDC" {{ old('tipo_medicao') == 'NEDC' ? 'selected' : '' }}>NEDC</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label for="co2" class="form-label-modern">CO2 (g/km)<span class="required-star">*</span></label>
-                        <input type="number" name="co2" id="co2" class="form-control-modern" placeholder="ex: 120">
+                        <input type="number" name="co2" id="co2" class="form-control-modern" placeholder="ex: 120" value="{{ old('co2') }}">
                     </div>
                     <div class="col-md-4" id="emissao_particulas_container" style="display: none;">
                         <label for="emissao_particulas" class="form-label-modern">Emissão de partículas (g/km)<span class="required-star">*</span></label>
                         <select name="emissao_particulas" id="emissao_particulas" class="form-control-modern">
-                            <option value="+0.0001">&gt;0.0001</option>
-                            <option value="-0.0001">&le;0.0001</option>
+                            <option value="+0.0001" {{ old('emissao_particulas', '+0.0001') == '+0.0001' ? 'selected' : '' }}>&gt;0.0001</option>
+                            <option value="-0.0001" {{ old('emissao_particulas') == '-0.0001' ? 'selected' : '' }}>&le;0.0001</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label for="tipo_veiculo" class="form-label-modern">Tipo de veículo<span class="required-star">*</span></label>
                         <select name="tipo_veiculo" id="tipo_veiculo" class="form-control-modern">
-                            <option value="passageiros">Ligeiro passageiros</option>
-                            <option value="hibrido">Ligeiro Híbrido</option>
-                            <option value="hibrido_plug_in">Ligeiro Híbrido plug-in</option>
+                            <option value="passageiros" {{ old('tipo_veiculo', 'passageiros') == 'passageiros' ? 'selected' : '' }}>Ligeiro passageiros</option>
+                            <option value="hibrido" {{ old('tipo_veiculo') == 'hibrido' ? 'selected' : '' }}>Ligeiro Híbrido</option>
+                            <option value="hibrido_plug_in" {{ old('tipo_veiculo') == 'hibrido_plug_in' ? 'selected' : '' }}>Ligeiro Híbrido plug-in</option>
                         </select>
                     </div>
                     <div class="col-md-4" id="autonomia_container" style="display: none;">
                         <label for="autonomia" class="form-label-modern">Autonomia da bateria<span class="required-star">*</span></label>
                         <select name="autonomia" id="autonomia" class="form-control-modern">
-                            <option value="igual_superior">igual ou superior a 50 kms</option>
-                            <option value="inferior">inferior a 50 kms</option>
+                            <option value="igual_superior" {{ old('autonomia', 'igual_superior') == 'igual_superior' ? 'selected' : '' }}>igual ou superior a 50 kms</option>
+                            <option value="inferior" {{ old('autonomia') == 'inferior' ? 'selected' : '' }}>inferior a 50 kms</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label for="valor_carro" class="form-label-modern">Valor do carro (€)<span class="required-star">*</span></label>
-                        <input type="number" name="valor_carro" id="valor_carro" class="form-control-modern" placeholder="ex: 25000" required>
+                        <input type="number" name="valor_carro" id="valor_carro" class="form-control-modern" placeholder="ex: 25000" value="{{ old('valor_carro') }}" required>
                     </div>
                 </div>
 
@@ -155,15 +155,24 @@
                 <div class="row g-4">
                     <div class="col-md-4">
                         <label for="name" class="form-label-modern">Nome<span class="required-star">*</span></label>
-                        <input type="text" name="name" id="name" class="form-control-modern" placeholder="Seu nome completo" required>
+                        <input type="text" name="name" id="name" class="form-control-modern" placeholder="Seu nome completo" value="{{ old('name') }}" required>
+                        @error('name')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="col-md-4">
                         <label for="email" class="form-label-modern">Email<span class="required-star">*</span></label>
-                        <input type="email" name="email" id="email" class="form-control-modern" placeholder="seu@email.com" required>
+                        <input type="email" name="email" id="email" class="form-control-modern" placeholder="seu@email.com" value="{{ old('email') }}" required>
+                        @error('email')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="col-md-4">
                         <label for="phone" class="form-label-modern">Telefone<span class="required-star">*</span></label>
-                        <input type="text" name="phone" id="phone" class="form-control-modern" placeholder="+351 XXX XXX XXX" required>
+                        <input type="text" name="phone" id="phone" class="form-control-modern" placeholder="+351 XXX XXX XXX" value="{{ old('phone') }}" required>
+                        @error('phone')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
