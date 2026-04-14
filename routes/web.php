@@ -234,6 +234,21 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     });
 
     // ============================================================
+    // TAREFAS
+    // ============================================================
+    Route::prefix('tasks')->name('admin.tasks.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\TaskController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\TaskController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\TaskController::class, 'store'])->name('store');
+        Route::get('/{task}', [App\Http\Controllers\Admin\TaskController::class, 'show'])->name('show');
+        Route::get('/{task}/edit', [App\Http\Controllers\Admin\TaskController::class, 'edit'])->name('edit');
+        Route::put('/{task}', [App\Http\Controllers\Admin\TaskController::class, 'update'])->name('update');
+        Route::delete('/{task}', [App\Http\Controllers\Admin\TaskController::class, 'destroy'])->name('destroy');
+        Route::patch('/{task}/status', [App\Http\Controllers\Admin\TaskController::class, 'updateStatus'])->name('update-status');
+        Route::get('/json/tasks', [App\Http\Controllers\Admin\TaskController::class, 'getTasksJson'])->name('json');
+    });
+
+    // ============================================================
     // DESPESAS V2
     // ============================================================
     Route::prefix('v2/expenses')->name('admin.v2.expenses.')->group(function () {

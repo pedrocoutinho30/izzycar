@@ -741,6 +741,13 @@
             </div>
 
             <div class="nav-item">
+                <a href="{{ route('admin.tasks.index') }}" class="nav-link {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
+                    <i class="bi bi-check2-square"></i>
+                    <span>Tarefas</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
                 <a href="{{ route('admin.v2.newsletter-management.index') }}" class="nav-link {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
                     <i class="bi bi-newspaper"></i>
                     <span>Newsletter</span>

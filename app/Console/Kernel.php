@@ -22,7 +22,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        
+        // Gerar sitemap diariamente
         $schedule->command('sitemap:generate')->daily();
+        
+        // Enviar lembretes de tarefas todos os dias às 00:00
+        $schedule->command('tasks:send-reminders')->dailyAt('00:00');
     }
 
     /**
