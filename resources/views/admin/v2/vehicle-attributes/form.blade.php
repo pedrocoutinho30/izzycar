@@ -51,6 +51,18 @@ $existAction = isset($attribute) ? 'Editar' : 'Criar';
                     </div>
 
                     <div class="col-md-6">
+                        <label for="alemao" class="form-label">Alemão</label>
+                        <input type="text" name="alemao" id="alemao"
+                               class="form-control @error('alemao') is-invalid @enderror"
+                               value="{{ old('alemao', $attribute->alemao ?? '') }}"
+                               placeholder="Ex: Sitzheizung, Navigationssystem">
+                        @error('alemao')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">Termo principal em alemão para ajudar no match e nas importações.</small>
+                    </div>
+
+                    <div class="col-md-6">
                         <label for="key" class="form-label">Chave <span class="text-danger">*</span></label>
                         <input type="text" name="key" id="key" 
                                class="form-control @error('key') is-invalid @enderror" 

@@ -73,7 +73,7 @@
         @endphp
         @include('components.admin.item-card', [
             'title' => $attribute->name,
-            'subtitle' => 'Chave: ' . $attribute->key,
+            'subtitle' => 'Chave: ' . $attribute->key . ($attribute->alemao ? ' | Alemão: ' . $attribute->alemao : ''),
             'image' => null,
             'badges' => [
                 [

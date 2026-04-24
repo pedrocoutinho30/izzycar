@@ -764,6 +764,20 @@
                 </a>
             </div>
 
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.comparator.index') }}" class="nav-link {{ request()->routeIs('admin.v2.comparator.*') ? 'active' : '' }}">
+                    <i class="bi bi-columns-gap"></i>
+                    <span>Comparador de Veículos</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('car-analysis.index') }}" class="nav-link {{ request()->routeIs('car-analysis.*') ? 'active' : '' }}">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Análise de Carros</span>
+                </a>
+            </div>
+
             <!-- Parceiros -->
             <div class="nav-group-title">Rede</div>
 

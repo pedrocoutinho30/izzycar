@@ -26,6 +26,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ConvertedProposalController;
 use App\Http\Controllers\Frontend\ImportController;
 use App\Http\Controllers\Frontend\ImportSimulatorController;
+use App\Http\Controllers\CarAnalysisController;
 use App\Models\ConvertedProposal;
 use Sabberworm\CSS\Property\Import;
 use UniSharp\LaravelFilemanager\Lfm;
@@ -70,6 +71,10 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
     Route::get('/simulador-isv', [ImportSimulatorController::class, 'index'])->name('isv.simulator');
     Route::post('/simulador-isv', [ImportSimulatorController::class, 'calcular'])->name('isv.calcular');
+
+    // Análise de carros usados (JSON)
+    Route::get('/analise-carros', [CarAnalysisController::class, 'index'])->name('car-analysis.index');
+    Route::post('/analise-carros', [CarAnalysisController::class, 'upload'])->name('car-analysis.upload');
 
     // Calculadora de Lucro
     Route::get('/calculadora-lucro', function () {
@@ -122,6 +127,14 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     // ============================================================
     // PROPOSALS V2 (Sistema Novo - Moderno e Mobile-First)
     // ============================================================
+    // ============================================================
+    // COMPARADOR DE VEÍCULOS V2
+    // ============================================================
+    Route::prefix('v2/comparator')->name('admin.v2.comparator.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\CarComparatorController::class, 'index'])->name('index');
+        Route::post('/analyze', [App\Http\Controllers\Admin\CarComparatorController::class, 'analyze'])->name('analyze');
+    });
+
     // ============================================================
     // ADMIN DASHBOARD V2
     // ============================================================

@@ -9,6 +9,7 @@ class VehicleAttribute extends Model
 {
     protected $fillable = [
         'name',
+        'alemao',
         'key',
         'type',
         'options',

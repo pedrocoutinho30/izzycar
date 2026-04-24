@@ -17,6 +17,7 @@ class VehicleAttributeV2Controller extends Controller
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('alemao', 'like', '%' . $request->search . '%')
                   ->orWhere('key', 'like', '%' . $request->search . '%');
             });
         }
@@ -80,6 +81,7 @@ class VehicleAttributeV2Controller extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'alemao' => 'nullable|string|max:255',
             'key' => 'required|string|max:255|unique:vehicle_attributes,key',
             'type' => 'required|in:text,number,boolean,select',
             'options' => 'nullable|string',
@@ -112,6 +114,7 @@ class VehicleAttributeV2Controller extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'alemao' => 'nullable|string|max:255',
             'key' => 'required|string|max:255|unique:vehicle_attributes,key,' . $attribute->id,
             'type' => 'required|in:text,number,boolean,select',
             'options' => 'nullable|string',

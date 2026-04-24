@@ -464,6 +464,31 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
 
                 <div class="collapse show" id="extrasCollapse">
                     <div class="row g-3">
+                        <div class="col-12">
+                            <label for="proposed_car_features" class="form-label">Texto de Equipamento e Extras</label>
+                            <textarea
+                                name="proposed_car_features"
+                                id="proposed_car_features"
+                                class="form-control @error('proposed_car_features') is-invalid @enderror"
+                                rows="5"
+                                placeholder="Ex: Apple CarPlay, heated seats, camara traseira, sensores de estacionamento, teto de abrir...">{{ old('proposed_car_features', $proposal->proposed_car_features ?? '') }}</textarea>
+                            @error('proposed_car_features')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+
+                            <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
+                                <button type="button" class="btn btn-sm btn-secondary-modern" id="matchAttributesBtn">
+                                    <i class="bi bi-magic"></i>
+                                    Fazer match de atributos
+                                </button>
+                                <small class="text-muted">Compara por aproximação (PT/EN) e marca automaticamente os atributos encontrados.</small>
+                            </div>
+
+                            <div id="matchAttributesResult" class="alert alert-light mt-2 mb-0 py-2 px-3 small d-none"></div>
+                        </div>
+
+                        <div class="col-12"><hr class="my-1"></div>
+
                         @if(isset($attributes) && count($attributes) > 0)
                         @foreach($attributes as $groupName => $groupAttributes)
                         <!-- Grupo de Atributos -->
@@ -478,6 +503,12 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                         @php
                         $fieldName = 'attributes[' . $attr->id . ']';
                         $existingValue = old($fieldName, isset($attributeValues) && isset($attributeValues[$attr->id]) ? $attributeValues[$attr->id]->value : null);
+                        $matchTerms = collect([
+                            $attr->name,
+                            $attr->alemao ?? null,
+                            $attr->field_name_autoscout ?? null,
+                            $attr->field_name_mobile ?? null,
+                        ])->filter()->implode(' | ');
                         @endphp
 
                         <div class="col-md-4">
@@ -488,6 +519,7 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                                     class="form-check-input"
                                     type="checkbox"
                                     id="attr_{{ $attr->id }}"
+                                    data-match-terms="{{ $matchTerms }}"
                                     name="{{ $fieldName }}"
                                     value="1"
                                     {{ $existingValue ? 'checked' : '' }}>
@@ -502,6 +534,7 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                             <select
                                 name="{{ $fieldName }}"
                                 id="attr_{{ $attr->id }}"
+                                data-match-terms="{{ $matchTerms }}"
                                 class="form-select">
                                 <option value="">Selecione</option>
                                 @if(isset($attr->options) && is_array($attr->options))
@@ -520,6 +553,7 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                                 type="{{ $attr->type }}"
                                 name="{{ $fieldName }}"
                                 id="attr_{{ $attr->id }}"
+                                data-match-terms="{{ $matchTerms }}"
                                 class="form-control"
                                 value="{{ $existingValue }}"
                                 placeholder="{{ $attr->name }}">
@@ -757,6 +791,18 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
         font-size: 1.5rem;
     }
 
+    .match-result-success {
+        background: #eef9f1;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+    }
+
+    .match-result-warning {
+        background: #fff8e8;
+        color: #664d03;
+        border: 1px solid #ffecb5;
+    }
+
     /* Collapse button animation */
     [data-bs-toggle="collapse"] i {
         transition: transform 0.3s ease;
@@ -893,16 +939,198 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
         }
 
         /**
+         * MATCH AUTOMATICO DE ATRIBUTOS (PT/EN/DE - exato)
+         */
+        const featuresTextarea = document.getElementById('proposed_car_features');
+        const matchAttributesBtn = document.getElementById('matchAttributesBtn');
+        const matchAttributesResult = document.getElementById('matchAttributesResult');
+
+        function normalizeText(text) {
+            return (text || '')
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/ß/g, 'ss')
+                .replace(/[()\[\]{}]/g, ' ')
+                .replace(/[.,;:|/\\\n\r\t\-]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function canonicalizeText(text) {
+            let value = ` ${normalizeText(text)} `;
+
+            const phraseMap = [
+                [/\bar condicionado\b|\bair conditioning\b|\bac\b|\bklimaanlage\b|\bklimaautomatik\b/g, ' climatizacao '],
+                [/\bnavegacao\b|\bgps\b|\bnavigation\b|\bsat nav\b|\bnavigationssystem\b/g, ' navegacao '],
+                [/\bcamera traseira\b|\brear view camera\b|\brear camera\b|\bbackup camera\b|\bruckfahrkamera\b/g, ' camera traseira '],
+                [/\bsensores estacionamento\b|\bparking sensors\b|\bpark assist\b|\beinparkhilfe\b|\bparksensoren\b/g, ' sensores estacionamento '],
+                [/\bteto de abrir\b|\bsunroof\b|\bpanoramic roof\b|\bteto panoramico\b|\bschiebedach\b|\bpanoramadach\b/g, ' teto abrir '],
+                [/\bbancos aquecidos\b|\bheated seats\b|\bsitzheizung\b/g, ' bancos aquecidos '],
+                [/\bbancos em pele\b|\bleather seats\b|\bledersitze\b/g, ' bancos pele '],
+                [/\bcaixa automatica\b|\bautomatic transmission\b|\bautomatikgetriebe\b/g, ' caixa automatica '],
+                [/\bcaixa manual\b|\bmanual transmission\b|\bschaltgetriebe\b/g, ' caixa manual '],
+                [/\bcruise control\b|\bcontrolo de velocidade\b|\btempomat\b/g, ' cruise control '],
+                [/\bapple carplay\b|\bcarplay\b/g, ' apple carplay '],
+                [/\bandroid auto\b/g, ' android auto '],
+                [/\bkeyless\b|\bentrada sem chave\b|\barranque sem chave\b|\bschlussellos\b|\bkeyless go\b/g, ' keyless '],
+                [/\bfaros led\b|\bled headlights\b|\bled scheinwerfer\b/g, ' farois led '],
+                [/\bjantes de liga leve\b|\balloy wheels\b|\bleichtmetallfelgen\b|\balufelgen\b/g, ' jantes liga '],
+                [/\b4x4\b|\bawd\b|\ball wheel drive\b|\btracao integral\b|\ballradantrieb\b/g, ' tracao integral '],
+                [/\bblind spot assist\b|\bassistente angulo morto\b|\btotwinkelassistent\b/g, ' angulo morto '],
+                [/\blane assist\b|\bassistente de faixa\b|\bspurhalteassistent\b/g, ' assistente faixa '],
+            ];
+
+            phraseMap.forEach(([pattern, replacement]) => {
+                value = value.replace(pattern, replacement);
+            });
+
+            return value.replace(/\s+/g, ' ').trim();
+        }
+
+        function tokenize(text) {
+            const stopWords = new Set([
+                'de', 'da', 'do', 'das', 'dos', 'a', 'o', 'as', 'os', 'e', 'com', 'para', 'em',
+                'the', 'and', 'with', 'for', 'in',
+                'der', 'die', 'das', 'und', 'mit', 'fur', 'im', 'am', 'vom', 'von', 'ein', 'eine', 'einer', 'einem', 'den', 'dem', 'des'
+            ]);
+
+            return canonicalizeText(text)
+                .split(' ')
+                .map(token => token.trim())
+                .filter(token => token.length > 2 && !stopWords.has(token));
+        }
+
+        function levenshteinDistance(a, b) {
+            const s = canonicalizeText(a);
+            const t = canonicalizeText(b);
+
+            if (!s.length) return t.length;
+            if (!t.length) return s.length;
+
+            const matrix = Array.from({ length: s.length + 1 }, () => new Array(t.length + 1).fill(0));
+
+            for (let i = 0; i <= s.length; i++) matrix[i][0] = i;
+            for (let j = 0; j <= t.length; j++) matrix[0][j] = j;
+
+            for (let i = 1; i <= s.length; i++) {
+                for (let j = 1; j <= t.length; j++) {
+                    const cost = s[i - 1] === t[j - 1] ? 0 : 1;
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j - 1] + cost
+                    );
+                }
+            }
+
+            return matrix[s.length][t.length];
+        }
+
+        function similarity(a, b) {
+            const x = canonicalizeText(a);
+            const y = canonicalizeText(b);
+            const maxLen = Math.max(x.length, y.length);
+            if (!maxLen) return 0;
+            return 1 - (levenshteinDistance(x, y) / maxLen);
+        }
+
+        function tokenOverlapScore(aTokens, bTokens) {
+            if (!aTokens.length || !bTokens.length) return 0;
+            const bSet = new Set(bTokens);
+            const common = aTokens.filter(token => bSet.has(token)).length;
+            return common / Math.max(1, aTokens.length);
+        }
+
+        function shouldMatchAttribute(attributeTerms, rawText, textParts) {
+            const terms = (attributeTerms || '')
+                .split('|')
+                .map(term => normalizeText(term))
+                .filter(Boolean);
+
+            const normalizedParts = [normalizeText(rawText), ...textParts.map(part => normalizeText(part))]
+                .filter(Boolean);
+
+            for (const term of terms) {
+                const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+                const exactPattern = new RegExp(`(^|\\s)${escaped}(\\s|$)`);
+
+                for (const part of normalizedParts) {
+                    if (part === term || exactPattern.test(part)) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        function showMatchResult(type, message) {
+            if (!matchAttributesResult) return;
+            matchAttributesResult.classList.remove('d-none', 'match-result-success', 'match-result-warning', 'alert-light');
+            matchAttributesResult.classList.add(type === 'success' ? 'match-result-success' : 'match-result-warning');
+            matchAttributesResult.textContent = message;
+        }
+
+        if (matchAttributesBtn && featuresTextarea) {
+            matchAttributesBtn.addEventListener('click', function() {
+                const rawText = featuresTextarea.value || '';
+                const textParts = rawText
+                    .split(/\n|,|;|\u2022|\-|\|/)
+                    .map(part => part.trim())
+                    .filter(Boolean);
+
+                if (!rawText.trim()) {
+                    showMatchResult('warning', 'Escreva primeiro o texto de equipamento/extras para fazer o match.');
+                    return;
+                }
+
+                const collapseEl = document.getElementById('extrasCollapse');
+                if (collapseEl && typeof bootstrap !== 'undefined') {
+                    const collapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+                        toggle: false
+                    });
+                    collapse.show();
+                }
+
+                const checkboxInputs = document.querySelectorAll('input.form-check-input[type="checkbox"][id^="attr_"]');
+                let matched = 0;
+
+                checkboxInputs.forEach(input => {
+                    const label = document.querySelector(`label[for="${input.id}"]`);
+                    if (!label) return;
+
+                    const attributeTerms = input.dataset.matchTerms || label.textContent.trim();
+                    if (shouldMatchAttribute(attributeTerms, rawText, textParts)) {
+                        if (!input.checked) {
+                            input.checked = true;
+                            input.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                        matched++;
+                    }
+                });
+
+                if (matched > 0) {
+                    showMatchResult('success', `Foram encontrados e selecionados ${matched} atributo(s).`);
+                } else {
+                    showMatchResult('warning', 'Não foi encontrado nenhum atributo com correspondência suficiente. Tente adicionar mais detalhes ou termos alternativos.');
+                }
+            });
+        }
+
+        /**
          * PREVIEW DE IMAGENS
          * Mostra preview das imagens antes de upload
          */
-        const imageInput = document.getElementById('images');
+        const imageInput = document.getElementById('image');
 
-        imageInput.addEventListener('change', function(e) {
-            // TODO: Implementar preview de imagens selecionadas
-            const files = Array.from(e.target.files);
-            console.log(`${files.length} imagens selecionadas`);
-        });
+        if (imageInput) {
+            imageInput.addEventListener('change', function(e) {
+                // TODO: Implementar preview de imagens selecionadas
+                const files = Array.from(e.target.files);
+                console.log(`${files.length} imagens selecionadas`);
+            });
+        }
 
         /**
          * VALIDAÇÃO ANTES DE SUBMIT
