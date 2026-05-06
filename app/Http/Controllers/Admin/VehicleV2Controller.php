@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use App\Models\Supplier;
 use App\Models\VehicleImage;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Brand;
-use App\Models\VehicleAttribute;;
+use App\Models\VehicleAttribute;
 
 use App\Models\VehicleAttributeValue;
 use App\Models\AttributeGroup;
@@ -293,10 +294,8 @@ class VehicleV2Controller extends Controller
             foreach ($imagesToRemove as $imageId) {
                 $image = VehicleImage::find($imageId);
                 if ($image && $image->vehicle_id == $vehicle->id) {
-                    // Eliminar do storage
-                    if (Storage::disk('public')->exists($image->path)) {
-                        Storage::disk('public')->delete($image->path);
-                    }
+                    // Eliminar todas as variantes (thumb/medium/large × avif/webp)
+                    (new ImageOptimizerService())->deleteAllVariants($image->path);
                     $image->delete();
                 }
             }
@@ -334,11 +333,10 @@ class VehicleV2Controller extends Controller
                 ->with('error', 'Não é possível eliminar um veículo que já foi vendido!');
         }
 
-        // Eliminar imagens do storage
+        // Eliminar imagens do storage (todas as variantes)
+        $optimizer = new ImageOptimizerService();
         foreach ($vehicle->images as $image) {
-            if (Storage::exists($image->path)) {
-                Storage::delete($image->path);
-            }
+            $optimizer->deleteAllVariants($image->path);
             $image->delete();
         }
 
@@ -358,17 +356,18 @@ class VehicleV2Controller extends Controller
     private function handleImageUpload(Request $request, Vehicle $vehicle)
     {
         if ($request->hasFile('new_images')) {
+            $optimizer       = new ImageOptimizerService();
             $currentMaxOrder = $vehicle->images()->max('order') ?? 0;
 
             foreach ($request->file('new_images') as $index => $image) {
-                // Guardar imagem no storage
-                $path = $image->store('vehicles/' . $vehicle->id, 'public');
+                // Optimizar: gera AVIF + WebP para thumb/medium/large.
+                // Devolve o caminho canónico (large AVIF) para guardar no DB.
+                $path = $optimizer->optimize($image, 'vehicles/' . $vehicle->id);
 
-                // Criar registo na base de dados
                 VehicleImage::create([
                     'vehicle_id' => $vehicle->id,
-                    'path' => $path,
-                    'order' => $currentMaxOrder + $index + 1
+                    'path'       => $path,
+                    'order'      => $currentMaxOrder + $index + 1,
                 ]);
             }
         }

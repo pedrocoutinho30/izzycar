@@ -646,7 +646,15 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                 <div class="existing-image">
                     <label class="form-label">Imagem atual:</label>
                     <div class="image-preview">
-                        <img src="{{ asset('storage/' . $proposal->images) }}" alt="Imagem" style="max-width: 300px; border-radius: 8px;">
+                        @php
+                            $proposalImageRaw  = is_array($proposal->images) ? $proposal->images[0] : $proposal->images;
+                            $proposalImageBase = preg_replace('/_(thumb|medium|large)\.(avif|webp)$/', '', $proposalImageRaw);
+                        @endphp
+                        <picture>
+                            <source srcset="{{ asset('storage/' . $proposalImageBase . '_medium.avif') }}" type="image/avif">
+                            <source srcset="{{ asset('storage/' . $proposalImageBase . '_medium.webp') }}" type="image/webp">
+                            <img src="{{ asset('storage/' . $proposalImageBase . '_medium.webp') }}" alt="Imagem" style="max-width: 300px; border-radius: 8px;">
+                        </picture>
                     </div>
                 </div>
                 @endif

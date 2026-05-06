@@ -38,6 +38,7 @@ use App\Models\Brand;
 use App\Models\VehicleAttribute;
 use App\Models\ProposalAttributeValue;
 use App\Models\AttributeGroup;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -430,9 +431,10 @@ class ProposalV2Controller extends Controller
         // Obter proposta
         $proposal = Proposal::findOrFail($id);
 
-        // Eliminar imagem do storage (se existir)
-        if ($proposal->images && Storage::disk('public')->exists($proposal->images)) {
-            Storage::disk('public')->delete($proposal->images);
+        // Eliminar imagem do storage (todas as variantes)
+        if ($proposal->images) {
+            $existing = is_array($proposal->images) ? $proposal->images[0] : $proposal->images;
+            (new ImageOptimizerService())->deleteAllVariants($existing);
         }
 
         // Eliminar proposta (cascade irá remover attributeValues automaticamente)
@@ -460,28 +462,20 @@ class ProposalV2Controller extends Controller
      */
     private function handleImageUpload(Proposal $proposal, $image)
     {
-        // Eliminar imagem anterior se existir
-        if ($proposal->images && Storage::disk('public')->exists($proposal->images)) {
-            Storage::disk('public')->delete($proposal->images);
+        // Eliminar imagem anterior (todas as variantes) se existir
+        if ($proposal->images) {
+            $existing = is_array($proposal->images) ? $proposal->images[0] : $proposal->images;
+            (new ImageOptimizerService())->deleteAllVariants($existing);
         }
 
-        $extension = $image->getClientOriginalExtension();
-
-        // Nome personalizado: brand_model_version_yearmonth_id
-        $fileName = Str::slug($proposal->brand) . '_' .
-            Str::slug($proposal->model) . '_' .
-            ($proposal->version ? Str::slug($proposal->version) . '_' : '') .
-            ($proposal->proposed_car_year_month ?? 'NA') . '_' .
-            $proposal->id . '.' . $extension;
-
-        // Guardar na pasta correta
-        $path = $image->storeAs(
-            "proposals/{$proposal->client_id}/{$proposal->id}",
-            $fileName,
-            'public'
+        // Optimizar: gera AVIF + WebP para thumb/medium/large.
+        $optimizer = new ImageOptimizerService();
+        $path      = $optimizer->optimize(
+            $image,
+            "proposals/{$proposal->client_id}/{$proposal->id}"
         );
 
-        // Atualizar caminho da imagem no banco de dados
+        // Guardar caminho canónico (large AVIF) no banco de dados.
         $proposal->images = $path;
         $proposal->save();
     }

@@ -432,7 +432,14 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
                             @foreach($vehicle->images->sortBy('order') as $image)
                             <div class="col-md-3 image-item" data-image-id="{{ $image->id }}">
                                 <div class="position-relative">
-                                    <img src="{{ asset('storage/' . $image->path) }}" class="img-thumbnail w-100" alt="Imagem do veículo" style="cursor: move;">
+                                    @php
+                                        $baseImagePath = preg_replace('/_(thumb|medium|large)\.(avif|webp)$/', '', $image->path);
+                                    @endphp
+                                    <picture>
+                                        <source srcset="{{ asset('storage/' . $baseImagePath . '_medium.avif') }}" type="image/avif">
+                                        <source srcset="{{ asset('storage/' . $baseImagePath . '_medium.webp') }}" type="image/webp">
+                                        <img src="{{ asset('storage/' . $baseImagePath . '_medium.webp') }}" class="img-thumbnail w-100" alt="Imagem do veículo" style="cursor: move;">
+                                    </picture>
                                     <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 remove-image" data-image-id="{{ $image->id }}">
                                         <i class="bi bi-x"></i>
                                     </button>
