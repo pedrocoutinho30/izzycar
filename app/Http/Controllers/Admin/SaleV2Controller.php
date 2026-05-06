@@ -269,12 +269,13 @@ class SaleV2Controller extends Controller
             $net_margin = $sell_value_without_vat - $purchasePrice - $expenses_without_vat;
             
         } else if ($purchaseType == 'Geral') {
-            // Regime geral: compra COM IVA 19%, venda COM IVA 23%
-            // O purchase_price JÁ INCLUI IVA de 19%
-            $purchase_value_without_vat = $purchasePrice / 1.19;
-            $vat_on_purchase = $purchasePrice - $purchase_value_without_vat;
-            
-            $calculatedData = $this->calculateIvaGeral($sellPrice, $purchase_value_without_vat, $vat_on_purchase, $expenses);
+            // Regime geral: o utilizador inseriu o valor LÍQUIDO (sem IVA) no veículo.
+            // A taxa de IVA é configurável no veículo (purchase_vat_rate), default 23%
+            $vatRateGeral = ($vehicle->purchase_vat_rate ?? 23) / 100;
+            $purchase_value_without_vat = $purchasePrice;
+            $vat_on_purchase            = $purchasePrice * $vatRateGeral;
+
+            $calculatedData = $this->calculateIvaGeral($sellPrice, $purchase_value_without_vat, $vat_on_purchase, $expenses, $vatRateGeral);
             $gross_margin = $calculatedData['gross_margin'];
             $net_margin = $calculatedData['net_margin'];
             $vat_paid = $calculatedData['vat_paid'];
@@ -284,8 +285,10 @@ class SaleV2Controller extends Controller
         } else if ($purchaseType == 'Margem') {
             // Regime de IVA de margem (usado em veículos usados)
             // IVA só incide sobre a margem (venda - compra)
+            $vatRateMargem = ($vehicle->purchase_vat_rate ?? 23) / 100;
+            $vatDivisor = 1 + $vatRateMargem;
             $margin = $sellPrice - $purchasePrice;
-            $margin_without_vat = $margin / 1.23;
+            $margin_without_vat = $margin / $vatDivisor;
             $vat_on_margin = $margin - $margin_without_vat;
             
             // Calcular despesas sem IVA para margem líquida
@@ -314,6 +317,15 @@ class SaleV2Controller extends Controller
         $net_profitability = $sellPrice > 0 ? ($net_margin / $sellPrice) * 100 : 0;
         $gross_profitability = $sellPrice > 0 ? ($gross_margin / $sellPrice) * 100 : 0;
 
+        // Custo total do veículo (base de compra + despesas)
+        if ($purchaseType == 'Geral') {
+            // custo real inclui o IVA pago na compra (que depois é deduzido)
+            $vatRateForCost = ($vehicle->purchase_vat_rate ?? 23) / 100;
+            $totalCost = ($purchasePrice + $purchasePrice * $vatRateForCost) + $totalExpenses;
+        } else {
+            $totalCost = $purchasePrice + $totalExpenses;
+        }
+
         // Preparar dados para atualização
         $validatedData['gross_margin'] = $gross_margin;
         $validatedData['net_margin'] = $net_margin;
@@ -321,16 +333,18 @@ class SaleV2Controller extends Controller
         $validatedData['vat_deducible_purchase'] = $vat_deducible_purchase;
         $validatedData['vat_settle_sale'] = $vat_settle_sale;
         $validatedData['totalExpenses'] = $totalExpenses;
+        $validatedData['totalCost'] = $totalCost;
         $validatedData['net_profitability'] = $net_profitability;
         $validatedData['gross_profitability'] = $gross_profitability;
 
         $sale->update($validatedData);
     }
 
-    public function calculateIvaGeral($sellPrice, $purchaseValueWithoutVat, $vatOnPurchase, $expenses)
+    public function calculateIvaGeral($sellPrice, $purchaseValueWithoutVat, $vatOnPurchase, $expenses, $vatRate = 0.23)
     {
-        // Venda COM IVA 23%
-        $sell_value_without_vat = $sellPrice / 1.23;
+        // Venda COM IVA à taxa configurada (por defeito 23%)
+        $vatDivisor = 1 + $vatRate;
+        $sell_value_without_vat = $sellPrice / $vatDivisor;
         $vat_settle_sale = $sellPrice - $sell_value_without_vat;
         
         // IVA dedutível das despesas
@@ -374,9 +388,9 @@ class SaleV2Controller extends Controller
         }
         
         // Margens
-        // Margem bruta: tudo com IVA incluído
-        $gross_margin = $sellPrice - ($purchaseValueWithoutVat + $vatOnPurchase) - $totalExpenses;
-        // Margem líquida: tudo sem IVA
+        // Margem bruta: preço venda - (custo compra com IVA) - despesas brutas
+        $gross_margin = $sellPrice - ($purchaseValueWithoutVat * $vatDivisor) - $totalExpenses;
+        // Margem líquida (verdadeiro lucro): tudo sem IVA
         $net_margin = $sell_value_without_vat - $purchaseValueWithoutVat - $expenses_without_vat;
 
         return [

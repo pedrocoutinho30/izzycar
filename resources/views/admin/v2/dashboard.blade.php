@@ -30,6 +30,75 @@
 <!-- Stats Cards -->
 @include('components.admin.stats-cards', ['stats' => $stats])
 
+<!-- Tarefas da Semana -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="modern-card">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title">
+                    <i class="bi bi-check2-square"></i>
+                    Tarefas da Semana
+                </h5>
+                <a href="{{ route('admin.tasks.index') }}" class="btn btn-sm btn-secondary-modern">
+                    Ver Todas
+                </a>
+            </div>
+
+            @if($weekTasks->count() > 0)
+            <div class="modern-card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tarefa</th>
+                                <th>Estado</th>
+                                <th>Prazo</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($weekTasks as $task)
+                            @php
+                                $atrasada = $task->due_date && $task->due_date->isPast() && !$task->due_date->isToday();
+                                $hoje     = $task->due_date && $task->due_date->isToday();
+                            @endphp
+                            <tr class="{{ $atrasada ? 'table-danger' : ($hoje ? 'table-warning' : '') }}">
+                                <td>
+                                    <span class="fw-semibold">{{ $task->title }}</span>
+                                    @if($atrasada)
+                                        <span class="badge bg-danger ms-1">Atrasada</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($task->status === 'pendente')
+                                        <span class="badge bg-warning text-dark">Pendente</span>
+                                    @elseif($task->status === 'em_progresso')
+                                        <span class="badge bg-info text-dark">Em progresso</span>
+                                    @else
+                                        <span class="badge bg-secondary">{{ $task->status }}</span>
+                                    @endif
+                                </td>
+                                <td class="{{ $atrasada ? 'text-danger fw-semibold' : ($hoje ? 'text-warning fw-semibold' : '') }}">
+                                    {{ $task->due_date ? $task->due_date->format('d/m/Y') : '—' }}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ route('admin.tasks.show', $task) }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @else
+                <p class="text-muted text-center py-4"><i class="bi bi-check-circle me-1"></i>Sem tarefas pendentes para esta semana</p>
+            @endif
+        </div>
+    </div>
+</div>
+
 <!-- Alertas Importantes -->
 @if(count($alerts) > 0)
 <div class="row g-4 mb-4">
@@ -454,6 +523,23 @@
         background: #f8f9fa;
         border-radius: 8px;
     }
+
+    /* Card collapse toggle */
+    .card-toggle-btn {
+        background: none;
+        border: none;
+        color: #aaa;
+        padding: 0 0 0 8px;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+    .card-toggle-btn:hover { color: #555; }
+    .card-toggle-btn i {
+        display: block;
+        transition: transform 0.25s ease;
+        font-size: 0.9rem;
+    }
+    .modern-card-header { align-items: center; }
 </style>
 @endpush
 
@@ -725,5 +811,60 @@ function updateChartType() {
     currentChartType = document.getElementById('chartType').value;
     loadCharts();
 }
+</script>
+
+<script>
+// ── Accordion-style collapse for each dashboard card ──────────────
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.modern-card').forEach(function (card, idx) {
+        var header = card.querySelector('.modern-card-header');
+        if (!header) return;
+
+        var id = 'dash-card-' + idx;
+
+        // Wrap all nodes after the header in a collapse div
+        var wrapper = document.createElement('div');
+        wrapper.id = id;
+        wrapper.className = 'collapse show';
+        Array.from(card.childNodes).forEach(function (child) {
+            if (child !== header) wrapper.appendChild(child);
+        });
+        card.appendChild(wrapper);
+
+        // Restore persisted state BEFORE Bootstrap init
+        if (localStorage.getItem(id) === '0') {
+            wrapper.classList.remove('show');
+        }
+
+        // Init Bootstrap Collapse
+        var bsCollapse = new bootstrap.Collapse(wrapper, { toggle: false });
+
+        // Add chevron button to header
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'card-toggle-btn';
+        btn.title = 'Minimizar / Expandir';
+        btn.innerHTML = '<i class="bi bi-chevron-up"></i>';
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            bsCollapse.toggle();
+        });
+        header.appendChild(btn);
+
+        // Rotate chevron
+        var icon = btn.querySelector('i');
+        if (!wrapper.classList.contains('show')) {
+            icon.style.transform = 'rotate(180deg)';
+        }
+        wrapper.addEventListener('hide.bs.collapse', function () {
+            icon.style.transform = 'rotate(180deg)';
+            localStorage.setItem(id, '0');
+        });
+        wrapper.addEventListener('show.bs.collapse', function () {
+            icon.style.transform = 'rotate(0deg)';
+            localStorage.setItem(id, '1');
+        });
+    });
+});
 </script>
 @endpush

@@ -28,6 +28,7 @@ use App\Models\Client;
 use App\Models\Vehicle;
 use App\Models\Sale;
 use App\Models\Expense;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -174,13 +175,22 @@ class DashboardV2Controller extends Controller
             ];
         }
 
+        // ============================================================
+        // TAREFAS DA SEMANA
+        // ============================================================
+        $weekTasks = Task::whereNotIn('status', ['concluida', 'cancelada'])
+            ->where('due_date', '<=', now()->endOfWeek())
+            ->orderBy('due_date')
+            ->get();
+
         return view('admin.v2.dashboard', compact(
             'stats',
             'recentProposals',
             'recentFormProposals',
             'recentSales',
             'proposalsChart',
-            'alerts'
+            'alerts',
+            'weekTasks'
         ));
     }
 

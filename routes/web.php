@@ -75,11 +75,42 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     // Análise de carros usados (JSON)
     Route::get('/analise-carros', [CarAnalysisController::class, 'index'])->name('car-analysis.index');
     Route::post('/analise-carros', [CarAnalysisController::class, 'upload'])->name('car-analysis.upload');
+    Route::post('/analise-carros/recalcular', [CarAnalysisController::class, 'recalculate'])->name('car-analysis.recalculate');
 
     // Calculadora de Lucro
     Route::get('/calculadora-lucro', function () {
         return view('admin.v2.calculator.profit');
     })->name('calculator.profit');
+
+    // ============================================================
+    // LEGALIZAÇÕES
+    // ============================================================
+    Route::prefix('legalizacoes')->name('admin.legalizations.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\LegalizationController::class, 'index'])->name('index');
+        Route::get('/criar', [App\Http\Controllers\Admin\LegalizationController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\LegalizationController::class, 'store'])->name('store');
+        Route::get('/{legalization}', [App\Http\Controllers\Admin\LegalizationController::class, 'show'])->name('show');
+        Route::get('/{legalization}/editar', [App\Http\Controllers\Admin\LegalizationController::class, 'edit'])->name('edit');
+        Route::put('/{legalization}', [App\Http\Controllers\Admin\LegalizationController::class, 'update'])->name('update');
+        Route::delete('/{legalization}', [App\Http\Controllers\Admin\LegalizationController::class, 'destroy'])->name('destroy');
+        Route::post('/{legalization}/passo', [App\Http\Controllers\Admin\LegalizationController::class, 'toggleStep'])->name('toggle-step');
+        Route::post('/{legalization}/documentos', [App\Http\Controllers\Admin\LegalizationController::class, 'uploadDocument'])->name('upload-document');
+        Route::get('/{legalization}/documentos/{document}/download', [App\Http\Controllers\Admin\LegalizationController::class, 'downloadDocument'])->name('download-document');
+        Route::delete('/{legalization}/documentos/{document}', [App\Http\Controllers\Admin\LegalizationController::class, 'deleteDocument'])->name('delete-document');
+    });
+
+    // ============================================================
+    // TESTEMUNHOS
+    // ============================================================
+    Route::prefix('testemunhos')->name('admin.testimonials.')->group(function () {
+        Route::get('/',                 [App\Http\Controllers\Admin\TestimonialController::class, 'index'])->name('index');
+        Route::get('/criar',            [App\Http\Controllers\Admin\TestimonialController::class, 'create'])->name('create');
+        Route::post('/',                [App\Http\Controllers\Admin\TestimonialController::class, 'store'])->name('store');
+        Route::get('/{testimonial}/editar', [App\Http\Controllers\Admin\TestimonialController::class, 'edit'])->name('edit');
+        Route::put('/{testimonial}',    [App\Http\Controllers\Admin\TestimonialController::class, 'update'])->name('update');
+        Route::delete('/{testimonial}', [App\Http\Controllers\Admin\TestimonialController::class, 'destroy'])->name('destroy');
+        Route::post('/{testimonial}/toggle', [App\Http\Controllers\Admin\TestimonialController::class, 'togglePublished'])->name('toggle');
+    });
 
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);

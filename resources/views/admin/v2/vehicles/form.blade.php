@@ -216,9 +216,15 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
 
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label">Preço de Compra (€)</label>
-                        <input type="number" name="purchase_price" class="form-control @error('purchase_price') is-invalid @enderror"
+                        <label class="form-label">Preço de Compra (€)
+                            <i class="bi bi-info-circle text-muted ms-1" id="purchase-price-icon" style="cursor:pointer" data-bs-toggle="tooltip" title=""></i>
+                        </label>
+                        <input type="number" name="purchase_price" id="purchase_price" class="form-control @error('purchase_price') is-invalid @enderror"
                             value="{{ old('purchase_price', $vehicle->purchase_price ?? '') }}" step="0.01" min="0">
+                        <div id="purchase-price-hint" class="form-text mt-1"></div>
+                        <div id="purchase-price-geral-calc" class="mt-1 small text-muted d-none">
+                            Total com IVA (23%): <strong id="purchase-price-gross">—</strong>
+                        </div>
                         @error('purchase_price')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -268,6 +274,21 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
                         @error('purchase_type')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    {{-- Taxa de IVA do Regime Geral (só visível quando Tipo = Geral) --}}
+                    <div class="col-md-6" id="purchase_vat_rate_group" style="display:none;">
+                        <label class="form-label">Taxa de IVA (Regime Geral) <span class="text-danger">*</span></label>
+                        <select class="form-control rounded shadow-sm @error('purchase_vat_rate') is-invalid @enderror" id="purchase_vat_rate" name="purchase_vat_rate">
+                            <option value="">Selecione</option>
+                            @foreach([6, 13, 19, 20, 23] as $rate)
+                                <option value="{{ $rate }}" {{ old('purchase_vat_rate', $vehicle->purchase_vat_rate ?? '') == $rate ? 'selected' : '' }}>{{ $rate }}%</option>
+                            @endforeach
+                        </select>
+                        @error('purchase_vat_rate')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text text-muted">Taxa de IVA dedutível na compra (o preço inserido é líquido, sem IVA).</div>
                     </div>
 
                     <div class="col-md-6">
@@ -692,6 +713,76 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
         brandSelect.dispatchEvent(new Event('change'));
         modelSelect.value = '{{ $vehicle->model }}';
         @endif
+
+        /**
+         * TIPO DE COMPRA → HINT DO PREÇO DE COMPRA
+         */
+        const purchaseTypeSelect = document.getElementById('purchase_type');
+        const purchasePriceInput = document.getElementById('purchase_price');
+        const hintDiv            = document.getElementById('purchase-price-hint');
+        const geralCalcDiv       = document.getElementById('purchase-price-geral-calc');
+        const geralGrossSpan     = document.getElementById('purchase-price-gross');
+        const vatRateGroup       = document.getElementById('purchase_vat_rate_group');
+        const vatRateSelect      = document.getElementById('purchase_vat_rate');
+
+        const hints = {
+            'Geral': {
+                html: null, // built dynamically based on selected rate
+                geral: true,
+            },
+            'Margem': {
+                html: '<span class="text-secondary"><i class="bi bi-info-circle me-1"></i>Insira o valor <u>bruto</u> total pago pelo veículo (IVA de margem — não deduz IVA da compra).</span>',
+                geral: false,
+            },
+            'Sem Iva': {
+                html: '<span class="text-secondary"><i class="bi bi-info-circle me-1"></i>Insira o valor <u>bruto</u> total pago (compra isenta de IVA — não há IVA a deduzir).</span>',
+                geral: false,
+            },
+        };
+
+        function getGeralHint() {
+            const rate = vatRateSelect ? vatRateSelect.value : '';
+            const rateLabel = rate ? rate + '%' : '?%';
+            return '<span class="text-primary fw-semibold"><i class="bi bi-info-circle me-1"></i>Insira o valor <u>líquido</u> (sem IVA). O sistema irá calcular o IVA de ' + rateLabel + ' automaticamente.</span>';
+        }
+
+        function updatePurchaseHint() {
+            const type = purchaseTypeSelect.value;
+            const isGeral = type === 'Geral';
+            vatRateGroup.style.display = isGeral ? '' : 'none';
+            if (!isGeral) vatRateSelect.value = '';
+            const cfg = hints[type];
+            if (cfg) {
+                hintDiv.innerHTML = isGeral ? getGeralHint() : cfg.html;
+                geralCalcDiv.classList.toggle('d-none', !cfg.geral);
+                if (cfg.geral) updateGeralCalc();
+            } else {
+                hintDiv.innerHTML = '';
+                geralCalcDiv.classList.add('d-none');
+            }
+        }
+
+        function updateGeralCalc() {
+            const net = parseFloat(purchasePriceInput.value);
+            const rate = parseFloat(vatRateSelect.value) || 23;
+            if (!isNaN(net) && net > 0) {
+                const gross = net * (1 + rate / 100);
+                geralGrossSpan.textContent = gross.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+            } else {
+                geralGrossSpan.textContent = '—';
+            }
+        }
+
+        purchaseTypeSelect.addEventListener('change', updatePurchaseHint);
+        vatRateSelect.addEventListener('change', function () {
+            if (purchaseTypeSelect.value === 'Geral') updatePurchaseHint();
+        });
+        purchasePriceInput.addEventListener('input', function () {
+            if (purchaseTypeSelect.value === 'Geral') updateGeralCalc();
+        });
+
+        // Inicializar na edição
+        updatePurchaseHint();
 
         /**
          * GESTÃO DE IMAGENS

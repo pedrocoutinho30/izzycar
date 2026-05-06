@@ -12,16 +12,16 @@ class CarAnalysisController extends Controller
      * Usado no ajuste diferencial do PJM.
      */
     private const FEATURE_BONUSES = [
-        'Keyless-go'                            => 400,
-        'Jantes de liga leve'                   => 300,
-        'Reconhecimento dos sinais de trânsito' => 300,
-        'Apple CarPlay'                         => 400,
-        'Android Auto'                          => 350,
-        'Sensor de estacionamento dianteiro'    => 200,
-        'Sensor de estacionamento traseiro'     => 200,
-        'Câmara de marcha atrás'                => 400,
-        'Teto de abrir'                         => 700,
-        'Assistente de ângulo morto'            => 400,
+        'Keyless-go'                            => 200,
+        'Jantes de liga leve'                   => 200,
+        'Reconhecimento dos sinais de trânsito' => 200,
+        'Apple CarPlay'                         => 300,
+        'Android Auto'                          => 300,
+        'Sensor de estacionamento dianteiro'    => 400,
+        'Sensor de estacionamento traseiro'     => 400,
+        'Câmara de marcha atrás'                => 600,
+        'Teto de abrir'                         => 900,
+        'Assistente de ângulo morto'            => 300,
     ];
 
     public function __construct()
@@ -63,6 +63,30 @@ class CarAnalysisController extends Controller
         return view('car-analysis', compact('carros', 'metricas'));
     }
 
+    /**
+     * Recalcula com um subconjunto de carros (enviado como JSON pelo cliente).
+     * Usado ao remover linhas da tabela e clicar "Recalcular".
+     */
+    public function recalculate(Request $request)
+    {
+        $request->validate([
+            'cars_json' => ['required', 'string'],
+        ]);
+
+        $raw = json_decode($request->input('cars_json'), true);
+
+        if (!is_array($raw) || empty($raw)) {
+            return back()->withErrors(['cars_json' => 'Dados inválidos.']);
+        }
+
+        // A collection já vem normalizada; apenas re-avaliamos.
+        $carros   = collect($raw)->values();
+        $carros   = $this->avaliar($carros);
+        $metricas = $this->metricas($carros);
+
+        return view('car-analysis', compact('carros', 'metricas'));
+    }
+
     // -------------------------------------------------------------------------
     // 1. Normalização
     // -------------------------------------------------------------------------
@@ -82,6 +106,7 @@ class CarAnalysisController extends Controller
                 'preco'        => $this->parsePrice($item['preco'] ?? ''),
                 'localizacao'  => trim($item['localizacao'] ?? ''),
                 'link'         => trim($item['link']        ?? ''),
+                'potencia'     => trim($item['potencia']    ?? ''),
                 'features'     => is_array($item['features'] ?? null) ? $item['features'] : [],
             ];
         })->filter(fn(array $c): bool => $c['preco'] > 0 && $c['ano'] > 0)->values();

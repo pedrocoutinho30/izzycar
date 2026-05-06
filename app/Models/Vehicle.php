@@ -24,6 +24,7 @@ class Vehicle extends Model
         'supplier_id',
         'color',
         'purchase_type',
+        'purchase_vat_rate',
         'purchase_date',
         'business_type',
         'kilometers',

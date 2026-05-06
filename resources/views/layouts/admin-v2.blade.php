@@ -707,6 +707,20 @@
                     <span>Transportes</span>
                 </a>
             </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.legalizations.index') }}" class="nav-link {{ request()->routeIs('admin.legalizations.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-check"></i>
+                    <span>Legalizações</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.testimonials.index') }}" class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
+                    <i class="bi bi-chat-quote"></i>
+                    <span>Testemunhos</span>
+                </a>
+            </div>
             
 
 

@@ -129,155 +129,126 @@ $existAction = isset($sale) ? 'Editar' : 'Criar';
             </div>
 
             <!-- Margens e Rentabilidade (só mostra na edição) -->
-            @if(isset($sale) )
+            @if(isset($sale))
+            @php
+                $purchaseType  = $sale->vehicle->purchase_type ?? "—";
+                $purchasePrice = $sale->vehicle->purchase_price ?? 0;
+                $salePrice     = $sale->sale_price ?? 0;
+                $totalExp      = $sale->totalExpenses ?? 0;
+                $netMargin     = $sale->net_margin ?? 0;
+                $grossMargin   = $sale->gross_margin ?? 0;
+                $vatPaid       = $sale->vat_paid ?? 0;
+                $vatSettle     = $sale->vat_settle_sale ?? 0;
+                $vatDeducible  = $sale->vat_deducible_purchase ?? 0;
+                $isProfit      = $netMargin >= 0;
+                $typeLabel = match($purchaseType) {
+                    "Geral"   => "Regime Geral — preço de compra sem IVA",
+                    "Margem"  => "Regime de Margem — IVA só sobre a margem",
+                    "Sem Iva" => "Sem IVA — compra isenta, venda c/ IVA 23%",
+                    default   => $purchaseType,
+                };
+            @endphp
             <div class="modern-card">
                 <div class="modern-card-header">
                     <h5 class="modern-card-title">
-                        <i class="bi bi-car-front"></i>
-                        Margens e Rentabilidade
+                        <i class="bi bi-graph-up-arrow"></i>
+                        Lucro / Prejuízo Real
                     </h5>
+                    <span class="badge bg-secondary small">{{ $typeLabel }}</span>
                 </div>
-
                 <div class="modern-card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="border rounded p-3 text-center">
+                                <div class="text-muted small mb-1">Preço de Compra</div>
+                                <div class="fw-bold fs-5">{{ number_format($purchasePrice, 2, ",", ".") }} €</div>
+                                @if($purchaseType === "Geral")
+                                    <div class="text-muted" style="font-size:.75rem">líquido → bruto: {{ number_format($purchasePrice * 1.23, 2, ",", ".") }} €</div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="border rounded p-3 text-center">
+                                <div class="text-muted small mb-1">Total Despesas</div>
+                                <div class="fw-bold fs-5">{{ number_format($totalExp, 2, ",", ".") }} €</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="border rounded p-3 text-center">
+                                <div class="text-muted small mb-1">Preço de Venda</div>
+                                <div class="fw-bold fs-5">{{ number_format($salePrice, 2, ",", ".") }} €</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="border rounded p-3 text-center {{ $isProfit ? 'border-success bg-success bg-opacity-10' : 'border-danger bg-danger bg-opacity-10' }}">
+                                <div class="small mb-1 {{ $isProfit ? 'text-success' : 'text-danger' }}">
+                                    <i class="bi bi-{{ $isProfit ? 'arrow-up-circle-fill' : 'arrow-down-circle-fill' }} me-1"></i>
+                                    Lucro Líquido Real
+                                </div>
+                                <div class="fw-bold fs-4 {{ $isProfit ? 'text-success' : 'text-danger' }}">
+                                    {{ $isProfit ? '+' : '' }}{{ number_format($netMargin, 2, ',', '.') }} €
+                                </div>
+                                <div class="small {{ $isProfit ? 'text-success' : 'text-danger' }}">
+                                    {{ number_format($sale->net_profitability ?? 0, 1, ',', '.') }}% da venda
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="table-responsive">
-                        <table class="table table-bordered mb-0">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th colspan="2" class="text-center text-muted small text-uppercase">IVA</th>
+                                    <th colspan="2" class="text-center text-muted small text-uppercase">Margens</th>
+                                    <th colspan="2" class="text-center text-muted small text-uppercase">Rentabilidade</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 <tr>
-                                    <th>Margem Bruta (€)</th>
-                                    <td>{{ number_format($sale->gross_margin ?? 0, 2) }}</td>
-                                    <th>Margem Líquida (€)</th>
-                                    <td>{{ number_format($sale->net_margin ?? 0, 2) }}</td>
+                                    <th>IVA Liquidado (venda)</th>
+                                    <td>{{ number_format($vatSettle, 2, ",", ".") }} €</td>
+                                    <th>Margem Bruta</th>
+                                    <td class="{{ $grossMargin >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($grossMargin, 2, ",", ".") }} €</td>
+                                    <th>Rentab. Bruta</th>
+                                    <td>{{ number_format($sale->gross_profitability ?? 0, 2, ",", ".") }} %</td>
                                 </tr>
                                 <tr>
-                                    <th>Taxa IVA (%)</th>
-                                    <td>{{ $sale->vat_rate_margem ?? '-' }}</td>
-                                    <th>IVA Pago (€)</th>
-                                    <td>{{ number_format($sale->vat_paid ?? 0, 2) }}</td>
+                                    <th>IVA Dedutível (compra)</th>
+                                    <td>{{ number_format($vatDeducible, 2, ",", ".") }} €</td>
+                                    <th>Margem Líquida</th>
+                                    <td class="{{ $netMargin >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($netMargin, 2, ",", ".") }} €</td>
+                                    <th>Rentab. Líquida</th>
+                                    <td>{{ number_format($sale->net_profitability ?? 0, 2, ",", ".") }} %</td>
                                 </tr>
                                 <tr>
-                                    <th>IVA Dedutível Compra (€)</th>
-                                    <td>{{ number_format($sale->vat_deducible_purchase ?? 0, 2) }}</td>
-                                    <th>IVA Liquidação Venda (€)</th>
-                                    <td>{{ number_format($sale->vat_settle_sale ?? 0, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Custo Total (€)</th>
-                                    <td>{{ number_format($sale->totalCost ?? 0, 2) }}</td>
-                                    <th>Total Despesas (€)</th>
-                                    <td>{{ number_format($sale->totalExpenses ?? 0, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Rentabilidade Bruta (%)</th>
-                                    <td>{{ number_format($sale->gross_profitability ?? 0, 2) }}</td>
-                                    <th>Rentabilidade Líquida (%)</th>
-                                    <td>{{ number_format($sale->net_profitability ?? 0, 2) }}</td>
-
+                                    <th>IVA a Pagar ao Estado</th>
+                                    <td class="fw-semibold text-danger">{{ number_format($vatPaid, 2, ",", ".") }} €</td>
+                                    <th>Custo Total</th>
+                                    <td>{{ number_format($sale->totalCost ?? 0, 2, ",", ".") }} €</td>
+                                    <td colspan="2"></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-             @endif
-        </div>
-        <!-- Coluna Secundária (Direita) -->
-        <div class="col-lg-4">
-            <!-- BOTÕES DE AÇÃO -->
-            {{-- SECÇÃO: Ações --}}
-            @include('components.admin.action-card', [
-            'cancelButtonHref' => route('admin.v2.sales.index'),
-            'submitButtonLabel' => isset($sale) ? 'Atualizar Venda' : 'Registar Venda',
-            'timestamps' => isset($sale) ? [
-            'created_at' => $sale->created_at,
-            'updated_at' => $sale->updated_at
-            ] : null
-            ])
-            <div class="modern-card">
-                <div class="modern-card-header">
-                    <h5 class="modern-card-title">
-                        <i class="bi bi-car-front"></i>
-                        Retoma
-                    </h5>
-                </div>
-                <div class="modern-card-body">
-                    <div class="col-md-12">
-
-                        <label class="form-label">Tem retoma?</label>
-                        <select name="has_trade_in" id="has_trade_in" class="form-select @error('has_trade_in') is-invalid @enderror">
-                            <option value="0" {{ old('has_trade_in', $sale->has_trade_in ?? 0) == 0 ? 'selected' : '' }}>Não</option>
-                            <option value="1" {{ old('has_trade_in', $sale->has_trade_in ?? 0) == 1 ? 'selected' : '' }}>Sim</option>
-                        </select>
+                    @if($purchaseType === "Margem")
+                    <div class="alert alert-info mt-3 mb-0 py-2 small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Regime Margem:</strong> O IVA incide apenas sobre a margem (venda − compra). O preço de compra é bruto, sem recuperação de IVA.
                     </div>
-
-                    <div id="trade_in_vehicle_container" style="display: {{ old('has_trade_in', $sale->has_trade_in ?? 0) == 1 ? 'block' : 'none' }}; margin-top: 1rem;">
-                        <div class="col-md-12">
-                            <label class="form-label">Selecione o veículo de retoma</label>
-                            <select name="trade_in_vehicle_id" class="form-select @error('trade_in_vehicle_id') is-invalid @enderror">
-                                <option value="">Selecione o veículo...</option>
-                                @foreach($vehicles as $vehicle)
-                                <option value="{{ $vehicle->id }}" {{ old('trade_in_vehicle_id', $sale->trade_in_vehicle_id ?? '') == $vehicle->id ? 'selected' : '' }}>
-                                    {{ $vehicle->reference }} - {{ $vehicle->brand }} {{ $vehicle->model }} ({{ $vehicle->year }})
-                                </option>
-                                @endforeach
-                            </select>
-                            @error('trade_in_vehicle_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label">Valor da retoma</label>
-                            <input type="text" name="trade_in_value" class="form-control @error('trade_in_value') is-invalid @enderror" value="{{ old('trade_in_value', $sale->trade_in_value ?? '') }}">
-                            @error('trade_in_value')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    @elseif($purchaseType === "Geral")
+                    <div class="alert alert-info mt-3 mb-0 py-2 small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Regime Geral:</strong> O IVA da compra ({{ number_format($vatDeducible, 2, ",", ".") }} €) é dedutível. O lucro líquido representa o ganho real após recuperação/pagamento de IVA.
                     </div>
-
-                    @push('scripts')
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const hasTradeIn = document.getElementById('has_trade_in');
-                            const tradeInContainer = document.getElementById('trade_in_vehicle_container');
-                            hasTradeIn.addEventListener('change', function() {
-                                if (this.value == '1') {
-                                    tradeInContainer.style.display = 'block';
-                                } else {
-                                    tradeInContainer.style.display = 'none';
-                                }
-                            });
-                        });
-                    </script>
-                    @endpush
-                    @error('has_trade_in')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-            </div>
-            <div class="modern-card">
-                <div class="modern-card-header">
-                    <h5 class="modern-card-title">
-                        <i class="bi bi-car-front"></i>
-                        Despesas Associadas
-                    </h5>
-                </div>
-                <div class="modern-card-body">
-                    @if(isset($expenses) && $expenses->count() > 0)
-                    <ul class="list-group">
-                        @foreach($expenses as $expense)
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ $expense->title }}
-                            <span>€{{ number_format($expense->amount, 2) }}</span>
-                        </li>
-                        @endforeach
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>Total Despesas</strong>
-                            <span>€{{ number_format($expenses->sum('amount'), 2) }}</span>
-                        </li>
-                    </ul>
-                    @else
-                    <p class="text-muted">Sem despesas registradas para este veículo.</p>
+                    @elseif($purchaseType === "Sem Iva")
+                    <div class="alert alert-info mt-3 mb-0 py-2 small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Sem IVA:</strong> A compra não teve IVA — todo o IVA cobrado na venda ({{ number_format($vatSettle, 2, ",", ".") }} €) é entregue ao Estado.
+                    </div>
                     @endif
+                </div>
+            </div>
+            @endif
                 </div>
             </div>
         </div>

@@ -104,9 +104,14 @@
                 <i class="bi bi-table"></i> Resultados
                 <span class="badge bg-secondary ms-2">{{ $carros->count() }}</span>
             </h5>
-            <div style="min-width: 220px;">
-                <input type="text" id="tableSearch" class="form-control form-control-sm"
-                       placeholder="&#xF52A; Pesquisar...">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button" id="btnRecalcular" class="btn btn-sm btn-outline-primary" disabled>
+                    <i class="bi bi-arrow-clockwise me-1"></i> Recalcular sem desmarcados
+                </button>
+                <div style="min-width: 220px;">
+                    <input type="text" id="tableSearch" class="form-control form-control-sm"
+                           placeholder="&#xF52A; Pesquisar...">
+                </div>
             </div>
         </div>
         <div class="modern-card-body p-0">
@@ -114,11 +119,15 @@
                 <table class="table table-sm table-hover align-middle mb-0" id="analysisTable">
                     <thead class="table-light">
                         <tr>
+                            <th class="text-center" style="width:2rem">
+                                <input type="checkbox" id="checkAll" class="form-check-input" checked title="Seleccionar todos">
+                            </th>
                             <th>Marca / Modelo</th>
                             <th>Submodelo</th>
                             <th class="text-center">Ano</th>
                             <th class="text-end">Kms</th>
                             <th class="text-end">Preço</th>
+                            <th class="text-end">CV</th>
                             <th class="text-end" title="Preço Justo de Mercado">PJM</th>
                             <th class="text-center"># comp.</th>
                             <th class="text-center">Score</th>
@@ -168,7 +177,10 @@
 
                             $signedScore = ($score >= 0 ? '+' : '') . number_format($score * 100, 1) . '%';
                         @endphp
-                        <tr class="{{ $rowClass }}">
+                        <tr class="{{ $rowClass }}" data-idx="{{ $loop->index }}">
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input car-check" checked>
+                            </td>
                             <td class="fw-semibold">
                                 @if(!empty($carro['link'] ?? ''))
                                     <a href="{{ $carro['link'] }}" target="_blank" rel="noopener">
@@ -183,6 +195,7 @@
                             <td class="text-center">{{ $carro['ano'] }}</td>
                             <td class="text-end text-nowrap">{{ number_format($carro['kms'], 0, ',', ' ') }} km</td>
                             <td class="text-end text-nowrap fw-semibold">{{ number_format($carro['preco'], 0, ',', ' ') }} €</td>
+                            <td class="text-end text-nowrap text-muted">{{ $carro['potencia'] ?? '—' }}</td> 
                             <td class="text-end text-nowrap text-muted">{{ number_format($carro['pjm'], 0, ',', ' ') }} €</td>
                             <td class="text-center">
                                 <span class="badge bg-light text-dark border" title="Carros comparáveis usados no cálculo">
@@ -292,19 +305,76 @@
 @endpush
 
 @push('scripts')
+{{-- Dados base para recálculo (apenas campos normalizados, sem enriquecimento) --}}
+@isset($carros)
+@php
+    $carrosBase = $carros->map(fn($c) => [
+        'marca_modelo' => $c['marca_modelo'],
+        'submodelo'    => $c['submodelo'],
+        'ano'          => $c['ano'],
+        'kms'          => $c['kms'],
+        'preco'        => $c['preco'],
+        'localizacao'  => $c['localizacao'],
+        'link'         => $c['link'],
+        'potencia'     => $c['potencia'] ?? '',
+        'features'     => $c['features'],
+    ])->values();
+@endphp
+<form id="recalcForm" action="{{ route('car-analysis.recalculate') }}" method="POST" style="display:none">
+    @csrf
+    <input type="hidden" name="cars_json" id="carsJsonInput">
+</form>
+<script>
+const baseCarros = @json($carrosBase);
+</script>
+@endisset
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const input = document.getElementById('tableSearch');
-    if (!input) return;
+    const input     = document.getElementById('tableSearch');
+    const checkAll  = document.getElementById('checkAll');
+    const btnRecalc = document.getElementById('btnRecalcular');
 
-    input.addEventListener('input', function () {
-        const q = this.value.toLowerCase().trim();
-        const rows = document.querySelectorAll('#analysisTable tbody tr');
-
-        rows.forEach(function (row) {
-            const text = row.textContent.toLowerCase();
-            row.style.display = (!q || text.includes(q)) ? '' : 'none';
+    // Live search
+    if (input) {
+        input.addEventListener('input', function () {
+            const q = this.value.toLowerCase().trim();
+            document.querySelectorAll('#analysisTable tbody tr').forEach(function (row) {
+                row.style.display = (!q || row.textContent.toLowerCase().includes(q)) ? '' : 'none';
+            });
         });
+    }
+
+    if (!checkAll) return;
+
+    function updateBtn() {
+        const checks  = document.querySelectorAll('.car-check');
+        const checked = document.querySelectorAll('.car-check:checked');
+        // Activa o botão se algum carro foi desmarcado (e sobra pelo menos 2)
+        btnRecalc.disabled = (checked.length === checks.length || checked.length < 2);
+    }
+
+    // Seleccionar todos
+    checkAll.addEventListener('change', function () {
+        document.querySelectorAll('.car-check').forEach(c => c.checked = this.checked);
+        updateBtn();
+    });
+
+    // Muda estado individual
+    document.addEventListener('change', function (e) {
+        if (!e.target.classList.contains('car-check')) return;
+        const checks  = document.querySelectorAll('.car-check');
+        const checked = document.querySelectorAll('.car-check:checked');
+        checkAll.checked       = checked.length === checks.length;
+        checkAll.indeterminate = checked.length > 0 && checked.length < checks.length;
+        updateBtn();
+    });
+
+    // Recalcular
+    btnRecalc.addEventListener('click', function () {
+        const checks  = document.querySelectorAll('.car-check');
+        const filtered = baseCarros.filter((_, i) => checks[i] && checks[i].checked);
+        document.getElementById('carsJsonInput').value = JSON.stringify(filtered);
+        document.getElementById('recalcForm').submit();
     });
 });
 </script>
