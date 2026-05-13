@@ -18,6 +18,7 @@ class Expense extends Model
         'expense_date',
         'partner_id',
         'observations',
+        'attachment_path',
     ];
 
     // Relacionamentos (Se necessário)

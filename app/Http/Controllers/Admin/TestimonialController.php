@@ -33,11 +33,12 @@ class TestimonialController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'      => 'required|string|max:255',
-            'rating'    => 'required|integer|min:0|max:5',
-            'comment'   => 'required|string',
-            'origin'    => 'required|in:' . implode(',', array_keys(Testimonial::ORIGINS)),
-            'published' => 'sometimes|boolean',
+            'name'        => 'required|string|max:255',
+            'rating'      => 'required|numeric|min:0|max:5|in:0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5',
+            'comment'     => 'string|nullable',
+            'origin'      => 'required|in:' . implode(',', array_keys(Testimonial::ORIGINS)),
+            'published'   => 'sometimes|boolean',
+            'review_date' => 'nullable|date'
         ]);
 
         $data['published'] = $request->boolean('published');
@@ -57,11 +58,12 @@ class TestimonialController extends Controller
     public function update(Request $request, Testimonial $testimonial)
     {
         $data = $request->validate([
-            'name'      => 'required|string|max:255',
-            'rating'    => 'required|integer|min:0|max:5',
-            'comment'   => 'required|string',
-            'origin'    => 'required|in:' . implode(',', array_keys(Testimonial::ORIGINS)),
-            'published' => 'sometimes|boolean',
+            'name'        => 'required|string|max:255',
+            'rating'      => 'required|numeric|min:0|max:5|in:0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5',
+            'comment'     => 'string|nullable',
+            'origin'      => 'required|in:' . implode(',', array_keys(Testimonial::ORIGINS)),
+            'published'   => 'sometimes|boolean',
+            'review_date' => 'nullable|date',
         ]);
 
         $data['published'] = $request->boolean('published');

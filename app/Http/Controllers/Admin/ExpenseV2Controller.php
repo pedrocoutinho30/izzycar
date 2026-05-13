@@ -7,6 +7,7 @@ use App\Models\Expense;
 use App\Models\Vehicle;
 use App\Models\Partner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * ExpenseV2Controller
@@ -111,8 +112,14 @@ class ExpenseV2Controller extends Controller
             'expense_date' => 'required|date',
             'partner_id' => 'nullable|exists:partners,id',
             'observations' => 'nullable|string',
+            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:10240',
         ]);
 
+        if ($request->hasFile('attachment')) {
+            $validated['attachment_path'] = $request->file('attachment')->store('expenses/attachments', 'public');
+        }
+
+        unset($validated['attachment']);
         Expense::create($validated);
 
         return redirect()->route('admin.v2.expenses.index')
@@ -147,8 +154,23 @@ class ExpenseV2Controller extends Controller
             'expense_date' => 'required|date',
             'partner_id' => 'nullable|exists:partners,id',
             'observations' => 'nullable|string',
+            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:10240',
+            'remove_attachment' => 'nullable|boolean',
         ]);
 
+        if ($request->hasFile('attachment')) {
+            if ($expense->attachment_path) {
+                Storage::disk('public')->delete($expense->attachment_path);
+            }
+            $validated['attachment_path'] = $request->file('attachment')->store('expenses/attachments', 'public');
+        } elseif ($request->boolean('remove_attachment')) {
+            if ($expense->attachment_path) {
+                Storage::disk('public')->delete($expense->attachment_path);
+            }
+            $validated['attachment_path'] = null;
+        }
+
+        unset($validated['attachment'], $validated['remove_attachment']);
         $expense->update($validated);
 
         return redirect()->route('admin.v2.expenses.index')
@@ -161,6 +183,11 @@ class ExpenseV2Controller extends Controller
     public function destroy($id)
     {
         $expense = Expense::findOrFail($id);
+
+        if ($expense->attachment_path) {
+            Storage::disk('public')->delete($expense->attachment_path);
+        }
+
         $expense->delete();
 
         return redirect()->route('admin.v2.expenses.index')

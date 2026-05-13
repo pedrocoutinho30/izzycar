@@ -35,4 +35,8 @@ return [
         'key' => env('OPENAI_API_KEY'),
     ],
 
+    'google' => [
+        'review_url' => env('GOOGLE_REVIEW_URL'),
+    ],
+
 ];

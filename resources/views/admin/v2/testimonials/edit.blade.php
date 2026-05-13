@@ -48,22 +48,25 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-semibold">Avaliação <span class="text-danger">*</span></label>
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="star-picker d-flex gap-1" id="starPicker">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <i class="bi bi-star star-icon" data-value="{{ $i }}" style="font-size:1.8rem;cursor:pointer;color:#ccc"></i>
-                                    @endfor
-                                </div>
-                                <span id="ratingLabel" class="text-muted small">Seleciona uma avaliação</span>
-                                <input type="hidden" name="rating" id="ratingInput" value="{{ old('rating', $testimonial->rating) }}">
-                            </div>
+                            <select name="rating" id="ratingInput" class="form-select @error('rating') is-invalid @enderror" style="max-width:200px">
+                                @foreach([0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5] as $val)
+                                    <option value="{{ $val }}" {{ old('rating', $testimonial->rating) == $val ? 'selected' : '' }}>{{ $val }} ★</option>
+                                @endforeach
+                            </select>
                             @error('rating')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold">Comentário <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">Comentário </label>
                             <textarea name="comment" rows="5" class="form-control @error('comment') is-invalid @enderror"
-                                      required>{{ old('comment', $testimonial->comment) }}</textarea>
+                                      >{{ old('comment', $testimonial->comment) }}</textarea>
                             @error('comment')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Data da avaliação</label>
+                            <input type="date" name="review_date" class="form-control @error('review_date') is-invalid @enderror"
+                                   value="{{ old('review_date', $testimonial->review_date?->format('Y-m-d')) }}">
+                            <div class="form-text">Data em que o cliente deixou a avaliação (opcional).</div>
+                            @error('review_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>
                 </div>

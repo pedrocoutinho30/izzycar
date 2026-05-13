@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 use \App\Models\Page;
+use App\Models\Testimonial;
 
 class VehiclesController extends Controller
 {
@@ -16,7 +17,12 @@ class VehiclesController extends Controller
     public function index()
     {
 
-
+        $reviews = Testimonial::where('published', true)->orderBy('review_date', 'desc')->get();
+        
+       // arredonda com 2 casas decimais
+        $media = $reviews->count()
+                                ? round($reviews->avg('rating'), 1)
+                                : 0;
         $vehicles = Cache::remember('vehicles', 600, function () {
             return Vehicle::where('show_online', true)->get();
         });
@@ -32,7 +38,7 @@ class VehiclesController extends Controller
         $page = Page::where('slug', 'homepage')
             ->with('contents')
             ->firstOrFail();
-        return view('frontend.index', compact('vehicles_count', 'last_vehicles', 'vehicles', 'page'));
+        return view('frontend.index', compact('vehicles_count', 'last_vehicles', 'vehicles', 'page', 'reviews', 'media' ));
     }
 
     public function vehicles(Request $request)

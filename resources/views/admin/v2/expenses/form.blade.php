@@ -22,7 +22,7 @@ $existAction = isset($expense) ? 'Editar' : 'Criar';
 
 <!-- FORMULÁRIO -->
 <form action="{{ isset($expense) ? route('admin.v2.expenses.update', $expense->id) : route('admin.v2.expenses.store') }}"
-    method="POST">
+    method="POST" enctype="multipart/form-data">
     @csrf
     @if(isset($expense))
     @method('PUT')
@@ -154,6 +154,42 @@ $existAction = isset($expense) ? 'Editar' : 'Criar';
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Comprovativo / Anexo</label>
+                        @if(isset($expense) && $expense->attachment_path)
+                        <div class="mb-2 d-flex align-items-center gap-3">
+                            @php
+                                $ext = strtolower(pathinfo($expense->attachment_path, PATHINFO_EXTENSION));
+                                $isImage = in_array($ext, ['jpg','jpeg','png','gif','webp']);
+                            @endphp
+                            @if($isImage)
+                            <a href="{{ asset('storage/' . $expense->attachment_path) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $expense->attachment_path) }}" alt="Anexo" style="max-height:80px;border-radius:6px;border:1px solid #ddd;">
+                            </a>
+                            @else
+                            <a href="{{ asset('storage/' . $expense->attachment_path) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-file-earmark-pdf"></i> Ver ficheiro
+                            </a>
+                            @endif
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="remove_attachment" value="1" id="remove_attachment">
+                                <label class="form-check-label text-danger" for="remove_attachment">Remover anexo</label>
+                            </div>
+                        </div>
+                        @endif
+                        <input type="file" name="attachment" id="attachment"
+                            class="form-control @error('attachment') is-invalid @enderror"
+                            accept=".jpg,.jpeg,.png,.gif,.webp,.pdf">
+                        <small class="text-muted">Formatos aceites: JPG, PNG, GIF, WEBP, PDF. Máx. 10MB.</small>
+                        @error('attachment')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <!-- Preview da imagem selecionada -->
+                        <div id="attachmentPreview" class="mt-2" style="display:none;">
+                            <img id="attachmentPreviewImg" src="" alt="Preview" style="max-height:120px;border-radius:6px;border:1px solid #ddd;">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -239,4 +275,29 @@ $existAction = isset($expense) ? 'Editar' : 'Criar';
         }
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    const attachmentInput = document.getElementById('attachment');
+    const attachmentPreview = document.getElementById('attachmentPreview');
+    const attachmentPreviewImg = document.getElementById('attachmentPreviewImg');
+
+    if (attachmentInput) {
+        attachmentInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    attachmentPreviewImg.src = e.target.result;
+                    attachmentPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                attachmentPreview.style.display = 'none';
+                attachmentPreviewImg.src = '';
+            }
+        });
+    }
+</script>
 @endpush

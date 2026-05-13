@@ -35,7 +35,6 @@ class VehicleV2Controller extends Controller
     {
         // Query base com relacionamentos
         $query = Vehicle::with(['supplier', 'images']);
-
         // Filtro de pesquisa (referência, marca, modelo, matrícula)
         if ($request->filled('search')) {
             $search = $request->search;
@@ -74,12 +73,15 @@ class VehicleV2Controller extends Controller
 
         // Paginação
         $vehicles = $query->orderBy('created_at', 'desc')
-            ->paginate(12)
+        ->with('expenses')    
+        ->paginate(12)
             ->withQueryString();
 
+            
         // Estatísticas
         $totalVehicles = Vehicle::count();
         $availableVehicles = Vehicle::doesntHave('sale')->count();
+        
         $soldVehicles = Vehicle::has('sale')->count();
         $onlineVehicles = Vehicle::where('show_online', 1)->count();
 

@@ -319,6 +319,96 @@
     </div>
 </section>
 
+<!-- Testimonials Section -->
+<section class="section-padding testimonials-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">Clientes Satisfeitos</span>
+            <h2 class="section-title fade-in-up">O que dizem os nossos clientes</h2>
+            <p class="section-description fade-in-up" data-delay="100">Opiniões reais de quem já trabalhou connosco</p>
+            <div class="google-rating-summary fade-in-up" data-delay="150">
+                <img src="{{ asset('images/google-logo.svg') }}" alt="Google" class="google-logo-summary" onerror="this.style.display='none'">
+                <div class="google-stars-summary">
+                    @php
+                        $mediaFloor = floor($media);
+                        $mediaHalf  = ($media - $mediaFloor) >= 0.25;
+                    @endphp
+                    @for($s = 1; $s <= 5; $s++)
+                        @if($s <= $mediaFloor)
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#FBBC04"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        @elseif($s == $mediaFloor + 1 && $mediaHalf)
+                            <svg width="20" height="20" viewBox="0 0 24 24"><defs><linearGradient id="hsg-media-{{ $s }}"><stop offset="50%" stop-color="#FBBC04"/><stop offset="50%" stop-color="#e0e0e0"/></linearGradient></defs><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#hsg-media-{{ $s }})"/></svg>
+                        @else
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#e0e0e0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        @endif
+                    @endfor
+                </div>
+                <span class="google-rating-text">{{ $media }} &nbsp;·&nbsp; Google Reviews</span>
+            </div>
+            @if(config('services.google.review_url'))
+            <div class="fade-in-up mt-3" data-delay="200">
+                <a href="{{ config('services.google.review_url') }}" target="_blank" rel="noopener" class="btn-google-review">
+                    <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.7 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 6.9-10.1 7.1-17z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.8-6A24 24 0 0 0 0 24c0 3.9.9 7.5 2.5 10.8l8-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.7 2.3-7.7 2.3-6.2 0-11.5-4.2-13.4-9.9l-8 6.2C6.5 42.6 14.6 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+                    Deixar a sua opinião no Google
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                </a>
+            </div>
+            @endif
+        </div>
+@php
+    $avatarColors = ['#990000','#1a73e8','#34A853','#F9AB00','#7B1FA2','#0F9D58','#E64A19','#00838F'];
+    $delays = [100, 200, 300, 200, 300, 400];
+@endphp
+        <div class="row g-4">
+            @forelse($reviews as $index => $review)
+            @if($review->comment !== '' && $review->comment !== null)
+                
+            @php
+                $initial = mb_strtoupper(mb_substr($review->name, 0, 1));
+                $color   = $avatarColors[$index % count($avatarColors)];
+                $delay   = $delays[$index % count($delays)];
+            @endphp
+            <div class="col-lg-4 col-md-6 fade-in-up" data-delay="{{ $delay }}">
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-avatar" style="background: {{ $color }};">{{ $initial }}</div>
+                        <div class="reviewer-info">
+                            <span class="reviewer-name">{{ $review->name }}</span>
+                            <span class="reviewer-date">{{ ($review->review_date ?? $review->created_at)->diffForHumans() }}</span>
+                        </div>
+                        <div class="google-icon-wrap">
+                            @if($review->origin === 'google')
+                            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.7 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 6.9-10.1 7.1-17z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.8-6A24 24 0 0 0 0 24c0 3.9.9 7.5 2.5 10.8l8-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.7 2.3-7.7 2.3-6.2 0-11.5-4.2-13.4-9.9l-8 6.2C6.5 42.6 14.6 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="review-stars">
+                        @php
+                            $ratingFloor = floor($review->rating);
+                            $hasHalf = ($review->rating - $ratingFloor) >= 0.25;
+                        @endphp
+                        @for($s = 1; $s <= 5; $s++)
+                            @if($s <= $ratingFloor)
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FBBC04"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            @elseif($s == $ratingFloor + 1 && $hasHalf)
+                                <svg width="16" height="16" viewBox="0 0 24 24"><defs><linearGradient id="hsg-{{ $index }}-{{ $s }}"><stop offset="50%" stop-color="#FBBC04"/><stop offset="50%" stop-color="#e0e0e0"/></linearGradient></defs><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#hsg-{{ $index }}-{{ $s }})"/></svg>
+                            @else
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#e0e0e0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            @endif
+                        @endfor
+                    </div>
+                    <p class="review-text">"{{ $review->comment }}"</p>
+                </div>
+            </div>
+            @endif
+
+            @empty
+            <div class="col-12 text-center text-muted py-4">Ainda não há testemunhos disponíveis.</div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
 <!-- CTA Final Section -->
 <section class="cta-final-section">
     <div class="cta-overlay"></div>
@@ -809,6 +899,136 @@
         transform: translateY(-3px);
         /* box-shadow: 0 12px 35px rgba(153, 0, 0, 0.4); */
         color: white;
+    }
+
+    /* Testimonials Section */
+    .testimonials-section {
+        background: #f8f9fa;
+    }
+
+    .google-rating-summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 50px;
+        padding: 10px 24px;
+        margin-top: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .google-logo-summary {
+        height: 20px;
+        width: auto;
+    }
+
+    .google-stars-summary {
+        display: flex;
+        gap: 2px;
+    }
+
+    .google-rating-text {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #555;
+    }
+
+    .review-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.75rem;
+        border: 1px solid #e8e8e8;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .review-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        border-color: #dadada;
+    }
+
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0.75rem;
+    }
+
+    .reviewer-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .reviewer-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .reviewer-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #111;
+        line-height: 1.3;
+    }
+
+    .reviewer-date {
+        font-size: 0.8rem;
+        color: #9e9e9e;
+    }
+
+    .google-icon-wrap {
+        flex-shrink: 0;
+    }
+
+    .review-stars {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 0.85rem;
+    }
+
+    .review-text {
+        font-size: 0.95rem;
+        color: #444;
+        line-height: 1.7;
+        margin: 0;
+        flex: 1;
+    }
+
+    .btn-google-review {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 22px;
+        background: white;
+        color: #444;
+        border: 1.5px solid #dadada;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .btn-google-review:hover {
+        border-color: #4285F4;
+        color: #4285F4;
+        box-shadow: 0 4px 16px rgba(66,133,244,0.15);
+        transform: translateY(-2px);
     }
 
     /* CTA Final Section */

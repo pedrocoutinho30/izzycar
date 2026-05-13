@@ -125,6 +125,10 @@
     'icon' => 'bi-cash',
     'text' => 'Venda: ' . number_format($vehicle->sell_price, 0, ',', '.') . '€'
     ] : null,
+    $vehicle->purchase_price ? [
+    'icon' => 'bi-tag',
+    'text' => 'Gasto total: ' . number_format($vehicle->purchase_price + $vehicle->expenses->sum('amount'), 0, ',', '.') . '€'
+    ] : null,
     $vehicle->registration ? [
     'icon' => 'bi-credit-card-2-front',
     'text' => $vehicle->registration

@@ -20,10 +20,12 @@ class Testimonial extends Model
         'comment',
         'origin',
         'published',
+        'review_date',
     ];
 
     protected $casts = [
-        'rating'    => 'integer',
-        'published' => 'boolean',
+        'rating'      => 'float',
+        'published'   => 'boolean',
+        'review_date' => 'date',
     ];
 }
