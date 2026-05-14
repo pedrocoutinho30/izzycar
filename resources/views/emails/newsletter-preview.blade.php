@@ -124,6 +124,7 @@
             width: 100%;
             height: 280px;
             object-fit: cover;
+            object-position: center center;
             display: block;
         }
 
@@ -433,7 +434,11 @@
             }
 
             .offer-image {
-                height: 200px;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                min-height: 180px;
+                display: block !important;
             }
 
             .offer-details {
@@ -513,7 +518,7 @@
             @if($offer->is_active)
             <div class="offer">
                 @if($offer->image)
-                <img src="{{ url('storage/' . $offer->image) }}" alt="{{ $offer->brand }} {{ $offer->model }}" class="offer-image">
+                <img src="{{ url('storage/' . $offer->image) }}" alt="{{ $offer->brand }} {{ $offer->model }}" class="offer-image" style="width:100%;max-width:100%;height:auto;min-height:200px;object-fit:cover;object-position:center center;display:block;border:0;margin:0 auto;">
                 @endif
 
                 <div class="offer-details">
