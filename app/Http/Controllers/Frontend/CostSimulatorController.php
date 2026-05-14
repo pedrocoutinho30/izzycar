@@ -184,8 +184,7 @@ class CostSimulatorController extends Controller
             + $costSimulator->ipo_cost
             + $costSimulator->imt_cost
             + $costSimulator->registration_cost
-            + $costSimulator->plates_cost
-            + 300;
+            + $costSimulator->plates_cost;
 
         return view('frontend.cost-simulator.result', [
             'valorCarro' => $costSimulator->car_value,
