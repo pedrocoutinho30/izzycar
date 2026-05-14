@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Newsletter;
 use App\Models\NewsletterOffer;
+use App\Models\NewsletterSendLog;
 use App\Mail\NewsletterPreview as NewsletterPreviewMail;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 
 class NewsletterManagementController extends Controller
 {
@@ -96,56 +98,90 @@ class NewsletterManagementController extends Controller
         ];
         return view('emails.newsletter-preview', compact('newsletter', 'previewClient'));
     }
-    public function sendNewsletter($id)
+    public function sendPage($id)
     {
-        $newsletter = Newsletter::with(['offers' => function ($query) {
-            $query->where('is_active', true);
+        $newsletter = Newsletter::with('offers')->findOrFail($id);
+
+        $sentClientIds = NewsletterSendLog::where('newsletter_id', $id)
+            ->whereNotNull('sent_at')
+            ->pluck('client_id')
+            ->toArray();
+
+        $clients = Client::whereNotNull('email')
+            ->where('email', '!=', '')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.v2.newsletter-management.send', compact('newsletter', 'clients', 'sentClientIds'));
+    }
+
+    public function doSend(Request $request, $id)
+    {
+        $request->validate([
+            'client_ids'   => ['required', 'array', 'min:1', 'max:20'],
+            'client_ids.*' => ['integer', 'exists:clients,id'],
+        ]);
+
+        $newsletter = Newsletter::with(['offers' => function ($q) {
+            $q->where('is_active', true);
         }])->findOrFail($id);
 
-        // Dados de exemplo para o preview (usar o admin como exemplo)
-        // $clients = Client::whereNotNull('email')->get();
+        $clientIds = $request->input('client_ids');
+        $clients   = Client::whereIn('id', $clientIds)->get()->keyBy('id');
 
-        $clients = [
-            [
-                'email' => 'izzycarpt@gmail.com',
-                'name' => 'Admin',
-            ],
-            [
-                'email' => 'pedroc_30@hotmail.com',
-                'name' => 'Pedro Coutinho',
-            ],
-            [
-                'email' => 'dvpc1993@gmail.com',
-                'name' => 'DVPC',
-            ],
-            [
-                'email' => 'diana_vilar_8488@hotmail.com',  
-                'name' => 'Diana Vilar',
-            ],
-        ];
+        $sent    = 0;
+        $skipped = 0;
+        $errors  = 0;
 
-        foreach ($clients as $client) {
-            Log::info('Client email: ' . $client['email']);
-            dump("Enviando newsletter para: " . $client['email']);
-            $previewClient = [
-                'email' => !empty($client['email']) ? $client['email'] : null,
-                'name' => !empty($client['name']) ? $client['name'] : 'Subscriber',
-            ];
-            try {
-
-                Mail::to($previewClient['email'])->send(new NewsletterPreviewMail($newsletter, $previewClient));
-                dump("newsletter enviada para: " . $previewClient['email']);
-            } catch (\Exception $e) {
-                dump("Erro ao enviar newsletter para: " . $previewClient['email'] . " - " . $e->getMessage());
-                // Se falhar o envio, continua mostrando a preview
-                Log::error('Erro ao enviar newsletter para ' . $previewClient['email'] . ': ' . $e->getMessage());
+        foreach ($clientIds as $clientId) {
+            $client = $clients->get($clientId);
+            if (!$client) {
+                continue;
             }
-            // sleep(60); // Espera 1 minuto entre cada email
-            usleep(10000000); // Espera 60 segundos (1 minuto) entre cada email
+
+            // Skip if already sent
+            $alreadySent = NewsletterSendLog::where('newsletter_id', $id)
+                ->where('client_id', $clientId)
+                ->whereNotNull('sent_at')
+                ->exists();
+
+            if ($alreadySent) {
+                $skipped++;
+                continue;
+            }
+
+            $recipient = [
+                'email' => $client->email,
+                'name'  => $client->name,
+            ];
+
+            try {
+                Mail::to($client->email)->send(new NewsletterPreviewMail($newsletter, $recipient));
+
+                NewsletterSendLog::updateOrCreate(
+                    ['newsletter_id' => $id, 'client_id' => $clientId],
+                    ['sent_at' => Carbon::now()]
+                );
+
+                $sent++;
+                Log::info("Newsletter #{$id} enviada para {$client->email}");
+            } catch (\Exception $e) {
+                $errors++;
+                Log::error("Erro ao enviar newsletter #{$id} para {$client->email}: " . $e->getMessage());
+            }
         }
 
+        $message = "Newsletter enviada com sucesso para {$sent} cliente(s).";
+        if ($skipped > 0) {
+            $message .= " {$skipped} cliente(s) ignorado(s) (já tinham recebido).";
+        }
+        if ($errors > 0) {
+            $message .= " {$errors} erro(s) ao enviar.";
+        }
 
-        dd("enviado para todos os clientes");
+        return redirect()
+            ->route('admin.v2.newsletter-management.send', $id)
+            ->with($errors > 0 && $sent === 0 ? 'error' : 'success', $message);
     }
 
     // Offer management within newsletter

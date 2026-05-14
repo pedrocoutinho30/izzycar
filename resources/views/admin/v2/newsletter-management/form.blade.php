@@ -60,11 +60,11 @@
         </div>
 
         <div class="form-actions">
-            <a href="{{ route('admin.v2.newsletter-management.index') }}" class="btn-secondary-modern">
+            <a href="{{ route('admin.v2.newsletter-management.index') }}" class="btn btn-secondary-modern">
                 <i class="bi bi-x-lg"></i>
                 <span>Cancelar</span>
             </a>
-            <button type="submit" class="btn-primary-modern">
+            <button type="submit" class="btn btn-primary-modern btn-lg">
                 <i class="bi bi-check-lg"></i>
                 <span>{{ isset($newsletter) ? 'Atualizar' : 'Criar' }} Newsletter</span>
             </button>

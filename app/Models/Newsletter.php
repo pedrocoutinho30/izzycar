@@ -24,4 +24,16 @@ class Newsletter extends Model
     {
         return $this->hasMany(NewsletterOffer::class);
     }
+
+    public function sendLogs()
+    {
+        return $this->hasMany(NewsletterSendLog::class);
+    }
+
+    public function sentClients()
+    {
+        return $this->belongsToMany(Client::class, 'newsletter_send_logs')
+                    ->withPivot('sent_at')
+                    ->withTimestamps();
+    }
 }

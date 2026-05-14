@@ -214,7 +214,8 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::post('/', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'store'])->name('store');
         Route::get('/{id}', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'show'])->name('show');
         Route::get('/{id}/preview', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'preview'])->name('preview');
-        Route::get('/{id}/send', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'sendNewsletter'])->name('send');
+        Route::get('/{id}/send', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'sendPage'])->name('send');
+        Route::post('/{id}/send', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'doSend'])->name('doSend');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\NewsletterManagementController::class, 'destroy'])->name('destroy');

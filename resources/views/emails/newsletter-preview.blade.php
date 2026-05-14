@@ -190,6 +190,12 @@
             color: #990000;
         }
 
+        .offer-equipments {
+            font-size: 14px;
+            color: #666666;
+            padding-left: 15px !important;
+        }
+
         .offer-cta {
             margin-top: 15px;
             text-align: center;
@@ -501,7 +507,7 @@
             @if($newsletter->offers->count() > 0)
 
 
-            <h2 class="offers-title">Recomendações da semana</h2>
+            <h2 class="offers-title">Recomendações do mês</h2>
 
             @foreach($newsletter->offers as $offer)
             @if($offer->is_active)
@@ -523,8 +529,10 @@
 
                     @if($offer->equipamentos)
                     <div class="offer-info">
-                        <strong>✨ Equipamento:</strong><br>
-                        {!! $offer->equipamentos !!}
+                        <strong>✨ Equipamentos:</strong><br>
+                        @foreach(array_filter(array_map('trim', explode(';', $offer->equipamentos))) as $equip)
+                            <span class="offer-equipments">• {{ $equip }}</span><br>
+                        @endforeach
                     </div>
                     @endif
 

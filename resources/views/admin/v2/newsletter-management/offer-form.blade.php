@@ -112,18 +112,11 @@
 
                     <div class="col-md-12">
                         <label class="form-label">Equipamentos</label>
-                        <textarea name="equipamentos" rows="6" class="form-control ckeditor @error('equipamentos') is-invalid @enderror">{{ old('equipamentos', isset($offer) ? $offer->equipamentos : '') }}</textarea>
+                        <textarea name="equipamentos" rows="4" class="form-control @error('equipamentos') is-invalid @enderror" placeholder="Ex: GPS;Câmara traseira;Teto panorâmico;Sensores de estacionamento">{{ old('equipamentos', isset($offer) ? $offer->equipamentos : '') }}</textarea>
+                        <small class="text-muted">Separe cada equipamento com <strong>;</strong> — ex: GPS;Câmara traseira;Teto panorâmico</small>
                         @error('equipamentos')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        @push('scripts')
-                            <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
-                            <script>
-                                CKEDITOR.replace('equipamentos', {
-                                    height: 150
-                                });
-                            </script>
-                        @endpush
                     </div>
 
                     <div class="col-md-12">
@@ -141,11 +134,11 @@
         </div>
 
         <div class="form-actions">
-            <a href="{{ route('admin.v2.newsletter-management.show', $newsletter->id) }}" class="btn-secondary-modern">
+            <a href="{{ route('admin.v2.newsletter-management.show', $newsletter->id) }}" class="btn btn-secondary-modern">
                 <i class="bi bi-x-lg"></i>
                 <span>Cancelar</span>
             </a>
-            <button type="submit" class="btn-primary-modern">
+            <button type="submit" class="btn btn-primary-modern btn-lg">
                 <i class="bi bi-check-lg"></i>
                 <span>{{ isset($offer) ? 'Atualizar' : 'Criar' }} Oferta</span>
             </button>
