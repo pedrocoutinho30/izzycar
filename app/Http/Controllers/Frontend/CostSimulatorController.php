@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Frontend\ImportSimulatorController as ImportSimulator;
+use App\Mail\CostSimulatorResultMail;
 use App\Models\Client;
 use App\Models\CostSimulator;
 use App\Models\Setting;
 use App\Models\Brand;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class CostSimulatorController extends Controller
 {
@@ -129,6 +131,7 @@ class CostSimulatorController extends Controller
         // Cálculo do custo total
         $custoTotal = $valorCarro + $isv + $servicos;
 
+        $token = Str::random(48);
 
         $costSimulator = CostSimulator::create([
             'client_id' => $client->id,
@@ -144,6 +147,7 @@ class CostSimulatorController extends Controller
             'plates_cost' => $custo_matriculas,
             'total_cost' => $custoTotal,
             'isv_cost' => $isv,
+            'isv_table' => $tableIsv,
             'fuel' => $request->input('combustivel'),
             'year' => $request->input('data_matricula'),
             'cc' => $request->input('cilindrada'),
@@ -152,28 +156,46 @@ class CostSimulatorController extends Controller
             'tipo_veiculo' => $request->input('tipo_veiculo'),
             'autonomia' => $request->input('autonomia'),
             'pais_matricula' => $request->input('pais_matricula'),
+            'token' => $token,
         ]);
 
-
-
-
-
-
-
-        // enviar email com resultados
+        // Notificação interna
         Mail::raw("Novo Simulador de Custos submetido por {$client->name}, Email: {$client->email}, Telefone: {$client->phone}. Valor do Carro: {$valorCarro}€, ISV: {$isv}€, Custo Total: {$custoTotal}€.", function ($message) {
             $message->to('geral@izzycar.pt')
                 ->subject('Novo Simulador de Custos');
         });
+
+        // Email ao cliente com link para os resultados
+        $resultUrl = route('frontend.cost-simulator.result', $token);
+        Mail::to($client->email)->send(new CostSimulatorResultMail($costSimulator, $client->name, $resultUrl));
+
+        return redirect()->route('frontend.cost-simulator')
+            ->with('pending_email', $client->email);
+    }
+
+    public function result(string $token)
+    {
+        $costSimulator = CostSimulator::where('token', $token)->firstOrFail();
+        $client = $costSimulator->client;
+
+        $servicos = $costSimulator->commission_cost
+            + $costSimulator->inspection_commission_cost
+            + $costSimulator->transport
+            + $costSimulator->ipo_cost
+            + $costSimulator->imt_cost
+            + $costSimulator->registration_cost
+            + $costSimulator->plates_cost
+            + 300;
+
         return view('frontend.cost-simulator.result', [
-            'valorCarro' => $valorCarro,
-            'tableIsv' => $tableIsv,
-            'isv' => $isv,
-            'servicos' => $servicos,
-            'custoTotal' => $custoTotal,
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'phone' => $request->input('phone'),
+            'valorCarro' => $costSimulator->car_value,
+            'tableIsv'   => $costSimulator->isv_table,
+            'isv'        => $costSimulator->isv_cost,
+            'servicos'   => $servicos,
+            'custoTotal' => $costSimulator->total_cost,
+            'name'       => $client->name ?? 'Cliente',
+            'email'      => $client->email ?? '',
+            'phone'      => $client->phone ?? '',
         ]);
     }
 }

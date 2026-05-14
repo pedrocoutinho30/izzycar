@@ -32,6 +32,7 @@ Route::post('/formulario-importacao', [ImportController::class, 'submitFormImpor
 Route::get('/formulario-importacao', [ContactController::class, 'importForm'])->name('frontend.form-import');
 Route::get('/simulador-custos', [CostSimulatorController::class, 'index'])->name('frontend.cost-simulator');
 Route::post('/simulador-custos', [CostSimulatorController::class, 'calculate'])->name('frontend.cost-simulator.calculate');
+Route::get('/simulador-custos/resultado/{token}', [CostSimulatorController::class, 'result'])->name('frontend.cost-simulator.result');
 
 // API pública
 Route::get('/extras', [ExtrasController::class, 'index'])->name('api.extras');

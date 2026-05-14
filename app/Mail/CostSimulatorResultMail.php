@@ -2,37 +2,46 @@
 
 namespace App\Mail;
 
+use App\Models\CostSimulator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
 class CostSimulatorResultMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $valorCarro;
-    public $isv;
-    public $servicos;
-    public $custoTotal;
+    public CostSimulator $simulation;
+    public string $clientName;
+    public string $resultUrl;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct($valorCarro, $isv, $servicos, $custoTotal)
+    public function __construct(CostSimulator $simulation, string $clientName, string $resultUrl)
     {
-        $this->valorCarro = $valorCarro;
-        $this->isv = $isv;
-        $this->servicos = $servicos;
-        $this->custoTotal = $custoTotal;
+        $this->simulation = $simulation;
+        $this->clientName = $clientName;
+        $this->resultUrl  = $resultUrl;
     }
 
-    /**
-     * Build the message.
-     */
-    public function build()
+    public function envelope(): Envelope
     {
-        return $this
-            ->subject('Resultado do Simulador de Custos')
-            ->markdown('emails.cost_simulator_result');
+        return new Envelope(
+            from: new Address('geral@izzycar.pt', 'Izzycar - Importação Automóvel'),
+            subject: 'A sua Simulação de Custos de Importação',
+        );
+    }
+
+    public function content(): Content
+    {
+        return new Content(
+            view: 'emails.cost_simulator_result',
+        );
+    }
+
+    public function attachments(): array
+    {
+        return [];
     }
 }

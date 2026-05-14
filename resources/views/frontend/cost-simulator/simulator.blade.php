@@ -43,6 +43,21 @@
         </div>
 
         <div class="simulator-form-card">
+
+            @if(session('pending_email'))
+            <div style="background: linear-gradient(135deg, #111 0%, #2a0000 100%); border-radius: 16px; padding: 2.5rem 2rem; margin-bottom: 2rem; text-align: center; color: #fff;">
+                <div style="font-size: 52px; margin-bottom: 1rem;">📧</div>
+                <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 0.75rem;">Verifique a sua caixa de email!</h3>
+                <p style="font-size: 15px; color: rgba(255,255,255,0.8); max-width: 440px; margin: 0 auto 1rem;">
+                    Enviámos o resultado da simulação para <strong>{{ session('pending_email') }}</strong>.<br>
+                    Clique no link do email para ver os resultados detalhados.
+                </p>
+                <p style="font-size: 13px; color: rgba(255,255,255,0.5);">
+                    Não recebeu o email? Verifique também a pasta de <strong>spam / lixo</strong>.
+                </p>
+            </div>
+            @endif
+
             <form method="POST" action="{{ route('frontend.cost-simulator.calculate') }}">
             @csrf
 

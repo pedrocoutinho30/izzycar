@@ -8,6 +8,7 @@ class CostSimulator extends Model
 {
 
     public $fillable = [
+        'token',
         'client_id',
         'brand',
         'model',
@@ -21,6 +22,7 @@ class CostSimulator extends Model
         'plates_cost',
         'total_cost',
         'isv_cost',
+        'isv_table',
         'read',
         'fuel',
         'year',
