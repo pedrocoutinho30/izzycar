@@ -109,6 +109,7 @@ class NewsletterManagementController extends Controller
 
         $clients = Client::whereNotNull('email')
             ->where('email', '!=', '')
+            ->where('newsletter_consent', true)
             ->orderBy('name')
             ->get();
 
