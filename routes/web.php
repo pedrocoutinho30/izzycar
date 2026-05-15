@@ -300,15 +300,25 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     });
 
     // ============================================================
-    // DESPESAS V2
+    // MOVIMENTOS V2 (antigo: Despesas)
     // ============================================================
+    Route::prefix('v2/movements')->name('admin.v2.movements.')->group(function () {
+        Route::get('/',           [App\Http\Controllers\Admin\MovementV2Controller::class, 'index'])->name('index');
+        Route::get('/create',     [App\Http\Controllers\Admin\MovementV2Controller::class, 'create'])->name('create');
+        Route::post('/',          [App\Http\Controllers\Admin\MovementV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}/edit',  [App\Http\Controllers\Admin\MovementV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{id}',       [App\Http\Controllers\Admin\MovementV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}',    [App\Http\Controllers\Admin\MovementV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // Backward compatibility – redirect old expense URLs to new movement URLs
     Route::prefix('v2/expenses')->name('admin.v2.expenses.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'index'])->name('index');
-        Route::get('/create', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'create'])->name('create');
-        Route::post('/', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'edit'])->name('edit');
-        Route::put('/{id}', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'update'])->name('update');
-        Route::delete('/{id}', [App\Http\Controllers\Admin\ExpenseV2Controller::class, 'destroy'])->name('destroy');
+        Route::get('/',           fn () => redirect()->route('admin.v2.movements.index'))->name('index');
+        Route::get('/create',     fn () => redirect()->route('admin.v2.movements.create'))->name('create');
+        Route::get('/{id}/edit',  fn ($id) => redirect()->route('admin.v2.movements.edit', $id))->name('edit');
+        Route::post('/',          [App\Http\Controllers\Admin\MovementV2Controller::class, 'store'])->name('store');
+        Route::put('/{id}',       [App\Http\Controllers\Admin\MovementV2Controller::class, 'update'])->name('update');
+        Route::delete('/{id}',    [App\Http\Controllers\Admin\MovementV2Controller::class, 'destroy'])->name('destroy');
     });
 
     // ============================================================

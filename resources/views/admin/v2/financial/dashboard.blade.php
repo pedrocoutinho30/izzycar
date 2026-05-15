@@ -9,8 +9,11 @@
         ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
         ['icon' => 'bi bi-wallet2', 'label' => 'Financeiro', 'href' => ''],
     ],
-    'title'    => 'Dashboard Financeiro',
-    'subtitle' => 'Extrato completo de entradas, saídas e IVA estimado',
+    'title'        => 'Dashboard Financeiro',
+    'subtitle'     => 'Extrato completo de entradas, saídas e IVA estimado',
+    'action2Href'  => route('admin.v2.movements.index'),
+    'action2Label' => 'Movimentos',
+    'action2Icon'  => 'bi-journal-text',
 ])
 
 @include('components.admin.stats-cards', ['stats' => $stats])
@@ -22,16 +25,17 @@
             <div class="row g-3 align-items-end">
 
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold">Ano</label>
-                    <select name="year" class="form-select">
+                    <label class="form-label fw-semibold small">Período</label>
+                    <select name="year" class="form-select" id="yearSelect" onchange="toggleMonthFilter(this.value)">
+                        <option value="all" {{ $year === 'all' ? 'selected' : '' }}>Desde o início</option>
                         @foreach($availableYears as $y)
                             <option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>{{ $y }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Mês</label>
+                <div class="col-md-3" id="monthFilterCol" style="{{ $year === 'all' ? 'display:none' : '' }}">
+                    <label class="form-label fw-semibold small">Mês</label>
                     <select name="month" class="form-select">
                         <option value="">Todos os meses</option>
                         @foreach([1=>'Janeiro',2=>'Fevereiro',3=>'Março',4=>'Abril',5=>'Maio',6=>'Junho',7=>'Julho',8=>'Agosto',9=>'Setembro',10=>'Outubro',11=>'Novembro',12=>'Dezembro'] as $m => $label)
@@ -41,7 +45,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold">Tipo</label>
+                    <label class="form-label fw-semibold small">Tipo</label>
                     <select name="type" class="form-select">
                         <option value="">Todos</option>
                         <option value="income"  {{ $type === 'income'  ? 'selected' : '' }}>🟢 Entradas</option>
@@ -227,16 +231,23 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
+function toggleMonthFilter(yearVal) {
+    const col = document.getElementById('monthFilterCol');
+    if (col) col.style.display = yearVal === 'all' ? 'none' : '';
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
+    const chartLabels = @json($chartLabels ?? null);
     const incomeData   = @json(array_values($chartIncome));
     const expenseData  = @json(array_values($chartExpenses));
+    const labels = chartLabels ?? months;
 
     new Chart(document.getElementById('financialChart'), {
         type: 'bar',
         data: {
-            labels: months,
+            labels: labels,
             datasets: [
                 {
                     label: 'Entradas',

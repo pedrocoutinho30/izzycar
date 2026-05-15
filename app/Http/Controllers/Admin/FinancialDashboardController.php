@@ -13,15 +13,23 @@ class FinancialDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $year  = $request->input('year', now()->year);
-        $month = $request->input('month'); // nullable = all months
-        $type  = $request->input('type');  // income | expense | null = all
+        $year      = $request->input('year', now()->year); // 'all' = desde o início
+        $month     = $request->input('month');
+        $type      = $request->input('type');
+
+        // When year = 'all', month filter makes no sense – ignore it
+        if ($year === 'all') {
+            $month = null;
+        }
 
         // ----------------------------------------------------------------
         // Build query
         // ----------------------------------------------------------------
-        $query = FinancialMovement::query()
-            ->whereYear('movement_date', $year);
+        $query = FinancialMovement::query();
+
+        if ($year !== 'all') {
+            $query->whereYear('movement_date', $year);
+        }
 
         if ($month) {
             $query->whereMonth('movement_date', $month);
@@ -46,25 +54,49 @@ class FinancialDashboardController extends Controller
 
         // ----------------------------------------------------------------
         // Monthly chart data (always for the selected year, ignore month filter)
+        // For 'all' years, show per-year totals instead of per-month
         // ----------------------------------------------------------------
+        $chartByYear = $year === 'all';
         $monthlyData = FinancialMovement::selectRaw(
-                'MONTH(movement_date) as m,
+                ($chartByYear ? 'YEAR(movement_date) as m' : 'MONTH(movement_date) as m') . ',
                  type,
                  SUM(amount_gross) as total'
             )
-            ->whereYear('movement_date', $year)
+            ->when($year !== 'all', fn ($q) => $q->whereYear('movement_date', $year))
             ->groupBy('m', 'type')
+            ->orderBy('m')
             ->get()
             ->groupBy('m');
 
-        $chartIncome   = array_fill(1, 12, 0);
-        $chartExpenses = array_fill(1, 12, 0);
-        foreach ($monthlyData as $m => $rows) {
-            foreach ($rows as $row) {
-                if ($row->type === 'income') {
-                    $chartIncome[(int)$m] = (float) $row->total;
-                } else {
-                    $chartExpenses[(int)$m] = (float) $row->total;
+        if ($chartByYear) {
+            // Build dynamic year-based chart labels
+            $chartLabels   = [];
+            $chartIncome   = [];
+            $chartExpenses = [];
+            foreach ($monthlyData as $y => $rows) {
+                $chartLabels[] = (string) $y;
+                $chartIncome[]   = 0;
+                $chartExpenses[] = 0;
+                $idx = count($chartLabels) - 1;
+                foreach ($rows as $row) {
+                    if ($row->type === 'income') {
+                        $chartIncome[$idx] = (float) $row->total;
+                    } else {
+                        $chartExpenses[$idx] = (float) $row->total;
+                    }
+                }
+            }
+        } else {
+            $chartLabels   = null; // view will use month names
+            $chartIncome   = array_fill(1, 12, 0);
+            $chartExpenses = array_fill(1, 12, 0);
+            foreach ($monthlyData as $m => $rows) {
+                foreach ($rows as $row) {
+                    if ($row->type === 'income') {
+                        $chartIncome[(int)$m] = (float) $row->total;
+                    } else {
+                        $chartExpenses[(int)$m] = (float) $row->total;
+                    }
                 }
             }
         }
@@ -126,6 +158,7 @@ class FinancialDashboardController extends Controller
             'netVat',
             'chartIncome',
             'chartExpenses',
+            'chartLabels',
             'availableYears',
             'year',
             'month',
@@ -134,21 +167,26 @@ class FinancialDashboardController extends Controller
     }
 
     /**
-     * Seed existing data into financial_movements (called once via a route or artisan).
+     * Seed existing data into financial_movements via Expense records.
+     * Safe to run multiple times (uses updateOrCreate).
      */
     public function seedExisting()
     {
-        // Sales
+        // 1. Remove stale FinancialMovement entries that were created directly from Sale/Vehicle
+        //    (they are now replaced by Expense-based entries)
+        \App\Models\FinancialMovement::whereIn('movable_type', [Sale::class, Vehicle::class])->delete();
+
+        // 2. Create/update Expense records for all Sales → ExpenseObserver syncs to financial_movements
         Sale::with(['vehicle', 'client'])->get()->each(function ($sale) {
-            \App\Models\FinancialMovement::syncFromSale($sale);
+            Expense::syncFromSale($sale);
         });
 
-        // Vehicles with purchase price (purchase_date optional)
+        // 3. Create/update Expense records for all Vehicles → ExpenseObserver syncs to financial_movements
         Vehicle::whereNotNull('purchase_price')->get()->each(function ($vehicle) {
-            \App\Models\FinancialMovement::syncFromVehicle($vehicle);
+            Expense::syncFromVehicle($vehicle);
         });
 
-        // Expenses
+        // 4. Re-sync all Expense records to financial_movements (covers manual entries)
         Expense::all()->each(function ($expense) {
             \App\Models\FinancialMovement::syncFromExpense($expense);
         });

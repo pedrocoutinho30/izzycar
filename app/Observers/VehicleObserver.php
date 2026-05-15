@@ -3,22 +3,20 @@
 namespace App\Observers;
 
 use App\Models\Vehicle;
-use App\Models\FinancialMovement;
+use App\Models\Expense;
 
 class VehicleObserver
 {
     public function saved(Vehicle $vehicle): void
     {
-        // Only sync if purchase price is set
-        if ($vehicle->purchase_price) {
-            FinancialMovement::syncFromVehicle($vehicle);
-        }
+        Expense::syncFromVehicle($vehicle);
     }
 
     public function deleted(Vehicle $vehicle): void
     {
-        FinancialMovement::where('movable_type', Vehicle::class)
-            ->where('movable_id', $vehicle->id)
-            ->delete();
+        // Delete the auto-generated Expense; ExpenseObserver cleans up FinancialMovement
+        Expense::where('source_type', Vehicle::class)
+            ->where('source_id', $vehicle->id)
+            ->each(fn ($e) => $e->delete());
     }
 }

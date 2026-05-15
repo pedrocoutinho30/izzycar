@@ -169,7 +169,11 @@ class SaleV2Controller extends Controller
             ->get();
 
         $clients = Client::orderBy('name')->get();
-        $expenses = Expense::where('vehicle_id', $sale->vehicle_id)->get();
+        $expenses = Expense::where('vehicle_id', $sale->vehicle_id)
+            ->whereNull('source_type')
+            ->where('movement_type', 'expense')
+            ->where('category', '!=', 'vehicle_purchase')
+            ->get();
         return view('admin.v2.sales.form', compact('sale', 'vehicles', 'clients', 'expenses'));
     }
 
@@ -407,7 +411,13 @@ class SaleV2Controller extends Controller
 {
     $vehicle = $sale->vehicle;
 
-    $expenses = Expense::where('vehicle_id', $vehicle->id)->get();
+    // Only manual expense entries for this vehicle — exclude auto-generated entries
+    // (vehicle purchase and sale income are accounted for directly via vehicle/sale fields)
+    $expenses = Expense::where('vehicle_id', $vehicle->id)
+        ->whereNull('source_type')
+        ->where('movement_type', 'expense')
+        ->where('category', '!=', 'vehicle_purchase')
+        ->get();
 
     $sellPrice = (float) $request['sale_price'];
     $purchasePrice = (float) $vehicle->purchase_price;

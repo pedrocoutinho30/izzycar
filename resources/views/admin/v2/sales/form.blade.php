@@ -251,11 +251,9 @@ $existAction = isset($sale) ? 'Editar' : 'Criar';
             @endif
                 </div>
             </div>
-        </div>
 
         <!-- Coluna Secundária (Direita) -->
         <div class="col-lg-4">
-            <div class="sticky-top" style="top: 80px;">
             @include('components.admin.action-card', [
                 'cancelButtonHref' => route('admin.v2.sales.index'),
                 'submitButtonLabel' => isset($sale) ? 'Atualizar Venda' : 'Criar Venda',
@@ -264,7 +262,6 @@ $existAction = isset($sale) ? 'Editar' : 'Criar';
                     'updated_at' => $sale->updated_at,
                 ] : null,
             ])
-            </div>
         </div>
 
     </div>

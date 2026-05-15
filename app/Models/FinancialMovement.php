@@ -112,31 +112,38 @@ class FinancialMovement extends Model
     }
 
     /**
-     * Sync (create or update) the financial movement for an Expense.
+     * Sync (create or update) the financial movement for an Expense/Movement.
+     * Supports both expense and income movement_type.
      */
     public static function syncFromExpense(Expense $expense): void
     {
         if (!$expense->amount) return;
 
-        $description = $expense->title ?? $expense->type;
-        $amountGross = (float) $expense->amount;
+        // Use pre-computed values if available, otherwise compute from amount + vat_rate
+        $amountGross = (float) ($expense->amount_gross ?? $expense->amount);
+        $vatRateNum  = (float) ($expense->vat_rate ?? 0);
+        $vatAmount   = (float) ($expense->vat_amount
+            ?? ($vatRateNum > 0 ? round($amountGross - ($amountGross / (1 + $vatRateNum / 100)), 2) : 0.0));
+        $amountNet   = (float) ($expense->amount_net ?? ($amountGross - $vatAmount));
 
-        // Parse VAT rate string like "23%", "6%", etc.
-        $vatRateNum = 0.0;
-        if ($expense->vat_rate && $expense->vat_rate !== 'sem_iva' && $expense->vat_rate !== '0%') {
-            $vatRateNum = (float) str_replace('%', '', $expense->vat_rate);
-        }
+        // Use new movement_type if set, default to 'expense'
+        $movableType = in_array($expense->movement_type, ['income']) ? 'income' : 'expense';
 
-        $vatAmount = $vatRateNum > 0
-            ? round($amountGross - ($amountGross / (1 + $vatRateNum / 100)), 2)
-            : 0.0;
-        $amountNet = $amountGross - $vatAmount;
+        // Use new category if available, otherwise map old type/expense_category
+        $category = $expense->category
+            ?? $expense->expense_category
+            ?? ($expense->type ?? 'other');
+
+        // Map to Portuguese label for the financial ledger
+        $categoryLabel = \App\Models\Expense::categories()[$category] ?? ucfirst($category);
+
+        $description = $expense->title ?? $categoryLabel;
 
         self::updateOrCreate(
             ['movable_type' => Expense::class, 'movable_id' => $expense->id],
             [
-                'type'          => 'expense',
-                'category'      => 'Despesa',
+                'type'          => $movableType,
+                'category'      => $categoryLabel,
                 'description'   => $description,
                 'amount_gross'  => $amountGross,
                 'vat_rate'      => $vatRateNum > 0 ? $vatRateNum : null,

@@ -748,16 +748,9 @@
             </div>
 
             <div class="nav-item">
-                <a href="{{ route('admin.v2.expenses.index') }}" class="nav-link {{ request()->routeIs('admin.v2.expenses.*') ? 'active' : '' }}">
-                    <i class="bi bi-receipt"></i>
-                    <span>Despesas</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.financial.dashboard') }}" class="nav-link {{ request()->routeIs('admin.v2.financial.*') ? 'active' : '' }}">
-                    <i class="bi bi-wallet2"></i>
-                    <span>Financeiro</span>
+                <a href="{{ route('admin.v2.movements.index') }}" class="nav-link {{ request()->routeIs('admin.v2.movements.*') || request()->routeIs('admin.v2.expenses.*') ? 'active' : '' }}">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Movimentos</span>
                 </a>
             </div>
 

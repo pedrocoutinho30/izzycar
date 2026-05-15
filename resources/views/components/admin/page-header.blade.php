@@ -1,6 +1,9 @@
 @php
-    $actionHref = $actionHref ?? null;
+    $actionHref  = $actionHref  ?? null;
     $actionLabel = $actionLabel ?? null;
+    $action2Href  = $action2Href  ?? null;
+    $action2Label = $action2Label ?? null;
+    $action2Icon  = $action2Icon  ?? 'bi-arrow-right';
     $subtitle = $subtitle ?? null;
 @endphp
 
@@ -28,11 +31,21 @@
             @endif
         </div>
 
-        @if ($actionHref)
-        <a href="{{ $actionHref }}" class="btn btn-primary-modern">
-            <i class="bi bi-plus-lg"></i>
-            {{ $actionLabel }}
-        </a>
+        @if ($actionHref || $action2Href)
+        <div class="d-flex gap-2 flex-wrap">
+            @if ($action2Href)
+            <a href="{{ $action2Href }}" class="btn btn-secondary-modern">
+                <i class="bi {{ $action2Icon }} me-1"></i>
+                {{ $action2Label }}
+            </a>
+            @endif
+            @if ($actionHref)
+            <a href="{{ $actionHref }}" class="btn btn-primary-modern">
+                <i class="bi bi-plus-lg me-1"></i>
+                {{ $actionLabel }}
+            </a>
+            @endif
+        </div>
         @endif
     </div>
 </div>
