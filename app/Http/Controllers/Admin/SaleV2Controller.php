@@ -220,185 +220,286 @@ class SaleV2Controller extends Controller
     }
 
 
+    // public function calculate(Sale $sale, $request)
+    // {
+    //     $validatedData = [];
+    //     $vehicle = $sale->vehicle;
+        
+    //     // Buscar despesas associadas ao veículo
+    //     $expenses = Expense::where('vehicle_id', $vehicle->id)->get();
+    //     $totalExpenses = $expenses->sum('amount');
+
+    //     // Dados base
+    //     $sellPrice = $request['sale_price'];
+    //     $purchasePrice = $vehicle->purchase_price;
+    //     $purchaseType = $vehicle->purchase_type;
+        
+    //     // Inicializar variáveis
+    //     $gross_margin = 0;
+    //     $net_margin = 0;
+    //     $vat_paid = 0;
+    //     $vat_deducible_purchase = 0;
+    //     $vat_settle_sale = 0;
+
+    //     // Calcular com base no tipo de compra
+    //     if ($purchaseType == 'Sem Iva') {
+    //         // Compra sem IVA, venda com IVA 23%
+    //         $sell_value_without_vat = $sellPrice / 1.23;
+    //         $vat_settle_sale = $sellPrice - $sell_value_without_vat;
+            
+    //         // IVA a pagar é todo o IVA da venda (não há IVA dedutível na compra)
+    //         $vat_paid = $vat_settle_sale;
+            
+    //         // Calcular despesas sem IVA para margem líquida
+    //         $expenses_without_vat = 0;
+    //         foreach ($expenses as $expense) {
+    //             if ($expense->vat_rate == '23%') {
+    //                 $expenses_without_vat += $expense->amount / 1.23;
+    //             } else if ($expense->vat_rate == '19%') {
+    //                 $expenses_without_vat += $expense->amount / 1.19;
+    //             } else if ($expense->vat_rate == '6%') {
+    //                 $expenses_without_vat += $expense->amount / 1.06;
+    //             } else {
+    //                 $expenses_without_vat += $expense->amount;
+    //             }
+    //         }
+            
+    //         // Margens
+    //         $gross_margin = $sellPrice - $purchasePrice - $totalExpenses;
+    //         $net_margin = $sell_value_without_vat - $purchasePrice - $expenses_without_vat;
+            
+    //     } else if ($purchaseType == 'Geral') {
+    //         // Regime geral: o utilizador inseriu o valor LÍQUIDO (sem IVA) no veículo.
+    //         // IVA pago na compra: o valor real inserido no veículo (pode ser 0 se não foi pago)
+    //         $vatRateGeral = ($vehicle->purchase_vat_rate ?? 23) / 100;
+    //         $purchase_value_without_vat = $purchasePrice;
+    //         $vat_on_purchase            = $vehicle->purchase_vat_paid ?? 0;
+
+    //         $calculatedData = $this->calculateIvaGeral($sellPrice, $purchase_value_without_vat, $vat_on_purchase, $expenses, $vatRateGeral);
+    //         $gross_margin = $calculatedData['gross_margin'];
+    //         $net_margin = $calculatedData['net_margin'];
+    //         $vat_paid = $calculatedData['vat_paid'];
+    //         $vat_settle_sale = $calculatedData['vat_settle_sale'];
+    //         $vat_deducible_purchase = $calculatedData['vat_deducible_purchase'];
+            
+    //     } else if ($purchaseType == 'Margem') {
+    //         // Regime de IVA de margem (usado em veículos usados)
+    //         // IVA só incide sobre a margem (venda - compra)
+    //         $vatRateMargem = ($vehicle->purchase_vat_rate ?? 23) / 100;
+    //         $vatDivisor = 1 + $vatRateMargem;
+    //         $margin = $sellPrice - $purchasePrice;
+    //         $margin_without_vat = $margin / $vatDivisor;
+    //         $vat_on_margin = $margin - $margin_without_vat;
+            
+    //         // Calcular despesas sem IVA para margem líquida
+    //         $expenses_without_vat = 0;
+    //         foreach ($expenses as $expense) {
+    //             if ($expense->vat_rate == '23%') {
+    //                 $expenses_without_vat += $expense->amount / 1.23;
+    //             } else if ($expense->vat_rate == '19%') {
+    //                 $expenses_without_vat += $expense->amount / 1.19;
+    //             } else if ($expense->vat_rate == '6%') {
+    //                 $expenses_without_vat += $expense->amount / 1.06;
+    //             } else {
+    //                 $expenses_without_vat += $expense->amount;
+    //             }
+    //         }
+            
+    //         $gross_margin = $margin - $totalExpenses;
+    //         $net_margin = $margin_without_vat - $expenses_without_vat;
+    //         $vat_paid = $vat_on_margin;
+            
+    //         // No regime de margem, a venda é (compra + margem com IVA)
+    //         $vat_settle_sale = $vat_on_margin;
+    //     }
+
+    //     // Calcular rentabilidades
+    //     $net_profitability = $sellPrice > 0 ? ($net_margin / $sellPrice) * 100 : 0;
+    //     $gross_profitability = $sellPrice > 0 ? ($gross_margin / $sellPrice) * 100 : 0;
+
+    //     // Custo total do veículo (base de compra + despesas)
+    //     if ($purchaseType == 'Geral') {
+    //         // Importação: o IVA da compra não foi pago em PT, custo real = preço de compra líquido
+    //         $totalCost = $purchasePrice + $totalExpenses;
+    //     } else {
+    //         $totalCost = $purchasePrice + $totalExpenses;
+    //     }
+
+    //     // Preparar dados para atualização
+    //     $validatedData['gross_margin'] = $gross_margin;
+    //     $validatedData['net_margin'] = $net_margin;
+    //     $validatedData['vat_paid'] = $vat_paid;
+    //     $validatedData['vat_deducible_purchase'] = $vat_deducible_purchase;
+    //     $validatedData['vat_settle_sale'] = $vat_settle_sale;
+    //     $validatedData['totalExpenses'] = $totalExpenses;
+    //     $validatedData['totalCost'] = $totalCost;
+    //     $validatedData['net_profitability'] = $net_profitability;
+    //     $validatedData['gross_profitability'] = $gross_profitability;
+
+    //     $sale->update($validatedData);
+    // }
+
+    // public function calculateIvaGeral($sellPrice, $purchaseValueWithoutVat, $vatOnPurchase, $expenses, $vatRate = 0.23)
+    // {
+    //     // Venda COM IVA à taxa configurada (por defeito 23%)
+    //     $vatDivisor = 1 + $vatRate;
+    //     $sell_value_without_vat = $sellPrice / $vatDivisor;
+    //     $vat_settle_sale = $sellPrice - $sell_value_without_vat;
+        
+    //     // IVA dedutível das despesas
+    //     $vat_deducible_expenses = 0;
+    //     foreach ($expenses as $expense) {
+    //         if ($expense->vat_rate == '23%') {
+    //             $expense_without_vat = $expense->amount / 1.23;
+    //             $vat_deducible_expenses += ($expense->amount - $expense_without_vat);
+    //         } else if ($expense->vat_rate == '19%') {
+    //             $expense_without_vat = $expense->amount / 1.19;
+    //             $vat_deducible_expenses += ($expense->amount - $expense_without_vat);
+    //         } else if ($expense->vat_rate == '6%') {
+    //             $expense_without_vat = $expense->amount / 1.06;
+    //             $vat_deducible_expenses += ($expense->amount - $expense_without_vat);
+    //         }
+    //         // Se for "sem iva", não há IVA para deduzir
+    //     }
+        
+    //     // IVA dedutível da compra: o valor real pago (passado como parâmetro)
+    //     // Se 0 ou nulo, nada a deduzir da compra (ex: importação sem IVA PT pago)
+    //     $vat_deducible_purchase = $vatOnPurchase;
+    //     $total_vat_deducible = $vat_deducible_purchase + $vat_deducible_expenses;
+        
+    //     // IVA a pagar = IVA liquidado na venda - total dedutível (compra + despesas)
+    //     $vat_paid = $vat_settle_sale - $total_vat_deducible;
+        
+    //     // Soma total das despesas (com IVA incluído)
+    //     $totalExpenses = $expenses->sum('amount');
+        
+    //     // Calcular despesas sem IVA para margem líquida
+    //     $expenses_without_vat = 0;
+    //     foreach ($expenses as $expense) {
+    //         if ($expense->vat_rate == '23%') {
+    //             $expenses_without_vat += $expense->amount / 1.23;
+    //         } else if ($expense->vat_rate == '19%') {
+    //             $expenses_without_vat += $expense->amount / 1.19;
+    //         } else if ($expense->vat_rate == '6%') {
+    //             $expenses_without_vat += $expense->amount / 1.06;
+    //         } else {
+    //             $expenses_without_vat += $expense->amount;
+    //         }
+    //     }
+        
+    //     // Margens
+    //     // Importação: preço de compra é o custo real (sem IVA PT)
+    //     // Margem bruta: preço venda - custo compra - despesas brutas
+    //     $gross_margin = $sellPrice - $purchaseValueWithoutVat - $totalExpenses;
+    //     // Margem líquida (verdadeiro lucro): tudo sem IVA
+    //     $net_margin = $sell_value_without_vat - $purchaseValueWithoutVat - $expenses_without_vat;
+
+    //     return [
+    //         'gross_margin' => $gross_margin,
+    //         'net_margin' => $net_margin,
+    //         'vat_paid' => $vat_paid,
+    //         'vat_settle_sale' => $vat_settle_sale,
+    //         'vat_deducible_purchase' => $vat_deducible_purchase,
+    //     ];
+    // }
+
     public function calculate(Sale $sale, $request)
-    {
-        $validatedData = [];
-        $vehicle = $sale->vehicle;
-        
-        // Buscar despesas associadas ao veículo
-        $expenses = Expense::where('vehicle_id', $vehicle->id)->get();
-        $totalExpenses = $expenses->sum('amount');
+{
+    $vehicle = $sale->vehicle;
 
-        // Dados base
-        $sellPrice = $request['sale_price'];
-        $purchasePrice = $vehicle->purchase_price;
-        $purchaseType = $vehicle->purchase_type;
-        
-        // Inicializar variáveis
-        $gross_margin = 0;
-        $net_margin = 0;
-        $vat_paid = 0;
-        $vat_deducible_purchase = 0;
-        $vat_settle_sale = 0;
+    $expenses = Expense::where('vehicle_id', $vehicle->id)->get();
 
-        // Calcular com base no tipo de compra
-        if ($purchaseType == 'Sem Iva') {
-            // Compra sem IVA, venda com IVA 23%
-            $sell_value_without_vat = $sellPrice / 1.23;
-            $vat_settle_sale = $sellPrice - $sell_value_without_vat;
-            
-            // IVA a pagar é todo o IVA da venda (não há IVA dedutível na compra)
-            $vat_paid = $vat_settle_sale;
-            
-            // Calcular despesas sem IVA para margem líquida
-            $expenses_without_vat = 0;
-            foreach ($expenses as $expense) {
-                if ($expense->vat_rate == '23%') {
-                    $expenses_without_vat += $expense->amount / 1.23;
-                } else if ($expense->vat_rate == '19%') {
-                    $expenses_without_vat += $expense->amount / 1.19;
-                } else if ($expense->vat_rate == '6%') {
-                    $expenses_without_vat += $expense->amount / 1.06;
-                } else {
-                    $expenses_without_vat += $expense->amount;
-                }
-            }
-            
-            // Margens
-            $gross_margin = $sellPrice - $purchasePrice - $totalExpenses;
-            $net_margin = $sell_value_without_vat - $purchasePrice - $expenses_without_vat;
-            
-        } else if ($purchaseType == 'Geral') {
-            // Regime geral: o utilizador inseriu o valor LÍQUIDO (sem IVA) no veículo.
-            // A taxa de IVA é configurável no veículo (purchase_vat_rate), default 23%
-            $vatRateGeral = ($vehicle->purchase_vat_rate ?? 23) / 100;
-            $purchase_value_without_vat = $purchasePrice;
-            $vat_on_purchase            = $purchasePrice * $vatRateGeral;
+    $sellPrice = (float) $request['sale_price'];
+    $purchasePrice = (float) $vehicle->purchase_price;
+    $purchaseType = $vehicle->purchase_type;
 
-            $calculatedData = $this->calculateIvaGeral($sellPrice, $purchase_value_without_vat, $vat_on_purchase, $expenses, $vatRateGeral);
-            $gross_margin = $calculatedData['gross_margin'];
-            $net_margin = $calculatedData['net_margin'];
-            $vat_paid = $calculatedData['vat_paid'];
-            $vat_settle_sale = $calculatedData['vat_settle_sale'];
-            $vat_deducible_purchase = $calculatedData['vat_deducible_purchase'];
-            
-        } else if ($purchaseType == 'Margem') {
-            // Regime de IVA de margem (usado em veículos usados)
-            // IVA só incide sobre a margem (venda - compra)
-            $vatRateMargem = ($vehicle->purchase_vat_rate ?? 23) / 100;
-            $vatDivisor = 1 + $vatRateMargem;
-            $margin = $sellPrice - $purchasePrice;
-            $margin_without_vat = $margin / $vatDivisor;
-            $vat_on_margin = $margin - $margin_without_vat;
-            
-            // Calcular despesas sem IVA para margem líquida
-            $expenses_without_vat = 0;
-            foreach ($expenses as $expense) {
-                if ($expense->vat_rate == '23%') {
-                    $expenses_without_vat += $expense->amount / 1.23;
-                } else if ($expense->vat_rate == '19%') {
-                    $expenses_without_vat += $expense->amount / 1.19;
-                } else if ($expense->vat_rate == '6%') {
-                    $expenses_without_vat += $expense->amount / 1.06;
-                } else {
-                    $expenses_without_vat += $expense->amount;
-                }
-            }
-            
-            $gross_margin = $margin - $totalExpenses;
-            $net_margin = $margin_without_vat - $expenses_without_vat;
-            $vat_paid = $vat_on_margin;
-            
-            // No regime de margem, a venda é (compra + margem com IVA)
-            $vat_settle_sale = $vat_on_margin;
-        }
+    $vatRateRaw  = $request['vat_rate'] ?? $sale->vat_rate ?? '23';
+    $vatRateSale = ($vatRateRaw === 'Sem IVA') ? 0.0 : ((float) $vatRateRaw / 100);
 
-        // Calcular rentabilidades
-        $net_profitability = $sellPrice > 0 ? ($net_margin / $sellPrice) * 100 : 0;
-        $gross_profitability = $sellPrice > 0 ? ($gross_margin / $sellPrice) * 100 : 0;
+    // =========================
+    // VENDA (SEMPRE BASE + IVA)
+    // =========================
+    $sellBase = $vatRateSale > 0 ? $this->baseValue($sellPrice, $vatRateSale) : $sellPrice;
+    $sellVat  = $sellPrice - $sellBase;
 
-        // Custo total do veículo (base de compra + despesas)
-        if ($purchaseType == 'Geral') {
-            // custo real inclui o IVA pago na compra (que depois é deduzido)
-            $vatRateForCost = ($vehicle->purchase_vat_rate ?? 23) / 100;
-            $totalCost = ($purchasePrice + $purchasePrice * $vatRateForCost) + $totalExpenses;
-        } else {
-            $totalCost = $purchasePrice + $totalExpenses;
-        }
+    // =========================
+    // DESPESAS (BASE + IVA)
+    // =========================
+    $expenseBase = 0;
+    $expenseVat = 0;
+    $totalExpensesGross = 0;
 
-        // Preparar dados para atualização
-        $validatedData['gross_margin'] = $gross_margin;
-        $validatedData['net_margin'] = $net_margin;
-        $validatedData['vat_paid'] = $vat_paid;
-        $validatedData['vat_deducible_purchase'] = $vat_deducible_purchase;
-        $validatedData['vat_settle_sale'] = $vat_settle_sale;
-        $validatedData['totalExpenses'] = $totalExpenses;
-        $validatedData['totalCost'] = $totalCost;
-        $validatedData['net_profitability'] = $net_profitability;
-        $validatedData['gross_profitability'] = $gross_profitability;
+    foreach ($expenses as $expense) {
 
-        $sale->update($validatedData);
+        $rate = ((float) str_replace('%', '', $expense->vat_rate)) / 100;
+
+        $base = $expense->amount / (1 + $rate);
+        $vat  = $expense->amount - $base;
+
+        $expenseBase += $base;
+        $expenseVat  += $vat;
+        $totalExpensesGross += $expense->amount;
     }
 
-    public function calculateIvaGeral($sellPrice, $purchaseValueWithoutVat, $vatOnPurchase, $expenses, $vatRate = 0.23)
-    {
-        // Venda COM IVA à taxa configurada (por defeito 23%)
-        $vatDivisor = 1 + $vatRate;
-        $sell_value_without_vat = $sellPrice / $vatDivisor;
-        $vat_settle_sale = $sellPrice - $sell_value_without_vat;
-        
-        // IVA dedutível das despesas
-        $vat_deducible_expenses = 0;
-        foreach ($expenses as $expense) {
-            if ($expense->vat_rate == '23%') {
-                $expense_without_vat = $expense->amount / 1.23;
-                $vat_deducible_expenses += ($expense->amount - $expense_without_vat);
-            } else if ($expense->vat_rate == '19%') {
-                $expense_without_vat = $expense->amount / 1.19;
-                $vat_deducible_expenses += ($expense->amount - $expense_without_vat);
-            } else if ($expense->vat_rate == '6%') {
-                $expense_without_vat = $expense->amount / 1.06;
-                $vat_deducible_expenses += ($expense->amount - $expense_without_vat);
-            }
-            // Se for "sem iva", não há IVA para deduzir
-        }
-        
-        // IVA dedutível total: IVA da compra + IVA das despesas
-        $vat_deducible_purchase = $vatOnPurchase;
-        $total_vat_deducible = $vat_deducible_purchase + $vat_deducible_expenses;
-        
-        // IVA a pagar = IVA liquidado na venda - IVA dedutível
-        $vat_paid = $vat_settle_sale - $total_vat_deducible;
-        
-        // Soma total das despesas (com IVA incluído)
-        $totalExpenses = $expenses->sum('amount');
-        
-        // Calcular despesas sem IVA para margem líquida
-        $expenses_without_vat = 0;
-        foreach ($expenses as $expense) {
-            if ($expense->vat_rate == '23%') {
-                $expenses_without_vat += $expense->amount / 1.23;
-            } else if ($expense->vat_rate == '19%') {
-                $expenses_without_vat += $expense->amount / 1.19;
-            } else if ($expense->vat_rate == '6%') {
-                $expenses_without_vat += $expense->amount / 1.06;
-            } else {
-                $expenses_without_vat += $expense->amount;
-            }
-        }
-        
-        // Margens
-        // Margem bruta: preço venda - (custo compra com IVA) - despesas brutas
-        $gross_margin = $sellPrice - ($purchaseValueWithoutVat * $vatDivisor) - $totalExpenses;
-        // Margem líquida (verdadeiro lucro): tudo sem IVA
-        $net_margin = $sell_value_without_vat - $purchaseValueWithoutVat - $expenses_without_vat;
+    // =========================
+    // COMPRA
+    // =========================
+    $purchaseBase = $purchasePrice;
+    $purchaseVat  = (float) ($vehicle->purchase_vat_paid ?? 0);
 
-        return [
-            'gross_margin' => $gross_margin,
-            'net_margin' => $net_margin,
-            'vat_paid' => $vat_paid,
-            'vat_settle_sale' => $vat_settle_sale,
-            'vat_deducible_purchase' => $vat_deducible_purchase,
-        ];
+    // =========================
+    // LUCROS (CORRIGIDOS)
+    // =========================
+
+    // lucro real (sem IVA)
+    $net_margin =
+        $sellBase
+        - $purchaseBase
+        - $expenseBase;
+
+    // lucro bruto (cash)
+    $gross_margin =
+        $sellPrice
+        - ($purchaseBase + $purchaseVat)
+        - $totalExpensesGross;
+
+    // =========================
+    // IVA
+    // =========================
+    $vat_paid =
+        $sellVat
+        - $purchaseVat
+        - $expenseVat;
+
+    // =========================
+    // RENTABILIDADE
+    // =========================
+    $net_profitability = $sellPrice > 0 ? ($net_margin / $sellPrice) * 100 : 0;
+    $gross_profitability = $sellPrice > 0 ? ($gross_margin / $sellPrice) * 100 : 0;
+
+    // =========================
+    // CUSTO TOTAL
+    // =========================
+    $totalCost = $purchaseBase + $totalExpensesGross;
+
+    $sale->update([
+        'gross_margin' => $gross_margin,
+        'net_margin' => $net_margin,
+        'vat_paid' => $vat_paid,
+        'vat_settle_sale' => $sellVat,
+        'totalExpenses' => $totalExpensesGross,
+        'totalCost' => $totalCost,
+        'net_profitability' => $net_profitability,
+        'gross_profitability' => $gross_profitability,
+    ]);
+}
+    private function baseValue($amount, $rate)
+    {
+        return $amount / (1 + $rate);
+    }
+
+    private function vatValue($amount, $rate)
+    {
+        return $amount - $this->baseValue($amount, $rate);
     }
 }

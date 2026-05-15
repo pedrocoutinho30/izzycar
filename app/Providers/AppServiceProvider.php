@@ -7,8 +7,14 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\Menu;
 use Illuminate\Support\Facades\View;
 use App\Observers\SeoObserver;
+use App\Observers\SaleObserver;
+use App\Observers\VehicleObserver;
+use App\Observers\ExpenseObserver;
 use App\Models\Page;
 use App\Models\Proposal;
+use App\Models\Sale;
+use App\Models\Vehicle;
+use App\Models\Expense;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +34,9 @@ class AppServiceProvider extends ServiceProvider
 
         Page::observe(SeoObserver::class);
         Proposal::observe(SeoObserver::class);
+        Sale::observe(SaleObserver::class);
+        Vehicle::observe(VehicleObserver::class);
+        Expense::observe(ExpenseObserver::class);
         View::composer('*', function ($view) {
             $menus = Menu::orderBy('order')
                 ->where('show_online', 1)

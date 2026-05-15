@@ -288,7 +288,23 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
                         @error('purchase_vat_rate')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text text-muted">Taxa de IVA dedutível na compra (o preço inserido é líquido, sem IVA).</div>
+                        <div class="form-text text-muted">Taxa de IVA aplicada na compra (o preço inserido é líquido, sem IVA).</div>
+                    </div>
+
+                    {{-- IVA pago na compra (só visível quando Tipo = Geral) --}}
+                    <div class="col-md-6" id="purchase_vat_paid_group" style="display:none;">
+                        <label class="form-label">IVA Pago na Compra (€)</label>
+                        <input type="number" name="purchase_vat_paid" id="purchase_vat_paid"
+                            class="form-control rounded shadow-sm @error('purchase_vat_paid') is-invalid @enderror"
+                            value="{{ old('purchase_vat_paid', $vehicle->purchase_vat_paid ?? '') }}"
+                            step="0.01" min="0" placeholder="0.00">
+                        @error('purchase_vat_paid')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text text-muted">
+                            Valor de IVA efetivamente pago na compra. Se preenchido, será deduzido ao IVA a pagar na venda.
+                            Deixe em branco se o IVA ainda não foi pago (ex: importação).
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -730,6 +746,8 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
         const geralCalcDiv       = document.getElementById('purchase-price-geral-calc');
         const geralGrossSpan     = document.getElementById('purchase-price-gross');
         const vatRateGroup       = document.getElementById('purchase_vat_rate_group');
+        const vatPaidGroup        = document.getElementById('purchase_vat_paid_group');
+        const vatPaidInput        = document.getElementById('purchase_vat_paid');
         const vatRateSelect      = document.getElementById('purchase_vat_rate');
 
         const hints = {
@@ -757,7 +775,11 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
             const type = purchaseTypeSelect.value;
             const isGeral = type === 'Geral';
             vatRateGroup.style.display = isGeral ? '' : 'none';
-            if (!isGeral) vatRateSelect.value = '';
+            vatPaidGroup.style.display = isGeral ? '' : 'none';
+            if (!isGeral) {
+                vatRateSelect.value = '';
+                if (vatPaidInput) vatPaidInput.value = '';
+            }
             const cfg = hints[type];
             if (cfg) {
                 hintDiv.innerHTML = isGeral ? getGeralHint() : cfg.html;

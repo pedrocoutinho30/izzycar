@@ -172,6 +172,12 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     Route::get('v2/dashboard', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'index'])->name('admin.v2.dashboard');
     Route::get('v2/dashboard/chart-data', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'getChartData'])->name('admin.v2.dashboard.chart-data');
 
+    // ============================================================
+    // DASHBOARD FINANCEIRO
+    // ============================================================
+    Route::get('v2/financial', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'index'])->name('admin.v2.financial.dashboard');
+    Route::get('v2/financial/seed', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'seedExisting'])->name('admin.v2.financial.seed');
+
     Route::prefix('v2/proposals')->name('admin.v2.proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'create'])->name('create');
