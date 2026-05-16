@@ -78,6 +78,8 @@
     </div>
 
     @forelse($vehicles as $vehicle)
+
+
     @php
     $mainImage = $vehicle->images->first();
     $imageUrl = $mainImage
@@ -127,7 +129,7 @@
     ] : null,
     $vehicle->purchase_price ? [
     'icon' => 'bi-tag',
-    'text' => 'Gasto total: ' . number_format($vehicle->purchase_price + $vehicle->expenses->sum('amount'), 0, ',', '.') . '€'
+    'text' => 'Gasto total: ' . number_format( $vehicle->expenses()->where('category', '!=', 'vehicle_sale')->sum('amount'), 0, ',', '.') . '€'
     ] : null,
     $vehicle->registration ? [
     'icon' => 'bi-credit-card-2-front',

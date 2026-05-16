@@ -93,8 +93,16 @@
     'color' => 'info'
     ] : null,
     $sale->gross_margin ? [
-    'text' => 'Margem: ' . number_format($sale->gross_margin, 1) . '€',
-    'color' => $sale->gross_margin > 15 ? 'success' : 'warning'
+    'text' => 'Margem Bruta: ' . number_format($sale->gross_margin, 0, ',', '.') . '€',
+    'color' => $sale->gross_margin > 0 ? 'success' : 'danger'
+    ] : null,
+    $sale->net_margin ? [
+    'text' => 'Margem Líquida: ' . number_format($sale->net_margin, 0, ',', '.') . '€',
+    'color' => $sale->net_margin > 0 ? 'success' : 'danger'
+    ] : null,
+    $sale->vat_paid ? [
+    'text' => 'IVA: ' . number_format($sale->vat_paid, 0, ',', '.') . '€',
+    'color' => 'secondary'
     ] : null
     ]),
     'meta' => array_filter([
