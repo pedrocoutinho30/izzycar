@@ -78,6 +78,13 @@
                 <span class="badge bg-secondary rounded-pill">{{ $vehicle->photos->count() }}</span>
             @endif
         </a>
+        <a class="v3-tab-link" data-tab="equipment" href="#">
+            <i class="bi bi-star"></i> <span class="d-none d-md-inline">Equipamento</span>
+            @php $equippedCount = $vehicle->attributeValues->where('value', '!=', '0')->where('value', '!=', '')->count(); @endphp
+            @if($equippedCount)
+                <span class="badge bg-secondary rounded-pill">{{ $equippedCount }}</span>
+            @endif
+        </a>
         @if($vehicle->is_imported)
         <a class="v3-tab-link" data-tab="legalization" href="#">
             <i class="bi bi-globe2"></i> Legalização
@@ -106,6 +113,7 @@
     <div id="tab-documents"    class="v3-tab-pane">@include('admin.v3.vehicles.partials.tab-documents')</div>
     <div id="tab-sale"         class="v3-tab-pane">@include('admin.v3.vehicles.partials.tab-sale')</div>
     <div id="tab-photos"       class="v3-tab-pane">@include('admin.v3.vehicles.partials.tab-photos')</div>
+    <div id="tab-equipment"    class="v3-tab-pane">@include('admin.v3.vehicles.partials.tab-equipment')</div>
     @if($vehicle->is_imported)
     <div id="tab-legalization" class="v3-tab-pane">@include('admin.v3.vehicles.partials.tab-legalization')</div>
     @endif
@@ -172,8 +180,9 @@
     // Tabs that auto-save on switch
     const SAVEABLE  = ['general', 'purchase'];
     const SAVE_URLS = {
-        general:  '{{ route("admin.v3.vehicles.save-general",  $vehicle->id) }}',
-        purchase: '{{ route("admin.v3.vehicles.save-purchase", $vehicle->id) }}',
+        general:   '{{ route("admin.v3.vehicles.save-general",   $vehicle->id) }}',
+        purchase:  '{{ route("admin.v3.vehicles.save-purchase",  $vehicle->id) }}',
+        equipment: '{{ route("admin.v3.vehicles.save-equipment", $vehicle->id) }}',
     };
     const CSRF = document.querySelector('meta[name="csrf-token"]')?.content
               || '{{ csrf_token() }}';

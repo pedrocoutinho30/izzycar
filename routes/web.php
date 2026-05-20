@@ -287,8 +287,9 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::delete('/{id}',   [App\Http\Controllers\Admin\V3VehicleController::class, 'destroy'])->name('destroy');
 
         // Auto-save (AJAX)
-        Route::post('/{id}/save-general',  [App\Http\Controllers\Admin\V3VehicleController::class, 'saveGeneral'])->name('save-general');
-        Route::post('/{id}/save-purchase', [App\Http\Controllers\Admin\V3VehicleController::class, 'savePurchase'])->name('save-purchase');
+        Route::post('/{id}/save-general',    [App\Http\Controllers\Admin\V3VehicleController::class, 'saveGeneral'])->name('save-general');
+        Route::post('/{id}/save-purchase',   [App\Http\Controllers\Admin\V3VehicleController::class, 'savePurchase'])->name('save-purchase');
+        Route::post('/{id}/save-equipment',  [App\Http\Controllers\Admin\V3VehicleController::class, 'saveEquipment'])->name('save-equipment');
 
         // Expenses
         Route::post('/{id}/expenses',                 [App\Http\Controllers\Admin\V3VehicleController::class, 'storeExpense'])->name('expenses.store');

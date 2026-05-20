@@ -11,6 +11,7 @@ class VehicleAttributeValue extends Model
 
     protected $fillable = [
         'vehicle_id',
+        'v3_vehicle_id',
         'attribute_id',
         'value',
     ];
@@ -29,5 +30,10 @@ class VehicleAttributeValue extends Model
     public function attribute()
     {
         return $this->belongsTo(VehicleAttribute::class, 'attribute_id');
+    }
+
+    public function v3Vehicle()
+    {
+        return $this->belongsTo(V3Vehicle::class, 'v3_vehicle_id');
     }
 }

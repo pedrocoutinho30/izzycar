@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\VehicleAttributeValue;
 
 class V3Vehicle extends Model
 {
@@ -82,6 +83,11 @@ class V3Vehicle extends Model
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class, 'v3_vehicle_id');
+    }
+
+    public function attributeValues(): HasMany
+    {
+        return $this->hasMany(VehicleAttributeValue::class, 'v3_vehicle_id');
     }
 
     // ── Computed attributes ─────────────────────────────────────────────────

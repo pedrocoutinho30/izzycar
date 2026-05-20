@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AttributeGroup;
 use App\Models\Brand;
 use App\Models\Client;
 use App\Models\Expense;
@@ -13,6 +14,8 @@ use App\Models\Supplier;
 use App\Models\V3Vehicle;
 use App\Models\V3VehicleDocument;
 use App\Models\V3VehiclePhoto;
+use App\Models\VehicleAttribute;
+use App\Models\VehicleAttributeValue;
 use App\Services\SaleCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -87,9 +90,10 @@ class V3VehicleController extends Controller
             'supplier',
             'photos',
             'documents',
-            'expenses'     => fn ($q) => $q->orderBy('expense_date', 'desc'),
-            'sales'        => fn ($q) => $q->latest()->with('client'),
-            'legalization' => fn ($q) => $q->with('documents'),
+            'expenses'        => fn ($q) => $q->orderBy('expense_date', 'desc'),
+            'sales'           => fn ($q) => $q->latest()->with('client'),
+            'legalization'    => fn ($q) => $q->with('documents'),
+            'attributeValues',
         ])->findOrFail($id);
 
         $suppliers = Supplier::orderBy('company_name')->get();
@@ -98,7 +102,16 @@ class V3VehicleController extends Controller
         $brands    = Brand::with(['models' => fn ($q) => $q->with('submodels')->orderBy('name')])
             ->orderBy('name')->get();
 
-        return view('admin.v3.vehicles.edit', compact('vehicle', 'suppliers', 'clients', 'docTypes', 'brands'));
+        $groupOrder      = AttributeGroup::orderBy('order')->get()->pluck('name')->toArray();
+        $attributes      = VehicleAttribute::orderBy('order')->get()
+            ->groupBy('attribute_group')
+            ->sortBy(fn ($g, $k) => array_search($k, $groupOrder));
+        $attributeValues = $vehicle->attributeValues->keyBy('attribute_id');
+
+        return view('admin.v3.vehicles.edit', compact(
+            'vehicle', 'suppliers', 'clients', 'docTypes', 'brands',
+            'attributes', 'attributeValues'
+        ));
     }
 
     public function destroy($id)
@@ -115,8 +128,31 @@ class V3VehicleController extends Controller
     }
 
     // ═══════════════════════════════════════════════════
-    // AUTO-SAVE (AJAX) — General + Purchase tabs
+    // AUTO-SAVE (AJAX) — General + Purchase + Equipment
     // ═══════════════════════════════════════════════════
+
+    public function saveEquipment(Request $request, $id)
+    {
+        $vehicle = V3Vehicle::findOrFail($id);
+
+        // Delete existing attribute values for this V3 vehicle
+        $vehicle->attributeValues()->delete();
+
+        // Recreate from submitted checkboxes / selects
+        foreach ($request->input('attributes', []) as $attributeId => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+            VehicleAttributeValue::create([
+                'v3_vehicle_id' => $vehicle->id,
+                'attribute_id'  => (int) $attributeId,
+                'value'         => is_array($value) ? json_encode($value) : $value,
+            ]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Equipamento guardado.']);
+    }
+
 
     public function saveGeneral(Request $request, $id)
     {
