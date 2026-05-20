@@ -568,6 +568,11 @@ class ProposalController extends Controller
         $proposal = Proposal::where('proposal_code', $proposal_code)
             ->firstOrFail();
 
+        // Proposals older than 15 days are considered expired
+        if ($proposal->created_at->diffInDays(now()) > 15) {
+            return view('proposals.expired', compact('proposal'));
+        }
+
         $attributes = [];
 
         $potencia = "";

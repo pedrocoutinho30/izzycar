@@ -38,18 +38,18 @@
                 <div class="col-12">
                     <label class="form-label fw-semibold">Veículo</label>
                     <div class="d-flex gap-2 mb-2">
-                        <button type="button" class="btn btn-sm btn-outline-primary {{ $legalization->vehicle_id ? 'active' : '' }}" id="btnModeVehicle"
+                        <button type="button" class="btn btn-sm btn-outline-primary {{ $legalization->v3_vehicle_id ? 'active' : '' }}" id="btnModeVehicle"
                                 onclick="setMode('vehicle')">
                             <i class="bi bi-car-front me-1"></i> Selecionar do inventário
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary {{ !$legalization->vehicle_id ? 'active' : '' }}" id="btnModeManual"
+                        <button type="button" class="btn btn-sm btn-outline-secondary {{ !$legalization->v3_vehicle_id ? 'active' : '' }}" id="btnModeManual"
                                 onclick="setMode('manual')">
                             <i class="bi bi-pencil me-1"></i> Preencher manualmente
                         </button>
                     </div>
 
-                    <div id="vehiclePickerBlock" style="{{ !$legalization->vehicle_id ? 'display:none' : '' }}">
-                        <select name="vehicle_id" id="vehicleSelect" class="form-select"
+                    <div id="vehiclePickerBlock" style="{{ !$legalization->v3_vehicle_id ? 'display:none' : '' }}">
+                        <select name="v3_vehicle_id" id="vehicleSelect" class="form-select"
                                 onchange="fillFromVehicle(this)">
                             <option value="">— Selecionar veículo —</option>
                             @foreach($vehicles as $v)
@@ -58,7 +58,7 @@
                                         data-model="{{ $v->model }}"
                                         data-fuel="{{ $v->fuel }}"
                                         data-registration="{{ $v->registration }}"
-                                        {{ old('vehicle_id', $legalization->vehicle_id) == $v->id ? 'selected' : '' }}>
+                                        {{ old('v3_vehicle_id', $legalization->v3_vehicle_id) == $v->id ? 'selected' : '' }}>
                                     {{ $v->reference }} — {{ $v->brand }} {{ $v->model }}
                                     {{ $v->registration ? '(' . $v->registration . ')' : '' }}
                                 </option>
@@ -68,7 +68,7 @@
                 </div>
 
                 {{-- ── Campos manuais ─────────────────────────────────── --}}
-                <div id="manualFields" class="col-12" style="{{ $legalization->vehicle_id ? 'display:none' : '' }}">
+                <div id="manualFields" class="col-12" style="{{ $legalization->v3_vehicle_id ? 'display:none' : '' }}">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Marca</label>

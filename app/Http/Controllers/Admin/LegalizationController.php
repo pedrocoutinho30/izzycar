@@ -7,7 +7,7 @@ use App\Models\Brand;
 use App\Models\Client;
 use App\Models\Legalization;
 use App\Models\LegalizationDocument;
-use App\Models\Vehicle;
+use App\Models\V3Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -39,7 +39,8 @@ class LegalizationController extends Controller
     {
         $clients  = Client::orderBy('name')->get();
         $brands   = Brand::orderBy('name')->get();
-        $vehicles = Vehicle::select('id', 'reference', 'brand', 'model', 'fuel', 'registration')
+        $vehicles = V3Vehicle::select('id', 'reference', 'brand', 'model', 'fuel', 'registration')
+            ->whereNotIn('status', ['vendido'])
             ->orderBy('reference')->get();
 
         return view('admin.v2.legalizations.create', compact('clients', 'brands', 'vehicles'));
@@ -51,19 +52,19 @@ class LegalizationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'vehicle_id'      => 'nullable|exists:vehicles,id',
+            'v3_vehicle_id'   => 'nullable|exists:v3_vehicles,id',
             'client_id'       => 'nullable|exists:clients,id',
-            'marca'           => 'required_without:vehicle_id|nullable|string|max:100',
-            'modelo'          => 'required_without:vehicle_id|nullable|string|max:100',
-            'combustivel'     => 'required_without:vehicle_id|nullable|string|max:50',
+            'marca'           => 'required_without:v3_vehicle_id|nullable|string|max:100',
+            'modelo'          => 'required_without:v3_vehicle_id|nullable|string|max:100',
+            'combustivel'     => 'required_without:v3_vehicle_id|nullable|string|max:50',
             'matricula'       => 'nullable|string|max:20',
             'num_homologacao' => 'nullable|string|max:100',
             'notas'           => 'nullable|string',
         ]);
 
-        // If a vehicle is selected, fill fields from it
-        if (!empty($validated['vehicle_id'])) {
-            $vehicle = Vehicle::findOrFail($validated['vehicle_id']);
+        // If a V3 vehicle is selected, fill fields from it
+        if (!empty($validated['v3_vehicle_id'])) {
+            $vehicle = V3Vehicle::findOrFail($validated['v3_vehicle_id']);
             $validated['marca']       = $vehicle->brand;
             $validated['modelo']      = $vehicle->model;
             $validated['combustivel'] = $vehicle->fuel ?? 'Gasolina';
@@ -214,7 +215,7 @@ class LegalizationController extends Controller
     {
         $clients  = Client::orderBy('name')->get();
         $brands   = Brand::orderBy('name')->get();
-        $vehicles = Vehicle::select('id', 'reference', 'brand', 'model', 'fuel', 'registration')
+        $vehicles = V3Vehicle::select('id', 'reference', 'brand', 'model', 'fuel', 'registration')
             ->orderBy('reference')->get();
 
         return view('admin.v2.legalizations.edit', compact('legalization', 'clients', 'brands', 'vehicles'));
@@ -226,7 +227,7 @@ class LegalizationController extends Controller
     public function update(Request $request, Legalization $legalization)
     {
         $validated = $request->validate([
-            'vehicle_id'      => 'nullable|exists:vehicles,id',
+            'v3_vehicle_id'   => 'nullable|exists:v3_vehicles,id',
             'client_id'       => 'nullable|exists:clients,id',
             'marca'           => 'nullable|string|max:100',
             'modelo'          => 'nullable|string|max:100',
@@ -236,11 +237,13 @@ class LegalizationController extends Controller
             'notas'           => 'nullable|string',
         ]);
 
-        if (!empty($validated['vehicle_id'])) {
-            $vehicle = Vehicle::findOrFail($validated['vehicle_id']);
+        if (!empty($validated['v3_vehicle_id'])) {
+            $vehicle = V3Vehicle::findOrFail($validated['v3_vehicle_id']);
             $validated['marca']       = $vehicle->brand;
             $validated['modelo']      = $vehicle->model;
             $validated['combustivel'] = $vehicle->fuel ?? 'Gasolina';
+            // clear legacy vehicle_id
+            $validated['vehicle_id']  = null;
         }
 
         $legalization->update($validated);

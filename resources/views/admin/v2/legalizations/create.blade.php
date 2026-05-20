@@ -50,7 +50,7 @@
 
                     {{-- Vehicle picker --}}
                     <div id="vehiclePickerBlock">
-                        <select name="vehicle_id" id="vehicleSelect" class="form-select"
+                        <select name="v3_vehicle_id" id="vehicleSelect" class="form-select"
                                 onchange="fillFromVehicle(this)">
                             <option value="">— Selecionar veículo —</option>
                             @foreach($vehicles as $v)
@@ -59,7 +59,7 @@
                                         data-model="{{ $v->model }}"
                                         data-fuel="{{ $v->fuel }}"
                                         data-registration="{{ $v->registration }}"
-                                        {{ old('vehicle_id') == $v->id ? 'selected' : '' }}>
+                                        {{ old('v3_vehicle_id') == $v->id ? 'selected' : '' }}>
                                     {{ $v->reference }} — {{ $v->brand }} {{ $v->model }}
                                     {{ $v->registration ? '(' . $v->registration . ')' : '' }}
                                 </option>
