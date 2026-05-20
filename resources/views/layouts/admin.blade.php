@@ -21,8 +21,17 @@
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
 
     <!-- Favicon -->
-    <link href="{{ asset('img/logo-simples.png') }}" class="img-fluid rounded-circle" rel="icon" type="image/png">
+    <link href="{{ asset('img/logo-simples.png') }}" rel="icon" type="image/png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!-- PWA -->
+    <meta name="theme-color" content="#1e3c72">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IzzyCar">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ asset('img/logo-arredondado.png') }}">
 
     <style>
         .nav-link {
@@ -442,6 +451,22 @@
                 console.error('filemanager não está disponível');
             }
         });
+    </script>
+
+    <!-- PWA — Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker
+                    .register('/sw.js', { scope: '/' })
+                    .then(function (reg) {
+                        console.log('[PWA] Service Worker registado:', reg.scope);
+                    })
+                    .catch(function (err) {
+                        console.warn('[PWA] Falha no registo do SW:', err);
+                    });
+            });
+        }
     </script>
 </body>
 
