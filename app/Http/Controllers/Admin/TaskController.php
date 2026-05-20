@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\User;
-use App\Models\Vehicle;
+use App\Models\V3Vehicle;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -50,7 +50,7 @@ class TaskController extends Controller
         }
 
         // Buscar tarefas do período
-        $tasks = Task::with(['user', 'vehicle'])
+        $tasks = Task::with(['user', 'v3Vehicle'])
             ->whereBetween('due_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->orderBy('due_date', 'asc')
             ->orderBy('created_at', 'asc')
@@ -82,9 +82,8 @@ class TaskController extends Controller
      */
     public function create()
     {
-        // Buscar usuários e veículos para os selects
-        $users = User::orderBy('name')->get();
-        $vehicles = Vehicle::select('id', 'reference', 'brand', 'model', 'year')
+        $users    = User::orderBy('name')->get();
+        $vehicles = V3Vehicle::select('id', 'reference', 'brand', 'model', 'year')
             ->orderBy('reference')
             ->get();
 
@@ -104,7 +103,7 @@ class TaskController extends Controller
             'reminder_date' => 'nullable|date|before_or_equal:due_date',
             'user_id' => 'nullable|exists:users,id',
             'user_name' => 'nullable|string|max:255',
-            'vehicle_id' => 'nullable|exists:vehicles,id',
+            'v3_vehicle_id' => 'nullable|exists:v3_vehicles,id',
             'status' => 'required|in:pendente,em_progresso,concluida,cancelada',
         ], [
             'title.required' => 'O título é obrigatório.',
@@ -127,7 +126,7 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         // Carregar relacionamentos
-        $task->load(['user', 'vehicle']);
+        $task->load(['user', 'v3Vehicle']);
 
         return view('admin.v2.tasks.show', compact('task'));
     }
@@ -137,9 +136,8 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        // Buscar usuários e veículos para os selects
-        $users = User::orderBy('name')->get();
-        $vehicles = Vehicle::select('id', 'reference', 'brand', 'model', 'year')
+        $users    = User::orderBy('name')->get();
+        $vehicles = V3Vehicle::select('id', 'reference', 'brand', 'model', 'year')
             ->orderBy('reference')
             ->get();
 
@@ -159,7 +157,7 @@ class TaskController extends Controller
             'reminder_date' => 'nullable|date|before_or_equal:due_date',
             'user_id' => 'nullable|exists:users,id',
             'user_name' => 'nullable|string|max:255',
-            'vehicle_id' => 'nullable|exists:vehicles,id',
+            'v3_vehicle_id' => 'nullable|exists:v3_vehicles,id',
             'status' => 'required|in:pendente,em_progresso,concluida,cancelada',
         ], [
             'title.required' => 'O título é obrigatório.',

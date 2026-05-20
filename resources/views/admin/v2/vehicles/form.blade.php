@@ -431,6 +431,15 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
             'updated_at' => $vehicle->updated_at
             ] : null
             ])
+
+            @if(isset($vehicle))
+            <div class="d-grid mb-3">
+                <button type="button" class="btn btn-outline-success btn-sm"
+                        onclick="openSimuladorVenda()">
+                    <i class="bi bi-calculator me-1"></i> Simular Venda
+                </button>
+            </div>
+            @endif
             <!-- Imagens -->
             <div class="modern-card">
                 <div class="modern-card-header">
@@ -485,6 +494,97 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
                     </div>
                 </div>
             </div>
+
+            {{-- ── Documentos do Veículo (só na edição) ───────────────────── --}}
+            @if(isset($vehicle))
+            @php
+                $legalizationDocs = $vehicle->legalizations->flatMap(fn($l) => $l->documents->map(fn($d) => ['doc' => $d, 'legalization' => $l]));
+            @endphp
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5 class="modern-card-title">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Documentos
+                        @php $totalDocs = $vehicle->documents->count() + $legalizationDocs->count(); @endphp
+                        @if($totalDocs > 0)
+                            <span class="badge bg-secondary ms-2">{{ $totalDocs }}</span>
+                        @endif
+                    </h5>
+                </div>
+                <div class="modern-card-body">
+
+                    {{-- Documentos do veículo --}}
+                    @if($vehicle->documents->count() > 0)
+                    <p class="text-muted small fw-semibold mb-1 text-uppercase" style="font-size:.65rem;letter-spacing:.05em">Documentos do veículo</p>
+                    <div class="list-group list-group-flush mb-3">
+                        @foreach($vehicle->documents as $doc)
+                        <div class="list-group-item d-flex align-items-center justify-content-between px-0 py-2">
+                            <div class="d-flex align-items-center gap-2 overflow-hidden">
+                                <i class="bi bi-file-earmark{{ Str::endsWith($doc->nome_original, '.pdf') ? '-pdf text-danger' : ' text-secondary' }} fs-5 flex-shrink-0"></i>
+                                <div class="overflow-hidden">
+                                    <div class="text-truncate small fw-semibold">{{ $doc->nome_original }}</div>
+                                    @if($doc->tipo)
+                                        <div class="text-muted" style="font-size:.7rem">{{ \App\Models\Legalization::DOCUMENTOS[$doc->tipo] ?? $doc->tipo }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="d-flex gap-1 flex-shrink-0">
+                                <a href="{{ route('admin.v2.vehicles.download-document', [$vehicle->id, $doc->id]) }}"
+                                   class="btn btn-sm btn-outline-secondary" title="Download">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                                <form action="{{ route('admin.v2.vehicles.delete-document', [$vehicle->id, $doc->id]) }}"
+                                      method="POST" class="d-inline"
+                                      onsubmit="return confirm('Eliminar este documento?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    {{-- Documentos das legalizações --}}
+                    @if($legalizationDocs->count() > 0)
+                    <p class="text-muted small fw-semibold mb-1 text-uppercase" style="font-size:.65rem;letter-spacing:.05em">
+                        Da legalização
+                    </p>
+                    <div class="list-group list-group-flush mb-3">
+                        @foreach($legalizationDocs as $entry)
+                        @php $doc = $entry['doc']; $leg = $entry['legalization']; @endphp
+                        <div class="list-group-item d-flex align-items-center justify-content-between px-0 py-2">
+                            <div class="d-flex align-items-center gap-2 overflow-hidden">
+                                <i class="bi bi-file-earmark{{ Str::endsWith($doc->nome_original, '.pdf') ? '-pdf text-danger' : ' text-secondary' }} fs-5 flex-shrink-0"></i>
+                                <div class="overflow-hidden">
+                                    <div class="text-truncate small fw-semibold">{{ $doc->nome_original }}</div>
+                                    <div class="text-muted" style="font-size:.7rem">
+                                        {{ \App\Models\Legalization::DOCUMENTOS[$doc->tipo] ?? $doc->tipo }}
+                                        &middot;
+                                        <a href="{{ route('admin.legalizations.show', $leg->id) }}" class="text-muted text-decoration-underline">
+                                            Legalização #{{ $leg->id }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{{ route('admin.legalizations.download-document', [$leg->id, $doc->id]) }}"
+                               class="btn btn-sm btn-outline-secondary flex-shrink-0" title="Download">
+                                <i class="bi bi-download"></i>
+                            </a>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    @if($vehicle->documents->count() === 0 && $legalizationDocs->count() === 0)
+                    <p class="text-muted small mb-0">Sem documentos associados.</p>
+                    @endif
+
+                </div>
+            </div>
+            @endif
 
             <!-- Opções -->
             <div class="modern-card">
@@ -863,4 +963,278 @@ $existAction = isset($vehicle) ? 'Editar' : 'Criar';
     });
 </script>
 @endpush
+
+@if(isset($vehicle))
+@push('scripts')
+{{-- ══════════════════════════════════════════════════════
+     MODAL: SIMULADOR DE VENDA
+     ══════════════════════════════════════════════════════ --}}
+@php
+    // Expenses already loaded via eager-load (excludes auto-generated source entries excluded by convention)
+    $expensesTotal = $vehicle->expenses
+        ->where('movement_type', 'expense')
+        ->whereNull('source_type')
+        ->sum('amount_gross');
+
+    // purchase cost: net if Geral (IVA deductible), gross otherwise
+    $purchaseNet = 0;
+    if ($vehicle->purchase_price) {
+        if ($vehicle->purchase_type === 'Geral' && $vehicle->purchase_vat_rate) {
+            $purchaseNet = round($vehicle->purchase_price, 2); // already net
+        } else {
+            $purchaseNet = round($vehicle->purchase_price, 2); // gross = cost for margin
+        }
+    }
+    $totalCosts = round($purchaseNet + $expensesTotal, 2);
+@endphp
+
+<div class="modal fade" id="simuladorVendaModal" tabindex="-1" aria-labelledby="simuladorVendaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="simuladorVendaModalLabel">
+                    <i class="bi bi-calculator me-2 text-success"></i>
+                    Simulador de Venda — {{ $vehicle->brand }} {{ $vehicle->model }}
+                    @if($vehicle->registration) <span class="text-muted fw-normal small">({{ $vehicle->registration }})</span> @endif
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row g-3 mb-4">
+                    {{-- ── Tipo de IVA de Venda ──────────────── --}}
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small">Regime IVA de Venda</label>
+                        <select id="simVatType" class="form-select form-select-sm" onchange="simCalc()">
+                            <option value="margem">Margem (IVA incluído na margem)</option>
+                            <option value="geral_23" selected>Regime Geral 23%</option>
+                            <option value="geral_13">Regime Geral 13%</option>
+                            <option value="geral_6">Regime Geral 6%</option>
+                            <option value="isento">Isento de IVA</option>
+                        </select>
+                    </div>
+
+                    {{-- ── Preço de venda ────────────────────── --}}
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small" id="simSellPriceLabel">Preço de Venda (c/ IVA)</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" id="simSellPrice" class="form-control" step="0.01" min="0"
+                                   placeholder="0.00" oninput="simCalc()">
+                            <span class="input-group-text">€</span>
+                        </div>
+                    </div>
+
+                    {{-- ── Custos extra / correção ───────────── --}}
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small">Despesas adicionais</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" id="simExtraCosts" class="form-control" step="0.01" min="0"
+                                   value="0" oninput="simCalc()">
+                            <span class="input-group-text">€</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ── Detalhes dos custos ───────────────────── --}}
+                <div class="card bg-light border-0 mb-3">
+                    <div class="card-body py-2 px-3">
+                        <p class="mb-1 small fw-semibold text-muted text-uppercase" style="font-size:.65rem;letter-spacing:.05em">Estrutura de Custos</p>
+                        <div class="row g-1 small">
+                            <div class="col-6 col-md-3">
+                                <span class="text-muted">Preço Compra</span><br>
+                                <strong id="simCostPurchase">{{ number_format($purchaseNet, 2, ',', '.') }} €</strong>
+                                @if($vehicle->purchase_type)
+                                    <span class="badge bg-secondary ms-1" style="font-size:.6rem">{{ $vehicle->purchase_type }}</span>
+                                @endif
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="text-muted">IVA Compra recuperável</span><br>
+                                <strong id="simVatPurchase">{{ $vehicle->purchase_type === 'Geral' ? number_format((float)$vehicle->purchase_vat_paid, 2, ',', '.') . ' €' : '0,00 €' }}</strong>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="text-muted">Despesas ({{ $vehicle->expenses->where('movement_type','expense')->whereNull('source_type')->count() }} mov.)</span><br>
+                                <strong>{{ number_format($expensesTotal, 2, ',', '.') }} €</strong>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="text-muted">Total custos base</span><br>
+                                <strong id="simTotalCostsDisplay">{{ number_format($totalCosts, 2, ',', '.') }} €</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ── Resultados ────────────────────────────── --}}
+                <div id="simResults" style="display:none">
+                    <hr class="my-3">
+                    <div class="row g-3 text-center">
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 bg-white shadow-sm h-100">
+                                <div class="card-body py-2">
+                                    <p class="text-muted small mb-1">Receita Líquida</p>
+                                    <p class="fw-bold fs-6 mb-0" id="simNetRevenue">—</p>
+                                    <small class="text-muted" style="font-size:.7rem">(venda s/ IVA)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 bg-white shadow-sm h-100">
+                                <div class="card-body py-2">
+                                    <p class="text-muted small mb-1">IVA a entregar</p>
+                                    <p class="fw-bold fs-6 mb-0" id="simVatOwed">—</p>
+                                    <small class="text-muted" style="font-size:.7rem">(venda − compra)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm h-100" id="simGrossCard">
+                                <div class="card-body py-2">
+                                    <p class="text-muted small mb-1">Margem Bruta</p>
+                                    <p class="fw-bold fs-6 mb-0" id="simGrossMargin">—</p>
+                                    <small class="text-muted" style="font-size:.7rem" id="simGrossPct">0%</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm h-100" id="simNetCard">
+                                <div class="card-body py-2">
+                                    <p class="text-muted small mb-1">Margem Líquida</p>
+                                    <p class="fw-bold fs-6 mb-0" id="simNetMargin">—</p>
+                                    <small class="text-muted" style="font-size:.7rem" id="simNetPct">0%</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Alert with interpretation --}}
+                    <div id="simAlert" class="alert mt-3 mb-0 py-2 small"></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const SIM = {
+    purchaseNet:     {{ $purchaseNet }},
+    purchaseVatPaid: {{ (float)($vehicle->purchase_vat_paid ?? 0) }},
+    purchaseType:    '{{ $vehicle->purchase_type ?? '' }}',
+    expensesTotal:   {{ $expensesTotal }},
+    baseCosts:       {{ $totalCosts }},
+};
+
+function openSimuladorVenda() {
+    // Update extra costs to 0
+    document.getElementById('simExtraCosts').value = '0';
+    simCalc();
+    new bootstrap.Modal(document.getElementById('simuladorVendaModal')).show();
+}
+
+function simCalc() {
+    const vatType    = document.getElementById('simVatType').value;
+    const sellGross  = parseFloat(document.getElementById('simSellPrice').value) || 0;
+    const extraCosts = parseFloat(document.getElementById('simExtraCosts').value) || 0;
+    const totalCosts = SIM.baseCosts + extraCosts;
+
+    // Update costs display
+    document.getElementById('simTotalCostsDisplay').textContent = fmt(totalCosts) + ' €';
+
+    if (sellGross <= 0) {
+        document.getElementById('simResults').style.display = 'none';
+        return;
+    }
+
+    // ── Compute net revenue (excl. IVA) and VAT owed ──
+    let vatRate     = 0;
+    let netRevenue  = 0;
+    let vatOwed     = 0;
+    let vatRecoverable = 0;
+
+    if (vatType === 'margem') {
+        // Regime de Margem: IVA is inside the margin, charged on (sell - purchase gross)
+        // For display, net revenue = sell price (IVA handled internally on margin)
+        netRevenue = sellGross;
+        const margin = sellGross - SIM.purchaseNet - extraCosts;
+        // IVA de margem = margin * 23 / 123
+        vatOwed = Math.max(0, margin * 23 / 123);
+        vatRecoverable = 0; // no deductible purchase VAT in this regime
+    } else if (vatType === 'isento') {
+        netRevenue = sellGross;
+        vatOwed = 0;
+        vatRecoverable = 0;
+    } else {
+        const rates = { 'geral_23': 23, 'geral_13': 13, 'geral_6': 6 };
+        vatRate = rates[vatType] || 23;
+        netRevenue = sellGross / (1 + vatRate / 100);
+        const vatCollected = sellGross - netRevenue;
+        vatRecoverable = SIM.purchaseType === 'Geral' ? SIM.purchaseVatPaid : 0;
+        vatOwed = Math.max(0, vatCollected - vatRecoverable);
+    }
+
+    // ── Margins ──
+    // Gross margin = net revenue − total costs (no tax deduction)
+    const grossMargin = netRevenue - totalCosts;
+    // Net margin = gross margin − VAT owed (real cash out)
+    const netMargin   = grossMargin - vatOwed;
+
+    const grossPct = netRevenue > 0 ? (grossMargin / netRevenue * 100) : 0;
+    const netPct   = netRevenue > 0 ? (netMargin   / netRevenue * 100) : 0;
+
+    // ── Update DOM ──
+    document.getElementById('simNetRevenue').textContent  = fmt(netRevenue) + ' €';
+    document.getElementById('simVatOwed').textContent     = fmt(vatOwed) + ' €';
+    document.getElementById('simGrossMargin').textContent = fmt(grossMargin) + ' €';
+    document.getElementById('simNetMargin').textContent   = fmt(netMargin) + ' €';
+    document.getElementById('simGrossPct').textContent    = grossPct.toFixed(1) + '%';
+    document.getElementById('simNetPct').textContent      = netPct.toFixed(1) + '%';
+
+    const grossCard = document.getElementById('simGrossCard');
+    const netCard   = document.getElementById('simNetCard');
+    grossCard.className = 'card border-0 shadow-sm h-100 ' + (grossMargin >= 0 ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10');
+    netCard.className   = 'card border-0 shadow-sm h-100 ' + (netMargin >= 0 ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10');
+
+    // ── Alert ──
+    const alert = document.getElementById('simAlert');
+    if (netMargin < 0) {
+        alert.className = 'alert alert-danger mt-3 mb-0 py-2 small';
+        alert.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i><strong>Venda com prejuízo.</strong> Para atingir break-even, o preço mínimo de venda seria <strong>' + fmtBreakeven(totalCosts, vatType, SIM.purchaseNet, extraCosts, SIM.purchaseVatPaid) + '</strong>.';
+    } else if (netPct < 5) {
+        alert.className = 'alert alert-warning mt-3 mb-0 py-2 small';
+        alert.innerHTML = '<i class="bi bi-info-circle me-1"></i>Margem líquida muito baixa (' + netPct.toFixed(1) + '%). Reveja os custos ou o preço de venda.';
+    } else {
+        alert.className = 'alert alert-success mt-3 mb-0 py-2 small';
+        alert.innerHTML = '<i class="bi bi-check-circle me-1"></i>Operação com margem saudável de <strong>' + netPct.toFixed(1) + '%</strong>.';
+    }
+
+    document.getElementById('simResults').style.display = '';
+}
+
+function fmtBreakeven(totalCosts, vatType, purchaseNet, extraCosts, purchaseVatPaid) {
+    // Minimum sell price = break-even (net margin = 0)
+    // For geral: netRevenue = grossSell/(1+r); vatOwed = vatCollected - vatRecoverable
+    //   grossMargin - vatOwed = 0
+    //   (netRevenue - totalCosts) - (netRevenue * r/(1+r) - vatRecoverable) = 0
+    //   netRevenue * (1 - r/(1+r)) = totalCosts - vatRecoverable
+    //   netRevenue = (totalCosts - vatRecoverable) / (1/(1+r))
+    const rates = { 'geral_23': 23, 'geral_13': 13, 'geral_6': 6 };
+    if (vatType in rates) {
+        const r = rates[vatType] / 100;
+        const vatRecoverable = SIM.purchaseType === 'Geral' ? purchaseVatPaid : 0;
+        const netMin = (totalCosts - vatRecoverable) / (1 - r / (1 + r));
+        const grossMin = netMin * (1 + r);
+        return fmt(grossMin) + ' € (c/ IVA)';
+    }
+    // margem or isento
+    return fmt(totalCosts) + ' €';
+}
+
+function fmt(v) {
+    return v.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+</script>
+@endpush
+@endif
 @endsection

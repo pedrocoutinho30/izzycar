@@ -16,6 +16,7 @@ class Expense extends Model
         'category',          // new taxonomy: vehicle_purchase, repair, transport, tax, etc.
         // References
         'vehicle_id',
+        'v3_vehicle_id',
         'client_id',
         'partner_id',
         // Description & financials
@@ -131,6 +132,11 @@ class Expense extends Model
         return $this->belongsTo(Vehicle::class);
     }
 
+    public function v3Vehicle()
+    {
+        return $this->belongsTo(V3Vehicle::class, 'v3_vehicle_id');
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class);
@@ -149,11 +155,27 @@ class Expense extends Model
      */
     public static function syncFromSale(Sale $sale): void
     {
-        $vehicle = $sale->vehicle;
-        if (!$vehicle) return;
+        $sale->loadMissing(['vehicle', 'v3Vehicle', 'client']);
 
-        $title = 'Venda ' . $vehicle->brand . ' ' . $vehicle->model
-            . ($vehicle->year ? ' (' . $vehicle->year . ')' : '');
+        $vehicle   = $sale->vehicle;
+        $v3Vehicle = $sale->v3Vehicle;
+
+        if (!$vehicle && !$v3Vehicle) return;
+
+        if ($v3Vehicle) {
+            // ── V3 sale ───────────────────────────────────────────────────
+            $brand = $v3Vehicle->brand;
+            $model = $v3Vehicle->model;
+            $year  = $v3Vehicle->year;
+        } else {
+            // ── V2 sale ───────────────────────────────────────────────────
+            $brand = $vehicle->brand;
+            $model = $vehicle->model;
+            $year  = $vehicle->year;
+        }
+
+        $title = 'Venda ' . $brand . ' ' . $model
+            . ($year ? ' (' . $year . ')' : '');
         if ($sale->client) {
             $title .= ' – ' . $sale->client->name;
         }
@@ -177,7 +199,8 @@ class Expense extends Model
                 'movement_type'  => 'income',
                 'category'       => 'vehicle_sale',
                 'title'          => $title,
-                'vehicle_id'     => $vehicle->id,
+                'vehicle_id'     => $vehicle ? $vehicle->id : null,
+                'v3_vehicle_id'  => $v3Vehicle ? $v3Vehicle->id : null,
                 'client_id'      => $sale->client_id,
                 'amount'         => $amountGross,
                 'amount_gross'   => $amountGross,
@@ -188,6 +211,53 @@ class Expense extends Model
                 'payment_method' => $paymentMethod,
                 'status'         => 'paid',
                 'observations'   => $sale->observation,
+            ]
+        );
+    }
+
+    // ── Auto-sync from V3Vehicle ─────────────────────────────────────────────
+
+    /**
+     * Create or update the auto-generated Expense record for a V3Vehicle purchase.
+     */
+    public static function syncFromV3Vehicle(V3Vehicle $vehicle): void
+    {
+        if (!$vehicle->purchase_price) {
+            self::where('source_type', V3Vehicle::class)
+                ->where('source_id', $vehicle->id)
+                ->each(fn ($e) => $e->delete());
+            return;
+        }
+
+        $title = 'Compra ' . $vehicle->brand . ' ' . $vehicle->model
+            . ($vehicle->year ? ' (' . $vehicle->year . ')' : '')
+            . ($vehicle->reference ? ' – Ref. ' . $vehicle->reference : '');
+
+        $amountNet   = (float) $vehicle->purchase_price;
+        $vatAmount   = (float) ($vehicle->purchase_vat_paid ?? 0);
+        $amountGross = $amountNet + $vatAmount;
+        $vatRate     = $vatAmount > 0 && $amountNet > 0
+            ? round($vatAmount / $amountNet * 100, 2)
+            : 0;
+
+        $movementDate = $vehicle->purchase_date
+            ?? ($vehicle->created_at ? $vehicle->created_at->toDateString() : now()->toDateString());
+
+        self::updateOrCreate(
+            ['source_type' => V3Vehicle::class, 'source_id' => $vehicle->id],
+            [
+                'movement_type'  => 'expense',
+                'category'       => 'vehicle_purchase',
+                'title'          => $title,
+                'v3_vehicle_id'  => $vehicle->id,
+                'amount'         => $amountGross,
+                'amount_gross'   => $amountGross,
+                'vat_rate'       => $vatRate,
+                'vat_amount'     => $vatAmount,
+                'amount_net'     => $amountNet,
+                'expense_date'   => $movementDate,
+                'payment_method' => 'other',
+                'status'         => 'paid',
             ]
         );
     }

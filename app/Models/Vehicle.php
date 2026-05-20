@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Vehicle extends Model
 {
@@ -70,5 +71,15 @@ class Vehicle extends Model
     public function sale()
     {
         return $this->hasOne(Sale::class, 'vehicle_id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(VehicleDocument::class);
+    }
+
+    public function legalizations(): HasMany
+    {
+        return $this->hasMany(Legalization::class);
     }
 }

@@ -172,15 +172,15 @@
                     {{-- Veículo --}}
                     <div class="col-12">
                         <label class="form-label">Veículo Relacionado</label>
-                        <select name="vehicle_id" class="form-select @error('vehicle_id') is-invalid @enderror">
+                        <select name="v3_vehicle_id" class="form-select @error('v3_vehicle_id') is-invalid @enderror">
                             <option value="">Nenhum veículo...</option>
                             @foreach($vehicles as $vehicle)
-                                <option value="{{ $vehicle->id }}" {{ old('vehicle_id', $task->vehicle_id ?? '') == $vehicle->id ? 'selected' : '' }}>
+                                <option value="{{ $vehicle->id }}" {{ old('v3_vehicle_id', $task->v3_vehicle_id ?? '') == $vehicle->id ? 'selected' : '' }}>
                                     {{ $vehicle->reference }} - {{ $vehicle->brand }} {{ $vehicle->model }} ({{ $vehicle->year }})
                                 </option>
                             @endforeach
                         </select>
-                        @error('vehicle_id')
+                        @error('v3_vehicle_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <small class="text-muted">Associar tarefa a um veículo específico</small>

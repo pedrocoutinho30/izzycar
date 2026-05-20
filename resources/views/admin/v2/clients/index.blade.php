@@ -90,6 +90,12 @@
     ]),
     'actions' => [
     [
+    'href' => route('admin.v2.clients.show', $client->id),
+    'icon' => 'bi-eye',
+    'label' => 'Ver',
+    'color' => 'info'
+    ],
+    [
     'href' => route('admin.v2.clients.edit', $client->id),
     'icon' => 'bi-pencil',
     'label' => 'Editar',

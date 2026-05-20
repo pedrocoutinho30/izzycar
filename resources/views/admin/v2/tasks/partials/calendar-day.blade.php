@@ -105,10 +105,10 @@
                                     @endif
                                     
                                     {{-- Veículo --}}
-                                    @if($task->vehicle)
+                                    @if($task->v3Vehicle)
                                         <span class="text-muted">
                                             <i class="bi bi-car-front"></i>
-                                            Veículo: {{ $task->vehicle->reference }} - {{ $task->vehicle->brand }} {{ $task->vehicle->model }}
+                                            Veículo: {{ $task->v3Vehicle->reference }} - {{ $task->v3Vehicle->brand }} {{ $task->v3Vehicle->model }}
                                         </span>
                                     @endif
                                     

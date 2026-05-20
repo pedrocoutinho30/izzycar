@@ -8,6 +8,7 @@ use App\Models\Vehicle;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Models\Expense;
+use App\Services\SaleCalculator;
 
 /**
  * SaleV2Controller
@@ -29,7 +30,7 @@ class SaleV2Controller extends Controller
     public function index(Request $request)
     {
         // Query base com relacionamentos
-        $query = Sale::with(['vehicle', 'client']);
+        $query = Sale::with(['vehicle.images', 'client', 'v3Vehicle']);
 
         // Filtro de pesquisa (cliente ou veículo)
         if ($request->filled('search')) {
@@ -408,108 +409,35 @@ class SaleV2Controller extends Controller
     // }
 
     public function calculate(Sale $sale, $request)
-{
-    $vehicle = $sale->vehicle;
-
-    // Only manual expense entries for this vehicle — exclude auto-generated entries
-    // (vehicle purchase and sale income are accounted for directly via vehicle/sale fields)
-    $expenses = Expense::where('vehicle_id', $vehicle->id)
-        ->whereNull('source_type')
-        ->where('movement_type', 'expense')
-        ->where('category', '!=', 'vehicle_purchase')
-        ->get();
-
-    $sellPrice = (float) $request['sale_price'];
-    $purchasePrice = (float) $vehicle->purchase_price;
-    $purchaseType = $vehicle->purchase_type;
-
-    $vatRateRaw  = $request['vat_rate'] ?? $sale->vat_rate ?? '23';
-    $vatRateSale = ($vatRateRaw === 'Sem IVA') ? 0.0 : ((float) $vatRateRaw / 100);
-
-    // =========================
-    // VENDA (SEMPRE BASE + IVA)
-    // =========================
-    $sellBase = $vatRateSale > 0 ? $this->baseValue($sellPrice, $vatRateSale) : $sellPrice;
-    $sellVat  = $sellPrice - $sellBase;
-
-    // =========================
-    // DESPESAS (BASE + IVA)
-    // =========================
-    $expenseBase = 0;
-    $expenseVat = 0;
-    $totalExpensesGross = 0;
-
-    foreach ($expenses as $expense) {
-
-        $rate = ((float) str_replace('%', '', $expense->vat_rate)) / 100;
-
-        $base = $expense->amount / (1 + $rate);
-        $vat  = $expense->amount - $base;
-
-        $expenseBase += $base;
-        $expenseVat  += $vat;
-        $totalExpensesGross += $expense->amount;
-    }
-
-    // =========================
-    // COMPRA
-    // =========================
-    $purchaseBase = $purchasePrice;
-    $purchaseVat  = (float) ($vehicle->purchase_vat_paid ?? 0);
-
-    // =========================
-    // LUCROS (CORRIGIDOS)
-    // =========================
-
-    // lucro real (sem IVA)
-    $net_margin =
-        $sellBase
-        - $purchaseBase
-        - $expenseBase;
-
-    // lucro bruto (cash)
-    $gross_margin =
-        $sellPrice
-        - ($purchaseBase + $purchaseVat)
-        - $totalExpensesGross;
-
-    // =========================
-    // IVA
-    // =========================
-    $vat_paid =
-        $sellVat
-        - $purchaseVat
-        - $expenseVat;
-
-    // =========================
-    // RENTABILIDADE
-    // =========================
-    $net_profitability = $sellPrice > 0 ? ($net_margin / $sellPrice) * 100 : 0;
-    $gross_profitability = $sellPrice > 0 ? ($gross_margin / $sellPrice) * 100 : 0;
-
-    // =========================
-    // CUSTO TOTAL
-    // =========================
-    $totalCost = $purchaseBase + $totalExpensesGross;
-
-    $sale->update([
-        'gross_margin' => $gross_margin,
-        'net_margin' => $net_margin,
-        'vat_paid' => $vat_paid,
-        'vat_settle_sale' => $sellVat,
-        'totalExpenses' => $totalExpensesGross,
-        'totalCost' => $totalCost,
-        'net_profitability' => $net_profitability,
-        'gross_profitability' => $gross_profitability,
-    ]);
-}
-    private function baseValue($amount, $rate)
     {
-        return $amount / (1 + $rate);
-    }
+        $vehicle = $sale->vehicle;
 
-    private function vatValue($amount, $rate)
-    {
-        return $amount - $this->baseValue($amount, $rate);
+        $expenses = Expense::where('vehicle_id', $vehicle->id)
+            ->whereNull('source_type')
+            ->where('movement_type', 'expense')
+            ->where('category', '!=', 'vehicle_purchase')
+            ->get();
+
+        $vatRateRaw = $request['vat_rate'] ?? $sale->vat_rate ?? '23';
+        $vatType    = SaleCalculator::normaliseVatType($vatRateRaw);
+
+        $metrics = SaleCalculator::compute(
+            (float) $request['sale_price'],
+            $vatType,
+            (float) $vehicle->purchase_price,
+            (float) ($vehicle->purchase_vat_paid ?? 0),
+            $expenses
+        );
+
+        $sale->update([
+            'gross_margin'        => $metrics['gross_margin'],
+            'net_margin'          => $metrics['net_margin'],
+            'vat_paid'            => $metrics['vat_paid'],
+            'vat_settle_sale'     => $metrics['vat_settle_sale'],
+            'totalExpenses'       => $metrics['expenses_total'],
+            'totalCost'           => $metrics['total_cost'],
+            'net_profitability'   => $metrics['net_profitability'],
+            'gross_profitability' => $metrics['gross_profitability'],
+        ]);
     }
 }

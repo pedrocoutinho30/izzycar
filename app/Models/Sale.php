@@ -11,6 +11,7 @@ class Sale extends Model
 
     protected $fillable = [
         'vehicle_id',
+        'v3_vehicle_id',
         'client_id',
         'sale_date',
         'sale_price',
@@ -34,6 +35,11 @@ class Sale extends Model
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    public function v3Vehicle()
+    {
+        return $this->belongsTo(\App\Models\V3Vehicle::class, 'v3_vehicle_id');
     }
 
     public function client()

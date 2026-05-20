@@ -96,12 +96,12 @@
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Veículo (Opcional)</label>
-                            <select name="vehicle_id"
-                                    class="form-select @error('vehicle_id') is-invalid @enderror">
+                            <select name="v3_vehicle_id"
+                                    class="form-select @error('v3_vehicle_id') is-invalid @enderror">
                                 <option value="">Sem veículo</option>
                                 @foreach($vehicles as $v)
                                     <option value="{{ $v->id }}"
-                                        {{ old('vehicle_id', $movement->vehicle_id ?? '') == $v->id ? 'selected' : '' }}>
+                                        {{ old('v3_vehicle_id', $movement->v3_vehicle_id ?? '') == $v->id ? 'selected' : '' }}>
                                         {{ $v->reference }} – {{ $v->brand }} {{ $v->model }}
                                     </option>
                                 @endforeach

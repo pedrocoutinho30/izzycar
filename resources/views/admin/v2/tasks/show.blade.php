@@ -123,7 +123,7 @@
         </div>
 
         {{-- ASSOCIAÇÕES --}}
-        @if($task->user || $task->user_name || $task->vehicle)
+        @if($task->user || $task->user_name || $task->v3Vehicle)
             <div class="modern-card mt-4">
                 <div class="modern-card-header">
                     <h5 class="modern-card-title">
@@ -154,7 +154,7 @@
                         @endif
 
                         {{-- Veículo --}}
-                        @if($task->vehicle)
+                        @if($task->v3Vehicle)
                             <div class="col-md-6">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="icon-box bg-dark bg-opacity-10">
@@ -162,13 +162,13 @@
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Veículo</small>
-                                        <strong class="fs-5">{{ $task->vehicle->brand }} {{ $task->vehicle->model }}</strong>
+                                        <strong class="fs-5">{{ $task->v3Vehicle->brand }} {{ $task->v3Vehicle->model }}</strong>
                                         <br>
                                         <small class="text-muted">
-                                            Ref: {{ $task->vehicle->reference }} | Ano: {{ $task->vehicle->year }}
+                                            Ref: {{ $task->v3Vehicle->reference }} | Ano: {{ $task->v3Vehicle->year }}
                                         </small>
                                         <br>
-                                        <a href="{{ route('admin.v2.vehicles.show', $task->vehicle) }}" class="btn btn-sm btn-outline-primary mt-2">
+                                        <a href="{{ route('admin.v3.vehicles.edit', $task->v3Vehicle) }}" class="btn btn-sm btn-outline-primary mt-2">
                                             <i class="bi bi-eye"></i> Ver Veículo
                                         </a>
                                     </div>

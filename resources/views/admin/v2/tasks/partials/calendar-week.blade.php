@@ -108,10 +108,10 @@
                                     @endif
                                     
                                     {{-- Veículo --}}
-                                    @if($task->vehicle)
+                                    @if($task->v3Vehicle)
                                         <span class="meta-item">
                                             <i class="bi bi-car-front"></i>
-                                            {{ $task->vehicle->brand }} {{ $task->vehicle->model }}
+                                            {{ $task->v3Vehicle->brand }} {{ $task->v3Vehicle->model }}
                                         </span>
                                     @endif
                                     

@@ -17,6 +17,7 @@ class Task extends Model
         'user_id',
         'user_name',
         'vehicle_id',
+        'v3_vehicle_id',
         'status',
         'reminder_sent',
     ];
@@ -46,6 +47,11 @@ class Task extends Model
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    public function v3Vehicle()
+    {
+        return $this->belongsTo(V3Vehicle::class, 'v3_vehicle_id');
     }
 
     /**

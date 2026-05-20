@@ -73,16 +73,27 @@
     @php
     $vehicle = $sale->vehicle;
     $client = $sale->client;
-    $mainImage = $vehicle->images->first();
-    $imageUrl = $mainImage
-    ? asset('storage/' . $mainImage->path)
-    : 'https://via.placeholder.com/400x300/6e0707/ffffff?text=' . urlencode($vehicle->brand);
+    if (!$vehicle) {
+        $v3 = $sale->v3Vehicle ?? null;
+        $mainImage = null;
+        $imageUrl = 'https://via.placeholder.com/400x300/6e0707/ffffff?text=' . urlencode($v3 ? $v3->brand . '+' . $v3->model : 'V3+Vehicle');
+        $vehicleLabel = $v3 ? $v3->brand . ' ' . $v3->model : '—';
+        $vehicleRef   = $v3->reference ?? null;
+    } else {
+        $v3 = null;
+        $mainImage = $vehicle->images->first();
+        $imageUrl = $mainImage
+        ? asset('storage/' . $mainImage->path)
+        : 'https://via.placeholder.com/400x300/6e0707/ffffff?text=' . urlencode($vehicle->brand);
+        $vehicleLabel = $vehicle->brand . ' ' . $vehicle->model;
+        $vehicleRef   = $vehicle->reference ?? null;
+    }
     @endphp
 
     @include('components.admin.item-card', [
     'image' => $imageUrl,
-    'title' => $vehicle->brand . ' ' . $vehicle->model,
-    'subtitle' => 'Cliente: ' . $client->name,
+    'title' => $vehicleLabel,
+    'subtitle' => 'Cliente: ' . ($client->name ?? '—'),
     'badges' => array_filter([
     [
     'text' => number_format($sale->sale_price, 0, ',', '.') . '€',
@@ -114,9 +125,9 @@
     'icon' => 'bi-person',
     'text' => $client->name
     ],
-    $vehicle->reference ? [
+    $vehicleRef ? [
     'icon' => 'bi-tag',
-    'text' => 'Ref: ' . $vehicle->reference
+    'text' => 'Ref: ' . $vehicleRef
     ] : null
     ]),
     'actions' => [

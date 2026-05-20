@@ -94,6 +94,19 @@ class ClientV2Controller extends Controller
     }
 
     /**
+     * SHOW - Detalhe do cliente
+     */
+    public function show($id)
+    {
+        $client = Client::with([
+            'proposals',
+            'sale.v3Vehicle',
+        ])->findOrFail($id);
+
+        return view('admin.v2.clients.show', compact('client'));
+    }
+
+    /**
      * EDIT - Form de edição
      */
     public function edit($id)

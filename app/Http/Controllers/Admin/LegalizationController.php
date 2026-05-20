@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Client;
 use App\Models\Legalization;
 use App\Models\LegalizationDocument;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,10 +37,12 @@ class LegalizationController extends Controller
     // ---------------------------------------------------------------
     public function create()
     {
-        $clients = Client::orderBy('name')->get();
-        $brands  = Brand::orderBy('name')->get();
+        $clients  = Client::orderBy('name')->get();
+        $brands   = Brand::orderBy('name')->get();
+        $vehicles = Vehicle::select('id', 'reference', 'brand', 'model', 'fuel', 'registration')
+            ->orderBy('reference')->get();
 
-        return view('admin.v2.legalizations.create', compact('clients', 'brands'));
+        return view('admin.v2.legalizations.create', compact('clients', 'brands', 'vehicles'));
     }
 
     // ---------------------------------------------------------------
@@ -48,14 +51,31 @@ class LegalizationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'vehicle_id'      => 'nullable|exists:vehicles,id',
             'client_id'       => 'nullable|exists:clients,id',
-            'marca'           => 'required|string|max:100',
-            'modelo'          => 'required|string|max:100',
-            'combustivel'     => 'required|string|max:50',
+            'marca'           => 'required_without:vehicle_id|nullable|string|max:100',
+            'modelo'          => 'required_without:vehicle_id|nullable|string|max:100',
+            'combustivel'     => 'required_without:vehicle_id|nullable|string|max:50',
             'matricula'       => 'nullable|string|max:20',
             'num_homologacao' => 'nullable|string|max:100',
             'notas'           => 'nullable|string',
         ]);
+
+        // If a vehicle is selected, fill fields from it
+        if (!empty($validated['vehicle_id'])) {
+            $vehicle = Vehicle::findOrFail($validated['vehicle_id']);
+            $validated['marca']       = $vehicle->brand;
+            $validated['modelo']      = $vehicle->model;
+            $validated['combustivel'] = $vehicle->fuel ?? 'Gasolina';
+            if ($vehicle->registration) {
+                $validated['matricula'] = $validated['matricula'] ?? $vehicle->registration;
+            }
+        }
+
+        // Ensure required fields are filled
+        $validated['marca']       = $validated['marca'] ?? '';
+        $validated['modelo']      = $validated['modelo'] ?? '';
+        $validated['combustivel'] = $validated['combustivel'] ?? 'Gasolina';
 
         $legalization = Legalization::create($validated);
 
@@ -192,10 +212,12 @@ class LegalizationController extends Controller
     // ---------------------------------------------------------------
     public function edit(Legalization $legalization)
     {
-        $clients = Client::orderBy('name')->get();
-        $brands  = Brand::orderBy('name')->get();
+        $clients  = Client::orderBy('name')->get();
+        $brands   = Brand::orderBy('name')->get();
+        $vehicles = Vehicle::select('id', 'reference', 'brand', 'model', 'fuel', 'registration')
+            ->orderBy('reference')->get();
 
-        return view('admin.v2.legalizations.edit', compact('legalization', 'clients', 'brands'));
+        return view('admin.v2.legalizations.edit', compact('legalization', 'clients', 'brands', 'vehicles'));
     }
 
     // ---------------------------------------------------------------
@@ -204,14 +226,22 @@ class LegalizationController extends Controller
     public function update(Request $request, Legalization $legalization)
     {
         $validated = $request->validate([
+            'vehicle_id'      => 'nullable|exists:vehicles,id',
             'client_id'       => 'nullable|exists:clients,id',
-            'marca'           => 'required|string|max:100',
-            'modelo'          => 'required|string|max:100',
-            'combustivel'     => 'required|string|max:50',
+            'marca'           => 'nullable|string|max:100',
+            'modelo'          => 'nullable|string|max:100',
+            'combustivel'     => 'nullable|string|max:50',
             'matricula'       => 'nullable|string|max:20',
             'num_homologacao' => 'nullable|string|max:100',
             'notas'           => 'nullable|string',
         ]);
+
+        if (!empty($validated['vehicle_id'])) {
+            $vehicle = Vehicle::findOrFail($validated['vehicle_id']);
+            $validated['marca']       = $vehicle->brand;
+            $validated['modelo']      = $vehicle->model;
+            $validated['combustivel'] = $vehicle->fuel ?? 'Gasolina';
+        }
 
         $legalization->update($validated);
 

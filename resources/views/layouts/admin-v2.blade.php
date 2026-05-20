@@ -741,6 +741,13 @@
             </div>
 
             <div class="nav-item">
+                <a href="{{ route('admin.v3.vehicles.index') }}" class="nav-link {{ request()->routeIs('admin.v3.vehicles.*') ? 'active' : '' }}">
+                    <i class="bi bi-car-front-fill"></i>
+                    <span>Veículos V3</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
                 <a href="{{ route('admin.v2.sales.index') }}" class="nav-link {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
                     <i class="bi bi-cash-coin"></i>
                     <span>Vendas</span>

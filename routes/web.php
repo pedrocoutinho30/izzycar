@@ -194,6 +194,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ClientV2Controller::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\ClientV2Controller::class, 'create'])->name('create');
         Route::post('/', [App\Http\Controllers\Admin\ClientV2Controller::class, 'store'])->name('store');
+        Route::get('/{id}', [App\Http\Controllers\Admin\ClientV2Controller::class, 'show'])->name('show');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\ClientV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\ClientV2Controller::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\ClientV2Controller::class, 'destroy'])->name('destroy');
@@ -269,6 +270,53 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'destroy'])->name('destroy');
         Route::get('list', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'list'])->name('list');
+        // Documents
+        Route::post('/{id}/documentos', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'uploadDocument'])->name('upload-document');
+        Route::get('/{id}/documentos/{document}/download', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'downloadDocument'])->name('download-document');
+        Route::delete('/{id}/documentos/{document}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'deleteDocument'])->name('delete-document');
+    });
+
+    // ============================================================
+    // VEÍCULOS V3
+    // ============================================================
+    Route::prefix('v3/vehicles')->name('admin.v3.vehicles.')->group(function () {
+        Route::get('/',       [App\Http\Controllers\Admin\V3VehicleController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\V3VehicleController::class, 'create'])->name('create');
+        Route::post('/',      [App\Http\Controllers\Admin\V3VehicleController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\V3VehicleController::class, 'edit'])->name('edit');
+        Route::delete('/{id}',   [App\Http\Controllers\Admin\V3VehicleController::class, 'destroy'])->name('destroy');
+
+        // Auto-save (AJAX)
+        Route::post('/{id}/save-general',  [App\Http\Controllers\Admin\V3VehicleController::class, 'saveGeneral'])->name('save-general');
+        Route::post('/{id}/save-purchase', [App\Http\Controllers\Admin\V3VehicleController::class, 'savePurchase'])->name('save-purchase');
+
+        // Expenses
+        Route::post('/{id}/expenses',                 [App\Http\Controllers\Admin\V3VehicleController::class, 'storeExpense'])->name('expenses.store');
+        Route::delete('/{vehicleId}/expenses/{expenseId}', [App\Http\Controllers\Admin\V3VehicleController::class, 'destroyExpense'])->name('expenses.destroy');
+
+        // Documents
+        Route::post('/{id}/documents',                      [App\Http\Controllers\Admin\V3VehicleController::class, 'uploadDocument'])->name('documents.upload');
+        Route::get('/{vehicleId}/documents/{documentId}/download', [App\Http\Controllers\Admin\V3VehicleController::class, 'downloadDocument'])->name('documents.download');
+        Route::delete('/{vehicleId}/documents/{documentId}',       [App\Http\Controllers\Admin\V3VehicleController::class, 'destroyDocument'])->name('documents.destroy');
+
+        // Photos
+        Route::post('/{id}/photos',                    [App\Http\Controllers\Admin\V3VehicleController::class, 'uploadPhoto'])->name('photos.upload');
+        Route::delete('/{vehicleId}/photos/{photoId}', [App\Http\Controllers\Admin\V3VehicleController::class, 'destroyPhoto'])->name('photos.destroy');
+        Route::post('/{vehicleId}/photos/{photoId}/cover', [App\Http\Controllers\Admin\V3VehicleController::class, 'setCoverPhoto'])->name('photos.cover');
+        Route::post('/{id}/photos/reorder',            [App\Http\Controllers\Admin\V3VehicleController::class, 'reorderPhotos'])->name('photos.reorder');
+
+        // Sale
+        Route::post('/{id}/sale',                   [App\Http\Controllers\Admin\V3VehicleController::class, 'storeSale'])->name('sale.store');
+        Route::delete('/{vehicleId}/sale/{saleId}', [App\Http\Controllers\Admin\V3VehicleController::class, 'destroySale'])->name('sale.destroy');
+        Route::post('/{id}/sale/preview',           [App\Http\Controllers\Admin\V3VehicleController::class, 'calculatePreview'])->name('sale.preview');
+
+        // Legalization
+        Route::post('/{id}/legalization/create',    [App\Http\Controllers\Admin\V3VehicleController::class, 'createLegalization'])->name('legalization.create');
+        Route::post('/{id}/legalization/save',      [App\Http\Controllers\Admin\V3VehicleController::class, 'saveLegalization'])->name('legalization.save');
+        Route::post('/{id}/legalization/step',      [App\Http\Controllers\Admin\V3VehicleController::class, 'toggleLegalizationStep'])->name('legalization.toggle-step');
+        Route::post('/{id}/legalization/documents', [App\Http\Controllers\Admin\V3VehicleController::class, 'uploadLegalizationDocument'])->name('legalization.upload-document');
+        Route::get('/{vehicleId}/legalization/documents/{documentId}/download', [App\Http\Controllers\Admin\V3VehicleController::class, 'downloadLegalizationDocument'])->name('legalization.download-document');
+        Route::delete('/{vehicleId}/legalization/documents/{documentId}',        [App\Http\Controllers\Admin\V3VehicleController::class, 'deleteLegalizationDocument'])->name('legalization.delete-document');
     });
 
     // ============================================================

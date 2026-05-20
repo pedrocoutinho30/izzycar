@@ -34,6 +34,67 @@
 
             <div class="row g-3">
 
+                {{-- ── Origem do veículo ──────────────────────────────── --}}
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Veículo</label>
+                    <div class="d-flex gap-2 mb-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary {{ $legalization->vehicle_id ? 'active' : '' }}" id="btnModeVehicle"
+                                onclick="setMode('vehicle')">
+                            <i class="bi bi-car-front me-1"></i> Selecionar do inventário
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary {{ !$legalization->vehicle_id ? 'active' : '' }}" id="btnModeManual"
+                                onclick="setMode('manual')">
+                            <i class="bi bi-pencil me-1"></i> Preencher manualmente
+                        </button>
+                    </div>
+
+                    <div id="vehiclePickerBlock" style="{{ !$legalization->vehicle_id ? 'display:none' : '' }}">
+                        <select name="vehicle_id" id="vehicleSelect" class="form-select"
+                                onchange="fillFromVehicle(this)">
+                            <option value="">— Selecionar veículo —</option>
+                            @foreach($vehicles as $v)
+                                <option value="{{ $v->id }}"
+                                        data-brand="{{ $v->brand }}"
+                                        data-model="{{ $v->model }}"
+                                        data-fuel="{{ $v->fuel }}"
+                                        data-registration="{{ $v->registration }}"
+                                        {{ old('vehicle_id', $legalization->vehicle_id) == $v->id ? 'selected' : '' }}>
+                                    {{ $v->reference }} — {{ $v->brand }} {{ $v->model }}
+                                    {{ $v->registration ? '(' . $v->registration . ')' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                {{-- ── Campos manuais ─────────────────────────────────── --}}
+                <div id="manualFields" class="col-12" style="{{ $legalization->vehicle_id ? 'display:none' : '' }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Marca</label>
+                            <input type="text" id="marcaInput" name="marca" class="form-control"
+                                   value="{{ old('marca', $legalization->marca) }}" placeholder="ex: Volkswagen">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Modelo</label>
+                            <input type="text" id="modeloInput" name="modelo" class="form-control"
+                                   value="{{ old('modelo', $legalization->modelo) }}" placeholder="ex: Golf">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Combustível</label>
+                            <select id="combustivelInput" name="combustivel" class="form-select">
+                                @foreach(['Gasolina','Diesel','Elétrico','Híbrido Plug-In','Híbrido','GPL','Hidrogénio'] as $c)
+                                    <option value="{{ $c }}"
+                                        {{ old('combustivel', $legalization->combustivel) === $c ? 'selected' : '' }}>
+                                        {{ $c }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ── Cliente ─────────────────────────────────────────── --}}
                 <div class="col-md-12">
                     <label class="form-label fw-semibold">Cliente</label>
                     <select name="client_id" class="form-select">
@@ -47,33 +108,10 @@
                     </select>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Marca <span class="text-danger">*</span></label>
-                    <input type="text" name="marca" class="form-control"
-                           value="{{ old('marca', $legalization->marca) }}" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Modelo <span class="text-danger">*</span></label>
-                    <input type="text" name="modelo" class="form-control"
-                           value="{{ old('modelo', $legalization->modelo) }}" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Combustível <span class="text-danger">*</span></label>
-                    <select name="combustivel" class="form-select" required>
-                        @foreach(['Gasolina','Diesel','Elétrico','Híbrido Plug-In','Híbrido','GPL','Hidrogénio'] as $c)
-                            <option value="{{ $c }}"
-                                {{ old('combustivel', $legalization->combustivel) === $c ? 'selected' : '' }}>
-                                {{ $c }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
+                {{-- ── Matrícula & Homologação ──────────────────────────── --}}
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Matrícula Portuguesa</label>
-                    <input type="text" name="matricula" class="form-control"
+                    <input type="text" name="matricula" id="matriculaInput" class="form-control"
                            value="{{ old('matricula', $legalization->matricula) }}"
                            placeholder="ex: AA-00-BB">
                 </div>
@@ -102,4 +140,21 @@
     </div>
 </div>
 
+<script>
+function setMode(mode) {
+    const isVehicle = mode === 'vehicle';
+    document.getElementById('vehiclePickerBlock').style.display = isVehicle ? '' : 'none';
+    document.getElementById('manualFields').style.display        = isVehicle ? 'none' : '';
+    document.getElementById('btnModeVehicle').classList.toggle('active', isVehicle);
+    document.getElementById('btnModeManual').classList.toggle('active', !isVehicle);
+    if (!isVehicle) document.getElementById('vehicleSelect').value = '';
+}
+
+function fillFromVehicle(select) {
+    const opt = select.options[select.selectedIndex];
+    if (opt.dataset.registration) {
+        document.getElementById('matriculaInput').value = opt.dataset.registration;
+    }
+}
+</script>
 @endsection

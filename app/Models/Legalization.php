@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\V3VehicleDocument;
 
 class Legalization extends Model
 {
     protected $fillable = [
         'client_id',
+        'vehicle_id',
+        'v3_vehicle_id',
         'marca',
         'modelo',
         'combustivel',
@@ -108,6 +111,11 @@ class Legalization extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function vehicle(): BelongsTo
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(LegalizationDocument::class);
@@ -118,7 +126,9 @@ class Legalization extends Model
     // ---------------------------------------------------------------
     public function hasDocument(string $tipo): bool
     {
-        return $this->documents->where('tipo', $tipo)->isNotEmpty();
+        return V3VehicleDocument::where('v3_vehicle_id', $this->v3_vehicle_id)
+            ->where('tipo', $tipo)
+            ->exists();
     }
 
     public function isStepCompleted(int $step): bool

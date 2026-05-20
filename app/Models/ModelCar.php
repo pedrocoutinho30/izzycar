@@ -24,4 +24,9 @@ class ModelCar extends Model
     {
         return $this->hasMany(ModelYear::class);
     }
+
+    public function submodels(): HasMany
+    {
+        return $this->hasMany(SubmodelCar::class, 'model_id')->orderBy('name');
+    }
 }

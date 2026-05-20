@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Expense;
 use App\Models\Partner;
-use App\Models\Vehicle;
+use App\Models\V3Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,7 +19,7 @@ class MovementV2Controller extends Controller
         // Year filter: default = current year, 'all' = no restriction
         $year = $request->input('year', (string) now()->year);
 
-        $query = Expense::with(['vehicle', 'partner', 'client']);
+        $query = Expense::with(['v3Vehicle', 'partner', 'client']);
 
         // Only apply year filter when date_from/date_to are not set
         if (!$request->filled('date_from') && !$request->filled('date_to')) {
@@ -48,8 +48,8 @@ class MovementV2Controller extends Controller
             $query->where('status', $request->status);
         }
 
-        if ($request->filled('vehicle_id')) {
-            $query->where('vehicle_id', $request->vehicle_id);
+        if ($request->filled('v3_vehicle_id')) {
+            $query->where('v3_vehicle_id', $request->v3_vehicle_id);
         }
 
         if ($request->filled('client_id')) {
@@ -66,7 +66,7 @@ class MovementV2Controller extends Controller
 
         $movements = $query->orderBy('expense_date', 'desc')
             ->orderBy('created_at', 'desc')
-            ->paginate(15)
+            ->paginate(50)
             ->withQueryString();
 
         // Stats — scoped to same year filter for coherence
@@ -115,7 +115,7 @@ class MovementV2Controller extends Controller
             ],
         ];
 
-        $vehicles = Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
+        $vehicles = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
         $clients  = Client::select('id', 'name')->orderBy('name')->get();
 
         return view('admin.v2.movements.index', compact(
@@ -127,7 +127,7 @@ class MovementV2Controller extends Controller
 
     public function create()
     {
-        $vehicles = Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
+        $vehicles = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
         $partners = Partner::orderBy('name')->get();
         $clients  = Client::select('id', 'name')->orderBy('name')->get();
 
@@ -158,14 +158,14 @@ class MovementV2Controller extends Controller
 
     public function edit($id)
     {
-        $movement = Expense::with(['vehicle', 'partner', 'client'])->findOrFail($id);
+        $movement = Expense::with(['v3Vehicle', 'partner', 'client'])->findOrFail($id);
 
         if ($movement->source_type) {
             return redirect()->route('admin.v2.movements.index')
                 ->with('error', 'Este movimento foi gerado automaticamente e não pode ser editado aqui. Edite a venda ou o veículo correspondente.');
         }
 
-        $vehicles = Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
+        $vehicles = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
         $partners = Partner::orderBy('name')->get();
         $clients  = Client::select('id', 'name')->orderBy('name')->get();
 
@@ -236,7 +236,7 @@ class MovementV2Controller extends Controller
         return $request->validate([
             'movement_type'  => 'required|string|max:50',
             'category'       => 'nullable|string|max:100',
-            'vehicle_id'     => 'nullable|exists:vehicles,id',
+            'v3_vehicle_id'  => 'nullable|exists:v3_vehicles,id',
             'client_id'      => 'nullable|exists:clients,id',
             'partner_id'     => 'nullable|exists:partners,id',
             'title'          => 'required|string|max:255',

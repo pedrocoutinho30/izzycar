@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Brand;
 use App\Models\VehicleAttribute;
-
+use App\Models\VehicleDocument;
 use App\Models\VehicleAttributeValue;
 use App\Models\AttributeGroup;
 
@@ -209,7 +209,7 @@ class VehicleV2Controller extends Controller
      */
     public function edit($id)
     {
-        $vehicle = Vehicle::with(['supplier', 'images'])->findOrFail($id);
+        $vehicle = Vehicle::with(['supplier', 'images', 'documents', 'legalizations.documents', 'expenses'])->findOrFail($id);
         $suppliers = Supplier::orderBy('company_name')->get();
         $brands = Brand::with(['models' => function ($query) {
             $query->orderBy('name');
@@ -385,5 +385,43 @@ class VehicleV2Controller extends Controller
             ->get();
 
         return view('admin.v2.vehicles.list', compact('vehicles'));
+    }
+
+    // ── Document upload ───────────────────────────────────────────────────
+
+    public function uploadDocument(Request $request, $id)
+    {
+        $vehicle = Vehicle::findOrFail($id);
+
+        $request->validate([
+            'ficheiro' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:20480',
+            'tipo'     => 'nullable|string|max:100',
+        ]);
+
+        $file = $request->file('ficheiro');
+        $path = $file->store("vehicles/{$vehicle->id}/documents", 'local');
+
+        VehicleDocument::create([
+            'vehicle_id'    => $vehicle->id,
+            'tipo'          => $request->input('tipo') ?: null,
+            'nome_original' => $file->getClientOriginalName(),
+            'caminho'       => $path,
+        ]);
+
+        return back()->with('success', 'Documento carregado com sucesso.');
+    }
+
+    public function downloadDocument($id, VehicleDocument $document)
+    {
+        abort_if($document->vehicle_id != $id, 403);
+        return Storage::disk('local')->download($document->caminho, $document->nome_original);
+    }
+
+    public function deleteDocument($id, VehicleDocument $document)
+    {
+        abort_if($document->vehicle_id != $id, 403);
+        Storage::disk('local')->delete($document->caminho);
+        $document->delete();
+        return back()->with('success', 'Documento removido.');
     }
 }
