@@ -11,7 +11,8 @@
     ],
     'title'    => 'Veículos V3',
     'subtitle' => 'Gestão completa de veículos',
-    'actions'  => '<a href="' . route('admin.v3.vehicles.create') . '" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Novo Veículo</a>',
+    'actionHref' => route('admin.v3.vehicles.create'),
+    'actionLabel' => 'Novo Veículo',
 ])
 
 {{-- Flash --}}

@@ -31,11 +31,22 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Marca</label>
-                    <input type="text" name="brand" class="form-control" value="{{ old('brand') }}" placeholder="ex: Volkswagen" autofocus>
+                    <select name="brand" id="v3CreateBrandSelect" class="form-select" onchange="v3CreateLoadModels()" autofocus>
+                        <option value="">— Selecionar —</option>
+                        @foreach($brands as $brand)
+                            <option value="{{ $brand->name }}"
+                                    data-models='@json($brand->models->pluck('name')->values())'
+                                    {{ old('brand') === $brand->name ? 'selected' : '' }}>
+                                {{ $brand->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Modelo</label>
-                    <input type="text" name="model" class="form-control" value="{{ old('model') }}" placeholder="ex: Golf">
+                    <select name="model" id="v3CreateModelSelect" class="form-select" disabled>
+                        <option value="">— Primeiro selecione a marca —</option>
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Ano</label>
@@ -61,5 +72,42 @@
 
     </div>
 </div>
+
+<script>
+(function () {
+    const savedBrand = @json(old('brand'));
+    const savedModel = @json(old('model'));
+
+    function v3CreateLoadModels() {
+        const brandSel = document.getElementById('v3CreateBrandSelect');
+        const modelSel = document.getElementById('v3CreateModelSelect');
+        const opt = brandSel.options[brandSel.selectedIndex];
+        const models = JSON.parse(opt?.dataset.models || '[]');
+
+        modelSel.innerHTML = '<option value="">— Selecionar modelo —</option>';
+        models.forEach((modelName) => {
+            const option = document.createElement('option');
+            option.value = modelName;
+            option.textContent = modelName;
+            modelSel.appendChild(option);
+        });
+
+        modelSel.disabled = models.length === 0;
+
+        if (savedModel) {
+            modelSel.value = savedModel;
+        }
+    }
+
+    window.v3CreateLoadModels = v3CreateLoadModels;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (savedBrand) {
+            document.getElementById('v3CreateBrandSelect').value = savedBrand;
+            v3CreateLoadModels();
+        }
+    });
+})();
+</script>
 
 @endsection
