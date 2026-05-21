@@ -525,8 +525,8 @@ function calcNormalRegime(purchasePrice, expensesTotal, expensesVAT, vatRate, mo
  * @param {number} modeValue      Valor associado ao modo escolhido
  * @returns {object} Resultado com todos os indicadores
  */
-function calcMargemRegime(purchasePrice, expensesTotal, vatRate, mode, modeValue) {
-    // Sem dedução: o IVA das despesas não é recuperado
+function calcMargemRegime(purchasePrice, expensesTotal, expensesVAT, vatRate, mode, modeValue) {
+    // O IVA das despesas com IVA é dedutível mesmo no regime de margem
     const totalCost = purchasePrice + expensesTotal;
 
     let salePriceIncVAT;
@@ -548,7 +548,8 @@ function calcMargemRegime(purchasePrice, expensesTotal, vatRate, mode, modeValue
     }
 
     const grossMargin = salePriceIncVAT - totalCost;               // Margem bruta (antes de IVA)
-    const vatAmount   = grossMargin * vatRate / (1 + vatRate);     // IVA entregue ao Estado
+    const vatOnMargin = grossMargin * vatRate / (1 + vatRate);     // IVA sobre a margem
+    const vatAmount   = vatOnMargin - expensesVAT;                 // IVA líquido a pagar (após dedução de despesas)
     const profit      = grossMargin - vatAmount;                   // Lucro líquido após IVA
     const markup      = totalCost > 0 ? (profit / totalCost) * 100 : 0;
     const margin      = salePriceIncVAT > 0 ? (grossMargin / salePriceIncVAT) * 100 : 0;
@@ -604,7 +605,7 @@ function runCalculation() {
 
         const result = regime === 'normal'
             ? calcNormalRegime(purchasePrice, expensesTotal, expensesVAT, vatRateDecimal, mode, modeValue)
-            : calcMargemRegime(purchasePrice, expensesTotal, vatRateDecimal, mode, modeValue);
+            : calcMargemRegime(purchasePrice, expensesTotal, expensesVAT, vatRateDecimal, mode, modeValue);
 
         renderResults(result, regime, mode, purchasePrice, expensesTotal, expensesVAT);
     } catch (err) {
@@ -632,7 +633,7 @@ function renderResults(r, regime, mode, purchasePrice, expensesTotal, expensesVA
     document.getElementById('res-expensesTotal').textContent = fmtCurrency(expensesTotal);
 
     const expVATRow = document.getElementById('res-expensesVATRow');
-    if (regime === 'normal') {
+    if (expensesVAT > 0) {
         document.getElementById('res-expensesVAT').textContent = '- ' + fmtCurrency(expensesVAT);
         expVATRow.style.display = '';
     } else {
@@ -695,13 +696,9 @@ function updateModeInputVisibility(mode) {
 
 /** Ajusta a UI consoante o regime fiscal seleccionado. */
 function updateRegimeUI(regime) {
-    // O campo de IVA das despesas só é relevante no regime normal
+    // O IVA das despesas é dedutível em ambos os regimes
     const expVATRow = document.getElementById('expensesVATRow');
-    if (regime === 'normal') {
-        expVATRow.classList.remove('field-disabled');
-    } else {
-        expVATRow.classList.add('field-disabled');
-    }
+    expVATRow.classList.remove('field-disabled');
 }
 
 function resetForm() {

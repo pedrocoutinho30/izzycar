@@ -121,10 +121,11 @@ class SaleController extends Controller
             $validatedData['vat_deducible_purchase'] = 0;
             $validatedData['net_margin'] = $net_margin;
         } else if ($purchaseType == 'Margem') {
+            $expenseVat = $expenses->sum('vat_amount');
             $gross_margin = $sellPrice - $purchasePrice;
             $net_margin = $gross_margin / 1.23;
-            $vat_paid = $gross_margin - $net_margin;
-            $validatedData['net_margin'] = $net_margin - $totalExpenses;
+            $vat_paid = ($gross_margin - $net_margin) - $expenseVat;
+            $validatedData['net_margin'] = $net_margin - ($totalExpenses - $expenseVat);
         }
 
         $validatedData['gross_margin'] = $gross_margin - $totalExpenses;

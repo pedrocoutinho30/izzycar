@@ -34,7 +34,7 @@
             ['label' => 'Preço Venda', 'value' => number_format($sale->sale_price, 2, ',', '.') . ' €', 'color' => 'primary'],
             ['label' => 'Margem Bruta', 'value' => number_format($sale->gross_margin, 2, ',', '.') . ' €', 'color' => ($sale->gross_margin >= 0 ? 'success' : 'danger')],
             ['label' => 'Margem Líquida', 'value' => number_format($sale->net_margin, 2, ',', '.') . ' €', 'color' => ($sale->net_margin >= 0 ? 'success' : 'danger')],
-            ['label' => 'IVA Entregue', 'value' => number_format($sale->vat_settle_sale, 2, ',', '.') . ' €', 'color' => 'secondary'],
+            ['label' => 'IVA a Pagar', 'value' => number_format($sale->vat_paid, 2, ',', '.') . ' €', 'color' => 'secondary'],
             ['label' => 'Rent. Bruta', 'value' => number_format($sale->gross_profitability, 1, ',', '.') . '%', 'color' => 'info'],
             ['label' => 'Rent. Líquida', 'value' => number_format($sale->net_profitability, 1, ',', '.') . '%', 'color' => 'info'],
         ];
@@ -244,7 +244,7 @@ async function saleCalc() {
         const m = await fetchMetrics(price, vat, 0);
         preview.classList.remove('d-none');
         document.getElementById('spNetRevenue').textContent = fmt(m.net_revenue) + ' €';
-        document.getElementById('spVatOwed').textContent    = fmt(m.vat_settle_sale) + ' €';
+        document.getElementById('spVatOwed').textContent    = fmt(m.vat_paid) + ' €';
         document.getElementById('spGross').textContent      = fmt(m.gross_margin) + ' €';
         document.getElementById('spNet').textContent        = fmt(m.net_margin) + ' €';
         document.getElementById('spGrossPct').textContent   = m.gross_profitability.toFixed(1) + '%';
@@ -270,7 +270,7 @@ async function simCalcV3() {
     try {
         const m = await fetchMetrics(price, vat, extra);
         document.getElementById('simNetRevenue').textContent = fmt(m.net_revenue) + ' €';
-        document.getElementById('simVatOwed').textContent    = fmt(m.vat_settle_sale) + ' €';
+        document.getElementById('simVatOwed').textContent    = fmt(m.vat_paid) + ' €';
         document.getElementById('simGross').textContent      = fmt(m.gross_margin) + ' €';
         document.getElementById('simNet').textContent        = fmt(m.net_margin) + ' €';
         document.getElementById('simGrossPct').textContent   = m.gross_profitability.toFixed(1) + '%';
