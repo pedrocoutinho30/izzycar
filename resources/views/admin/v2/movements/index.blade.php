@@ -160,6 +160,8 @@
                         <th class="text-end">Bruto</th>
                         <th class="text-end">IVA</th>
                         <th class="text-end">Líquido</th>
+                        <th class="text-end">Saldo</th>
+                        <th class="text-end">Saldo Real</th>
                         <th>Estado</th>
                         <th class="text-end" style="width:110px">Ações</th>
                     </tr>
@@ -244,7 +246,16 @@
                         <td class="text-end">
                             € {{ number_format($mov->amount_net ?? $mov->amount, 2, ',', '.') }}
                         </td>
-                        <td>
+                        @php $rowSaldo = $runningBalances[$mov->id] ?? null; @endphp
+                        <td class="text-end fw-semibold {{ $rowSaldo !== null ? ($rowSaldo >= 0 ? 'text-primary' : 'text-danger') : 'text-muted' }}">
+                            {{ $rowSaldo !== null ? '€ ' . number_format($rowSaldo, 2, ',', '.') : '—' }}
+                        </td>
+                        @php $rowSaldoReal = $runningBalancesReal[$mov->id] ?? null; @endphp
+                        <td class="text-end fw-semibold {{ $rowSaldoReal !== null ? ($rowSaldoReal >= 0 ? 'text-success' : 'text-danger') : 'text-muted' }}"
+                            title="{{ $rowSaldoReal === null ? 'Movimento pendente — não contabilizado no saldo real' : '' }}">
+                            {{ $rowSaldoReal !== null ? '€ ' . number_format($rowSaldoReal, 2, ',', '.') : '—' }}
+                        </td>
+                        <td>>
                             <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }} border border-{{ $statusColor }}-subtle">
                                 {{ $mov->status_label }}
                             </span>
@@ -294,6 +305,12 @@
                         </td>
                         <td class="text-end {{ $periodNet >= 0 ? 'text-success' : 'text-danger' }}">
                             {{ $periodNet >= 0 ? '+' : '' }}€ {{ number_format($periodNet, 2, ',', '.') }}
+                        </td>
+                        <td class="text-end fw-semibold text-primary">
+                            € {{ number_format($currentSaldo, 2, ',', '.') }}
+                        </td>
+                        <td class="text-end fw-semibold text-success">
+                            € {{ number_format($currentSaldoReal, 2, ',', '.') }}
                         </td>
                         <td colspan="2"></td>
                     </tr>

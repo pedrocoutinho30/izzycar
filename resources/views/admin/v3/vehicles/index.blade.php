@@ -94,6 +94,12 @@
                         <td><span class="badge bg-{{ $v->status_color }}">{{ $v->status_label }}</span></td>
                         <td class="text-end">
                             <a href="{{ route('admin.v3.vehicles.edit', $v->id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                            <button type="button"
+                                class="btn btn-sm btn-outline-success"
+                                title="Gerar Anúncio"
+                                onclick="openAdModal({{ $v->id }}, {{ json_encode(trim($v->brand . ' ' . $v->model . ' ' . $v->sub_model)) }}, {{ $v->ad_text ? 'true' : 'false' }}, {{ json_encode($v->ad_text) }})">
+                                <i class="bi bi-megaphone"></i>
+                            </button>
                             <form action="{{ route('admin.v3.vehicles.destroy', $v->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Eliminar este veículo?')">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
@@ -110,3 +116,173 @@
 </div>
 
 @endsection
+
+{{-- ===== MODAL: GERAR ANÚNCIO ===== --}}
+<div class="modal fade" id="adModal" tabindex="-1" aria-labelledby="adModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="adModalLabel">
+                    <i class="bi bi-megaphone me-2 text-success"></i>Gerar Anúncio
+                    <small class="ms-2 text-muted fw-normal" id="adModalVehicleName"></small>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                {{-- Status badges --}}
+                <div id="adStatusBadge" class="mb-2 d-none">
+                    <span id="adBadgeAI" class="badge bg-primary d-none"><i class="bi bi-stars me-1"></i>Gerado por IA</span>
+                    <span id="adBadgeSaved" class="badge bg-success d-none"><i class="bi bi-floppy me-1"></i>Guardado</span>
+                    <span id="adBadgeTemplate" class="badge bg-secondary d-none"><i class="bi bi-file-text me-1"></i>Modelo padrão (IA indisponível)</span>
+                </div>
+
+                {{-- Spinner --}}
+                <div id="adSpinner" class="text-center py-5 d-none">
+                    <div class="spinner-border text-success" role="status"></div>
+                    <div class="mt-2 text-muted small">A gerar anúncio com IA…</div>
+                </div>
+
+                {{-- Textarea --}}
+                <textarea id="adTextarea" class="form-control d-none" rows="12" placeholder="O texto do anúncio aparecerá aqui…" style="resize:vertical; font-size:.92rem; line-height:1.6;"></textarea>
+            </div>
+            <div class="modal-footer flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="adBtnRegenerate" onclick="adGenerate(true)">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Regenerar
+                </button>
+                <button type="button" class="btn btn-outline-dark btn-sm" id="adBtnCopy" onclick="adCopy()">
+                    <i class="bi bi-clipboard me-1"></i>Copiar
+                </button>
+                <button type="button" class="btn btn-success btn-sm" id="adBtnSave" onclick="adSave()">
+                    <i class="bi bi-floppy me-1"></i>Guardar
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm ms-auto" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+let _adVehicleId   = null;
+let _adVehicleName = '';
+let _adSource      = null; // 'ai' | 'saved' | 'template'
+
+const adModal       = new bootstrap.Modal(document.getElementById('adModal'));
+const adTextarea    = document.getElementById('adTextarea');
+const adSpinner     = document.getElementById('adSpinner');
+const adStatusBadge = document.getElementById('adStatusBadge');
+const adBadgeAI     = document.getElementById('adBadgeAI');
+const adBadgeSaved  = document.getElementById('adBadgeSaved');
+const adBadgeTemplate = document.getElementById('adBadgeTemplate');
+
+function openAdModal(vehicleId, vehicleName, hasSaved, savedText) {
+    _adVehicleId   = vehicleId;
+    _adVehicleName = vehicleName;
+    document.getElementById('adModalVehicleName').textContent = vehicleName || '';
+
+    // Reset UI
+    adHideAll();
+    adSetBadge(null);
+
+    if (hasSaved && savedText) {
+        adShowText(savedText, 'saved');
+    } else {
+        adGenerate(false);
+    }
+
+    adModal.show();
+}
+
+function adHideAll() {
+    adTextarea.classList.add('d-none');
+    adSpinner.classList.add('d-none');
+    adStatusBadge.classList.add('d-none');
+}
+
+function adSetBadge(source) {
+    adBadgeAI.classList.add('d-none');
+    adBadgeSaved.classList.add('d-none');
+    adBadgeTemplate.classList.add('d-none');
+    if (source === 'ai')       { adBadgeAI.classList.remove('d-none'); adStatusBadge.classList.remove('d-none'); }
+    if (source === 'saved')    { adBadgeSaved.classList.remove('d-none'); adStatusBadge.classList.remove('d-none'); }
+    if (source === 'template') { adBadgeTemplate.classList.remove('d-none'); adStatusBadge.classList.remove('d-none'); }
+}
+
+function adShowText(text, source) {
+    _adSource = source;
+    adSpinner.classList.add('d-none');
+    adTextarea.value = text;
+    adTextarea.classList.remove('d-none');
+    adSetBadge(source);
+}
+
+function adGenerate(forceRegenerate) {
+    adHideAll();
+    adSpinner.classList.remove('d-none');
+
+    const url = `{{ url('gestao/v3/vehicles') }}/${_adVehicleId}/generate-ad`;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        },
+        body: JSON.stringify({ regenerate: forceRegenerate }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            adShowText(data.text, data.ai ? 'ai' : 'template');
+        } else {
+            adShowText('Erro ao gerar o anúncio. Tente novamente.', 'template');
+        }
+    })
+    .catch(() => {
+        adShowText('Erro de ligação. Tente novamente.', 'template');
+    });
+}
+
+function adCopy() {
+    const text = adTextarea.value.trim();
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('adBtnCopy');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check2 me-1"></i>Copiado!';
+        btn.classList.add('btn-success');
+        btn.classList.remove('btn-outline-dark');
+        setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-dark');
+        }, 2000);
+    });
+}
+
+function adSave() {
+    const text = adTextarea.value.trim();
+    const url  = `{{ url('gestao/v3/vehicles') }}/${_adVehicleId}/save-ad`;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        },
+        body: JSON.stringify({ ad_text: text }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            adSetBadge('saved');
+            const btn = document.getElementById('adBtnSave');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check2 me-1"></i>Guardado!';
+            setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        }
+    })
+    .catch(() => { alert('Erro ao guardar. Tente novamente.'); });
+}
+</script>
+@endpush

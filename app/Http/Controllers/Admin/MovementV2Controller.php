@@ -78,6 +78,38 @@ class MovementV2Controller extends Controller
         $totalIncome   = (clone $statsBase)->where('movement_type', 'income')->sum('amount_gross');
         $pending       = (clone $statsBase)->where('status', 'pending')->sum('amount_gross');
 
+        // ── Saldo (running balance) ────────────────────────────────────────
+        $initialBalance = 15757.28;
+
+        // Load ALL year movements sorted ascending for cumulative balance calculation
+        $allYearMovements = Expense::query()
+            ->when($year !== 'all', fn ($q) => $q->whereYear('expense_date', $year))
+            ->orderBy('expense_date', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->get(['id', 'movement_type', 'amount_gross', 'amount', 'status']);
+
+        $runningBalances     = []; // inclui pendentes
+        $runningBalancesReal = []; // só pagos
+        $runningBalance      = $initialBalance;
+        $runningBalanceReal  = $initialBalance;
+
+        foreach ($allYearMovements as $m) {
+            $amount = (float) ($m->amount_gross ?? $m->amount ?? 0);
+            $isPaid = $m->status !== 'pending';
+
+            if ($m->movement_type === 'income') {
+                $runningBalance += $amount;
+                if ($isPaid) $runningBalanceReal += $amount;
+            } else {
+                $runningBalance -= $amount;
+                if ($isPaid) $runningBalanceReal -= $amount;
+            }
+            $runningBalances[$m->id]     = $runningBalance;
+            $runningBalancesReal[$m->id] = $isPaid ? $runningBalanceReal : null;
+        }
+        $currentSaldo     = $runningBalance;
+        $currentSaldoReal = $runningBalanceReal;
+
         // Available years for the year picker
         $availableYears = Expense::selectRaw('YEAR(expense_date) as y')
             ->whereNotNull('expense_date')
@@ -102,16 +134,16 @@ class MovementV2Controller extends Controller
                 'icon'  => 'bi-arrow-down-circle',
             ],
             [
-                'title' => 'Pendentes',
-                'value' => number_format($pending, 2, ',', '.') . '€',
-                'color' => 'warning',
-                'icon'  => 'bi-hourglass-split',
+                'title' => 'Saldo (c/ Pendentes)',
+                'value' => number_format($currentSaldo, 2, ',', '.') . '€',
+                'color' => $currentSaldo >= 0 ? 'primary' : 'danger',
+                'icon'  => 'bi-wallet2',
             ],
             [
-                'title' => 'Nº Movimentos',
-                'value' => Expense::count(),
-                'color' => 'info',
-                'icon'  => 'bi-list-ul',
+                'title' => 'Saldo Real (só Pagos)',
+                'value' => number_format($currentSaldoReal, 2, ',', '.') . '€',
+                'color' => $currentSaldoReal >= 0 ? 'success' : 'danger',
+                'icon'  => 'bi-check-circle',
             ],
         ];
 
@@ -119,7 +151,8 @@ class MovementV2Controller extends Controller
         $clients  = Client::select('id', 'name')->orderBy('name')->get();
 
         return view('admin.v2.movements.index', compact(
-            'movements', 'stats', 'vehicles', 'clients', 'availableYears', 'year'
+            'movements', 'stats', 'vehicles', 'clients', 'availableYears', 'year',
+            'runningBalances', 'runningBalancesReal', 'currentSaldo', 'currentSaldoReal', 'initialBalance'
         ));
     }
 

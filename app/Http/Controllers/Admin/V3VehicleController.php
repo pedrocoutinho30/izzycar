@@ -480,8 +480,170 @@ class V3VehicleController extends Controller
     }
 
     // ═══════════════════════════════════════════════════
+    // AD TEXT (Gerar Anúncio)
+    // ═══════════════════════════════════════════════════
+
+    public function generateAdText(Request $request, $id)
+    {
+        $vehicle = V3Vehicle::with(['attributeValues.attribute'])->findOrFail($id);
+
+        // Collect enabled equipment attributes
+        $equipment = $vehicle->attributeValues
+            ->filter(fn($v) => $v->value && $v->value !== '0' && $v->value !== '' && $v->attribute)
+            ->map(function ($v) {
+                $attr = $v->attribute;
+                if ($attr->type === 'boolean') {
+                    return $attr->name;
+                }
+                // select / text — show as "Name: Value"
+                return $attr->name . ': ' . $v->value;
+            })
+            ->filter()
+            ->values()
+            ->toArray();
+
+        $apiKey = config('services.openai.key');
+
+        if (empty($apiKey)) {
+            return response()->json([
+                'success' => true,
+                'text'    => $this->buildTemplateAdText($vehicle, $equipment),
+                'ai'      => false,
+            ]);
+        }
+
+        // Build structured info for the prompt
+        $parts = array_filter([
+            $vehicle->brand,
+            $vehicle->model,
+            $vehicle->sub_model,
+            $vehicle->version,
+        ]);
+        $name = implode(' ', $parts);
+
+        $specs = array_filter([
+            'Ano'          => $vehicle->year,
+            'Combustível'  => $vehicle->fuel,
+            'Quilómetros'  => $vehicle->kilometers ? number_format($vehicle->kilometers, 0, ',', '.') . ' km' : null,
+            'Potência'     => $vehicle->power ? $vehicle->power . ' CV' : null,
+            'Cilindrada'   => $vehicle->cylinder_capacity ? $vehicle->cylinder_capacity . ' cc' : null,
+            'Cor'          => $vehicle->color,
+        ]);
+        $specsText = implode("\n", array_map(fn($k, $v) => "- $k: $v", array_keys($specs), $specs));
+        $equipText = !empty($equipment)
+            ? "\n\nEquipamento incluído:\n- " . implode("\n- ", $equipment)
+            : '';
+
+        $userPrompt = "Cria um anúncio profissional e apelativo em português de Portugal para a venda de um automóvel usado:\n\n"
+            . "**Veículo:** $name\n\n"
+            . "**Características:**\n$specsText"
+            . $equipText
+            . "\n\nO anúncio deve:\n"
+            . "- Ser cativante e destacar os pontos fortes\n"
+            . "- Ter um tom profissional adequado para OLX, AutoSapo, CustoJusto, etc.\n"
+            . "- Incluir um título apelativo no início (em linha própria, sem hashtags)\n"
+            . "- Ter entre 150 e 300 palavras\n"
+            . "- Terminar com um convite ao contacto";
+
+        $ch = curl_init('https://api.openai.com/v1/chat/completions');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $apiKey,
+            ],
+            CURLOPT_POSTFIELDS => json_encode([
+                'model'       => 'gpt-4o-mini',
+                'messages'    => [
+                    [
+                        'role'    => 'system',
+                        'content' => 'És um especialista em marketing automóvel português. Crias anúncios persuasivos, honestos e profissionais para a venda de automóveis usados em plataformas portuguesas.',
+                    ],
+                    ['role' => 'user', 'content' => $userPrompt],
+                ],
+                'max_tokens'  => 700,
+                'temperature' => 0.72,
+            ]),
+            CURLOPT_TIMEOUT => 30,
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200 || !$response) {
+            return response()->json([
+                'success' => true,
+                'text'    => $this->buildTemplateAdText($vehicle, $equipment),
+                'ai'      => false,
+            ]);
+        }
+
+        $data = json_decode($response, true);
+        $text = $data['choices'][0]['message']['content'] ?? null;
+
+        if (!$text) {
+            return response()->json([
+                'success' => true,
+                'text'    => $this->buildTemplateAdText($vehicle, $equipment),
+                'ai'      => false,
+            ]);
+        }
+
+        return response()->json(['success' => true, 'text' => trim($text), 'ai' => true]);
+    }
+
+    public function saveAdText(Request $request, $id)
+    {
+        $vehicle   = V3Vehicle::findOrFail($id);
+        $validated = $request->validate(['ad_text' => 'nullable|string|max:5000']);
+        $vehicle->update(['ad_text' => $validated['ad_text'] ?? null]);
+
+        return response()->json(['success' => true, 'message' => 'Anúncio guardado com sucesso.']);
+    }
+
+    // ═══════════════════════════════════════════════════
     // PRIVATE HELPERS
     // ═══════════════════════════════════════════════════
+
+    private function buildTemplateAdText(V3Vehicle $vehicle, array $equipment): string
+    {
+        $nameParts = array_filter([
+            $vehicle->brand,
+            $vehicle->model,
+            $vehicle->sub_model,
+            $vehicle->version,
+        ]);
+        $name = implode(' ', $nameParts) ?: 'Veículo';
+        $year = $vehicle->year ? " ({$vehicle->year})" : '';
+
+        $lines   = [];
+        $lines[] = strtoupper($name) . $year;
+        $lines[] = '';
+
+        if ($vehicle->kilometers) {
+            $lines[] = '🔢 Quilómetros: ' . number_format($vehicle->kilometers, 0, ',', '.') . ' km';
+        }
+        if ($vehicle->fuel)             { $lines[] = '⛽ Combustível: ' . $vehicle->fuel; }
+        if ($vehicle->power)            { $lines[] = '⚡ Potência: ' . $vehicle->power . ' CV'; }
+        if ($vehicle->cylinder_capacity){ $lines[] = '🔧 Cilindrada: ' . $vehicle->cylinder_capacity . ' cc'; }
+        if ($vehicle->color)            { $lines[] = '🎨 Cor: ' . $vehicle->color; }
+
+        if (!empty($equipment)) {
+            $lines[] = '';
+            $lines[] = '✅ Equipamento de série:';
+            foreach ($equipment as $e) {
+                $lines[] = '   • ' . $e;
+            }
+        }
+
+        $lines[] = '';
+        $lines[] = 'Veículo em excelente estado de conservação, disponível para inspeção prévia.';
+        $lines[] = 'Para mais informações ou para agendar uma visita, entre em contacto connosco!';
+
+        return implode("\n", $lines);
+    }
 
     private function calculateSaleMetrics(V3Vehicle $vehicle, float $salePrice, string $vatType): array
     {
