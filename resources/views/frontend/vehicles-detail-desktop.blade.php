@@ -227,7 +227,17 @@
     }
 
     /* Miniaturas */
+    .mySwiperThumbs .swiper-slide {
+        width: auto !important;
+        height: 100px;
+        flex-shrink: 0;
+    }
+
     .mySwiperThumbs .swiper-slide img {
+        height: 100px;
+        width: auto;
+        max-width: 160px;
+        object-fit: cover;
         border-radius: 8px;
         border: 2px solid transparent;
         transition: all 0.3s ease;
