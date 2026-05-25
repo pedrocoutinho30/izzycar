@@ -17,7 +17,7 @@
                                     'id' => $vehicle->reference
                                 ]) }}" class="text-decoration-none text-dark">
                             <div class="image-wrapper mb-3">
-                                <img src="{{  $vehicle->images->first()->image_path }}" class="img-fluid " loading="lazy" alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}" style="max-width: 100%; max-height: 300px;">
+                                <img src="{{  optional($vehicle->coverPhoto)->path ? asset("storage/" . $vehicle->coverPhoto->path) : asset("img/no-image.png") }}" class="img-fluid " loading="lazy" alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}" style="max-width: 100%; max-height: 300px;">
                             </div>
                             <h5 class="mb-2 text-accent" style="min-height: 3.5em; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                 {{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->version }}
@@ -36,7 +36,7 @@
                                 <p class="mb-0">{{ $vehicle->fuel }}</p>
                             </div>
                             <h3 class="d-flex align-items-end mt-4" style="color: var(--accent-color);">
-                                {{ number_format(round($vehicle->sell_price), 0, ',', ' ') }}&nbsp;€
+                                {{ number_format(round($vehicle->asking_price ?? 0), 0, ',', ' ') }}&nbsp;€
                             </h3>
                         </a>
                     </div>

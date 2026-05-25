@@ -304,6 +304,9 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::post('/{id}/photos',                    [App\Http\Controllers\Admin\V3VehicleController::class, 'uploadPhoto'])->name('photos.upload');
         Route::delete('/{vehicleId}/photos/{photoId}', [App\Http\Controllers\Admin\V3VehicleController::class, 'destroyPhoto'])->name('photos.destroy');
         Route::post('/{vehicleId}/photos/{photoId}/cover', [App\Http\Controllers\Admin\V3VehicleController::class, 'setCoverPhoto'])->name('photos.cover');
+        Route::post('/{vehicleId}/photos/{photoId}/focal', [App\Http\Controllers\Admin\V3VehicleController::class, 'setFocalPoint'])->name('photos.focal');
+        Route::post('/{vehicleId}/photos/{photoId}/crop',    [App\Http\Controllers\Admin\V3VehicleController::class, 'cropPhoto'])->name('photos.crop');
+        Route::post('/{vehicleId}/photos/{photoId}/restore', [App\Http\Controllers\Admin\V3VehicleController::class, 'restorePhoto'])->name('photos.restore');
         Route::post('/{id}/photos/reorder',            [App\Http\Controllers\Admin\V3VehicleController::class, 'reorderPhotos'])->name('photos.reorder');
 
         // Sale
@@ -318,6 +321,10 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::post('/{id}/legalization/documents', [App\Http\Controllers\Admin\V3VehicleController::class, 'uploadLegalizationDocument'])->name('legalization.upload-document');
         Route::get('/{vehicleId}/legalization/documents/{documentId}/download', [App\Http\Controllers\Admin\V3VehicleController::class, 'downloadLegalizationDocument'])->name('legalization.download-document');
         Route::delete('/{vehicleId}/legalization/documents/{documentId}',        [App\Http\Controllers\Admin\V3VehicleController::class, 'deleteLegalizationDocument'])->name('legalization.delete-document');
+
+        // Gerar anúncio
+        Route::post('/{id}/generate-ad', [App\Http\Controllers\Admin\V3VehicleController::class, 'generateAdText'])->name('generate-ad');
+        Route::post('/{id}/save-ad',     [App\Http\Controllers\Admin\V3VehicleController::class, 'saveAdText'])->name('save-ad');
     });
 
     // ============================================================

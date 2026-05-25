@@ -21,11 +21,12 @@ class V3Vehicle extends Model
         'kilometers', 'power', 'cylinder_capacity',
         'color', 'vin', 'registration',
         'manufacture_date', 'register_date', 'available_to_sell_date',
-        'notes', 'show_online', 'is_imported', 'status',
+        'notes', 'ad_text', 'show_online', 'is_imported', 'status',
         // Purchase
         'supplier_id',
         'purchase_price', 'purchase_date', 'purchase_type',
         'purchase_vat_rate', 'purchase_vat_paid',
+        'asking_price',
     ];
 
     protected $casts = [
@@ -38,6 +39,7 @@ class V3Vehicle extends Model
         'purchase_price'         => 'float',
         'purchase_vat_rate'      => 'float',
         'purchase_vat_paid'      => 'float',
+        'asking_price'           => 'float',
         'kilometers'             => 'integer',
         'year'                   => 'integer',
         'month'                  => 'integer',

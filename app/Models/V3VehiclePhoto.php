@@ -14,11 +14,15 @@ class V3VehiclePhoto extends Model
         'path',
         'order_position',
         'is_cover',
+        'focal_x',
+        'focal_y',
     ];
 
     protected $casts = [
-        'is_cover' => 'boolean',
+        'is_cover'       => 'boolean',
         'order_position' => 'integer',
+        'focal_x'        => 'float',
+        'focal_y'        => 'float',
     ];
 
     public function vehicle(): BelongsTo

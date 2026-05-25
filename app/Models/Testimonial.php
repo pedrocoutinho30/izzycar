@@ -21,6 +21,7 @@ class Testimonial extends Model
         'origin',
         'published',
         'review_date',
+        'google_review_id',
     ];
 
     protected $casts = [

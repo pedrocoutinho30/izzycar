@@ -6,10 +6,10 @@
             <!-- Swiper principal -->
             <div class="swiper mySwiperMainMobile">
                 <div class="swiper-wrapper">
-                    @foreach ($vehicle->photos as $key => $photo)
+                    @foreach ($vehicle->images as $key => $image)
                     <div class="swiper-slide">
-                        <img src="{{ asset('storage/' . $photo->path) }}" loading="lazy"
-                            class="img-fluid  d-block w-100  object-cover rounded" style="height: 200px; width: 100%; object-fit: cover; object-position: {{ $photo->focal_x ?? 50 }}% {{ $photo->focal_y ?? 50 }}%"
+                        <img src="{{ asset('storage/' . $image->image_path) }}" loading="lazy"
+                            class="img-fluid  d-block w-100  object-cover rounded" style="height: 200px; width: 100%;"
                             alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
                     </div>
                     @endforeach
@@ -22,9 +22,9 @@
             <!-- Swiper miniaturas -->
             <div class="swiper mySwiperThumbsMobile">
                 <div class="swiper-wrapper">
-                    @foreach ($vehicle->photos as $key => $photo)
+                    @foreach ($vehicle->images as $key => $image)
                     <div class="swiper-slide" style="width: 60px;">
-                        <img src="{{ asset('storage/' . $photo->path) }}" loading="lazy"
+                        <img src="{{ asset('storage/' . $image->image_path) }}" loading="lazy"
                             class="img-fluid rounded"
                             alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
                     </div>
@@ -36,54 +36,35 @@
         <div class="card news-listing shadow-sm mb-3">
             <div class="card-body">
                 <h3 class="text-accent mb-1">{{ $vehicle->brand }}</h3>
-                <h5 class="text-accent mb-2">{{ $vehicle->model }} {{ $vehicle->version }}</h5>
-                @if($vehicle->status === 'reservado')
-                <span class="badge rounded-pill fs-6 mb-3" style="background:#f59e0b;">Reservado</span>
-                @elseif($vehicle->status === 'vendido')
-                <span class="badge rounded-pill fs-6 mb-3" style="background:#dc2626;">Vendido</span>
-                @endif
+                <h5 class="text-accent mb-3">{{ $vehicle->model }} {{ $vehicle->version }}</h5>
 
-                @if($vehicle->asking_price && !in_array($vehicle->status ?? '', ['reservado', 'vendido']))
-                <h3 class="text-accent mb-3">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }} €</h3>
-                @endif
+                <h3 class="text-accent mb-3">{{ number_format(round($vehicle->sell_price), 0, ',', ' ') }} €</h3>
 
                 <div class="row g-2 mb-3">
-                    @if($vehicle->year)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.calendar')</span>
                         <p class="mb-0 text-dark">{{ $vehicle->year }}</p>
                     </div>
-                    @endif
-                    @if($vehicle->kilometers)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.road')</span>
                         <p class="mb-0 text-dark">{{ $vehicle->kilometers }} KM</p>
                     </div>
-                    @endif
-                    @if($vehicle->fuel)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.fuel')</span>
                         <p class="mb-0 text-dark">{{ $vehicle->fuel }}</p>
                     </div>
-                    @endif
-                    @if($cilindrada)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.motor')</span>
                         <p class="mb-0 text-dark">{{$cilindrada}} CC</p>
                     </div>
-                    @endif
-                    @if($potencia)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.power')</span>
                         <p class="mb-0 text-dark">{{$potencia}} CV</p>
                     </div>
-                    @endif
-                    @if($caixa)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.gearbox')</span>
                         <p class="mb-0 text-dark">{{$caixa}}</p>
                     </div>
-                    @endif
                 </div>
 
                 <div class="d-flex gap-2">

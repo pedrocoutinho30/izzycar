@@ -1,21 +1,25 @@
-<section class="py-5 bg-light">
+<section class="py-5 bg-light" style="padding-top: 6rem !important;">
     <div class="container">
+        <!-- Botão voltar -->
+        <div class="mb-4">
+            <a href="{{ route('vehicles.list') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Voltar à listagem
+            </a>
+        </div>
         <div class="row g-5">
             <!-- Coluna com imagens -->
             <div class="col-lg-8 border-gallery">
                 <!-- Swiper principal (imagem grande) -->
                 <div class="swiper mySwiperMain">
                     <div class="swiper-wrapper">
-                        @foreach ($vehicle->images as $key => $image)
+                        @foreach ($vehicle->photos as $key => $photo)
                         <div class="swiper-slide">
-                            <img src="{{ $image->image_path }}" loading="lazy"
-                                class="img-fluid rounded " style=" cursor: pointer; object-fit: cover; object-position: center;"
+                            <img src="{{ asset("storage/" . $photo->path) }}" loading="lazy"
+                                class="img-fluid rounded" style="cursor: pointer; object-fit: cover; object-position: {{ $photo->focal_x ?? 50 }}% {{ $photo->focal_y ?? 50 }}%;"
                                 alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
                         </div>
-
                         @endforeach
                     </div>
-                    <!-- Navegação -->
                     <div class="swiper-button-next"></div>
                     <div class="swiper-button-prev"></div>
                 </div>
@@ -23,10 +27,10 @@
                 <!-- Swiper das miniaturas -->
                 <div class="swiper mySwiperThumbs mt-1">
                     <div class="swiper-wrapper">
-                        @foreach ($vehicle->images as $key => $image)
-                        <div class="swiper-slide " style="width: auto; height: 100px; cursor: pointer; ">
-                            <img src="{{$image->image_path }}"
-                                class="img-fluid rounded" loading="lazy"
+                        @foreach ($vehicle->photos as $key => $photo)
+                        <div class="swiper-slide" style="width: auto; height: 100px; cursor: pointer;">
+                            <img src="{{ asset("storage/" . $photo->path) }}" loading="lazy"
+                                class="img-fluid rounded"
                                 alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
                         </div>
                         @endforeach
@@ -43,57 +47,75 @@
                                 <div class="col-12 mt-4">
                                     <h3 class="text-accent">{{ $vehicle->brand }}</h3>
                                     <h5 class="text-accent"> {{ $vehicle->model }} {{ $vehicle->version }}</h5>
-
+                                    @if($vehicle->status === 'reservado')
+                                    <span class="badge rounded-pill fs-6 mt-1" style="background:#f59e0b;">Reservado</span>
+                                    @elseif($vehicle->status === 'vendido')
+                                    <span class="badge rounded-pill fs-6 mt-1" style="background:#dc2626;">Vendido</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="row mt-4">
+                                @if($vehicle->year)
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start ">
                                         <span class="icon-colored pe-3">@include('components.icons.calendar')</span>
                                         <p class="mb-0 text-dark">{{ $vehicle->year }}</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($vehicle->kilometers)
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-center">
                                         <span class="icon-colored pe-3">@include('components.icons.road')</span>
                                         <p class="mb-0 text-dark">{{ $vehicle->kilometers }} KM</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($vehicle->fuel)
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.fuel')</span>
                                         <p class="mb-0 text-dark">{{ $vehicle->fuel }}</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($cilindrada)
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.motor')</span>
                                         <p class="mb-0 text-dark">{{$cilindrada}} CC</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($potencia)
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.power')</span>
                                         <p class="mb-0 text-dark">{{$potencia}} CV</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($caixa)
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.gearbox')</span>
                                         <p class="mb-0 text-dark">{{$caixa}}</p>
                                     </div>
                                 </div>
+                                @endif
                             </div>
 
+                            @if($vehicle->asking_price && !in_array($vehicle->status ?? '', ['reservado', 'vendido']))
                             <h3 class="d-flex align-items-end mt-4" style="color: var(--accent-color);">
-                                {{ number_format(round($vehicle->sell_price), 0, ',', ' ') }}&nbsp;€
+                                {{ number_format(round($vehicle->asking_price), 0, ',', ' ') }}&nbsp;€
                             </h3>
+                            @endif
                             <div class="d-flex gap-3 align-items-center mt-3">
                                 <!-- Botão de partilha -->
                                 <button type="button" class="btn btn-outline-form" data-bs-toggle="modal" data-bs-target="#shareModal">
                                     <i class="bi bi-share-fill text-dark"></i>
                                 </button>
-                                <a href="https://wa.me/351914250947?text=Olá, gostaria de saber mais informações sobre o veículo {{$vehicle->brand}} {{$vehicle->model}} {{$vehicle->version}} ({{ $vehicle->reference }})
+                                <a href="https://wa.me/351928459346?text=Olá, gostaria de saber mais informações sobre o veículo {{$vehicle->brand}} {{$vehicle->model}} {{$vehicle->version}} ({{ $vehicle->reference }})
                                 Link: {{ route('vehicles.details',  ['brand' => Str::slug($vehicle->brand),
                                     'model' => Str::slug($vehicle->model),
                                     'id' => $vehicle->reference]) }}"
@@ -353,8 +375,8 @@
     const swiperMain = new Swiper(".mySwiperMain", {
         spaceBetween: 10,
         navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
         },
         thumbs: {
             swiper: swiperThumbs,
@@ -368,14 +390,5 @@
             }
         }
     });
-
-    function copyShareLink() {
-        const link = "{{ request()->fullUrl() }}";
-        navigator.clipboard.writeText(link).then(() => {
-            alert("Link copiado para a área de transferência!");
-        }).catch(err => {
-            console.error('Erro ao copiar link: ', err);
-        });
-    }
 </script>
 @endpush

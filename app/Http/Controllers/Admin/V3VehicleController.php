@@ -19,6 +19,8 @@ use App\Models\VehicleAttributeValue;
 use App\Services\SaleCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\ImageManager;
 
 class V3VehicleController extends Controller
 {
@@ -178,6 +180,7 @@ class V3VehicleController extends Controller
             'available_to_sell_date' => 'nullable|date',
             'notes'                  => 'nullable|string',
             'status'                 => 'nullable|in:em_stock,vendido,reservado',
+            'asking_price'           => 'nullable|numeric|min:0',
         ]);
 
         $validated['show_online'] = $request->boolean('show_online');
@@ -362,6 +365,99 @@ class V3VehicleController extends Controller
         V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->where('id', $photoId)->update(['is_cover' => true]);
 
         return back()->with('return_tab', 'photos');
+    }
+
+    public function setFocalPoint(Request $request, $vehicleId, $photoId)
+    {
+        $vehicle = V3Vehicle::findOrFail($vehicleId);
+        $photo   = V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->findOrFail($photoId);
+
+        $request->validate([
+            'focal_x' => 'required|numeric|min:0|max:100',
+            'focal_y' => 'required|numeric|min:0|max:100',
+        ]);
+
+        $photo->update([
+            'focal_x' => round((float) $request->focal_x, 2),
+            'focal_y' => round((float) $request->focal_y, 2),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    private function backupPath(string $storagePath): string
+    {
+        return preg_replace('/(\.[^.\/]+)$/', '_original$1', $storagePath);
+    }
+
+    public function cropPhoto(Request $request, $vehicleId, $photoId)
+    {
+        $vehicle = V3Vehicle::findOrFail($vehicleId);
+        $photo   = V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->findOrFail($photoId);
+
+        $request->validate([
+            'x'      => 'required|numeric|min:0',
+            'y'      => 'required|numeric|min:0',
+            'width'  => 'required|numeric|min:10',
+            'height' => 'required|numeric|min:10',
+        ]);
+
+        $path     = storage_path('app/public/' . $photo->path);
+        $backupAbs = storage_path('app/public/' . $this->backupPath($photo->path));
+
+        if (!file_exists($path)) {
+            return response()->json(['success' => false, 'message' => 'Ficheiro não encontrado.'], 404);
+        }
+
+        // Keep original backup only on first crop
+        if (!file_exists($backupAbs)) {
+            copy($path, $backupAbs);
+        }
+
+        $manager = new ImageManager(new GdDriver());
+        $img     = $manager->read($path);
+
+        $img->crop(
+            (int) round($request->width),
+            (int) round($request->height),
+            (int) round($request->x),
+            (int) round($request->y)
+        );
+
+        $img->save($path);
+
+        // Reset focal point to centre after crop
+        $photo->update(['focal_x' => 50.00, 'focal_y' => 50.00]);
+
+        return response()->json([
+            'success'    => true,
+            'new_url'    => asset('storage/' . $photo->path) . '?v=' . time(),
+            'has_backup' => true,
+        ]);
+    }
+
+    public function restorePhoto($vehicleId, $photoId)
+    {
+        $vehicle = V3Vehicle::findOrFail($vehicleId);
+        $photo   = V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->findOrFail($photoId);
+
+        $path      = storage_path('app/public/' . $photo->path);
+        $backupAbs = storage_path('app/public/' . $this->backupPath($photo->path));
+
+        if (!file_exists($backupAbs)) {
+            return response()->json(['success' => false, 'message' => 'Backup não encontrado.'], 404);
+        }
+
+        copy($backupAbs, $path);
+        unlink($backupAbs);
+
+        $photo->update(['focal_x' => 50.00, 'focal_y' => 50.00]);
+
+        return response()->json([
+            'success'    => true,
+            'new_url'    => asset('storage/' . $photo->path) . '?v=' . time(),
+            'has_backup' => false,
+        ]);
     }
 
     public function reorderPhotos(Request $request, $id)

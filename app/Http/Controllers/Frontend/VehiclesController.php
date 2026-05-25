@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Vehicle;
+use App\Models\V3Vehicle;
 use App\Models\VehicleAttribute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -23,15 +23,20 @@ class VehiclesController extends Controller
         $media = $reviews->count()
                                 ? round($reviews->avg('rating'), 1)
                                 : 0;
-        $vehicles = Cache::remember('vehicles', 600, function () {
-            return Vehicle::where('show_online', true)->get();
+        $vehicles = Cache::remember('v3vehicles', 600, function () {
+            return V3Vehicle::with(['photos' => fn ($q) => $q->where('is_cover', true)->limit(1)])
+                ->where('show_online', true)
+                ->orderByRaw("CASE status WHEN 'em_stock' THEN 1 WHEN 'reservado' THEN 2 WHEN 'vendido' THEN 3 ELSE 4 END")
+                ->orderByRaw('purchase_date IS NULL')
+                ->orderBy('purchase_date', 'desc')
+                ->get();
         });
 
-        $vehicles_count = Cache::remember('vehicles_count', 600, function () use ($vehicles) {
+        $vehicles_count = Cache::remember('v3vehicles_count', 600, function () use ($vehicles) {
             return $vehicles->count();
         });
 
-        $last_vehicles = Cache::remember('last_vehicles', 600, function () use ($vehicles) {
+        $last_vehicles = Cache::remember('v3last_vehicles', 600, function () use ($vehicles) {
             return $vehicles->sortByDesc('created_at')->take(5);
         });
 
@@ -45,9 +50,10 @@ class VehiclesController extends Controller
     {
         // Gerar chave única de cache a partir dos filtros da querystring
         $cacheKey = 'vehicles_' . md5(json_encode($request->all()));
-
         $vehicles = Cache::remember($cacheKey, 600, function () use ($request) {
-            $query = Vehicle::query()->where('show_online', true);
+            $query = V3Vehicle::query()
+                ->with('photos')
+                ->where('show_online', true); //->where('status', '!=', 'vendido')
 
             if ($request->brand) {
                 $query->where('brand', $request->brand);
@@ -61,15 +67,17 @@ class VehiclesController extends Controller
             if ($request->fuel) {
                 $query->where('fuel', $request->fuel);
             }
-            // if ($request->box_type) {
-            //     $query->where('box_type', $request->box_type);
-            // }
-            // if ($request->kilometers_range) {
-            //     [$min, $max] = explode('-', str_replace('+', '', $request->kilometers_range));
-            //     $query->whereBetween('kilometers', [$min, $max ?? 9999999]);
-            // }
-
-            return $query->get();
+            if ($request->filled('price_max')) {
+                $query->where('asking_price', '<=', (float) $request->price_max);
+            }
+            if ($request->filled('km_max')) {
+                $query->where('kilometers', '<=', (int) $request->km_max);
+            }
+            return $query
+                ->orderByRaw("CASE status WHEN 'em_stock' THEN 1 WHEN 'reservado' THEN 2 WHEN 'vendido' THEN 3 ELSE 4 END")
+                ->orderByRaw('purchase_date IS NULL')
+                ->orderBy('purchase_date', 'desc')
+                ->get();
         });
 
         return view('frontend.vehicles-list', compact('vehicles'));
@@ -82,7 +90,10 @@ class VehiclesController extends Controller
 
         // Armazena no cache por 10 minutos (600 segundos)
         $vehicles = Cache::remember($cacheKey, 600, function () use ($request) {
-            $query = Vehicle::query()->with('images')->where('show_online', true);
+            $query = V3Vehicle::query()
+                ->with('photos')
+                ->where('show_online', true)
+                ;
 
             if ($request->filled('brand')) {
                 $query->where('brand', $request->brand);
@@ -96,26 +107,50 @@ class VehiclesController extends Controller
             if ($request->filled('fuel')) {
                 $query->where('fuel', $request->fuel);
             }
-            if ($request->filled('kilometers_range')) {
-                $range = explode('-', $request->kilometers_range);
-                if (count($range) === 2) {
-                    $query->whereBetween('kilometers', [$range[0], $range[1]]);
-                } elseif (strpos($request->kilometers_range, '+')) {
-                    $min = intval(str_replace('+', '', $request->kilometers_range));
-                    $query->where('kilometers', '>=', $min);
-                }
+            if ($request->filled('price_max')) {
+                $query->where('asking_price', '<=', (float) $request->price_max);
+            }
+            if ($request->filled('km_max')) {
+                $query->where('kilometers', '<=', (int) $request->km_max);
             }
 
-            return $query->get();
+            return $query
+                ->orderByRaw("CASE status WHEN 'em_stock' THEN 1 WHEN 'reservado' THEN 2 WHEN 'vendido' THEN 3 ELSE 4 END")
+                ->orderByRaw('purchase_date IS NULL')
+                ->orderBy('purchase_date', 'desc')
+                ->get();
         });
 
-        return response()->json($vehicles);
+        return response()->json($vehicles->map(function ($v) {
+            $cover = $v->coverPhoto;
+            return [
+                'id'           => $v->id,
+                'reference'    => $v->reference,
+                'brand'        => $v->brand,
+                'model'        => $v->model,
+                'sub_model'    => $v->sub_model,
+                'version'      => $v->version,
+                'year'         => $v->year,
+                'fuel'         => $v->fuel,
+                'kilometers'   => $v->kilometers,
+                'asking_price' => $v->asking_price,
+                'status'        => $v->status,
+                'cover_url'     => $cover ? asset('storage/' . $cover->path) : null,
+                'cover_focal_x' => $cover ? ($cover->focal_x ?? 50) : 50,
+                'cover_focal_y' => $cover ? ($cover->focal_y ?? 50) : 50,
+                'url'          => route('vehicles.details', [
+                    'brand' => Str::slug($v->brand ?? ''),
+                    'model' => Str::slug($v->model ?? ''),
+                    'id'    => $v->reference,
+                ]),
+            ];
+        }));
     }
 
     public function vehicleDetails($brand, $model, $id)
     {
 
-        $vehicle = Vehicle::where('reference', $id)->firstOrFail();
+        $vehicle = V3Vehicle::with(['photos', 'attributeValues'])->where('reference', $id)->firstOrFail();
         $attributes = [];
 
         $potencia = "";
@@ -181,13 +216,15 @@ class VehiclesController extends Controller
 
         // Valida se os slugs correspondem ao veículo
         if (
-            Str::slug($vehicle->brand) !== $brand ||
-            Str::slug($vehicle->model) !== $model
+            Str::slug($vehicle->brand ?? '') !== $brand ||
+            Str::slug($vehicle->model ?? '') !== $model
         ) {
             abort(404);
         }
 
-        $last_vehicles = Vehicle::get()->where('show_online', true)->sortByDesc('created_at')->take(5);
+        $last_vehicles = V3Vehicle::with(['photos' => fn ($q) => $q->where('is_cover', true)->limit(1)])
+            ->where('show_online', true)->where('status', '!=', 'vendido')
+            ->latest()->take(5)->get();
 
 
         return view('frontend.vehicles-detail', compact('vehicle', 'attributes', 'potencia', 'caixa', 'cilindrada', 'last_vehicles'));
@@ -201,7 +238,8 @@ class VehiclesController extends Controller
         $cacheKey = "models_by_brand_" . md5($brand);
 
         $models = Cache::remember($cacheKey, 600, function () use ($brand) {
-            return Vehicle::where('brand', $brand)
+            return V3Vehicle::where('brand', $brand)
+                ->where('show_online', true)->where('status', '!=', 'vendido')
                 ->pluck('model')
                 ->unique()
                 ->values();
@@ -217,7 +255,8 @@ class VehiclesController extends Controller
         $cacheKey = "years_by_brand_" . md5($brand);
 
         $years = Cache::remember($cacheKey, 600, function () use ($brand) {
-            return Vehicle::where('brand', $brand)
+            return V3Vehicle::where('brand', $brand)
+                ->where('show_online', true)->where('status', '!=', 'vendido')
                 ->pluck('year')
                 ->unique()
                 ->sortDesc()
@@ -235,7 +274,7 @@ class VehiclesController extends Controller
         $cacheKey = "years_by_brand_model_" . md5($brand . '_' . $model);
 
         $years = Cache::remember($cacheKey, 600, function () use ($brand, $model) {
-            $query = Vehicle::query();
+            $query = V3Vehicle::query()->where('show_online', true)->where('status', '!=', 'vendido');
 
             if ($brand) {
                 $query->where('brand', $brand);
@@ -260,7 +299,7 @@ class VehiclesController extends Controller
         $cacheKey = "fuels_by_brand_model_year_" . md5($brand . '_' . $model . '_' . $year);
 
         $fuels = Cache::remember($cacheKey, 600, function () use ($brand, $model, $year) {
-            $query = Vehicle::query();
+            $query = V3Vehicle::query()->where('show_online', true)->where('status', '!=', 'vendido');
 
             if ($brand) {
                 $query->where('brand', $brand);

@@ -184,6 +184,18 @@
             </div>
         </div>
 
+        {{-- ── Preço de Venda ──────────────────────────────────────────── --}}
+        <div class="col-12 mt-2">
+            <h6 class="text-muted text-uppercase fw-semibold mb-2" style="font-size:.7rem;letter-spacing:.06em">Preço</h6>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Preço de Venda (€)</label>
+            <input type="number" name="asking_price" class="form-control" step="0.01" min="0"
+                   value="{{ old('asking_price', $vehicle->asking_price) }}" placeholder="ex: 12500.00">
+            <div class="form-text">Preço exibido no website</div>
+        </div>
+
         <div class="col-12">
             <label class="form-label fw-semibold">Notas Internas</label>
             <textarea name="notes" class="form-control" rows="3" placeholder="Observações internas sobre este veículo…">{{ old('notes', $vehicle->notes) }}</textarea>

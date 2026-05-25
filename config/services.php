@@ -36,7 +36,10 @@ return [
     ],
 
     'google' => [
-        'review_url' => env('GOOGLE_REVIEW_URL'),
+        'review_url'    => env('GOOGLE_REVIEW_URL'),
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'refresh_token' => env('GOOGLE_REFRESH_TOKEN'),
     ],
 
 ];

@@ -21,8 +21,8 @@
                         @endforeach
                     </div>
                     <!-- Navegação -->
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-button-prev"></div>
+                    <!-- <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div> -->
                 </div>
 
                 <!-- Swiper das miniaturas -->
@@ -60,42 +60,54 @@
 
                             </div>
                             <div class="row mt-4">
+                                @if($vehicle->year)
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-start ">
                                         <span class="icon-colored pe-3">@include('components.icons.calendar')</span>
                                         <p class="mb-0">{{ $vehicle->year }}</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($vehicle->kilometers)
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-center">
                                         <span class="icon-colored pe-3">@include('components.icons.road')</span>
                                         <p class="mb-0">{{ $vehicle->kilometers }} KM</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($vehicle->fuel)
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.fuel')</span>
                                         <p class="mb-0">{{ $vehicle->fuel }}</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($cilindrada)
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.motor')</span>
                                         <p class="mb-0">{{$cilindrada}} CC</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($potencia)
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.power')</span>
                                         <p class="mb-0">{{$potencia}} CV</p>
                                     </div>
                                 </div>
+                                @endif
+                                @if($caixa)
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.gearbox')</span>
                                         <p class="mb-0">{{$caixa}}</p>
                                     </div>
                                 </div>
+                                @endif
                             </div>
                             <div class="d-flex gap-3 align-items-center mt-3">
                                 <!-- Botão de partilha -->

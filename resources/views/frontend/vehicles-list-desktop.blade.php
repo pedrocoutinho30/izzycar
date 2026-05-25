@@ -1,519 +1,571 @@
-<div class="row">
+@php use Illuminate\Support\Str; @endphp
 
-    {{-- Filtros à esquerda --}}
-    <div class="col-lg-3 mb-4 pr-2">
-        <div class="sticky-top" style="top: 110px;">
-            <h4 class="text-center mb-4">Filtros</h4>
+<div class="row g-4 align-items-start">
 
-            <form id="filter-form" class="custom-form" role="search" onsubmit="return false;">
-                <div class="vstack gap-3">
-                    {{-- Marca --}}
-                    <select name="brand" id="brand" class="form-select" aria-label="Marca">
-                        <option value="">Marca</option>
-                        @foreach($vehicles->pluck('brand')->unique() as $brand)
-                        <option value="{{ $brand }}">{{ $brand }}</option>
+    {{-- Sidebar de filtros --}}
+    <div class="col-lg-3">
+        <div class="vl-filter-sidebar sticky-top" style="top: 90px;">
+            <div class="vl-filter-header">
+                <i class="bi bi-sliders me-2"></i>Filtros
+                <button id="clear-filters-btn" type="button" class="vl-clear-btn d-none">
+                    <i class="bi bi-x-circle me-1"></i>Limpar
+                </button>
+            </div>
+
+            <form id="filter-form" onsubmit="return false;" class="vl-filter-body">
+
+                <div class="vl-filter-group">
+                    <label class="vl-filter-label">Marca</label>
+                    <select name="brand" id="brand" class="form-select vl-select">
+                        <option value="">Todas as marcas</option>
+                        @foreach($vehicles->pluck('brand')->filter()->unique()->sort() as $b)
+                        <option value="{{ $b }}">{{ $b }}</option>
                         @endforeach
                     </select>
-
-                    {{-- Modelo --}}
-                    <select name="model" id="model" class="form-select" aria-label="Modelo" disabled>
-                        <option value="">Modelo</option>
-                    </select>
-
-                    {{-- Ano --}}
-                    <select name="year" id="year" class="form-select" aria-label="Ano">
-                        <option value="">Ano</option>
-                        @foreach($vehicles->pluck('year')->unique()->sortDesc() as $year)
-                        <option value="{{ $year }}">{{ $year }}</option>
-                        @endforeach
-                    </select>
-
-                    {{-- Combustível --}}
-                    <select name="fuel" id="fuel" class="form-select" aria-label="Combustível">
-                        <option value="">Combustível</option>
-                        @foreach($vehicles->pluck('fuel')->unique() as $fuel)
-                        <option value="{{ $fuel }}">{{ $fuel }}</option>
-                        @endforeach
-                    </select>
-
-                    {{-- Botão limpar filtros --}}
-                    <div class="text-center">
-                        <button id="clear-filters-btn" type="button" class="btn btn-secondary w-100" style="display:none;">
-                            Limpar filtros
-                        </button>
-                    </div>
                 </div>
+
+                <div class="vl-filter-group">
+                    <label class="vl-filter-label">Modelo</label>
+                    <select name="model" id="model" class="form-select vl-select" disabled>
+                        <option value="">Todos os modelos</option>
+                    </select>
+                </div>
+
+                <div class="vl-filter-group">
+                    <label class="vl-filter-label">Ano</label>
+                    <select name="year" id="year" class="form-select vl-select">
+                        <option value="">Todos os anos</option>
+                        @foreach($vehicles->pluck('year')->filter()->unique()->sortDesc() as $y)
+                        <option value="{{ $y }}">{{ $y }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="vl-filter-group">
+                    <label class="vl-filter-label">Combustível</label>
+                    <select name="fuel" id="fuel" class="form-select vl-select">
+                        <option value="">Todos</option>
+                        @foreach($vehicles->pluck('fuel')->filter()->unique()->sort() as $f)
+                        <option value="{{ $f }}">{{ $f }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
             </form>
+
+            {{-- Contador --}}
+            <div class="vl-count-badge">
+                <span id="vehicles-count">{{ $vehicles->count() }}</span> viaturas encontradas
+            </div>
         </div>
     </div>
 
-
-
-    {{-- Lista de carros à direita --}}
-    <div class="col-lg-9 col-12">
-        <div id="vehicles-container" class="row">
+    {{-- Lista de viaturas --}}
+    <div class="col-lg-9">
+        <div id="vehicles-container">
             @foreach ($vehicles as $vehicle)
-
-            <div class="custom-block custom-block-transparent news-listing shadow-lg mb-5">
-                <a href="{{ route('vehicles.details', [
-                                    'brand' => Str::slug($vehicle->brand),
-                                    'model' => Str::slug($vehicle->model),
-                                    'id' => $vehicle->reference
-                                ]) }}">
-                    <div class="d-flex ">
-                        {{-- Imagem ou Carrossel --}}
-                        @if($vehicle->images->count() > 1)
-                        <!--  data-bs-ride="carousel" para rodar imagens auto -->
-                        <div id="carouselVehicle{{ $vehicle->id }}" class="carousel slide custom-block-image">
-                            <div class="carousel-inner">
-                                @foreach($vehicle->images as $key => $image)
-                                <div class="carousel-item {{ $key === 0 ? 'active' : '' }} image-wrapper">
-                                    <img src="{{  $image->image_path }}"
-                                        class="d-block img-fluid" loading="lazy"
-                                        alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}">
-                                </div>
-                                @endforeach
-                            </div>
-                            {{-- Controles do carrossel --}}
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselVehicle{{ $vehicle->id }}" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Anterior</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carouselVehicle{{ $vehicle->id }}" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Seguinte</span>
-                            </button>
-                        </div>
-                        @else
-                        <img src="{{  $vehicle->images->first()->image_path  }}"
-                            class="custom-block-image img-fluid" loading="lazy"
-                            alt="Imagem {{ $vehicle->brand }} {{ $vehicle->model }}">
+            @php
+                $cover = $vehicle->coverPhoto;
+                $coverUrl = $cover ? asset('storage/' . $cover->path) : asset('img/no-image.png');
+            @endphp
+            <a href="{{ route('vehicles.details', [
+                'brand' => Str::slug($vehicle->brand ?? ''),
+                'model' => Str::slug($vehicle->model ?? ''),
+                'id'    => $vehicle->reference
+            ]) }}" class="vl-card-link">
+                <div class="vl-card">
+                    <div class="vl-card-img-wrap">
+                        <img src="{{ $coverUrl }}" loading="lazy"
+                            alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
+                            style="object-position: {{ $vehicle->coverPhoto?->focal_x ?? 50 }}% {{ $vehicle->coverPhoto?->focal_y ?? 50 }}%">
+                        @if($vehicle->status === 'reservado')
+                        <span class="vl-badge-reservado">Reservado</span>
+                        @elseif($vehicle->status === 'vendido')
+                        <span class="vl-badge-vendido">Vendido</span>
                         @endif
-                        {{-- Info lateral --}}
-                        <div class="custom-block-topics-listing-info d-flex">
-                            <div>
-                                <h3 class="text-accent">{{ $vehicle->brand }}</h3>
-                                <h6 class="mb-2 text-accent">{{ $vehicle->model }} {{ $vehicle->version }}</h6>
-
-                                <p class="mb-1 list">
-                                    @if(!empty($vehicle->year))
-                                    <span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;&nbsp;
-                                    <span class="text-dark">{{ $vehicle->year }} </span>&nbsp;&nbsp;
-                                    @endif
-
-                                    @if(!empty($vehicle->fuel) )
-                                    <span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;<span class="text-dark">{{ $vehicle->fuel }}</span>&nbsp;&nbsp;
-                                    @endif
-
-                                    @if(!empty($vehicle->kilometers))
-                                    <span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;<span class="text-dark">{{ $vehicle->kilometers   }} KM</span>
-                                    @endif
-                                </p>
-
-                            </div>
-
-                            {{-- Badge com o preço --}}
-                            <span class="price  ms-auto align-self-start px-4 py-3 fs-5">
-                                {{ number_format(round($vehicle->sell_price), 0, ',', ' ') }}&nbsp;€
+                    </div>
+                    <div class="vl-card-body">
+                        <div class="vl-card-title">
+                            <span class="vl-brand">{{ $vehicle->brand }}</span>
+                            <span class="vl-model">{{ $vehicle->model }}
+                                @if($vehicle->sub_model) {{ $vehicle->sub_model }} @endif
                             </span>
-
-
+                        </div>
+                        @if($vehicle->version)
+                        <p class="vl-version">{{ $vehicle->version }}</p>
+                        @endif
+                        <div class="vl-specs">
+                            @if($vehicle->year)
+                            <span class="vl-spec">
+                                <i class="bi bi-calendar3"></i> {{ $vehicle->year_label }}
+                            </span>
+                            @endif
+                            @if($vehicle->fuel)
+                            <span class="vl-spec">
+                                <i class="bi bi-fuel-pump"></i> {{ $vehicle->fuel }}
+                            </span>
+                            @endif
+                            @if($vehicle->kilometers)
+                            <span class="vl-spec">
+                                <i class="bi bi-speedometer2"></i> {{ number_format($vehicle->kilometers, 0, ',', ' ') }} km
+                            </span>
+                            @endif
+                            @if($vehicle->power)
+                            <span class="vl-spec">
+                                <i class="bi bi-lightning-charge"></i> {{ $vehicle->power }} cv
+                            </span>
+                            @endif
+                        </div>
+                        <div class="vl-card-footer">
+                            <span class="vl-cta">Ver detalhes <i class="bi bi-arrow-right"></i></span>
+                            <div class="vl-card-actions">
+                                @if($vehicle->status !== 'vendido')
+                                <button type="button" class="vl-action-btn vl-action-btn--wa" title="Contactar via WhatsApp"
+                                        data-name="{{ $vehicle->brand }} {{ $vehicle->model }}"
+                                        data-ref="{{ $vehicle->reference }}"
+                                        onclick="event.stopPropagation(); event.preventDefault(); vlWA(this.dataset.name, this.dataset.ref)">
+                                    <i class="bi bi-whatsapp"></i>
+                                </button>
+                                @endif
+                                <button type="button" class="vl-action-btn vl-action-btn--share" title="Partilhar"
+                                        data-url="{{ route('vehicles.details', ['brand' => Str::slug($vehicle->brand ?? ''), 'model' => Str::slug($vehicle->model ?? ''), 'id' => $vehicle->reference]) }}"
+                                        data-title="{{ $vehicle->brand }} {{ $vehicle->model }}"
+                                        onclick="event.stopPropagation(); event.preventDefault(); vlShare(this.dataset.url, this.dataset.title)">
+                                    <i class="bi bi-share"></i>
+                                </button>
+                                @if($vehicle->status === 'reservado')
+                                <span class="vl-footer-badge vl-footer-badge--reservado">Reservado</span>
+                                @elseif($vehicle->status === 'vendido')
+                                <span class="vl-footer-badge vl-footer-badge--vendido">Vendido</span>
+                                @elseif($vehicle->asking_price)
+                                <span class="vl-price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }} €</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                </a>
-
-            </div>
+                </div>
+            </a>
             @endforeach
-        </div>
 
+            <div id="no-results" class="vl-empty d-none">
+                <i class="bi bi-search fs-1 mb-3 d-block text-muted"></i>
+                <p class="text-muted">Nenhuma viatura encontrada com os filtros selecionados.</p>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Limpar filtros</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <style>
-    /* Vehicle Card Modern Styles */
-    .custom-block {
-        border-radius: 12px;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(110, 7, 7, 0.1);
-    }
+/* ── Filter Sidebar ───────────────────────────────────── */
+.vl-filter-sidebar {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid rgba(110,7,7,.1);
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,.06);
+}
+.vl-filter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent-color);
+    border-bottom: 1px solid rgba(110,7,7,.1);
+    background: #fdf7f7;
+}
+.vl-clear-btn {
+    background: none;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    border-radius: 20px;
+    font-size: .78rem;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all .2s;
+}
+.vl-clear-btn:hover { background: var(--accent-color); color: #fff; }
+.vl-filter-body { padding: 16px 20px; }
+.vl-filter-group { margin-bottom: 14px; }
+.vl-filter-label {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #888;
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+.vl-select {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: .9rem;
+    transition: border-color .2s;
+}
+.vl-select:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(110,7,7,.1); }
+.vl-select:disabled { opacity: .5; }
+.vl-count-badge {
+    margin: 0 20px 18px;
+    background: rgba(110,7,7,.06);
+    color: var(--accent-color);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: .83rem;
+    font-weight: 600;
+    text-align: center;
+}
 
-    .custom-block:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(110, 7, 7, 0.2) !important;
-    }
+/* ── Vehicle Card (horizontal list) ──────────────────── */
+.vl-card-link { text-decoration: none; display: block; margin-bottom: 18px; }
+.vl-card {
+    display: flex;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(110,7,7,.1);
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    transition: transform .25s, box-shadow .25s;
+}
+.vl-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(110,7,7,.15); }
+.vl-card-img-wrap {
+    position: relative;
+    width: 300px;
+    min-width: 300px;
+    height: 210px;
+    overflow: hidden;
+    border-radius: 14px 0 0 14px;
+}
+.vl-card-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform .35s;
+}
+.vl-card:hover .vl-card-img-wrap img { transform: scale(1.04); }
+.vl-badge-reservado {
+    position: absolute; top: 10px; left: 10px;
+    background: #f59e0b; color: #fff;
+    font-size: .72rem; font-weight: 700;
+    border-radius: 20px; padding: 3px 10px;
+    text-transform: uppercase; letter-spacing: .05em;
+}
+.vl-badge-vendido {
+    position: absolute; top: 10px; left: 10px;
+    background: #dc2626; color: #fff;
+    font-size: .72rem; font-weight: 700;
+    border-radius: 20px; padding: 3px 10px;
+    text-transform: uppercase; letter-spacing: .05em;
+}
+.vl-card-body {
+    flex: 1;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.vl-card-title { margin-bottom: 4px; }
+.vl-brand {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    line-height: 1.1;
+}
+.vl-model {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    line-height: 1.2;
+}
+.vl-version { font-size: .82rem; color: var(--accent-color); opacity: .75; margin: 2px 0 10px; }
+.vl-specs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.vl-spec {
+    background: rgba(110,7,7,.06);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: .83rem;
+    color: var(--primary-color);
+    display: flex; align-items: center; gap: 4px;
+}
+.vl-spec i { color: var(--accent-color); font-size: .85rem; }
+.vl-footer-badge {
+    font-size: .8rem;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 5px 14px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.vl-footer-badge--reservado { background: #fef3c7; color: #92400e; }
+.vl-footer-badge--vendido   { background: #fee2e2; color: #991b1b; }
+.vl-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.vl-price {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--accent-color);
+}
+.vl-price-contact {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #888;
+    font-style: italic;
+}
+.vl-cta {
+    background: var(--accent-color);
+    color: #fff;
+    border-radius: 22px;
+    padding: 8px 18px;
+    font-size: .83rem;
+    font-weight: 600;
+    transition: background .2s, transform .2s;
+    white-space: nowrap;
+}
+.vl-card:hover .vl-cta { background: #990000; transform: translateX(2px); }
+.vl-card-actions { display: flex; align-items: center; gap: 8px; }
+.vl-action-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all .2s;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+.vl-action-btn--wa { background: #25d366; color: #fff; }
+.vl-action-btn--wa:hover { background: #1ebe5d; transform: scale(1.1); color: #fff; }
+.vl-action-btn--share { background: rgba(110,7,7,.1); color: var(--accent-color); }
+.vl-action-btn--share:hover { background: var(--accent-color); color: #fff; transform: scale(1.1); }
+.vl-toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: #222; color: #fff;
+    padding: 10px 24px; border-radius: 24px;
+    font-size: .88rem; font-weight: 600;
+    z-index: 9999; pointer-events: none;
+    animation: vlToastIn .2s ease;
+}
+@keyframes vlToastIn {
+    from { opacity:0; transform: translateX(-50%) translateY(10px); }
+    to   { opacity:1; transform: translateX(-50%) translateY(0); }
+}
 
-    .custom-block a {
-        text-decoration: none;
-    }
+/* ── Empty State ──────────────────────────────────────── */
+.vl-empty { text-align: center; padding: 60px 20px; }
 
-    .custom-block-image {
-        width: 280px;
-        min-width: 280px;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 12px 0 0 12px;
-    }
-
-    .custom-block-topics-listing-info {
-        padding: 20px;
-        width: 100%;
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .image-wrapper {
-        width: 280px !important;
-        min-width: 280px;
-        height: 200px;
-        overflow: hidden;
-        border-radius: 12px 0 0 12px;
-    }
-
-    .image-wrapper img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        object-position: center;
-        display: block;
-        transition: transform 0.3s ease;
-    }
-
-    .custom-block:hover .image-wrapper img {
-        transform: scale(1.05);
-    }
-
-    .custom-block h3 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-
-    .custom-block h6 {
-        font-size: 1.1rem;
-        font-weight: 400;
-        opacity: 0.9;
-    }
-
-    .price {
-        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
-        color: white !important;
-        border-radius: 50px;
-        font-weight: 600;
-        box-shadow: 0 4px 15px rgba(110, 7, 7, 0.3);
-        white-space: nowrap;
-    }
-
-    /* Filter Sidebar Modern Styles */
-    .sticky-top {
-        z-index: 100;
-    }
-
-    .sticky-top h4 {
-        color: var(--primary-color);
-        font-weight: 600;
-        padding-bottom: 15px;
-        border-bottom: 2px solid rgba(110, 7, 7, 0.2);
-    }
-
-    #filter-form {
-        background: var(--white-color);
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    #filter-form select {
-        background-color: #f8f9fa;
-        color: var(--primary-color);
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 12px 16px;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-    }
-
-    #filter-form select:focus {
-        border-color: var(--accent-color);
-        box-shadow: 0 0 0 3px rgba(110, 7, 7, 0.1);
-        outline: none;
-    }
-
-    #filter-form select:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    #clear-filters-btn {
-        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
-        color: var(--white-color);
-        border: none;
-        border-radius: 50px;
-        padding: 12px 24px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-    #clear-filters-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(110, 7, 7, 0.3);
-    }
-
-    /* Icon Styles */
-    .icon-colored {
-        color: var(--accent-color);
-    }
-
-    .list {
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    /* Carousel Controls */
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-        background-color: rgba(110, 7, 7, 0.8);
-        border-radius: 50%;
-        padding: 10px;
-    }
+/* ── Loading skeleton ─────────────────────────────────── */
+.vl-skeleton {
+    border-radius: 14px; overflow: hidden;
+    background: #fff; border: 1px solid #eee;
+    display: flex; margin-bottom: 18px; height: 210px;
+}
+.vl-skeleton-img { width: 300px; min-width: 300px; background: #f0f0f0; animation: vl-pulse 1.4s ease-in-out infinite; }
+.vl-skeleton-body { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.vl-skeleton-line { height: 14px; border-radius: 6px; background: #f0f0f0; animation: vl-pulse 1.4s ease-in-out infinite; }
+.vl-skeleton-line.wide { width: 60%; }
+.vl-skeleton-line.narrow { width: 35%; }
+@keyframes vl-pulse { 0%,100%{ opacity:1 } 50%{ opacity:.5 } }
 </style>
+
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const brandSelect = document.getElementById('brand');
-        const modelSelect = document.getElementById('model');
-        const yearSelect = document.getElementById('year');
-        const fuelSelect = document.querySelector('select[name="fuel"]');
-        const kilometersSelect = document.querySelector('select[name="kilometers_range"]');
-        const vehiclesContainer = document.getElementById('vehicles-container');
-        const clearFiltersBtn = document.getElementById('clear-filters-btn');
-        clearFiltersBtn.addEventListener('click', clearFilters);
+window.vlWA = function(name, ref) {
+    const msg = 'Olá, tenho interesse no ' + name + ' (ref: ' + ref + ')';
+    window.open('https://wa.me/351928459346?text=' + encodeURIComponent(msg), '_blank');
+};
 
-        // Função que verifica se algum filtro está ativo
-        function isAnyFilterActive() {
-            return (
-                brandSelect.value !== '' ||
-                modelSelect.value !== '' ||
-                yearSelect.value !== '' ||
-                fuelSelect.value !== ''
-            );
-        }
+window.vlShare = function(url, title) {
+    const fullUrl = url.startsWith('http') ? url : (window.location.origin + url);
+    if (navigator.share) {
+        navigator.share({ title: title, url: fullUrl }).catch(function(){});
+    } else {
+        navigator.clipboard.writeText(fullUrl).then(function() {
+            var t = document.createElement('div');
+            t.className = 'vl-toast';
+            t.textContent = 'Link copiado!';
+            document.body.appendChild(t);
+            setTimeout(function(){ t.remove(); }, 2500);
+        });
+    }
+};
 
-        // Atualiza a visibilidade do botão limpar filtros
-        function updateClearButtonVisibility() {
-            if (isAnyFilterActive()) {
-                clearFiltersBtn.style.display = 'inline-block';
-            } else {
-                clearFiltersBtn.style.display = 'none';
-            }
-        }
+(function () {
+    const brandSel = document.getElementById('brand');
+    const modelSel = document.getElementById('model');
+    const yearSel  = document.getElementById('year');
+    const fuelSel  = document.getElementById('fuel');
+    const container = document.getElementById('vehicles-container');
+    const noResults = document.getElementById('no-results');
+    const countEl   = document.getElementById('vehicles-count');
+    const clearBtn  = document.getElementById('clear-filters-btn');
 
-        // Limpa todos os filtros
-        function clearFilters() {
-            console.log('Clear filters clicked');
-            brandSelect.value = '';
+    function showSkeletons() {
+        container.innerHTML = [1,2,3].map(() => `
+            <div class="vl-skeleton">
+                <div class="vl-skeleton-img"></div>
+                <div class="vl-skeleton-body">
+                    <div class="vl-skeleton-line wide"></div>
+                    <div class="vl-skeleton-line narrow"></div>
+                    <div class="vl-skeleton-line"></div>
+                    <div class="vl-skeleton-line narrow"></div>
+                </div>
+            </div>`).join('');
+        noResults.classList.add('d-none');
+    }
 
-            // Reset modelo
-            modelSelect.innerHTML = '<option value="">Modelo</option>';
-            modelSelect.disabled = true;
+    function toSlug(str) {
+        if (!str) return '';
+        return str.toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+            .replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')
+            .replace(/--+/g,'-').replace(/^-+|-+$/g,'');
+    }
 
-            // Reset ano
-            yearSelect.innerHTML = '<option value="">Ano</option>';
-            yearSelect.disabled = true;
+    function fmt(n) {
+        return n ? Number(n).toLocaleString('pt-PT', { maximumFractionDigits: 0 }) : null;
+    }
 
-            // Reset combustível
-            fuelSelect.innerHTML = '<option value="">Combustível</option>';
+    function renderVehicle(v) {
+        const imgTag = v.cover_url
+            ? `<img src="${v.cover_url}" loading="lazy" alt="${v.brand} ${v.model}" style="object-position:${v.cover_focal_x ?? 50}% ${v.cover_focal_y ?? 50}%">`
+            : `<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;"><i class="bi bi-car-front text-muted fs-1"></i></div>`;
 
-            // Reset kms se quiser ativar (por enquanto está comentado no HTML)
-            if (kilometersSelect) {
-                kilometersSelect.value = '';
-            }
+        const badge = v.status === 'reservado'
+            ? `<span class="vl-badge-reservado">Reservado</span>`
+            : v.status === 'vendido'
+            ? `<span class="vl-badge-vendido">Vendido</span>` : '';
 
-            updateClearButtonVisibility();
-            updateVehicles();
-        }
-        async function updateModels() {
-            const brand = brandSelect.value;
-            modelSelect.innerHTML = '<option value="">Modelo</option>';
-            modelSelect.disabled = true;
-            if (!brand) return;
-            const res = await fetch(`/modelos-por-marca?brand=${encodeURIComponent(brand)}`);
-            const models = await res.json();
-            models.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m;
-                opt.text = m;
-                modelSelect.appendChild(opt);
-            });
-            modelSelect.disabled = false;
-        }
+        const footerRight = v.status === 'reservado'
+            ? `<span class="vl-footer-badge vl-footer-badge--reservado">Reservado</span>`
+            : v.status === 'vendido'
+            ? `<span class="vl-footer-badge vl-footer-badge--vendido">Vendido</span>`
+            : v.asking_price
+            ? `<span class="vl-price">${fmt(v.asking_price)} €</span>`
+            : ``;
 
-        async function updateYears() {
-            const brand = brandSelect.value;
-            const model = modelSelect.value;
-            yearSelect.innerHTML = '<option value="">Ano</option>';
-            yearSelect.disabled = true;
-            if (!brand) return;
-            const url = `/anos-por-marca-modelo?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`;
-            const res = await fetch(url);
-            const years = await res.json();
-            years.forEach(y => {
-                const opt = document.createElement('option');
-                opt.value = y;
-                opt.text = y;
-                yearSelect.appendChild(opt);
-            });
-            yearSelect.disabled = false;
-        }
+        const specs = [
+            v.year    ? `<span class="vl-spec"><i class="bi bi-calendar3"></i> ${v.year}</span>` : '',
+            v.fuel    ? `<span class="vl-spec"><i class="bi bi-fuel-pump"></i> ${v.fuel}</span>` : '',
+            v.kilometers ? `<span class="vl-spec"><i class="bi bi-speedometer2"></i> ${fmt(v.kilometers)} km</span>` : '',
+        ].filter(Boolean).join('');
 
-        async function updateFuels() {
-            const brand = brandSelect.value;
-            const model = modelSelect.value;
-            const year = yearSelect.value;
-            const params = new URLSearchParams({
-                brand,
-                model,
-                year
-            });
-            const res = await fetch(`/combustiveis-por-marca-modelo-ano?${params.toString()}`);
-            const fuels = await res.json();
-            fuelSelect.innerHTML = '<option value="">Combustível</option>';
-            fuels.forEach(f => {
-                const opt = document.createElement('option');
-                opt.value = f;
-                opt.text = f;
-                fuelSelect.appendChild(opt);
-            });
-        }
+        const subModel = v.sub_model ? ` ${v.sub_model}` : '';
+        const version  = v.version   ? `<p class="vl-version">${v.version}</p>` : '';
 
-        function renderVehicle(vehicle) {
-            const hasMultipleImages = vehicle.images.length > 1;
+        const waBtn = v.status !== 'vendido'
+            ? `<button type="button" class="vl-action-btn vl-action-btn--wa" title="Contactar via WhatsApp"
+                   onclick="event.stopPropagation(); event.preventDefault(); vlWA('${(v.brand + ' ' + v.model).replace(/'/g, "\\'")}',' ${String(v.reference).replace(/'/g, "\\'")}')"><i class="bi bi-whatsapp"></i></button>`
+            : '';
+        const shareBtn = `<button type="button" class="vl-action-btn vl-action-btn--share" title="Partilhar"
+            onclick="event.stopPropagation(); event.preventDefault(); vlShare('${v.url.replace(/'/g, "\\'")}',' ${(v.brand + ' ' + v.model).replace(/'/g, "\\'")}')"><i class="bi bi-share"></i></button>`;
 
-            let imagesHtml = "";
-
-            if (hasMultipleImages) {
-                imagesHtml = `
-        <div id="carouselVehicle${vehicle.id}" class="carousel slide custom-block-image">
-            <div class="carousel-inner">
-                ${vehicle.images.map((image, index) => `
-                    <div class="carousel-item ${index === 0 ? 'active' : ''} image-wrapper">
-                        <img src="${image.image_path}" 
-                             class="d-block img-fluid" loading="lazy"
-                             alt="Imagem ${vehicle.brand} ${vehicle.model}">
-                    </div>
-                `).join("")}
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselVehicle${vehicle.id}" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-                <span class="visually-hidden">Anterior</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselVehicle${vehicle.id}" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-                <span class="visually-hidden">Seguinte</span>
-            </button>
-        </div>`;
-            } else {
-                imagesHtml = `
-        <img src="${ vehicle.images[0].image_path }"
-             class="custom-block-image img-fluid" loading="lazy"
-             alt="Imagem ${vehicle.brand} ${vehicle.model}">`;
-            }
-
-            return `
-    <div class="custom-block custom-block-transparent news-listing shadow-lg mb-5">
-        <a href="/viaturas/${toSlug(vehicle.brand)}/${toSlug(vehicle.model)}/${vehicle.reference}">
-            <div class="d-flex">
-                ${imagesHtml}
-                <div class="custom-block-topics-listing-info d-flex">
+        return `
+        <a href="${v.url}" class="vl-card-link">
+            <div class="vl-card">
+                <div class="vl-card-img-wrap">
+                    ${imgTag}${badge}
+                </div>
+                <div class="vl-card-body">
                     <div>
-                        <h3 class="text-accent">${vehicle.brand}</h3>
-                        <h6 class="mb-2 text-accent">${vehicle.model} ${vehicle.version ?? ""}</h6>
-
-                        <p class="mb-1 list">
-                            ${vehicle.year ? `<span class="icon-colored">@include('components.icons.calendar')</span>&nbsp;&nbsp;<span class="text-dark">${vehicle.year}&nbsp;&nbsp;</span>` : ""}
-                            ${vehicle.fuel ? `<span class="icon-colored">@include('components.icons.fuel')</span>&nbsp;&nbsp;<span class="text-dark">${vehicle.fuel}&nbsp;&nbsp;</span>` : ""}
-                            ${vehicle.kilometers ? `<span class="icon-colored">@include('components.icons.road')</span>&nbsp;&nbsp;<span class="text-dark">${vehicle.kilometers} KM</span>` : ""}
-                        </p>
+                        <div class="vl-card-title">
+                            <span class="vl-brand">${v.brand}</span>
+                            <span class="vl-model">${v.model}${subModel}</span>
+                        </div>
+                        ${version}
+                        <div class="vl-specs">${specs}</div>
                     </div>
-                    <span class="price ms-auto align-self-start px-4 py-3 fs-5">
-                        ${Number(vehicle.sell_price).toLocaleString('pt-PT', { minimumFractionDigits: 0 })} €
-                    </span>
+                    <div class="vl-card-footer">
+                        <span class="vl-cta">Ver detalhes <i class="bi bi-arrow-right"></i></span>
+                        <div class="vl-card-actions">${waBtn}${shareBtn}${footerRight}</div>
+                    </div>
                 </div>
             </div>
-        </a>
-    </div>`;
-        }
+        </a>`;
+    }
 
-        function toSlug(str) {
-            return str
-                .toLowerCase()
-                .normalize('NFD') // separa acentos
-                .replace(/[\u0300-\u036f]/g, '') // remove acentos
-                .replace(/\s+/g, '-') // espaços por hífen
-                .replace(/[^a-z0-9-]/g, '') // remove caracteres inválidos
-                .replace(/--+/g, '-') // múltiplos hífens para 1
-                .replace(/^-+|-+$/g, ''); // remove hífens no início/fim
-        }
-        async function updateVehicles() {
-            const params = new URLSearchParams({
-                brand: brandSelect.value,
-                model: modelSelect.value,
-                year: yearSelect.value,
-                fuel: fuelSelect.value,
-            });
+    function updateClearBtn() {
+        const active = brandSel.value || modelSel.value || yearSel.value || fuelSel.value;
+        clearBtn.classList.toggle('d-none', !active);
+    }
 
-            const res = await fetch(`/viaturas-filtradas?${params.toString()}`);
-            const vehicles = await res.json();
-
-
-            if (vehicles.length === 0) {
-                vehiclesContainer.innerHTML = '<p>Nenhum veículo encontrado.</p>';
-                return;
-            }
-
-            vehiclesContainer.innerHTML = ""; // limpa os resultados anteriores
-            vehicles.forEach(vehicle => {
-
-                vehiclesContainer.innerHTML += renderVehicle(vehicle);
-            });
-
-            updateClearButtonVisibility();
-        }
-
-        // Quando muda a marca
-        brandSelect.addEventListener('change', async () => {
-            await updateModels();
-            await updateYears();
-            await updateFuels();
-            await updateVehicles();
+    async function updateModels() {
+        modelSel.innerHTML = '<option value="">Todos os modelos</option>';
+        modelSel.disabled = true;
+        if (!brandSel.value) return;
+        const res = await fetch(`/modelos-por-marca?brand=${encodeURIComponent(brandSel.value)}`);
+        const models = await res.json();
+        models.forEach(m => {
+            const o = document.createElement('option'); o.value = m; o.text = m;
+            modelSel.appendChild(o);
         });
+        modelSel.disabled = false;
+    }
 
-        // Quando muda o modelo
-        modelSelect.addEventListener('change', async () => {
-            await updateYears();
-            await updateFuels();
-            await updateVehicles();
+    async function updateYears() {
+        yearSel.innerHTML = '<option value="">Todos os anos</option>';
+        yearSel.disabled = true;
+        if (!brandSel.value) return;
+        const url = `/anos-por-marca-modelo?brand=${encodeURIComponent(brandSel.value)}&model=${encodeURIComponent(modelSel.value)}`;
+        const years = await (await fetch(url)).json();
+        years.forEach(y => {
+            const o = document.createElement('option'); o.value = y; o.text = y;
+            yearSel.appendChild(o);
         });
+        yearSel.disabled = false;
+    }
 
-        // Quando muda o ano
-        yearSelect.addEventListener('change', async () => {
-            await updateFuels();
-            await updateVehicles();
+    async function updateFuels() {
+        const params = new URLSearchParams({ brand: brandSel.value, model: modelSel.value, year: yearSel.value });
+        const fuels = await (await fetch(`/combustiveis-por-marca-modelo-ano?${params}`)).json();
+        fuelSel.innerHTML = '<option value="">Todos</option>';
+        fuels.forEach(f => {
+            const o = document.createElement('option'); o.value = f; o.text = f;
+            fuelSel.appendChild(o);
         });
+    }
 
-        // Quando muda o combustível
-        fuelSelect.addEventListener('change', updateVehicles);
+    async function updateVehicles() {
+        showSkeletons();
+        const params = new URLSearchParams({
+            brand: brandSel.value,
+            model: modelSel.value,
+            year:  yearSel.value,
+            fuel:  fuelSel.value,
+        });
+        const vehicles = await (await fetch(`/viaturas-filtradas?${params}`)).json();
 
-        // Quando muda os kms
-        // kilometersSelect.addEventListener('change', updateVehicles);
+        if (!vehicles.length) {
+            container.innerHTML = '';
+            noResults.classList.remove('d-none');
+            countEl.textContent = '0';
+            updateClearBtn();
+            return;
+        }
+        noResults.classList.add('d-none');
+        container.innerHTML = vehicles.map(renderVehicle).join('');
+        countEl.textContent = vehicles.length;
+        updateClearBtn();
+    }
 
-        // Botão limpar filtros
-        clearFiltersBtn.addEventListener('click', clearFilters);
-        // Chama updateVehicles no carregamento pra mostrar todos os veículos inicialmente
+    window.clearFilters = function () {
+        brandSel.value = '';
+        modelSel.innerHTML = '<option value="">Todos os modelos</option>';
+        modelSel.disabled = true;
+        yearSel.innerHTML  = '<option value="">Todos os anos</option>';
+        yearSel.disabled = true;
+        fuelSel.innerHTML  = '<option value="">Todos</option>';
+        updateClearBtn();
         updateVehicles();
-    });
+    };
+
+    brandSel.addEventListener('change', async () => { await updateModels(); await updateYears(); await updateFuels(); updateVehicles(); });
+    modelSel.addEventListener('change', async () => { await updateYears(); await updateFuels(); updateVehicles(); });
+    yearSel.addEventListener ('change', async () => { await updateFuels(); updateVehicles(); });
+    fuelSel.addEventListener ('change', updateVehicles);
+    clearBtn.addEventListener('click', clearFilters);
+
+    updateVehicles();
+})();
 </script>
