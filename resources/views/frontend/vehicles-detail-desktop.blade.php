@@ -166,14 +166,13 @@
     </div>
 </section>
 
-<section class="py-5 bg-light">
+{{-- <section class="py-5 bg-light">
     <div class="container">
-
-        <!-- <div class="row g-5">
+        <div class="row g-5">
             @include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles])
-        </div> -->
+        </div>
     </div>
-</section>
+</section> --}}
 
 @push('styles')
 <style>
