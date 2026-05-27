@@ -11,6 +11,7 @@ class VehicleInspection extends Model
     protected $fillable = [
         'vehicle_inspection_template_id',
         'v3_vehicle_id',
+        'parent_inspection_id',
         'status',
         'brand',
         'model',
@@ -56,6 +57,16 @@ class VehicleInspection extends Model
         'converted_at'     => 'datetime',
     ];
 
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(VehicleInspection::class, 'parent_inspection_id');
+    }
+
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(VehicleInspection::class, 'parent_inspection_id');
+    }
+
     public function template(): BelongsTo
     {
         return $this->belongsTo(VehicleInspectionTemplate::class, 'vehicle_inspection_template_id');
@@ -74,5 +85,12 @@ class VehicleInspection extends Model
     public function media(): HasMany
     {
         return $this->hasManyThrough(VehicleInspectionMedia::class, VehicleInspectionEntry::class, 'vehicle_inspection_id', 'vehicle_inspection_entry_id');
+    }
+
+    public function generalMedia(): HasMany
+    {
+        return $this->hasMany(VehicleInspectionMedia::class, 'vehicle_inspection_id')
+            ->whereNull('vehicle_inspection_entry_id')
+            ->orderBy('sort_order');
     }
 }

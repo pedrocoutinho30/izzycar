@@ -103,13 +103,84 @@ class VehicleInspectionController extends Controller
             ->with('success', 'Inspeção criada. Complete a checklist e anexe media.');
     }
 
+    public function report(VehicleInspection $inspection)
+    {
+        $inspection->load([
+            'template.categories' => fn ($q) => $q->orderBy('sort_order'),
+            'template.categories.items' => fn ($q) => $q->orderBy('sort_order'),
+            'entries.item.category',
+            'entries.media' => fn ($q) => $q->orderBy('sort_order'),
+            'generalMedia',
+            'parent.entries.item.category',
+        ]);
+
+        $entriesByItem = $inspection->entries->keyBy('vehicle_inspection_item_id');
+
+        $categoriesWithEntries = $inspection->template->categories->map(function ($category) use ($entriesByItem) {
+            $verifiedItems = $category->items->map(function ($item) use ($entriesByItem) {
+                $entry = $entriesByItem->get($item->id);
+                return ($entry && $entry->status !== 'nao_verificado')
+                    ? ['item' => $item, 'entry' => $entry]
+                    : null;
+            })->filter()->values();
+
+            return ['category' => $category, 'verifiedItems' => $verifiedItems];
+        })->filter(fn ($c) => $c['verifiedItems']->count() > 0)->values();
+
+        $problemEntries = $inspection->entries
+            ->filter(fn ($e) => $e->status === 'problema')
+            ->sortByDesc(fn ($e) => ['alta' => 3, 'media' => 2, 'baixa' => 1][$e->priority] ?? 0)
+            ->values();
+
+        $summary = $this->inspectionService->calculateSummary($inspection);
+
+        // Compute entry-level diff against parent inspection
+        $changedEntries = collect();
+        if ($inspection->parent) {
+            $parentEntriesByItem = $inspection->parent->entries->keyBy('vehicle_inspection_item_id');
+            $changedEntries = $inspection->entries
+                ->filter(function ($entry) use ($parentEntriesByItem) {
+                    $p = $parentEntriesByItem->get($entry->vehicle_inspection_item_id);
+                    if (! $p) {
+                        return false;
+                    }
+                    return $p->status !== $entry->status ||
+                        ($entry->status !== 'nao_verificado' && $p->priority !== $entry->priority);
+                })
+                ->map(function ($entry) use ($parentEntriesByItem) {
+                    $p = $parentEntriesByItem->get($entry->vehicle_inspection_item_id);
+                    return [
+                        'entry'        => $entry,
+                        'item'         => $entry->item,
+                        'old_status'   => $p->status,
+                        'new_status'   => $entry->status,
+                        'old_priority' => $p->priority,
+                        'new_priority' => $entry->priority,
+                    ];
+                })
+                ->values();
+        }
+
+        return view('admin.v3.inspections.report', compact(
+            'inspection', 'categoriesWithEntries', 'problemEntries', 'summary', 'changedEntries'
+        ));
+    }
+
     public function edit(VehicleInspection $inspection)
     {
+        // Completed / converted inspections are read-only — redirect to report
+        if (in_array($inspection->status, ['completed', 'converted'])) {
+            return redirect()
+                ->route('admin.v3.inspections.report', $inspection)
+                ->with('info', 'Esta inspecção está concluída e não pode ser editada. Crie uma nova revisão se necessário.');
+        }
+
         $template = $this->inspectionService->ensureDefaultTemplate();
         $inspection->load([
             'template.categories.items',
             'entries.item',
             'entries.media',
+            'generalMedia',
             'vehicle.photos',
             'vehicle.documents',
         ]);
@@ -126,10 +197,11 @@ class VehicleInspectionController extends Controller
         $entriesByItem    = $inspection->entries->keyBy('vehicle_inspection_item_id');
         $criticalEntries  = $inspection->entries->filter(fn ($e) => $e->status === 'problema' && ($e->item?->is_critical ?? false));
         $problemEntries   = $inspection->entries->filter(fn ($e) => $e->status === 'problema');
+        $generalMedia     = $inspection->generalMedia;
 
         return view('admin.v3.inspections.edit', compact(
             'inspection', 'brands', 'template', 'summary',
-            'entriesByItem', 'criticalEntries', 'problemEntries'
+            'entriesByItem', 'criticalEntries', 'problemEntries', 'generalMedia'
         ));
     }
 
@@ -254,6 +326,51 @@ class VehicleInspectionController extends Controller
         return back()->with('success', 'Media removida.');
     }
 
+    public function duplicate(VehicleInspection $inspection)
+    {
+        $template = $this->inspectionService->ensureDefaultTemplate();
+
+        $newInspection = VehicleInspection::create([
+            'vehicle_inspection_template_id' => $inspection->vehicle_inspection_template_id,
+            'parent_inspection_id' => $inspection->id,
+            'status'       => 'draft',
+            'brand'        => $inspection->brand,
+            'model'        => $inspection->model,
+            'sub_model'    => $inspection->sub_model,
+            'version'      => $inspection->version,
+            'year'         => $inspection->year,
+            'kilometers'   => $inspection->kilometers,
+            'vin'          => $inspection->vin,
+            'registration' => $inspection->registration,
+            'color'        => $inspection->color,
+            'fuel'         => $inspection->fuel,
+            'power'        => $inspection->power,
+            'transmission' => $inspection->transmission,
+            'traction'     => $inspection->traction,
+        ]);
+
+        $this->ensureEntries($newInspection, $template);
+        $newInspection->load(['entries']);
+
+        $originalEntriesByItem = $inspection->load('entries')->entries->keyBy('vehicle_inspection_item_id');
+        foreach ($newInspection->entries as $entry) {
+            $original = $originalEntriesByItem->get($entry->vehicle_inspection_item_id);
+            if ($original) {
+                $entry->update([
+                    'status'   => $original->status,
+                    'priority' => $original->priority,
+                    'notes'    => $original->notes,
+                ]);
+            }
+        }
+
+        $this->inspectionService->recalculate($newInspection);
+
+        return redirect()
+            ->route('admin.v3.inspections.edit', $newInspection)
+            ->with('success', 'Nova revisão criada a partir da Inspecção #' . $inspection->id . '. Actualize o que for necessário e conclua.');
+    }
+
     public function convert(Request $request, VehicleInspection $inspection)
     {
         if ($inspection->v3_vehicle_id) {
@@ -265,6 +382,46 @@ class VehicleInspectionController extends Controller
         return redirect()
             ->route('admin.v3.vehicles.edit', $vehicle->id)
             ->with('success', 'Veículo V3 criado automaticamente a partir da inspeção.');
+    }
+
+    public function uploadGeneralMedia(Request $request, VehicleInspection $inspection)
+    {
+        $request->validate([
+            'files'   => 'required|array|min:1',
+            'files.*' => 'file|max:51200',
+        ]);
+
+        $nextOrder = (int) ($inspection->generalMedia()->max('sort_order') ?? 0);
+
+        foreach ($request->file('files', []) as $file) {
+            $mime = (string) $file->getMimeType();
+            $type = str_starts_with($mime, 'video/') ? 'video' : 'image';
+            $path = $file->store("inspections/{$inspection->id}/general", 'public');
+
+            VehicleInspectionMedia::create([
+                'vehicle_inspection_id'       => $inspection->id,
+                'vehicle_inspection_entry_id' => null,
+                'type'          => $type,
+                'path'          => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'sort_order'    => ++$nextOrder,
+            ]);
+        }
+
+        return back()->with('success', 'Fotos adicionadas.');
+    }
+
+    public function destroyGeneralMedia(Request $request, VehicleInspection $inspection, VehicleInspectionMedia $media)
+    {
+        abort_unless(
+            $media->vehicle_inspection_id === $inspection->id && is_null($media->vehicle_inspection_entry_id),
+            404
+        );
+
+        Storage::disk('public')->delete($media->path);
+        $media->delete();
+
+        return back()->with('success', 'Foto removida.');
     }
 
     private function ensureEntries(VehicleInspection $inspection, $template): void

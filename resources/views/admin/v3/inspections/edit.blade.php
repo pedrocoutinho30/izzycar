@@ -140,7 +140,12 @@
                         </div>
                         <div class="col-12 d-flex flex-wrap gap-2 pt-2">
                             <button type="button" class="btn btn-outline-secondary" onclick="inspectionForceSave('draft')"><i class="bi bi-cloud-arrow-down me-1"></i>Guardar agora</button>
-                            <button type="button" class="btn btn-primary" onclick="inspectionForceSave('completed')"><i class="bi bi-check2-circle me-1"></i>Marcar concluída</button>
+                            <button type="button" class="btn btn-primary" onclick="inspectionForceSave('completed')"><i class="bi bi-check2-circle me-1"></i>Concluir inspeção</button>
+                            @if(in_array($inspection->status, ['completed', 'converted']))
+                                <a href="{{ route('admin.v3.inspections.report', $inspection) }}" class="btn btn-outline-info">
+                                    <i class="bi bi-file-earmark-text me-1"></i>Ver Relatório
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </form>
@@ -186,6 +191,55 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+{{-- General vehicle photos --}}
+<div class="modern-card mb-4">
+    <div class="modern-card-header d-flex justify-content-between align-items-center">
+        <div><i class="bi bi-images me-2"></i>Fotos do Veículo</div>
+        <span class="badge bg-secondary">{{ $generalMedia->count() }}</span>
+    </div>
+    <div class="modern-card-body">
+        {{-- Upload form --}}
+        <form action="{{ route('admin.v3.inspections.general-media.store', $inspection) }}" method="POST" enctype="multipart/form-data" class="mb-3">
+            @csrf
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <label class="btn btn-sm btn-outline-primary mb-0">
+                    <i class="bi bi-upload me-1"></i>Selecionar fotos
+                    <input type="file" name="files[]" multiple accept="image/*,video/*" class="d-none" onchange="this.closest('form').submit()">
+                </label>
+                <button type="button" class="btn btn-sm btn-outline-secondary inspection-camera-btn" data-upload-url="{{ route('admin.v3.inspections.general-media.store', $inspection) }}">
+                    <i class="bi bi-camera me-1"></i>Câmara
+                </button>
+                <span class="text-muted small">Fotos gerais do veículo inspecionado</span>
+            </div>
+        </form>
+
+        {{-- Photo grid --}}
+        @if($generalMedia->count())
+            <div class="row g-2" id="generalMediaGrid">
+                @foreach($generalMedia as $gm)
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="position-relative">
+                            @if($gm->type === 'image')
+                                <img src="{{ Storage::url($gm->path) }}" class="img-fluid rounded" style="aspect-ratio:4/3;object-fit:cover;width:100%" alt="">
+                            @else
+                                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="aspect-ratio:4/3">
+                                    <i class="bi bi-camera-video fs-3 text-muted"></i>
+                                </div>
+                            @endif
+                            <form action="{{ route('admin.v3.inspections.general-media.destroy', [$inspection, $gm]) }}" method="POST" class="position-absolute top-0 end-0 m-1">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm py-0 px-1" style="font-size:.7rem" onclick="return confirm('Remover foto?')">&times;</button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center text-muted py-3 small"><i class="bi bi-camera me-1"></i>Nenhuma foto geral adicionada.</div>
+        @endif
     </div>
 </div>
 
@@ -469,8 +523,25 @@
     }
 
     window.inspectionForceSave = function (status) {
-        saveInspection(status).then(() => window.location.reload()).catch(() => {});
+        saveInspection(status).then(() => {
+            if (status === 'completed') {
+                window.location.href = '{{ route('admin.v3.inspections.report', $inspection) }}';
+            } else {
+                sessionStorage.setItem('insp_scroll', window.scrollY);
+                window.location.reload();
+            }
+        }).catch(() => {});
     };
+
+    // Restore scroll position after forced save/reload
+    (function () {
+        const saved = sessionStorage.getItem('insp_scroll');
+        if (saved !== null) {
+            sessionStorage.removeItem('insp_scroll');
+            // Use requestAnimationFrame to wait for layout to settle
+            requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, parseInt(saved, 10))));
+        }
+    })();
 
     function applyFuelVisibility() {
         const selectedFuel = fuelSelect.value;
