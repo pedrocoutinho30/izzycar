@@ -27,6 +27,7 @@ class V3Vehicle extends Model
         'purchase_price', 'purchase_date', 'purchase_type',
         'purchase_vat_rate', 'purchase_vat_paid',
         'asking_price',
+        'generated_from_inspection_id',
     ];
 
     protected $casts = [
@@ -85,6 +86,11 @@ class V3Vehicle extends Model
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class, 'v3_vehicle_id');
+    }
+
+    public function generatedFromInspection(): BelongsTo
+    {
+        return $this->belongsTo(VehicleInspection::class, 'generated_from_inspection_id');
     }
 
     public function attributeValues(): HasMany

@@ -223,8 +223,9 @@ class VehiclesController extends Controller
         }
 
         $last_vehicles = V3Vehicle::with(['photos' => fn ($q) => $q->where('is_cover', true)->limit(1)])
-            ->where('show_online', true)->where('status', '!=', 'vendido')
-            ->latest()->take(5)->get();
+            ->where('show_online', true)
+            ->orderByRaw("FIELD(status, 'em_stock', 'reservado', 'vendido')")
+            ->latest()->take(6)->get();
 
 
         return view('frontend.vehicles-detail', compact('vehicle', 'attributes', 'potencia', 'caixa', 'cilindrada', 'last_vehicles'));

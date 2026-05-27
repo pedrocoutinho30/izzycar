@@ -1,21 +1,17 @@
 <section class="py-5 bg-light" style="padding-top: 6rem !important;">
     <div class="container">
-        <!-- Botão voltar -->
-        <div class="mb-4">
-            <a href="{{ route('vehicles.list') }}" class="btn btn-sm btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i> Voltar à listagem
-            </a>
-        </div>
         <div class="row g-5">
             <!-- Coluna com imagens -->
-            <div class="col-lg-8 border-gallery">
+            <div class="col-lg-8">
+                <div class="border-gallery">
                 <!-- Swiper principal (imagem grande) -->
                 <div class="swiper mySwiperMain">
                     <div class="swiper-wrapper">
                         @foreach ($vehicle->photos as $key => $photo)
                         <div class="swiper-slide">
                             <img src="{{ asset("storage/" . $photo->path) }}" loading="lazy"
-                                class="img-fluid rounded" style="cursor: pointer; object-fit: cover; object-position: {{ $photo->focal_x ?? 50 }}% {{ $photo->focal_y ?? 50 }}%;"
+                                class="img-fluid rounded main-gallery-img" data-index="{{ $key }}"
+                                style="cursor: zoom-in; object-fit: cover; object-position: {{ $photo->focal_x ?? 50 }}% {{ $photo->focal_y ?? 50 }}%;"
                                 alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
                         </div>
                         @endforeach
@@ -35,6 +31,7 @@
                         </div>
                         @endforeach
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -166,16 +163,174 @@
     </div>
 </section>
 
-{{-- <section class="py-5 bg-light">
+{{-- Lightbox --}}
+@php
+    $lightboxPhotos = $vehicle->photos->map(fn($p) => asset('storage/' . $p->path))->values()->toArray();
+@endphp
+<div id="vl-lightbox" role="dialog" aria-modal="true" aria-label="Galeria de imagens">
+    <button id="vl-lb-close" aria-label="Fechar"><i class="bi bi-x-lg"></i></button>
+    <button id="vl-lb-prev"  aria-label="Anterior"><i class="bi bi-chevron-left"></i></button>
+    <button id="vl-lb-next"  aria-label="Seguinte"><i class="bi bi-chevron-right"></i></button>
+    <div id="vl-lb-img-wrap">
+        <img id="vl-lb-img" src="" alt="">
+    </div>
+    <div id="vl-lb-counter"></div>
+</div>
+@php $related = $last_vehicles->where('id', '!=', $vehicle->id)->take(3)->values(); @endphp
+@if($related->count())
+<section class="related-section">
     <div class="container">
-        <div class="row g-5">
-            @include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles])
+        <div class="related-header">
+            <div>
+                <h4 class="related-title">Outras Viaturas</h4>
+                <p class="related-subtitle">Poderá também gostar</p>
+            </div>
+            <a href="{{ route('vehicles.list') }}" class="related-link">Ver todas <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="related-swiper-wrapper">
+            <div class="swiper mySwiperRelated">
+                <div class="swiper-wrapper">
+                    @foreach($related as $rv)
+                    <div class="swiper-slide">
+                        <a href="{{ route('vehicles.details', ['brand' => Str::slug($rv->brand), 'model' => Str::slug($rv->model), 'id' => $rv->reference]) }}" class="text-decoration-none related-card-link">
+                            <div class="related-card">
+                                <div class="related-card-img">
+                                    <img src="{{ optional($rv->photos->first())->path ? asset('storage/' . $rv->photos->first()->path) : asset('img/no-image.png') }}" alt="{{ $rv->brand }} {{ $rv->model }}" loading="lazy">
+                                    <div class="related-img-overlay"></div>
+                                    @if($rv->status === 'reservado')
+                                    <span class="related-badge" style="background:#f59e0b;">Reservado</span>
+                                    @elseif($rv->status === 'vendido')
+                                    <span class="related-badge" style="background:#6b7280;">Vendido</span>
+                                    @else
+                                    <span class="related-badge" style="background: var(--accent-color);">Em stock</span>
+                                    @endif
+                                </div>
+                                <div class="related-card-body">
+                                    <div class="related-card-top">
+                                        <p class="related-brand">{{ $rv->brand }}</p>
+                                        <h6 class="related-model">{{ $rv->model }} {{ $rv->version }}</h6>
+                                    </div>
+                                    <div class="related-card-specs">
+                                        @if($rv->year)
+                                        <span class="related-spec"><i class="bi bi-calendar3"></i> {{ $rv->year }}</span>
+                                        @endif
+                                        @if($rv->kilometers)
+                                        <span class="related-spec"><i class="bi bi-speedometer"></i> {{ number_format($rv->kilometers, 0, ',', '.') }} km</span>
+                                        @endif
+                                        @if($rv->fuel)
+                                        <span class="related-spec"><i class="bi bi-fuel-pump"></i> {{ ucfirst($rv->fuel) }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="related-card-footer">
+                                        @if($rv->status === 'em_stock')
+                                        <span class="related-price">{{ number_format(round($rv->asking_price ?? 0), 0, ',', ' ') }} €</span>
+                                        @elseif($rv->status === 'reservado')
+                                        <span class="related-price" style="color:#f59e0b;">Reservado</span>
+                                        @else
+                                        <span class="related-price" style="color:#6b7280;">Vendido</span>
+                                        @endif
+                                        <span class="related-cta">Ver viatura <i class="bi bi-arrow-right"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            <div class="related-nav related-prev"><i class="bi bi-chevron-left"></i></div>
+            <div class="related-nav related-next"><i class="bi bi-chevron-right"></i></div>
         </div>
     </div>
-</section> --}}
+</section>
+@endif
 
 @push('styles')
 <style>
+    /* ── Lightbox ────────────────────────────────────────────────────────── */
+    #vl-lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(0, 0, 0, .92);
+        align-items: center;
+        justify-content: center;
+    }
+    #vl-lightbox.active { display: flex; }
+
+    #vl-lb-img-wrap {
+        max-width: 90vw;
+        max-height: 88vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #vl-lb-img {
+        max-width: 90vw;
+        max-height: 88vh;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 8px 40px rgba(0,0,0,.6);
+        transition: opacity .2s ease;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+    #vl-lb-close {
+        position: fixed;
+        top: 18px;
+        right: 22px;
+        background: rgba(255,255,255,.12);
+        border: none;
+        color: #fff;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background .2s;
+        z-index: 10001;
+    }
+    #vl-lb-close:hover { background: rgba(255,255,255,.25); }
+
+    #vl-lb-prev, #vl-lb-next {
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,.1);
+        border: none;
+        color: #fff;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background .2s;
+        z-index: 10001;
+    }
+    #vl-lb-prev { left: 18px; }
+    #vl-lb-next { right: 18px; }
+    #vl-lb-prev:hover, #vl-lb-next:hover { background: rgba(255,255,255,.25); }
+    #vl-lb-prev.lb-hidden, #vl-lb-next.lb-hidden { opacity: .25; pointer-events: none; }
+
+    #vl-lb-counter {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255,255,255,.7);
+        font-size: .85rem;
+        letter-spacing: .5px;
+        z-index: 10001;
+    }
+
     .border-gallery {
         background: var(--white-color);
         border-radius: 12px;
@@ -368,6 +523,193 @@
             font-size: 16px;
         }
     }
+
+    /* ── Related Section ─────────────────────────────────────────────── */
+    .related-section {
+        background: #f4f4f6;
+        padding: 3rem 0 4rem;
+    }
+    .related-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+    .related-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: .2rem;
+    }
+    .related-subtitle {
+        color: #6b7280;
+        font-size: .9rem;
+        margin: 0;
+    }
+    .related-link {
+        font-size: .9rem;
+        font-weight: 600;
+        color: var(--accent-color);
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    .related-link:hover { text-decoration: underline; }
+
+    /* Swiper wrapper with room for nav arrows */
+    .related-swiper-wrapper {
+        position: relative;
+        padding: 0 50px;
+    }
+    .mySwiperRelated {
+        overflow: hidden;
+    }
+    .mySwiperRelated .swiper-slide {
+        height: auto;
+        display: flex;
+    }
+
+    /* Card */
+    .related-card-link { display: flex; flex: 1; }
+    .related-card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,.06);
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        transition: transform .3s ease, box-shadow .3s ease;
+    }
+    .related-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 40px rgba(110,7,7,.14);
+    }
+    .related-card-img {
+        position: relative;
+        height: 195px;
+        overflow: hidden;
+        background: #e9e9e9;
+        flex-shrink: 0;
+    }
+    .related-card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .5s ease;
+    }
+    .related-card:hover .related-card-img img { transform: scale(1.06); }
+    .related-img-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,.35) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    .related-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        color: #fff;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .4px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+
+    /* Card body */
+    .related-card-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 1.1rem 1.2rem 1rem;
+    }
+    .related-card-top { flex: 1; }
+    .related-brand {
+        font-size: .78rem;
+        font-weight: 700;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+        color: var(--accent-color);
+        margin-bottom: .15rem;
+    }
+    .related-model {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111;
+        margin-bottom: .8rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .related-card-specs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .4rem .9rem;
+        margin-bottom: 1rem;
+    }
+    .related-spec {
+        font-size: .8rem;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .related-spec i { color: #9ca3af; }
+
+    /* Footer row */
+    .related-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: .8rem;
+        border-top: 1px solid #f0f0f0;
+        margin-top: auto;
+    }
+    .related-price {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+    .related-cta {
+        font-size: .8rem;
+        font-weight: 600;
+        color: #9ca3af;
+        transition: color .2s;
+    }
+    .related-card:hover .related-cta { color: var(--accent-color); }
+
+    /* Nav arrows */
+    .related-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: var(--accent-color);
+        box-shadow: 0 2px 10px rgba(0,0,0,.12);
+        cursor: pointer;
+        z-index: 10;
+        transition: background .2s, box-shadow .2s;
+        user-select: none;
+    }
+    .related-nav:hover {
+        background: var(--accent-color);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(110,7,7,.3);
+    }
+    .related-prev { left: 0; }
+    .related-next { right: 0; }
+    .related-nav.swiper-button-disabled { opacity: .35; pointer-events: none; }
 </style>
 @endpush
 
@@ -384,8 +726,8 @@
     const swiperMain = new Swiper(".mySwiperMain", {
         spaceBetween: 10,
         navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
+            nextEl: '.mySwiperMain .swiper-button-next',
+            prevEl: '.mySwiperMain .swiper-button-prev',
         },
         thumbs: {
             swiper: swiperThumbs,
@@ -399,5 +741,85 @@
             }
         }
     });
+
+    new Swiper(".mySwiperRelated", {
+        spaceBetween: 24,
+        slidesPerView: 1,
+        speed: 500,
+        grabCursor: true,
+        navigation: {
+            nextEl: '.related-next',
+            prevEl: '.related-prev',
+        },
+        breakpoints: {
+            576: { slidesPerView: 2, spaceBetween: 20 },
+            992: { slidesPerView: 3, spaceBetween: 24 },
+        }
+    });
+
+    /* ── Lightbox ─────────────────────────────────────────────────────────── */
+    (function () {
+        const photos  = @json($lightboxPhotos);
+        const lb      = document.getElementById('vl-lightbox');
+        const lbImg   = document.getElementById('vl-lb-img');
+        const lbClose = document.getElementById('vl-lb-close');
+        const lbPrev  = document.getElementById('vl-lb-prev');
+        const lbNext  = document.getElementById('vl-lb-next');
+        const lbCount = document.getElementById('vl-lb-counter');
+        let current = 0;
+
+        function show(index) {
+            current = index;
+            lbImg.style.opacity = '0';
+            lbImg.src = photos[current];
+            lbImg.onload = () => { lbImg.style.opacity = '1'; };
+            lbCount.textContent = (current + 1) + ' / ' + photos.length;
+            lbPrev.classList.toggle('lb-hidden', current === 0);
+            lbNext.classList.toggle('lb-hidden', current === photos.length - 1);
+        }
+
+        function open(index) {
+            show(index);
+            lb.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function close() {
+            lb.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        /* Click on main gallery image */
+        document.querySelectorAll('.main-gallery-img').forEach(img => {
+            img.addEventListener('click', () => open(parseInt(img.dataset.index)));
+        });
+
+        lbClose.addEventListener('click', close);
+        lbPrev.addEventListener('click', () => { if (current > 0) show(current - 1); });
+        lbNext.addEventListener('click', () => { if (current < photos.length - 1) show(current + 1); });
+
+        /* Click outside image */
+        lb.addEventListener('click', e => { if (e.target === lb) close(); });
+
+        /* Keyboard */
+        document.addEventListener('keydown', e => {
+            if (!lb.classList.contains('active')) return;
+            if (e.key === 'Escape')      close();
+            if (e.key === 'ArrowLeft'  && current > 0)                show(current - 1);
+            if (e.key === 'ArrowRight' && current < photos.length - 1) show(current + 1);
+        });
+
+        /* Touch swipe */
+        let touchX = null;
+        lb.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+        lb.addEventListener('touchend',   e => {
+            if (touchX === null) return;
+            const diff = touchX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 40) diff > 0
+                ? (current < photos.length - 1 && show(current + 1))
+                : (current > 0 && show(current - 1));
+            touchX = null;
+        });
+    })();
 </script>
 @endpush

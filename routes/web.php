@@ -328,6 +328,22 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     });
 
     // ============================================================
+    // CHECKLIST / INSPEÇÕES V3
+    // ============================================================
+    Route::prefix('v3/inspections')->name('admin.v3.inspections.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'store'])->name('store');
+        Route::get('/{inspection}/edit', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'edit'])->name('edit');
+        Route::put('/{inspection}', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'update'])->name('update');
+        Route::post('/{inspection}/convert', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'convert'])->name('convert');
+
+        Route::post('/{inspection}/entries/{entry}/media', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'uploadMedia'])->name('media.store');
+        Route::post('/{inspection}/entries/{entry}/media/reorder', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'reorderMedia'])->name('media.reorder');
+        Route::delete('/{inspection}/entries/{entry}/media/{media}', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'destroyMedia'])->name('media.destroy');
+    });
+
+    // ============================================================
     // VENDAS V2
     // ============================================================
     Route::prefix('v2/sales')->name('admin.v2.sales.')->group(function () {

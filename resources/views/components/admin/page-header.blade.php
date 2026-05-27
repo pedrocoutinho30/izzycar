@@ -5,6 +5,7 @@
     $action2Label = $action2Label ?? null;
     $action2Icon  = $action2Icon  ?? 'bi-arrow-right';
     $subtitle = $subtitle ?? null;
+    $breadcrumbs = $breadcrumbs ?? [];
 @endphp
 
 <div class="page-header">
