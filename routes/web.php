@@ -336,6 +336,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::post('/', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'store'])->name('store');
         Route::post('/{inspection}/duplicate', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'duplicate'])->name('duplicate');
         Route::get('/{inspection}/report', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'report'])->name('report');
+        Route::get('/{inspection}/report/pdf', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'downloadPdf'])->name('report.pdf');
         Route::get('/{inspection}/edit', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'edit'])->name('edit');
         Route::put('/{inspection}', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'update'])->name('update');
         Route::post('/{inspection}/convert', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'convert'])->name('convert');
@@ -346,7 +347,9 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
         Route::post('/{inspection}/general-media', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'uploadGeneralMedia'])->name('general-media.store');
         Route::delete('/{inspection}/general-media/{media}', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'destroyGeneralMedia'])->name('general-media.destroy');
-    });
+        Route::post('/{inspection}/destroy', [App\Http\Controllers\Admin\VehicleInspectionController::class, 'destroy'])->name('destroy');
+        
+        });
 
     // ============================================================
     // VENDAS V2

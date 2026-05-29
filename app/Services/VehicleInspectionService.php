@@ -36,14 +36,16 @@ class VehicleInspectionService
 
     public function ensureDefaultTemplate(): VehicleInspectionTemplate
     {
-        $template = VehicleInspectionTemplate::firstOrCreate(
-            ['slug' => 'standard-vehicle-inspection'],
-            [
-                'name' => 'Checklist Standard de Inspeção',
-                'description' => 'Template base para inspeção automóvel com estrutura escalável.',
-                'is_default' => true,
-            ]
-        );
+        // $template = VehicleInspectionTemplate::firstOrCreate(
+        //     ['slug' => 'checklist-completa'],
+        //     [
+        //         'name' => 'Checklist Completa',
+        //         'description' => 'Checklist otimizada para análise de veículos usados antes da compra.',
+        //         'is_default' => true,
+        //     ]
+        // );
+
+        $template = VehicleInspectionTemplate::where('is_default', true)->first();
 
         foreach ($this->definition() as $categoryIndex => $categoryData) {
             $category = VehicleInspectionCategory::updateOrCreate(

@@ -139,9 +139,14 @@
     <a href="{{ route('admin.v3.inspections.edit', $inspection) }}" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>Voltar à edição
     </a>
-    <button class="btn btn-primary" onclick="window.print()">
-        <i class="bi bi-printer me-1"></i>Imprimir / Guardar PDF
-    </button>
+    <div class="d-flex gap-2">
+        <a href="{{ route('admin.v3.inspections.report.pdf', $inspection) }}" class="btn btn-success">
+            <i class="bi bi-file-earmark-pdf me-1"></i>Descarregar PDF
+        </a>
+        <button class="btn btn-primary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Imprimir
+        </button>
+    </div>
 </div>
 
 {{-- Vehicle header --}}

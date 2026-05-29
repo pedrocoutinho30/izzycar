@@ -21,7 +21,7 @@
         <form action="{{ route('admin.v3.inspections.store') }}" method="POST" autocomplete="off">
             @csrf
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-semibold">Marca</label>
                     <select name="brand" id="inspectionBrandSelect" class="form-select" onchange="inspectionLoadModels()">
                         <option value="">— Selecionar —</option>
@@ -30,19 +30,19 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-semibold">Modelo</label>
                     <select name="model" id="inspectionModelSelect" class="form-select" onchange="inspectionLoadSubmodels()" disabled>
                         <option value="">— Primeiro selecione a marca —</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-semibold">Submodelo</label>
                     <select name="sub_model" id="inspectionSubmodelSelect" class="form-select" disabled>
                         <option value="">— Nenhum —</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-semibold">Versão</label>
                     <input type="text" name="version" class="form-control" value="{{ old('version') }}" placeholder="ex: GT Line">
                 </div>
@@ -96,6 +96,19 @@
                         <option value="AWD/4x4" @selected(old('traction') === 'AWD/4x4')>AWD/4x4</option>
                     </select>
                 </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Template</label>
+                    <select name="template_id" class="form-select">
+                        <option value="">—</option>
+                        @foreach($templates as $template)
+                            <option value="{{ $template->id }}" @selected(old('template_id') === $template->id)>{{ $template->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                    </select>
+                </div>
+
                 <div class="col-12">
                     <label class="form-label fw-semibold">Notas</label>
                     <textarea name="notes" class="form-control" rows="4" placeholder="Observações gerais da inspeção…">{{ old('notes') }}</textarea>
