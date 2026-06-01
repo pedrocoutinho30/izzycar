@@ -119,10 +119,6 @@
     </div>
     <div id="vl-lb-counter"></div>
 </div>
-
-@push('styles')
-<style>
-    /* ── Breadcrumbs ─────────────────────────────────────────────────────── */
 @include('frontend.partials.contact-modal', [
 'vehicle' => $vehicle,
 ])
