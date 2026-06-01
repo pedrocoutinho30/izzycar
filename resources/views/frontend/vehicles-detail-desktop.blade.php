@@ -1,5 +1,23 @@
-<section class="py-5 bg-light" style="padding-top: 6rem !important;">
+<section class="py-5 bg-light" style="padding-top: 6rem !important;" role="main" itemscope itemtype="https://schema.org/Product">
     <div class="container">
+        {{-- Breadcrumbs para SEO --}}
+        <nav aria-label="Breadcrumbs" class="mb-4">
+            <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a href="{{ route('home') }}" itemprop="item"><span itemprop="name">Início</span></a>
+                    <meta itemprop="position" content="1" />
+                </li>
+                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a href="{{ route('vehicles.list') }}" itemprop="item"><span itemprop="name">Viaturas</span></a>
+                    <meta itemprop="position" content="2" />
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">{{ $vehicle->brand }} {{ $vehicle->model }}{{ $vehicle->version ? ' ' . $vehicle->version : '' }}</span>
+                    <meta itemprop="position" content="3" />
+                </li>
+            </ol>
+        </nav>
+
         <div class="row g-5">
             <!-- Coluna com imagens -->
             <div class="col-lg-8">
@@ -42,8 +60,10 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12 mt-4">
-                                    <h3 class="text-accent">{{ $vehicle->brand }}</h3>
-                                    <h5 class="text-accent"> {{ $vehicle->model }} {{ $vehicle->version }}</h5>
+                                    <h1 class="text-accent" itemprop="name">{{ $vehicle->brand }}</h1>
+                                    <h2 class="text-accent" itemprop="model"> {{ $vehicle->model }}@if($vehicle->version)<span itemprop="version"> {{ $vehicle->version }}</span>@endif</h2>
+                                    <meta itemprop="brand" content="{{ $vehicle->brand }}" />
+                                    <meta itemprop="sku" content="{{ $vehicle->reference }}" />
                                     @if($vehicle->status === 'reservado')
                                     <span class="badge rounded-pill fs-6 mt-1" style="background:#f59e0b;">Reservado</span>
                                     @elseif($vehicle->status === 'vendido')
@@ -56,7 +76,7 @@
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start ">
                                         <span class="icon-colored pe-3">@include('components.icons.calendar')</span>
-                                        <p class="mb-0 text-dark">{{ $vehicle->year }}</p>
+                                        <p class="mb-0 text-dark"><strong>Ano:</strong> <span itemprop="vehicleModelDate">{{ $vehicle->year }}</span></p>
                                     </div>
                                 </div>
                                 @endif
@@ -64,7 +84,7 @@
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-center">
                                         <span class="icon-colored pe-3">@include('components.icons.road')</span>
-                                        <p class="mb-0 text-dark">{{ $vehicle->kilometers }} KM</p>
+                                        <p class="mb-0 text-dark"><strong>Quilometragem:</strong> <span itemprop="mileageFromOdometer">{{ $vehicle->kilometers }}</span> KM</p>
                                     </div>
                                 </div>
                                 @endif
@@ -72,7 +92,7 @@
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.fuel')</span>
-                                        <p class="mb-0 text-dark">{{ $vehicle->fuel }}</p>
+                                        <p class="mb-0 text-dark"><strong>Combustível:</strong> <span itemprop="fuelType">{{ $vehicle->fuel }}</span></p>
                                     </div>
                                 </div>
                                 @endif
@@ -80,7 +100,7 @@
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.motor')</span>
-                                        <p class="mb-0 text-dark">{{$cilindrada}} CC</p>
+                                        <p class="mb-0 text-dark"><strong>Cilindrada:</strong> <span itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification"><span itemprop="engineDisplacement">{{$cilindrada}}</span></span> CC</p>
                                     </div>
                                 </div>
                                 @endif
@@ -88,7 +108,7 @@
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.power')</span>
-                                        <p class="mb-0 text-dark">{{$potencia}} CV</p>
+                                        <p class="mb-0 text-dark"><strong>Potência:</strong> <span itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification"><span itemprop="enginePower">{{$potencia}}</span></span> CV</p>
                                     </div>
                                 </div>
                                 @endif
@@ -96,15 +116,18 @@
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-start">
                                         <span class="icon-colored pe-3">@include('components.icons.gearbox')</span>
-                                        <p class="mb-0 text-dark">{{$caixa}}</p>
+                                        <p class="mb-0 text-dark"><strong>Transmissão:</strong> <span itemprop="vehicleTransmission">{{$caixa}}</span></p>
                                     </div>
                                 </div>
                                 @endif
                             </div>
 
                             @if($vehicle->asking_price && !in_array($vehicle->status ?? '', ['reservado', 'vendido']))
-                            <h3 class="d-flex align-items-end mt-4" style="color: var(--accent-color);">
-                                {{ number_format(round($vehicle->asking_price), 0, ',', ' ') }}&nbsp;€
+                            <h3 class="d-flex align-items-end mt-4" style="color: var(--accent-color);" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                                <span itemprop="price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }}</span>&nbsp;€
+                                <meta itemprop="priceCurrency" content="EUR" />
+                                <meta itemprop="availability" content="https://schema.org/InStock" />
+                                <meta itemprop="url" content="{{ url()->current() }}" />
                             </h3>
                             @endif
                             <div class="d-flex gap-3 align-items-center mt-3">
@@ -133,14 +156,12 @@
 
 
         <!-- Equipamento -->
-
         <div class="row ml-1 mt-5 g-4">
-
             @foreach ($attributes as $group => $attrs)
             <div class="col-12">
                 <div class="card news-listing shadow-sm h-100">
                     <div class="card-body">
-                        <h5 class="text-accent fw-semibold mb-4">{{ $group }}</h5>
+                        <h2 class="text-accent fw-semibold mb-4">{{ $group }}</h2>
 
                         <div class="row">
                             @foreach ($attrs as $attr => $value)
@@ -166,17 +187,8 @@
 {{-- Lightbox --}}
 @php
     $lightboxPhotos = $vehicle->photos->map(fn($p) => asset('storage/' . $p->path))->values()->toArray();
-@endphp
-<div id="vl-lightbox" role="dialog" aria-modal="true" aria-label="Galeria de imagens">
-    <button id="vl-lb-close" aria-label="Fechar"><i class="bi bi-x-lg"></i></button>
-    <button id="vl-lb-prev"  aria-label="Anterior"><i class="bi bi-chevron-left"></i></button>
-    <button id="vl-lb-next"  aria-label="Seguinte"><i class="bi bi-chevron-right"></i></button>
-    <div id="vl-lb-img-wrap">
-        <img id="vl-lb-img" src="" alt="">
-    </div>
-    <div id="vl-lb-counter"></div>
-</div>
-@php $related = $last_vehicles->where('id', '!=', $vehicle->id)->take(3)->values(); @endphp
+ $related = $last_vehicles->where('id', '!=', $vehicle->id)->take(3)->values(); 
+ @endphp
 @if($related->count())
 <section class="related-section">
     <div class="container">
@@ -248,6 +260,28 @@
 
 @push('styles')
 <style>
+    /* ── Breadcrumbs ─────────────────────────────────────────────────────── */
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0.75rem 0;
+        margin-bottom: 0;
+        border-radius: 0;
+    }
+    .breadcrumb-item {
+        font-size: 0.9rem;
+    }
+    .breadcrumb-item a {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+    .breadcrumb-item.active {
+        color: #6b7280;
+    }
+
     /* ── Lightbox ────────────────────────────────────────────────────────── */
     #vl-lightbox {
         display: none;
@@ -376,9 +410,27 @@
     /* Imagem principal */
     .mySwiperMain .swiper-slide img {
         width: 100%;
-        max-height: 500px;
+        max-height: 650px;
         object-fit: cover;
         border-radius: 12px;
+        animation: imageGrowth 2.5s ease-in-out forwards;
+    }
+
+    @keyframes imageGrowth {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(2);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Mobile gallery image animation */
+    .mobile-gallery-img {
+        animation: imageGrowth 2.5s ease-in-out forwards !important;
     }
 
     /* Miniaturas */
@@ -784,6 +836,8 @@
             document.body.style.overflow = 'hidden';
         }
 
+        window.vlLightboxOpen = open;
+
         function close() {
             lb.classList.remove('active');
             document.body.style.overflow = '';
@@ -793,6 +847,16 @@
         document.querySelectorAll('.main-gallery-img').forEach(img => {
             img.addEventListener('click', () => open(parseInt(img.dataset.index)));
         });
+
+        /* Open lightbox when clicking swiper navigation buttons */
+        const swiperNextBtn = document.querySelector('.mySwiperMain .swiper-button-next');
+        const swiperPrevBtn = document.querySelector('.mySwiperMain .swiper-button-prev');
+        if (swiperNextBtn) {
+            swiperNextBtn.addEventListener('click', () => open(swiperMain.realIndex));
+        }
+        if (swiperPrevBtn) {
+            swiperPrevBtn.addEventListener('click', () => open(swiperMain.realIndex));
+        }
 
         lbClose.addEventListener('click', close);
         lbPrev.addEventListener('click', () => { if (current > 0) show(current - 1); });

@@ -83,9 +83,107 @@
 
     @stack('head')
     @stack('styles')
+
+    <style>
+        /* ── Page Loader ─────────────────────────────────────────────────────── */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeOut 0.5s ease-out 2.5s forwards;
+        }
+
+        .page-loader.hidden {
+            animation: fadeOut 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                visibility: visible;
+            }
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-circle {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader-circle::before {
+            content: '';
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #990000;
+            border-right-color: #990000;
+            border-radius: 50%;
+            animation: loaderSpin 2.5s ease-in-out forwards;
+        }
+
+        @keyframes loaderSpin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-logo {
+            position: relative;
+            z-index: 1;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: contain;
+            animation: logoFadeIn 0.6s ease-out 0.4s both;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes logoFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
 </head>
 
 <body id="top">
+
+    {{-- Page Loader --}}
+    <div id="page-loader" class="page-loader">
+        <div class="loader-content">
+            <div class="loader-circle">
+                <img src="https://izzycar.pt/storage/settings/logo.png" alt="IzzyCar Logo" class="loader-logo">
+            </div>
+        </div>
+    </div>
 
     @include('frontend.partials.header')
     @include('frontend.partials.cookies')
@@ -105,6 +203,26 @@
 
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script>
+    // Page Loader - Hide after page loads
+    window.addEventListener('load', function() {
+        const loader = document.getElementById('page-loader');
+        if (loader) {
+            setTimeout(function() {
+                loader.classList.add('hidden');
+            }, 2500);
+        }
+    });
+
+    // Fallback: hide after 4 seconds max
+    setTimeout(function() {
+        const loader = document.getElementById('page-loader');
+        if (loader && !loader.classList.contains('hidden')) {
+            loader.classList.add('hidden');
+        }
+    }, 4000);
+    </script>
 
     @stack('scripts')
 </body>

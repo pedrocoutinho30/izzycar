@@ -1,5 +1,23 @@
-<section class="py-4 bg-light mt-4">
+<section class="py-4 bg-light mt-4" role="main" itemscope itemtype="https://schema.org/Product">
     <div class="container">
+
+        {{-- Breadcrumbs para SEO Mobile --}}
+        <nav aria-label="Breadcrumbs" class="mb-3">
+            <ol class="breadcrumb breadcrumb-mobile" itemscope itemtype="https://schema.org/BreadcrumbList">
+                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a href="{{ route('home') }}" itemprop="item"><span itemprop="name">Início</span></a>
+                    <meta itemprop="position" content="1" />
+                </li>
+                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a href="{{ route('vehicles.list') }}" itemprop="item"><span itemprop="name">Viaturas</span></a>
+                    <meta itemprop="position" content="2" />
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">{{ $vehicle->brand }} {{ $vehicle->model }}{{ $vehicle->version ? ' ' . $vehicle->version : '' }}</span>
+                    <meta itemprop="position" content="3" />
+                </li>
+            </ol>
+        </nav>
 
         <!-- Galeria Mobile -->
         <div class="mb-3 border-gallery">
@@ -9,7 +27,7 @@
                     @foreach ($vehicle->photos as $key => $photo)
                     <div class="swiper-slide">
                         <img src="{{ asset('storage/' . $photo->path) }}" loading="lazy"
-                            class="img-fluid  d-block w-100  object-cover rounded" style="height: 200px; width: 100%; object-fit: cover; object-position: {{ $photo->focal_x ?? 50 }}% {{ $photo->focal_y ?? 50 }}%"
+                            class="img-fluid  d-block w-100  object-cover rounded mobile-gallery-img" data-index="{{ $key }}" style="height: 200px; width: 100%; object-fit: cover; object-position: {{ $photo->focal_x ?? 50 }}% {{ $photo->focal_y ?? 50 }}%"
                             alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
                     </div>
                     @endforeach
@@ -35,8 +53,10 @@
         <!-- Detalhes do veículo -->
         <div class="card news-listing shadow-sm mb-3">
             <div class="card-body">
-                <h3 class="text-accent mb-1">{{ $vehicle->brand }}</h3>
-                <h5 class="text-accent mb-2">{{ $vehicle->model }} {{ $vehicle->version }}</h5>
+                <h1 class="text-accent mb-1" itemprop="name">{{ $vehicle->brand }}</h1>
+                <h2 class="text-accent mb-2" itemprop="model">{{ $vehicle->model }}@if($vehicle->version)<span itemprop="version"> {{ $vehicle->version }}</span>@endif</h2>
+                <meta itemprop="brand" content="{{ $vehicle->brand }}" />
+                <meta itemprop="sku" content="{{ $vehicle->reference }}" />
                 @if($vehicle->status === 'reservado')
                 <span class="badge rounded-pill fs-6 mb-3" style="background:#f59e0b;">Reservado</span>
                 @elseif($vehicle->status === 'vendido')
@@ -44,44 +64,49 @@
                 @endif
 
                 @if($vehicle->asking_price && !in_array($vehicle->status ?? '', ['reservado', 'vendido']))
-                <h3 class="text-accent mb-3">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }} €</h3>
+                <h3 class="text-accent mb-3" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                    <span itemprop="price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }}</span> €
+                    <meta itemprop="priceCurrency" content="EUR" />
+                    <meta itemprop="availability" content="https://schema.org/InStock" />
+                    <meta itemprop="url" content="{{ url()->current() }}" />
+                </h3>
                 @endif
 
                 <div class="row g-2 mb-3">
                     @if($vehicle->year)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.calendar')</span>
-                        <p class="mb-0 text-dark">{{ $vehicle->year }}</p>
+                        <p class="mb-0 text-dark"><span itemprop="vehicleModelDate">{{ $vehicle->year }}</span></p>
                     </div>
                     @endif
                     @if($vehicle->kilometers)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.road')</span>
-                        <p class="mb-0 text-dark">{{ $vehicle->kilometers }} KM</p>
+                        <p class="mb-0 text-dark"><span itemprop="mileageFromOdometer">{{ $vehicle->kilometers }}</span> KM</p>
                     </div>
                     @endif
                     @if($vehicle->fuel)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.fuel')</span>
-                        <p class="mb-0 text-dark">{{ $vehicle->fuel }}</p>
+                        <p class="mb-0 text-dark"><span itemprop="fuelType">{{ $vehicle->fuel }}</span></p>
                     </div>
                     @endif
                     @if($cilindrada)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.motor')</span>
-                        <p class="mb-0 text-dark">{{$cilindrada}} CC</p>
+                        <p class="mb-0 text-dark"><span itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification"><span itemprop="engineDisplacement">{{$cilindrada}}</span></span> CC</p>
                     </div>
                     @endif
                     @if($potencia)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.power')</span>
-                        <p class="mb-0 text-dark">{{$potencia}} CV</p>
+                        <p class="mb-0 text-dark"><span itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification"><span itemprop="enginePower">{{$potencia}}</span></span> CV</p>
                     </div>
                     @endif
                     @if($caixa)
                     <div class="col-6 d-flex align-items-center">
                         <span class="icon-colored pe-2">@include('components.icons.gearbox')</span>
-                        <p class="mb-0 text-dark">{{$caixa}}</p>
+                        <p class="mb-0 text-dark"><span itemprop="vehicleTransmission">{{$caixa}}</span></p>
                     </div>
                     @endif
                 </div>
@@ -113,7 +138,7 @@
         @foreach ($attributes as $group => $attrs)
         <div class="card news-listing shadow-sm mb-3">
             <div class="card-body">
-                <h5 class="card-title text-accent fw-semibold mb-3">{{ $group }}</h5>
+                <h2 class="card-title text-accent fw-semibold mb-3">{{ $group }}</h2>
                 <div class="row g-2">
                     @foreach ($attrs as $attr => $value)
                     @if(!in_array($attr, ['Potência', 'Cilindrada', 'Transmissão']))
@@ -173,9 +198,31 @@
     }
 
     .news-listing h3,
-    .news-listing h5 {
+    .news-listing h5,
+    .news-listing h2 {
         color: var(--accent-color);
         font-weight: 600;
+    }
+
+    .breadcrumb-mobile {
+        background-color: transparent;
+        padding: 0.5rem 0;
+        margin-bottom: 1rem;
+    }
+    .breadcrumb-mobile .breadcrumb-item {
+        font-size: 0.85rem;
+    }
+    .breadcrumb-mobile .breadcrumb-item a {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .breadcrumb-mobile .breadcrumb-item a:active {
+        text-decoration: underline;
+    }
+    .breadcrumb-mobile .breadcrumb-item.active {
+        color: #6b7280;
+        font-size: 0.85rem;
     }
 
     .news-listing h5.card-title {
@@ -298,6 +345,32 @@
             }
         }
     });
+
+    document.querySelectorAll('.mobile-gallery-img').forEach(img => {
+        img.addEventListener('click', () => {
+            if (typeof window.vlLightboxOpen === 'function') {
+                window.vlLightboxOpen(parseInt(img.dataset.index));
+            }
+        });
+    });
+
+    /* Open lightbox when clicking swiper navigation buttons */
+    const swiperNextBtnMobile = document.querySelector('.swiper-button-next-mobile');
+    const swiperPrevBtnMobile = document.querySelector('.swiper-button-prev-mobile');
+    if (swiperNextBtnMobile) {
+        swiperNextBtnMobile.addEventListener('click', () => {
+            if (typeof window.vlLightboxOpen === 'function') {
+                window.vlLightboxOpen(swiperMainMobile.realIndex);
+            }
+        });
+    }
+    if (swiperPrevBtnMobile) {
+        swiperPrevBtnMobile.addEventListener('click', () => {
+            if (typeof window.vlLightboxOpen === 'function') {
+                window.vlLightboxOpen(swiperMainMobile.realIndex);
+            }
+        });
+    }
 
     function copyShareLink() {
         const link = "{{ request()->fullUrl() }}";

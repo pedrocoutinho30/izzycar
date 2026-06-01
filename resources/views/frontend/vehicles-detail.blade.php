@@ -108,6 +108,21 @@
 <div class="mobile-only">
     @include('frontend.vehicles-detail-mobile')
 </div>
+
+{{-- Shared same-page lightbox overlay for vehicle images --}}
+<div id="vl-lightbox" role="dialog" aria-modal="true" aria-label="Galeria de imagens">
+    <button id="vl-lb-close" aria-label="Fechar"><i class="bi bi-x-lg"></i></button>
+    <button id="vl-lb-prev" aria-label="Anterior"><i class="bi bi-chevron-left"></i></button>
+    <button id="vl-lb-next" aria-label="Seguinte"><i class="bi bi-chevron-right"></i></button>
+    <div id="vl-lb-img-wrap">
+        <img id="vl-lb-img" src="" alt="">
+    </div>
+    <div id="vl-lb-counter"></div>
+</div>
+
+@push('styles')
+<style>
+    /* ── Breadcrumbs ─────────────────────────────────────────────────────── */
 @include('frontend.partials.contact-modal', [
 'vehicle' => $vehicle,
 ])
@@ -115,7 +130,5 @@
 'urldecode' => urldecode(request()->fullUrl()),
 'vehicle' => $vehicle,
 ])
-</div>
-
 
 @endsection

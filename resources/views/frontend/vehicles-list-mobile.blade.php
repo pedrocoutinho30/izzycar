@@ -68,7 +68,7 @@
         $cover = $vehicle->coverPhoto;
         $coverUrl = $cover ? asset('storage/' . $cover->path) : asset('img/no-image.png');
     @endphp
-    <div class="col-6">
+    <div class="col-12">
         <a href="{{ route('vehicles.details', [
             'brand' => Str::slug($vehicle->brand ?? ''),
             'model' => Str::slug($vehicle->model ?? ''),
@@ -172,7 +172,7 @@
 
     function showSkeletons() {
         container.innerHTML = [1,2,3,4].map(() => `
-            <div class="col-6">
+            <div class="col-12">
                 <div class="vlm-skeleton">
                     <div class="vlm-sk-img"></div>
                     <div class="vlm-sk-body">
@@ -215,7 +215,7 @@
             v.kilometers  ? fmt(v.kilometers) + ' km' : null,
         ].filter(Boolean).map(s => `<span>${s}</span>`).join('');
 
-        return `<div class="col-6">
+        return `<div class="col-12">
             <a href="${v.url}" class="vlm-card-link">
                 <div class="vlm-card">
                     <div class="vlm-img-wrap">${img}${badge}</div>
