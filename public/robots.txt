@@ -1,4 +1,14 @@
 User-agent: *
-Disallow:
+Allow: /
 
-Sitemap: https://www.izzycar.pt/sitemap.xml
+# Bloquear rotas de admin e API
+Disallow: /gestao/
+Disallow: /api/
+Disallow: /storage/
+Disallow: /proposta/
+
+# Bloquear parâmetros de filtro duplicados (evita conteúdo duplicado)
+Disallow: /*?*page=
+Disallow: /viaturas-filtradas
+
+Sitemap: https://izzycar.pt/sitemap.xml

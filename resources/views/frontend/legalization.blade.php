@@ -3,6 +3,38 @@
 @include('frontend.partials.seo', [
 'seo' => $data->seo
 ])
+
+@push('head')
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Legalização Automóvel em Portugal",
+    "alternateName": "Legalização de carros importados",
+    "description": "Serviço completo de legalização de veículos importados em Portugal: inspeção de origem, cálculo e pagamento de ISV, IPO, IMT, matrícula e documentação.",
+    "url": "https://izzycar.pt/legalizacao",
+    "provider": {
+        "@type": "AutoDealer",
+        "name": "Izzycar",
+        "url": "https://izzycar.pt"
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "Portugal"
+    },
+    "serviceType": "Legalização Automóvel",
+    "category": "Automóvel",
+    "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+            {"@type": "ListItem", "position": 2, "name": "Legalização Automóvel", "item": "https://izzycar.pt/legalizacao"}
+        ]
+    }
+}
+</script>
+@endpush
+
 @section('content')
 
 <!-- Hero Section -->

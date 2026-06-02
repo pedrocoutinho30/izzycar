@@ -1,63 +1,171 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
     <url>
-    <loc>https://izzycar.pt</loc>
+    <loc>http://localhost</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/importacao</loc>
+    <loc>http://localhost/viaturas</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.9</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/legalizacao</loc>
+    <loc>http://localhost/importacao</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.9</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/viaturas</loc>
+    <loc>http://localhost/legalizacao</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.9</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/noticias</loc>
+    <loc>http://localhost/consignacao</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/viaturas/mercedes-benz/classe-cla/VWA537</loc>
+    <loc>http://localhost/retomas</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/venda</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/simulador-custos</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/formulario-importacao</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/viaturas/kia/xceed/RVK710</loc>
+    <loc>http://localhost/noticias</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/politica-privacidade</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+            </url>
+    <url>
+    <loc>http://localhost/termos-condicoes</loc>
+    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+            </url>
+    <url>
+    <loc>http://localhost/viaturas/mercedes-benz/classe-cla/01E</loc>
+    <lastmod>2025-12-16T17:01:48+00:00</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/viaturas/ds/ds7-crossback/ZJP814</loc>
+    <loc>http://localhost/viaturas/fiat/500e/V3-2026-001</loc>
+    <lastmod>2026-05-31T20:26:25+00:00</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/noticias/mobilidade-eletrica-bate-recordes-em-agosto-2025</loc>
+    <loc>http://localhost/viaturas/mercedes-benz/classe-cla/V3-2026-002</loc>
+    <lastmod>2026-05-25T11:20:47+00:00</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/noticias/venda-de-veiculos-eletricos-cresce-face-a-2024</loc>
+    <loc>http://localhost/viaturas/mercedes-benz/classe-cla/V3-2026-003</loc>
+    <lastmod>2026-05-25T10:39:58+00:00</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/noticias/marcas-mais-vendidas-primeiro-semestre-2025</loc>
+    <loc>http://localhost/viaturas/kia/xceed/V3-2026-004</loc>
+    <lastmod>2026-05-25T11:40:47+00:00</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/noticias/crescimento-mercado-automovel</loc>
+    <loc>http://localhost/viaturas/mercedes-benz/eqb/V3-2026-005</loc>
+    <lastmod>2026-06-01T11:17:12+00:00</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/noticias/polestar-5</loc>
+    <loc>http://localhost/noticias/mudancas-iuc</loc>
+    <lastmod>2025-12-12T10:57:06+00:00</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/noticias/novo-glc-eletrico</loc>
+    <loc>http://localhost/noticias/como-escolher-o-seu-proximo-carro-dicas-para-fazer-a-escolha-certa</loc>
+    <lastmod>2025-10-08T15:08:34+00:00</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>https://izzycar.pt/noticias/mercedes-e-bmw</loc>
+    <loc>http://localhost/noticias/importar-carros-da-alemanha-ainda-compensa-em-2025</loc>
+    <lastmod>2025-10-08T14:19:52+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/custos-de-manutencao-eletrico-vs-combustao</loc>
+    <lastmod>2025-09-19T09:13:07+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/como-prolongar-a-vida-util-da-bateria-do-seu-carro-eletrico</loc>
+    <lastmod>2025-09-19T09:04:26+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/iuc-2026-novas-regras-de-pagamento-entram-em-vigor-com-prazo-unico-e-possibilidade-de-duas-prestacoes</loc>
+    <lastmod>2025-09-18T20:41:31+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/mobilidade-eletrica-bate-recordes-em-agosto-2025</loc>
+    <lastmod>2025-09-12T09:38:27+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/venda-de-veiculos-eletricos-cresce-face-a-2024</loc>
+    <lastmod>2025-09-12T09:34:34+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/marcas-mais-vendidas-primeiro-semestre-2025</loc>
+    <lastmod>2025-09-12T09:29:21+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/crescimento-mercado-automovel</loc>
+    <lastmod>2025-09-12T09:21:48+00:00</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
 </urlset>

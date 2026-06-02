@@ -3,6 +3,45 @@
 @include('frontend.partials.seo', [
 'seo' => $data->seo
 ])
+
+@push('head')
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Importação Automóvel Chave na Mão",
+    "alternateName": "Importação de carros da Alemanha e Europa",
+    "description": "Serviço completo de importação automóvel para Portugal — pesquisa, negociação, transporte, ISV, IPO, matrícula e entrega. Processo 100% gerido pela Izzycar.",
+    "url": "https://izzycar.pt/importacao",
+    "provider": {
+        "@type": "AutoDealer",
+        "name": "Izzycar",
+        "url": "https://izzycar.pt"
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "Portugal"
+    },
+    "serviceType": "Importação Automóvel",
+    "category": "Automóvel",
+    "offers": {
+        "@type": "Offer",
+        "description": "Proposta personalizada de importação automóvel — peça a sua gratuitamente",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "url": "https://izzycar.pt/formulario-importacao"
+    },
+    "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+            {"@type": "ListItem", "position": 2, "name": "Importação Automóvel", "item": "https://izzycar.pt/importacao"}
+        ]
+    }
+}
+</script>
+@endpush
+
 @section('content')
 
 <!-- Hero Section Import -->

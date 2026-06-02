@@ -1,68 +1,131 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-PT">
 
 <head>
+    @php
+        $s = App\Models\Setting::get();
+        $iz_phone   = $s->where('label','phone')->first()?->value   ?? '';
+        $iz_email   = $s->where('label','email')->first()?->value   ?? '';
+        $iz_address = $s->where('label','address')->first()?->value ?? '';
+        $iz_fb      = $s->where('label','facebook')->first()?->value ?? 'https://www.facebook.com/profile.php?id=61572831810539';
+        $iz_ig      = $s->where('label','insta')->first()?->value   ?? 'https://www.instagram.com/izzycarpt/';
+    @endphp
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0NT5HLTZ2J"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0NT5HLTZ2J');</script>
 
-    <!-- Outros meta tags -->
-    @verbatim
+    <!-- Schema.org — AutoDealer -->
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "AutoDealer",
-            "name": "Izzycar",
-            "url": "https://izzycar.pt",
-            "logo": "https://izzycar.pt/storage/settings/logo_redondo.png",
-            "description": "Izzycar é especialista em importação automóvel chave na mão, venda de carros nacionais e previamente importados preparados para entrega imediata. Ajudamos clientes a trazer carros da Alemanha e outros países para Portugal, cuidando de todo o processo de importação, inspeção e registo. Também fazemos legalização automóvel e venda de consignados.",
-            "address": {
-                "@type": "PostalAddress",
-                "addressCountry": "PT"
-            },
-            "hasOfferCatalog": {
-                "@type": "OfferCatalog",
-                "name": "Serviços de automóvel Izzycar",
-                "itemListElement": [{
-                        "@type": "Offer",
+    {
+        "@context": "https://schema.org",
+        "@type": "AutoDealer",
+        "name": "Izzycar",
+        "url": "https://izzycar.pt",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://izzycar.pt/storage/settings/logo_redondo.png",
+            "width": 192,
+            "height": 192
+        },
+        "image": "https://izzycar.pt/storage/settings/logo_redondo.png",
+        "description": "Izzycar é especialista em importação automóvel chave na mão, venda de carros nacionais e previamente importados preparados para entrega imediata. Ajudamos clientes a trazer carros da Alemanha e outros países para Portugal, cuidando de todo o processo de importação, inspeção e registo.",
+        "telephone": "{{ $iz_phone }}",
+        "email": "{{ $iz_email }}",
+        "priceRange": "€€",
+        "currenciesAccepted": "EUR",
+        "paymentAccepted": "Transferência Bancária, Multibanco",
+        "areaServed": {
+            "@type": "Country",
+            "name": "Portugal"
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "PT",
+            "addressLocality": "Portugal"
+        },
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Serviços Izzycar",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
                         "name": "Importação de carros da Alemanha",
-                        "description": "Serviço completo de importação de veículos da Alemanha, incluindo transporte, inspeção e registo em Portugal."
-                    },
-                    {
-                        "@type": "Offer",
-                        "name": "Importação de carros de outros países",
-                        "description": "Serviço de importação automóvel de qualquer país da União Europeia, com acompanhamento total do processo."
-                    },
-                    {
-                        "@type": "Offer",
-                        "name": "Venda de carros nacionais e previamente importados",
-                        "description": "Carros prontos para entrega imediata, nacionais ou previamente importados e preparados para o cliente."
-                    },
-                    {
-                        "@type": "Offer",
-                        "name": "Legalização automóvel",
-                        "description": "Serviço completo de legalização de veículos, incluindo inspeção e registo em Portugal."
-                    },
-                    {
-                        "@type": "Offer",
-                        "name": "Venda de carros em consignação",
-                        "description": "Gerimos a venda do seu carro em consignação, cuidando de todo o processo de venda."
+                        "description": "Serviço completo de importação de veículos da Alemanha, incluindo transporte, inspeção e registo em Portugal.",
+                        "url": "https://izzycar.pt/importacao"
                     }
-                ]
-            },
-            "sameAs": [
-                "https://www.facebook.com/profile.php?id=61572831810539",
-                "https://www.instagram.com/izzycarpt/"
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Importação de carros da Europa",
+                        "description": "Serviço de importação automóvel de qualquer país da União Europeia, com acompanhamento total do processo.",
+                        "url": "https://izzycar.pt/importacao"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Legalização automóvel",
+                        "description": "Serviço completo de legalização de veículos importados em Portugal, incluindo ISV, IPO e matrícula.",
+                        "url": "https://izzycar.pt/legalizacao"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Venda de carros em consignação",
+                        "description": "Gerimos a venda do seu carro em consignação, cuidando de todo o processo.",
+                        "url": "https://izzycar.pt/consignacao"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Simulador de custos de importação",
+                        "description": "Calcule gratuitamente os custos de importar o seu carro para Portugal, incluindo ISV e todos os encargos.",
+                        "url": "https://izzycar.pt/simulador-custos"
+                    }
+                }
             ]
-        }
+        },
+        "sameAs": [
+            "{{ $iz_fb }}",
+            "{{ $iz_ig }}"
+        ]
+    }
     </script>
-    @endverbatim
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'IzzyCar - Carros Usados em Portugal')</title>
-    <meta name="description" content="@yield('meta_description', 'Encontre carros usados de qualidade em Portugal. A IzzyCar oferece opções confiáveis para compra e venda de veículos, com garantia e transparência.')">
-    <meta name="author" content="IzzyCar">
-    <meta name="google-site-verification" content="8ey-yAqrOmo1lTV1ZnDmJdyRs8KDw-XoE128jpKtys4" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#6e0707">
+    <meta name="format-detection" content="telephone=no">
+
+    <title>@yield('title', 'Izzycar — Importação Automóvel Chave na Mão | Portugal')</title>
+    <meta name="description" content="@yield('meta_description', 'Izzycar: importação automóvel da Alemanha e Europa chave na mão. ISV, transporte, matrícula — tudo incluído. Peça já a sua proposta gratuita.')">
+    <meta name="author" content="Izzycar">
+    <meta name="robots" content="@yield('robots', 'index, follow')">
+    <meta name="google-site-verification" content="8ey-yAqrOmo1lTV1ZnDmJdyRs8KDw-XoE128jpKtys4">
+
+    <!-- Open Graph global -->
+    <meta property="og:site_name" content="Izzycar">
+    <meta property="og:locale" content="pt_PT">
+    <meta property="og:type" content="website">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="fb:app_id" content="61572831810539">
+
+    <!-- DNS prefetch -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//www.googletagmanager.com">
+
     <!-- CSS FILES -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
