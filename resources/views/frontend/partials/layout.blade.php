@@ -18,12 +18,12 @@
     <!-- Schema.org — AutoDealer -->
     <script type="application/ld+json">
     {
-        "@context": "https://schema.org",
-        "@type": "AutoDealer",
+        "@@context": "https://schema.org",
+        "@@type": "AutoDealer",
         "name": "Izzycar",
         "url": "https://izzycar.pt",
         "logo": {
-            "@type": "ImageObject",
+            "@@type": "ImageObject",
             "url": "https://izzycar.pt/storage/settings/logo_redondo.png",
             "width": 192,
             "height": 192
@@ -36,58 +36,58 @@
         "currenciesAccepted": "EUR",
         "paymentAccepted": "Transferência Bancária, Multibanco",
         "areaServed": {
-            "@type": "Country",
+            "@@type": "Country",
             "name": "Portugal"
         },
         "address": {
-            "@type": "PostalAddress",
+            "@@type": "PostalAddress",
             "addressCountry": "PT",
             "addressLocality": "Portugal"
         },
         "hasOfferCatalog": {
-            "@type": "OfferCatalog",
+            "@@type": "OfferCatalog",
             "name": "Serviços Izzycar",
             "itemListElement": [
                 {
-                    "@type": "Offer",
+                    "@@type": "Offer",
                     "itemOffered": {
-                        "@type": "Service",
+                        "@@type": "Service",
                         "name": "Importação de carros da Alemanha",
                         "description": "Serviço completo de importação de veículos da Alemanha, incluindo transporte, inspeção e registo em Portugal.",
                         "url": "https://izzycar.pt/importacao"
                     }
                 },
                 {
-                    "@type": "Offer",
+                    "@@type": "Offer",
                     "itemOffered": {
-                        "@type": "Service",
+                        "@@type": "Service",
                         "name": "Importação de carros da Europa",
                         "description": "Serviço de importação automóvel de qualquer país da União Europeia, com acompanhamento total do processo.",
                         "url": "https://izzycar.pt/importacao"
                     }
                 },
                 {
-                    "@type": "Offer",
+                    "@@type": "Offer",
                     "itemOffered": {
-                        "@type": "Service",
+                        "@@type": "Service",
                         "name": "Legalização automóvel",
                         "description": "Serviço completo de legalização de veículos importados em Portugal, incluindo ISV, IPO e matrícula.",
                         "url": "https://izzycar.pt/legalizacao"
                     }
                 },
                 {
-                    "@type": "Offer",
+                    "@@type": "Offer",
                     "itemOffered": {
-                        "@type": "Service",
+                        "@@type": "Service",
                         "name": "Venda de carros em consignação",
                         "description": "Gerimos a venda do seu carro em consignação, cuidando de todo o processo.",
                         "url": "https://izzycar.pt/consignacao"
                     }
                 },
                 {
-                    "@type": "Offer",
+                    "@@type": "Offer",
                     "itemOffered": {
-                        "@type": "Service",
+                        "@@type": "Service",
                         "name": "Simulador de custos de importação",
                         "description": "Calcule gratuitamente os custos de importar o seu carro para Portugal, incluindo ISV e todos os encargos.",
                         "url": "https://izzycar.pt/simulador-custos"

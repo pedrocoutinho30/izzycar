@@ -3,29 +3,29 @@
 @push('head')
 <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
+    "@@context": "https://schema.org",
+    "@@type": "WebApplication",
     "name": "Simulador de Custos de Importação Automóvel",
     "description": "Calcule gratuitamente os custos de importar o seu carro para Portugal: ISV, transporte, IPO, IMT, matrícula e todos os encargos.",
     "url": "https://izzycar.pt/simulador-custos",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Web",
     "offers": {
-        "@type": "Offer",
+        "@@type": "Offer",
         "price": "0",
         "priceCurrency": "EUR",
         "description": "Simulação gratuita e sem registo"
     },
     "provider": {
-        "@type": "AutoDealer",
+        "@@type": "AutoDealer",
         "name": "Izzycar",
         "url": "https://izzycar.pt"
     },
     "breadcrumb": {
-        "@type": "BreadcrumbList",
+        "@@type": "BreadcrumbList",
         "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
-            {"@type": "ListItem", "position": 2, "name": "Simulador de Custos", "item": "https://izzycar.pt/simulador-custos"}
+            {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+            {"@@type": "ListItem", "position": 2, "name": "Simulador de Custos", "item": "https://izzycar.pt/simulador-custos"}
         ]
     }
 }

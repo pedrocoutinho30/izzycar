@@ -6,21 +6,21 @@
 @push('head')
 <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
-    "@type": "ContactPage",
+    "@@context": "https://schema.org",
+    "@@type": "ContactPage",
     "name": "Pedido de Proposta de Importação Automóvel",
     "description": "Formulário para pedido de proposta gratuita de importação automóvel da Alemanha e Europa para Portugal.",
     "url": "https://izzycar.pt/formulario-importacao",
     "provider": {
-        "@type": "AutoDealer",
+        "@@type": "AutoDealer",
         "name": "Izzycar",
         "url": "https://izzycar.pt"
     },
     "breadcrumb": {
-        "@type": "BreadcrumbList",
+        "@@type": "BreadcrumbList",
         "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
-            {"@type": "ListItem", "position": 2, "name": "Pedido de Proposta", "item": "https://izzycar.pt/formulario-importacao"}
+            {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+            {"@@type": "ListItem", "position": 2, "name": "Pedido de Proposta", "item": "https://izzycar.pt/formulario-importacao"}
         ]
     }
 }

@@ -7,28 +7,28 @@
 @push('head')
 <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
-    "@type": "Service",
+    "@@context": "https://schema.org",
+    "@@type": "Service",
     "name": "Venda de Automóvel em Consignação",
     "alternateName": "Consignação automóvel Portugal",
     "description": "A Izzycar gere a venda do seu carro em consignação: avaliação, exposição, negociação e formalização — sem stress e com o máximo valor para o seu veículo.",
     "url": "https://izzycar.pt/consignacao",
     "provider": {
-        "@type": "AutoDealer",
+        "@@type": "AutoDealer",
         "name": "Izzycar",
         "url": "https://izzycar.pt"
     },
     "areaServed": {
-        "@type": "Country",
+        "@@type": "Country",
         "name": "Portugal"
     },
     "serviceType": "Consignação Automóvel",
     "category": "Automóvel",
     "breadcrumb": {
-        "@type": "BreadcrumbList",
+        "@@type": "BreadcrumbList",
         "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
-            {"@type": "ListItem", "position": 2, "name": "Consignação", "item": "https://izzycar.pt/consignacao"}
+            {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+            {"@@type": "ListItem", "position": 2, "name": "Consignação", "item": "https://izzycar.pt/consignacao"}
         ]
     }
 }
