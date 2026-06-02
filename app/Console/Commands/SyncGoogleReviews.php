@@ -133,7 +133,7 @@ class SyncGoogleReviews extends Command
     {
         $force = $this->option('force-refresh');
 
-        if (! $force && ! empty($this->cache['account_id'])) {
+        if (! $force && ! empty($this->cache['account_id'])) {§
             $this->line('[Google] AccountId em cache: ' . $this->cache['account_id']);
             return $this->cache['account_id'];
         }
