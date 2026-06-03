@@ -246,6 +246,20 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     });
 
     // ============================================================
+    // NOTÍCIAS (novo módulo independente)
+    // ============================================================
+    Route::prefix('news')->name('admin.news.')->group(function () {
+        Route::get('/',                [App\Http\Controllers\Admin\NewsArticleController::class, 'index'])->name('index');
+        Route::get('/create',          [App\Http\Controllers\Admin\NewsArticleController::class, 'create'])->name('create');
+        Route::post('/',               [App\Http\Controllers\Admin\NewsArticleController::class, 'store'])->name('store');
+        Route::get('/{id}/edit',       [App\Http\Controllers\Admin\NewsArticleController::class, 'edit'])->name('edit');
+        Route::put('/{id}',            [App\Http\Controllers\Admin\NewsArticleController::class, 'update'])->name('update');
+        Route::delete('/{id}',         [App\Http\Controllers\Admin\NewsArticleController::class, 'destroy'])->name('destroy');
+        Route::patch('/{id}/toggle-status',  [App\Http\Controllers\Admin\NewsArticleController::class, 'toggleStatus'])->name('toggle-status');
+        Route::delete('/{id}/gallery-image', [App\Http\Controllers\Admin\NewsArticleController::class, 'deleteGalleryImage'])->name('gallery-image.delete');
+    });
+
+    // ============================================================
     // TRANSPORTES
     // ============================================================
     Route::prefix('v2/transport-quotes')->name('admin.transport-quotes.')->group(function () {
@@ -572,7 +586,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     Route::resource('menu-items', MenuItemController::class)->only(['store', 'update', 'destroy'])->names('menu-items');
 
     Route::get('homepage', [PageController::class, 'getHomepage'])->name('pages.homepage');
-    Route::get('news', [PageController::class, 'getNews'])->name('pages.news');
+    // Route::get('news', [PageController::class, 'getNews'])->name('pages.news'); // substituído por admin.news.*
     Route::get('categories', [PageController::class, 'getCategories'])->name('pages.categories');
     Route::get('legalizations', [PageController::class, 'getLegalizations'])->name('pages.legalizations');
     Route::get('imports', [PageController::class, 'getImports'])->name('pages.imports');

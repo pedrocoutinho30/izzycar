@@ -776,6 +776,13 @@
             </div>
 
             <div class="nav-item">
+                <a href="{{ route('admin.news.index') }}" class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-richtext"></i>
+                    <span>Notícias</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
                 <a href="{{ route('admin.v2.newsletter-management.index') }}" class="nav-link {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
                     <i class="bi bi-newspaper"></i>
                     <span>Newsletter</span>
