@@ -344,10 +344,13 @@ document.addEventListener('DOMContentLoaded', function () {
   max-width:1000px; margin:0 auto;
   padding: 0 1.5rem;
   margin-top:2rem;
+  border-radius:16px; overflow:hidden;
+  aspect-ratio:16/7;
+  box-shadow:0 16px 48px rgba(0,0,0,.2);
 }
 .nd-hero-img {
-  width:100%; border-radius:16px;
-  box-shadow:0 16px 48px rgba(0,0,0,.2);
+  width:100%; height:100%; border-radius:16px;
+  object-fit:cover; object-position:center top;
   display:block;
 }
 
@@ -533,8 +536,7 @@ document.addEventListener('DOMContentLoaded', function () {
 @media(max-width:640px) {
   .nd-article { padding:1.5rem; }
   .nd-header { padding:2.5rem 1.25rem 2.5rem; }
-  .nd-hero-img-wrap { padding:0 1rem; }
-  .nd-hero-img { max-height:220px; object-fit:cover; }
+  .nd-hero-img-wrap { padding:0 1rem; aspect-ratio:16/9; }
   .nd-layout { padding:1.5rem 1rem 3rem; }
 }
 </style>
