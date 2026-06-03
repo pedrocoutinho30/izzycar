@@ -534,6 +534,7 @@ document.addEventListener('DOMContentLoaded', function () {
   .nd-article { padding:1.5rem; }
   .nd-header { padding:2.5rem 1.25rem 2.5rem; }
   .nd-hero-img-wrap { padding:0 1rem; }
+  .nd-hero-img { max-height:220px; object-fit:cover; }
   .nd-layout { padding:1.5rem 1rem 3rem; }
 }
 </style>
