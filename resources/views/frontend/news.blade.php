@@ -228,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
   background: var(--nb-dark);
 }
 .nb-featured__img {
+  position:absolute; inset:0;
   width:100%; height:100%; object-fit:cover; display:block;
   transition:transform .6s ease;
 }
@@ -352,6 +353,12 @@ document.addEventListener('DOMContentLoaded', function () {
 .nb-reveal { opacity:0; transform:translateY(24px); transition:opacity .55s ease, transform .55s ease; transition-delay: var(--delay,0s); }
 .nb-reveal.is-visible { opacity:1; transform:none; }
 
+@media(max-width:859px) {
+  .nb-featured__img-wrap {
+    min-height:0;
+    padding-top:56.25%; /* 16:9 */
+  }
+}
 @media(max-width:640px) {
   .nb-featured__body { padding:1.5rem; }
   .nb-cta { flex-direction:column; padding:1.5rem; }
