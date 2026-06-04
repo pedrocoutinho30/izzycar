@@ -54,7 +54,7 @@
 @section('content')
 
 @php
-  $readTime = max(1, (int)(str_word_count(strip_tags($news->content ?? '')) / 200));
+  $readTime = $news->read_time;
 @endphp
 
 {{-- ══════ PROGRESS BAR ══════ --}}

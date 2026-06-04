@@ -70,8 +70,8 @@
           </span>
           @endif
           <span class="nb-read-time">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            {{ max(1, (int)(str_word_count(strip_tags($featured->content ?? '')) / 200)) }} min leitura
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            {{ $featured->read_time }} min de leitura
           </span>
         </div>
         <h2 class="nb-featured__title">{{ $featured->title }}</h2>
@@ -112,7 +112,8 @@
             </span>
             @endif
             <span class="nb-read-time">
-              {{ max(1, (int)(str_word_count(strip_tags($article->content ?? '')) / 200)) }} min
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              {{ $article->read_time }} min
             </span>
           </div>
           <h3 class="nb-card__title">{{ $article->title }}</h3>
@@ -320,8 +321,10 @@ document.addEventListener('DOMContentLoaded', function () {
   font-size:.75rem; font-weight:500; color: var(--nb-gray);
 }
 .nb-read-time {
-  display:inline-flex; align-items:center; gap:.35rem;
-  font-size:.72rem; color:#9ca3af;
+  display:inline-flex; align-items:center; gap:.3rem;
+  font-size:.72rem; font-weight:600; color: var(--nb-brand);
+  background:rgba(110,7,7,.07); border-radius:100px;
+  padding:.2rem .6rem;
 }
 
 /* ── CTA ── */
