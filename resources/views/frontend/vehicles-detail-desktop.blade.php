@@ -766,7 +766,6 @@
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 <script>
     const swiperThumbs = new Swiper(".mySwiperThumbs", {
         spaceBetween: 10,

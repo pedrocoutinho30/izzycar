@@ -250,13 +250,22 @@
             <div class="col-lg-6 d-flex align-items-stretch">
                 <div class="why-image-grid fade-in-up" data-delay="300" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1rem; height: 100%; max-height: 480px; min-height: 320px;">
                     <div class="why-image-item why-image-large" style="grid-row: 1 / span 2; grid-column: 1 / 2; height: 100%;">
-                        <img src="{{ asset('img/2.jpg') }}" alt="Profissionalismo Izzycar" onerror="this.src='{{ asset('img/logo-simples.png') }}'" style="height: 100%; width: 100%; object-fit: cover; max-height: 480px;">
+                        <picture>
+                            <source srcset="{{ asset('img/2.webp') }}" type="image/webp">
+                            <img src="{{ asset('img/2.jpg') }}" alt="Profissionalismo Izzycar" loading="lazy" style="height: 100%; width: 100%; object-fit: cover; max-height: 480px;">
+                        </picture>
                     </div>
                     <div class="why-image-item" style="grid-row: 1 / 2; grid-column: 2 / 3; height: 100%;">
-                        <img src="{{ asset('img/1.jpg') }}" alt="Qualidade Garantida" onerror="this.src='{{ asset('img/logo-simples.png') }}'" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
+                        <picture>
+                            <source srcset="{{ asset('img/1.webp') }}" type="image/webp">
+                            <img src="{{ asset('img/1.jpg') }}" alt="Qualidade Garantida" loading="lazy" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
+                        </picture>
                     </div>
                     <div class="why-image-item" style="grid-row: 2 / 3; grid-column: 2 / 3; height: 100%;">
-                        <img src="{{ asset('img/3.jpg') }}" alt="Experiência Comprovada" onerror="this.src='{{ asset('img/logo-simples.png') }}'" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
+                        <picture>
+                            <source srcset="{{ asset('img/3.webp') }}" type="image/webp">
+                            <img src="{{ asset('img/3.jpg') }}" alt="Experiência Comprovada" loading="lazy" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
+                        </picture>
                     </div>
                 </div>
             </div>

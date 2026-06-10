@@ -2,7 +2,7 @@
     <div class="container d-flex justify-content-between align-items-center">
         {{-- Logo --}}
         <a class="navbar-brand-modern" href="{{ route('frontend.home') }}">
-            <img src="{{ asset($logotipo) ?? '/images/default-logo.png' }}" alt="Logo" class="navbar-logo-modern"  loading="lazy">
+            <img src="{{ asset($logotipo) ?? '/images/default-logo.png' }}" alt="Izzycar" class="navbar-logo-modern" loading="lazy">
         </a>
 
         <div class="collapse navbar-collapse" id="navbarNav">
