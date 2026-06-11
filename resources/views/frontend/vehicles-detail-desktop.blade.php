@@ -1,7 +1,8 @@
-<section class="py-5 bg-light" style="padding-top: 6rem !important;" role="main" itemscope itemtype="https://schema.org/Product">
-    <div class="container">
-        {{-- Breadcrumbs para SEO --}}
-        <nav aria-label="Breadcrumbs" class="mb-4">
+<section class="vd-page" role="main" itemscope itemtype="https://schema.org/Product">
+    <div class="container-xl">
+
+        {{-- Breadcrumbs --}}
+        <nav aria-label="Breadcrumbs" class="mb-3">
             <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
                 <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
                     <a href="{{ route('home') }}" itemprop="item"><span itemprop="name">Início</span></a>
@@ -18,19 +19,57 @@
             </ol>
         </nav>
 
-        <div class="row g-5">
-            <!-- Coluna com imagens -->
-            <div class="col-lg-8">
-                <div class="border-gallery">
-                <!-- Swiper principal (imagem grande) -->
+        {{-- Header: marca/modelo esquerda | preço/estado direita --}}
+        <div class="vd-header">
+            <div class="vd-header-left">
+                <p class="vd-brand" itemprop="name">{{ $vehicle->brand }}</p>
+                <h1 class="vd-model">{{ $vehicle->model }}@if($vehicle->version)<span class="vd-version"> {{ $vehicle->version }}</span>@endif</h1>
+                <meta itemprop="brand" content="{{ $vehicle->brand }}" />
+                <meta itemprop="sku" content="{{ $vehicle->reference }}" />
+            </div>
+            <div class="vd-header-right">
+                @if($vehicle->status === 'reservado')
+                    <span class="vd-status-badge" style="background:#f59e0b;">Reservado</span>
+                @elseif($vehicle->status === 'vendido')
+                    <span class="vd-status-badge" style="background:#dc2626;">Vendido</span>
+                @elseif($vehicle->asking_price)
+                    <p class="vd-price-label">Preço</p>
+                    <div class="vd-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                        <span itemprop="price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }}</span>&nbsp;€
+                        <meta itemprop="priceCurrency" content="EUR" />
+                        <meta itemprop="availability" content="https://schema.org/InStock" />
+                        <meta itemprop="url" content="{{ url()->current() }}" />
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- Layout 3 colunas --}}
+        <div class="vd-layout">
+
+            {{-- Col 1: miniaturas verticais --}}
+            <div class="vd-thumbs" id="vdThumbs">
+                @foreach($vehicle->photos as $key => $photo)
+                <div class="vd-thumb {{ $key === 0 ? 'active' : '' }}" data-index="{{ $key }}">
+                    <img src="{{ asset('storage/' . $photo->path) }}"
+                         loading="{{ $key < 5 ? 'eager' : 'lazy' }}"
+                         alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
+                </div>
+                @endforeach
+            </div>
+
+            {{-- Col 2: imagem principal + specs --}}
+            <div class="vd-main">
                 <div class="swiper mySwiperMain">
                     <div class="swiper-wrapper">
-                        @foreach ($vehicle->photos as $key => $photo)
+                        @foreach($vehicle->photos as $key => $photo)
                         <div class="swiper-slide">
-                            <img src="{{ asset("storage/" . $photo->path) }}" loading="lazy"
-                                class="img-fluid rounded main-gallery-img" data-index="{{ $key }}"
-                                style="cursor: zoom-in; object-fit: cover; object-position: {{ $photo->focal_x ?? 50 }}% {{ $photo->focal_y ?? 50 }}%;"
-                                alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
+                            <img src="{{ asset('storage/' . $photo->path) }}"
+                                 loading="{{ $key === 0 ? 'eager' : 'lazy' }}"
+                                 class="vd-main-img main-gallery-img"
+                                 data-index="{{ $key }}"
+                                 style="cursor:zoom-in; object-position:{{ $photo->focal_x ?? 50 }}% {{ $photo->focal_y ?? 50 }}%;"
+                                 alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
                         </div>
                         @endforeach
                     </div>
@@ -38,150 +77,117 @@
                     <div class="swiper-button-prev"></div>
                 </div>
 
-                <!-- Swiper das miniaturas -->
-                <div class="swiper mySwiperThumbs mt-1">
-                    <div class="swiper-wrapper">
-                        @foreach ($vehicle->photos as $key => $photo)
-                        <div class="swiper-slide" style="width: auto; height: 100px; cursor: pointer;">
-                            <img src="{{ asset("storage/" . $photo->path) }}" loading="lazy"
-                                class="img-fluid rounded"
-                                alt="{{ $vehicle->brand }} {{ $vehicle->model }} {{ $key + 1 }}">
+                <div class="vd-specs-grid">
+                    @if($vehicle->year)
+                    <div class="vd-spec-card" style="--si:0">
+                        <div class="vd-spec-head">
+                            <div class="vd-spec-icon"><i class="bi bi-calendar3"></i></div>
+                            <span class="vd-spec-label">Ano</span>
                         </div>
-                        @endforeach
+                        <span class="vd-spec-value" itemprop="vehicleModelDate">{{ $vehicle->year }}</span>
                     </div>
-                </div>
+                    @endif
+                    @if($vehicle->kilometers)
+                    <div class="vd-spec-card" style="--si:1">
+                        <div class="vd-spec-head">
+                            <div class="vd-spec-icon"><i class="bi bi-speedometer2"></i></div>
+                            <span class="vd-spec-label">Km</span>
+                        </div>
+                        <span class="vd-spec-value">
+                            <span itemprop="mileageFromOdometer">{{ number_format($vehicle->kilometers, 0, ',', '.') }}</span>
+                            <small class="vd-spec-unit">km</small>
+                        </span>
+                    </div>
+                    @endif
+                    @if($vehicle->fuel)
+                    <div class="vd-spec-card" style="--si:2">
+                        <div class="vd-spec-head">
+                            <div class="vd-spec-icon"><i class="bi bi-fuel-pump"></i></div>
+                            <span class="vd-spec-label">Combustível</span>
+                        </div>
+                        <span class="vd-spec-value" itemprop="fuelType">{{ $vehicle->fuel }}</span>
+                    </div>
+                    @endif
+                    @if($cilindrada)
+                    <div class="vd-spec-card" style="--si:3">
+                        <div class="vd-spec-head">
+                            <div class="vd-spec-icon"><i class="bi bi-cpu-fill"></i></div>
+                            <span class="vd-spec-label">Cilindrada</span>
+                        </div>
+                        <span class="vd-spec-value" itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification">
+                            <span itemprop="engineDisplacement">{{ $cilindrada }}</span>
+                            <small class="vd-spec-unit">cc</small>
+                        </span>
+                    </div>
+                    @endif
+                    @if($potencia)
+                    <div class="vd-spec-card" style="--si:4">
+                        <div class="vd-spec-head">
+                            <div class="vd-spec-icon"><i class="bi bi-lightning-charge"></i></div>
+                            <span class="vd-spec-label">Potência</span>
+                        </div>
+                        <span class="vd-spec-value" itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification">
+                            <span itemprop="enginePower">{{ $potencia }}</span>
+                            <small class="vd-spec-unit">cv</small>
+                        </span>
+                    </div>
+                    @endif
+                    @if($caixa)
+                    <div class="vd-spec-card" style="--si:5">
+                        <div class="vd-spec-head">
+                            <div class="vd-spec-icon"><i class="bi bi-gear-wide-connected"></i></div>
+                            <span class="vd-spec-label">Transmissão</span>
+                        </div>
+                        <span class="vd-spec-value" itemprop="vehicleTransmission">{{ $caixa }}</span>
+                    </div>
+                    @endif
                 </div>
             </div>
 
-            <!-- Coluna com detalhes -->
-            <div class="col-lg-4 ">
-                <div class="col-12">
-                    <div class="card custom-block-transparent news-listing shadow-sm h-100">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-12 mt-4">
-                                    <h1 class="text-accent" itemprop="name">{{ $vehicle->brand }}</h1>
-                                    <h2 class="text-accent" itemprop="model"> {{ $vehicle->model }}@if($vehicle->version)<span itemprop="version"> {{ $vehicle->version }}</span>@endif</h2>
-                                    <meta itemprop="brand" content="{{ $vehicle->brand }}" />
-                                    <meta itemprop="sku" content="{{ $vehicle->reference }}" />
-                                    @if($vehicle->status === 'reservado')
-                                    <span class="badge rounded-pill fs-6 mt-1" style="background:#f59e0b;">Reservado</span>
-                                    @elseif($vehicle->status === 'vendido')
-                                    <span class="badge rounded-pill fs-6 mt-1" style="background:#dc2626;">Vendido</span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="row mt-4">
-                                @if($vehicle->year)
-                                <div class="col-md-12">
-                                    <div class="d-flex align-items-start ">
-                                        <span class="icon-colored pe-3">@include('components.icons.calendar')</span>
-                                        <p class="mb-0 text-dark"><strong>Ano:</strong> <span itemprop="vehicleModelDate">{{ $vehicle->year }}</span></p>
-                                    </div>
-                                </div>
-                                @endif
-                                @if($vehicle->kilometers)
-                                <div class="col-md-12">
-                                    <div class="d-flex align-items-center">
-                                        <span class="icon-colored pe-3">@include('components.icons.road')</span>
-                                        <p class="mb-0 text-dark"><strong>Quilometragem:</strong> <span itemprop="mileageFromOdometer">{{ $vehicle->kilometers }}</span> KM</p>
-                                    </div>
-                                </div>
-                                @endif
-                                @if($vehicle->fuel)
-                                <div class="col-md-12">
-                                    <div class="d-flex align-items-start">
-                                        <span class="icon-colored pe-3">@include('components.icons.fuel')</span>
-                                        <p class="mb-0 text-dark"><strong>Combustível:</strong> <span itemprop="fuelType">{{ $vehicle->fuel }}</span></p>
-                                    </div>
-                                </div>
-                                @endif
-                                @if($cilindrada)
-                                <div class="col-md-12">
-                                    <div class="d-flex align-items-start">
-                                        <span class="icon-colored pe-3">@include('components.icons.motor')</span>
-                                        <p class="mb-0 text-dark"><strong>Cilindrada:</strong> <span itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification"><span itemprop="engineDisplacement">{{$cilindrada}}</span></span> CC</p>
-                                    </div>
-                                </div>
-                                @endif
-                                @if($potencia)
-                                <div class="col-md-12">
-                                    <div class="d-flex align-items-start">
-                                        <span class="icon-colored pe-3">@include('components.icons.power')</span>
-                                        <p class="mb-0 text-dark"><strong>Potência:</strong> <span itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification"><span itemprop="enginePower">{{$potencia}}</span></span> CV</p>
-                                    </div>
-                                </div>
-                                @endif
-                                @if($caixa)
-                                <div class="col-md-12">
-                                    <div class="d-flex align-items-start">
-                                        <span class="icon-colored pe-3">@include('components.icons.gearbox')</span>
-                                        <p class="mb-0 text-dark"><strong>Transmissão:</strong> <span itemprop="vehicleTransmission">{{$caixa}}</span></p>
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
+            {{-- Col 3: painel lateral com scroll --}}
+            <div class="vd-sidebar">
 
-                            @if($vehicle->asking_price && !in_array($vehicle->status ?? '', ['reservado', 'vendido']))
-                            <h3 class="d-flex align-items-end mt-4" style="color: var(--accent-color);" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                                <span itemprop="price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }}</span>&nbsp;€
-                                <meta itemprop="priceCurrency" content="EUR" />
-                                <meta itemprop="availability" content="https://schema.org/InStock" />
-                                <meta itemprop="url" content="{{ url()->current() }}" />
-                            </h3>
-                            @endif
-                            <div class="d-flex gap-3 align-items-center mt-3">
-                                <!-- Botão de partilha -->
-                                <button type="button" class="btn btn-outline-form" data-bs-toggle="modal" data-bs-target="#shareModal">
-                                    <i class="bi bi-share-fill text-dark"></i>
-                                </button>
-                                <a href="https://wa.me/351928459346?text=Olá, gostaria de saber mais informações sobre o veículo {{$vehicle->brand}} {{$vehicle->model}} {{$vehicle->version}} ({{ $vehicle->reference }})
-                                Link: {{ route('vehicles.details',  ['brand' => Str::slug($vehicle->brand),
-                                    'model' => Str::slug($vehicle->model),
-                                    'id' => $vehicle->reference]) }}"
-                                    target="_blank"
-                                    class="btn btn-outline-form">
-                                    <i class="bi bi-whatsapp text-dark"></i>
-                                </a>
-                                <button type="button" class="btn btn-outline-form text-dark" data-bs-toggle="modal" data-bs-target="#contactModal">
-                                    Informações
-                                </button>
-
-                            </div>
-                        </div>
+                {{-- Botões sempre visíveis --}}
+                <div class="vd-actions">
+                    <button class="vd-btn-primary w-100" data-bs-toggle="modal" data-bs-target="#contactModal">
+                        <i class="bi bi-envelope-fill"></i> Pedir Informações
+                    </button>
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="https://wa.me/351928459346?text=Olá, gostaria de saber mais informações sobre o veículo {{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->version }} ({{ $vehicle->reference }}) Link: {{ route('vehicles.details', ['brand' => Str::slug($vehicle->brand), 'model' => Str::slug($vehicle->model), 'id' => $vehicle->reference]) }}"
+                           target="_blank" class="vd-btn-secondary flex-grow-1">
+                            <i class="bi bi-whatsapp"></i> WhatsApp
+                        </a>
+                        <button class="vd-btn-icon" data-bs-toggle="modal" data-bs-target="#shareModal" title="Partilhar">
+                            <i class="bi bi-share-fill"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
 
-
-        <!-- Equipamento -->
-        <div class="row ml-1 mt-5 g-4">
-            @foreach ($attributes as $group => $attrs)
-            <div class="col-12">
-                <div class="card news-listing shadow-sm h-100">
-                    <div class="card-body">
-                        <h2 class="text-accent fw-semibold mb-4">{{ $group }}</h2>
-
-                        <div class="row">
-                            @foreach ($attrs as $attr => $value)
-                            @if(!in_array($attr, ['Potência', 'Cilindrada', 'Transmissão']))
-                            <div class="col-md-4 col-sm-6 mb-3">
-                                <div class="d-flex align-items-start">
-                                    <i class="bi bi-check-circle-fill me-2" style="color: var(--accent-color);"></i>
-                                    <span class="text-dark">{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
-                                </div>
-                            </div>
-                            @endif
+                {{-- Cards de equipamento/atributos (scrolláveis) --}}
+                <div class="vd-sidebar-scroll">
+                    @foreach($attributes as $group => $attrs)
+                    @php $visibleAttrs = collect($attrs)->reject(fn($v,$k) => in_array($k, ['Potência','Cilindrada','Transmissão']))->all(); @endphp
+                    @if(count($visibleAttrs))
+                    <div class="vd-attr-card">
+                        <h6 class="vd-attr-title">{{ $group }}</h6>
+                        <ul class="vd-attr-list">
+                            @foreach($visibleAttrs as $attr => $value)
+                            <li class="vd-attr-item">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
+                            </li>
                             @endforeach
-                        </div>
+                        </ul>
                     </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
+                    @endif
+                    @endforeach
+                </div>{{-- /vd-sidebar-scroll --}}
 
-    </div>
+            </div>{{-- /vd-sidebar --}}
+
+        </div>{{-- /vd-layout --}}
+
+    </div>{{-- /container --}}
 </section>
 
 {{-- Lightbox --}}
@@ -260,538 +266,194 @@
 
 @push('styles')
 <style>
-    /* ── Breadcrumbs ─────────────────────────────────────────────────────── */
-    .breadcrumb {
-        background-color: transparent;
-        padding: 0.75rem 0;
-        margin-bottom: 0;
-        border-radius: 0;
-    }
-    .breadcrumb-item {
-        font-size: 0.9rem;
-    }
-    .breadcrumb-item a {
-        color: var(--accent-color);
-        text-decoration: none;
-        font-weight: 500;
-    }
-    .breadcrumb-item a:hover {
-        text-decoration: underline;
-    }
-    .breadcrumb-item.active {
-        color: #6b7280;
-    }
+    /* ── Page ───────────────────────────────────────────────────────────── */
+    .vd-page { padding: 5.5rem 0 3rem; background: #f4f4f6; }
 
-    /* ── Lightbox ────────────────────────────────────────────────────────── */
-    #vl-lightbox {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        background: rgba(0, 0, 0, .92);
-        align-items: center;
-        justify-content: center;
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .vd-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+    .vd-header-left { flex: 1; min-width: 0; }
+    .vd-brand { font-size: 1.05rem; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent-color); margin-bottom: .3rem; display: flex; align-items: center; gap: .5rem; }
+    .vd-brand::before { content: ''; display: inline-block; width: 18px; height: 3px; background: var(--accent-color); border-radius: 2px; flex-shrink: 0; }
+    .vd-model { font-size: 1.7rem; font-weight: 700; color: #111; margin: 0; line-height: 1.2; }
+    .vd-version { color: #6b7280; font-weight: 500; }
+    .vd-header-right { text-align: right; flex-shrink: 0; }
+    .vd-price-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #9ca3af; margin-bottom: .1rem; }
+    .vd-price { font-size: 2rem; font-weight: 800; color: var(--accent-color); line-height: 1; }
+    .vd-status-badge { display: inline-block; color: #fff; font-size: .9rem; font-weight: 700; padding: .45rem 1.1rem; border-radius: 20px; }
+
+    /* ── 3-col layout ───────────────────────────────────────────────────── */
+    .vd-layout { display: grid; grid-template-columns: 88px 1fr 290px; gap: 1rem; align-items: start; }
+
+    /* ── Thumbnail strip ────────────────────────────────────────────────── */
+    .vd-thumbs { display: flex; flex-direction: column; gap: .4rem; max-height: 520px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(110,7,7,.25) transparent; padding-right: 2px; }
+    .vd-thumb { width: 80px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: border-color .2s, box-shadow .2s; flex-shrink: 0; }
+    .vd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .vd-thumb.active { border-color: var(--accent-color); box-shadow: 0 0 0 1px var(--accent-color); }
+    .vd-thumb:hover:not(.active) { border-color: rgba(110,7,7,.35); }
+
+    /* ── Main swiper ────────────────────────────────────────────────────── */
+    .vd-main { min-width: 0; }
+    .mySwiperMain { border-radius: 14px; overflow: hidden; background: #e9e9e9; }
+    .vd-main-img { width: 100%; height: 460px; object-fit: cover; display: block; }
+
+    /* Swiper nav buttons */
+    .mySwiperMain .swiper-button-next,
+    .mySwiperMain .swiper-button-prev {
+        background: rgba(110,7,7,.85);
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        transition: background .2s;
     }
+    .mySwiperMain .swiper-button-next:hover,
+    .mySwiperMain .swiper-button-prev:hover { background: rgba(110,7,7,1); }
+    .mySwiperMain .swiper-button-next::after,
+    .mySwiperMain .swiper-button-prev::after { font-size: 15px; color: #fff; }
+
+    /* ── Specs grid (below main image) ──────────────────────────────────── */
+    .vd-specs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .45rem; margin-top: .75rem; }
+    .vd-spec-card {
+        background: #fff; border: 1.5px solid #e9ecef; border-radius: 10px;
+        padding: .55rem .65rem; display: flex; flex-direction: column; gap: .3rem;
+        transition: box-shadow .2s, transform .2s;
+        animation: vdSpecUp .45s ease both;
+        animation-delay: calc(var(--si, 0) * 60ms);
+    }
+    .vd-spec-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,.08); transform: translateY(-1px); }
+    .vd-spec-head { display: flex; align-items: center; gap: .4rem; }
+    .vd-spec-icon { width: 22px; height: 22px; border-radius: 6px; background: rgba(110,7,7,.08); display: flex; align-items: center; justify-content: center; color: var(--accent-color,#6e0707); font-size: .72rem; flex-shrink: 0; }
+    .vd-spec-label { font-size: .63rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #9ca3af; line-height: 1; }
+    .vd-spec-value { font-size: .92rem; font-weight: 700; color: #111; line-height: 1.2; padding-left: 2px; }
+    .vd-spec-unit { font-size: .7rem; font-weight: 500; color: #6b7280; }
+    @keyframes vdSpecUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+    /* ── Sidebar ────────────────────────────────────────────────────────── */
+    .vd-sidebar { position: sticky; top: 6rem; max-height: calc(100vh - 7rem); display: flex; flex-direction: column; overflow: hidden; }
+    .vd-sidebar-scroll { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(110,7,7,.2) transparent; display: flex; flex-direction: column; gap: .75rem; padding-right: 2px; padding-top: .1rem; }
+
+    /* ── Action buttons ─────────────────────────────────────────────────── */
+    .vd-actions { flex-shrink: 0; padding-bottom: .85rem; margin-bottom: .75rem; border-bottom: 1.5px solid #e9ecef; }
+    .vd-btn-primary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: var(--accent-color); color: #fff; border: none; border-radius: 10px; padding: .7rem 1rem; font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .2s, transform .2s; text-decoration: none; }
+    .vd-btn-primary:hover { background: #8b0000; transform: translateY(-1px); color: #fff; }
+    .vd-btn-secondary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: #25d366; color: #fff; border: none; border-radius: 10px; padding: .6rem .9rem; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; }
+    .vd-btn-secondary:hover { background: #1da951; color: #fff; }
+    .vd-btn-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border: 1.5px solid #e5e7eb; border-radius: 10px; color: #374151; font-size: .9rem; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+    .vd-btn-icon:hover { background: #e9ecef; }
+
+    /* ── Attribute cards ────────────────────────────────────────────────── */
+    .vd-attr-card { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: .85rem 1rem; }
+    .vd-attr-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-color); margin-bottom: .55rem; padding-bottom: .35rem; border-bottom: 1.5px solid rgba(110,7,7,.1); }
+    .vd-attr-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .28rem; }
+    .vd-attr-item { display: flex; align-items: flex-start; gap: .4rem; font-size: .82rem; color: #374151; line-height: 1.4; }
+    .vd-attr-item i { color: var(--accent-color); font-size: .72rem; flex-shrink: 0; margin-top: .2rem; }
+
+    /* ── Breadcrumbs ────────────────────────────────────────────────────── */
+    .breadcrumb { background: transparent; padding: .75rem 0; margin-bottom: 0; }
+    .breadcrumb-item { font-size: .9rem; }
+    .breadcrumb-item a { color: var(--accent-color); text-decoration: none; font-weight: 500; }
+    .breadcrumb-item a:hover { text-decoration: underline; }
+    .breadcrumb-item.active { color: #6b7280; }
+
+    /* ── Lightbox ───────────────────────────────────────────────────────── */
+    #vl-lightbox { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.92); align-items: center; justify-content: center; }
     #vl-lightbox.active { display: flex; }
-
-    #vl-lb-img-wrap {
-        max-width: 90vw;
-        max-height: 88vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    #vl-lb-img {
-        max-width: 90vw;
-        max-height: 88vh;
-        object-fit: contain;
-        border-radius: 8px;
-        box-shadow: 0 8px 40px rgba(0,0,0,.6);
-        transition: opacity .2s ease;
-        user-select: none;
-        -webkit-user-drag: none;
-    }
-    #vl-lb-close {
-        position: fixed;
-        top: 18px;
-        right: 22px;
-        background: rgba(255,255,255,.12);
-        border: none;
-        color: #fff;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        font-size: 1.1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background .2s;
-        z-index: 10001;
-    }
+    #vl-lb-img-wrap { max-width: 90vw; max-height: 88vh; display: flex; align-items: center; justify-content: center; }
+    #vl-lb-img { max-width: 90vw; max-height: 88vh; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.6); transition: opacity .2s; user-select: none; -webkit-user-drag: none; }
+    #vl-lb-close { position: fixed; top: 18px; right: 22px; background: rgba(255,255,255,.12); border: none; color: #fff; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 10001; }
     #vl-lb-close:hover { background: rgba(255,255,255,.25); }
-
-    #vl-lb-prev, #vl-lb-next {
-        position: fixed;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(255,255,255,.1);
-        border: none;
-        color: #fff;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        font-size: 1.2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background .2s;
-        z-index: 10001;
-    }
-    #vl-lb-prev { left: 18px; }
-    #vl-lb-next { right: 18px; }
+    #vl-lb-prev, #vl-lb-next { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.1); border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 10001; }
+    #vl-lb-prev { left: 18px; } #vl-lb-next { right: 18px; }
     #vl-lb-prev:hover, #vl-lb-next:hover { background: rgba(255,255,255,.25); }
     #vl-lb-prev.lb-hidden, #vl-lb-next.lb-hidden { opacity: .25; pointer-events: none; }
+    #vl-lb-counter { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.7); font-size: .85rem; letter-spacing: .5px; z-index: 10001; }
 
-    #vl-lb-counter {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: rgba(255,255,255,.7);
-        font-size: .85rem;
-        letter-spacing: .5px;
-        z-index: 10001;
-    }
-
-    .border-gallery {
-        background: var(--white-color);
-        border-radius: 12px;
-        padding: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        border: none;
-    }
-
-    .group-badge-stylish {
-        position: absolute;
-        background: var(--accent-color);
-        color: white;
-        font-weight: bold;
-        padding: 14px 20px;
-        font-size: 1rem;
-        z-index: 10;
-
-        /* Bordas personalizadas */
-        border-top-right-radius: 12px;
-        border-bottom-left-radius: 12px;
-
-        /* “Bico” no canto superior esquerdo e inferior direito */
-        /* clip-path: polygon(
-        100% 0,
-        100% 100%,
-        100% 100%,
-        0 100%
-    ); */
-
-
-    }
-
-    .swiper {
-        width: 100%;
-        height: auto;
-    }
-
-    .swiper-slide img {
-        width: 100%;
-        border-radius: 12px;
-    }
-
-    /* Imagem principal */
-    .mySwiperMain .swiper-slide img {
-        width: 100%;
-        max-height: 650px;
-        object-fit: cover;
-        border-radius: 12px;
-        animation: imageGrowth 2.5s ease-in-out forwards;
-    }
-
-    @keyframes imageGrowth {
-        0% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(2);
-        }
-        100% {
-            transform: scale(1);
-        }
-    }
-
-    /* Mobile gallery image animation */
-    .mobile-gallery-img {
-        animation: imageGrowth 2.5s ease-in-out forwards !important;
-    }
-
-    /* Miniaturas */
-    .mySwiperThumbs .swiper-slide {
-        width: auto !important;
-        height: 100px;
-        flex-shrink: 0;
-    }
-
-    .mySwiperThumbs .swiper-slide img {
-        height: 100px;
-        width: auto;
-        max-width: 160px;
-        object-fit: cover;
-        border-radius: 8px;
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .mySwiperThumbs .swiper-slide img:hover {
-        border-color: rgba(110, 7, 7, 0.3);
-    }
-
-    .mySwiperThumbs .swiper-slide-thumb-active img {
-        border-color: var(--accent-color);
-        box-shadow: 0 4px 12px rgba(110, 7, 7, 0.3);
-    }
-
-    /* Modern Info Card */
-    .custom-block-transparent {
-        background: var(--white-color) !important;
-        border-radius: 12px;
-        border: 1px solid rgba(110, 7, 7, 0.1);
-        transition: all 0.3s ease;
-    }
-
-    .custom-block-transparent:hover {
-        box-shadow: 0 8px 30px rgba(110, 7, 7, 0.15) !important;
-    }
-
-    .custom-block-transparent h3 {
-        font-size: 1.8rem;
-        font-weight: 600;
-    }
-
-    .custom-block-transparent h5 {
-        font-size: 1.2rem;
-        font-weight: 400;
-        opacity: 0.9;
-    }
-
-    .icon-colored {
-        color: var(--accent-color);
-        font-size: 1.2rem;
-    }
-
-    /* Buttons Modern */
-    .btn-outline-form {
-        background: var(--white-color);
-        border: 2px solid var(--accent-color);
-        color: var(--accent-color);
-        border-radius: 50px;
-        padding: 10px 20px;
-        transition: all 0.3s ease;
-        font-weight: 500;
-    }
-
-    .btn-outline-form:hover {
-        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(110, 7, 7, 0.3);
-    }
-
-    /* Equipment Card Modern */
-    .news-listing {
-        background: var(--white-color) !important;
-        border-radius: 12px;
-        border: 1px solid rgba(110, 7, 7, 0.1);
-    }
-
-    .news-listing h5 {
-        color: var(--accent-color);
-        font-weight: 600;
-        padding-bottom: 10px;
-        border-bottom: 2px solid rgba(110, 7, 7, 0.2);
-    }
-
-    .bi-check-circle-fill {
-        color: var(--accent-color);
-        font-size: 1.1rem;
-    }
-
-    /* Swiper Navigation */
-    .swiper-button-next,
-    .swiper-button-prev {
-        background-color: rgba(110, 7, 7, 0.9);
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        transition: all 0.3s ease;
-    }
-
-    .swiper-button-next:hover,
-    .swiper-button-prev:hover {
-        background-color: rgba(110, 7, 7, 1);
-        transform: scale(1.1);
-    }
-
-    .swiper-button-next::after,
-    .swiper-button-prev::after {
-        font-size: 18px;
-        color: white;
-    }
-
-    /* Mobile */
-    @media (max-width: 768px) {
-        .border-gallery {
-            padding: 10px;
-        }
-
-        /* Reduz altura da imagem principal */
-        .mySwiperMain .swiper-slide img {
-            max-height: 300px;
-        }
-
-        /* Miniaturas com mais espaço para dedo */
-        .mySwiperThumbs .swiper-slide {
-            width: 60px !important;
-        }
-
-        /* Botões de navegação menores */
-        .swiper-button-next,
-        .swiper-button-prev {
-            width: 35px;
-            height: 35px;
-        }
-
-        .swiper-button-next::after,
-        .swiper-button-prev::after {
-            font-size: 16px;
-        }
-    }
-
-    /* ── Related Section ─────────────────────────────────────────────── */
-    .related-section {
-        background: #f4f4f6;
-        padding: 3rem 0 4rem;
-    }
-    .related-header {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        margin-bottom: 2rem;
-    }
-    .related-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #111;
-        margin-bottom: .2rem;
-    }
-    .related-subtitle {
-        color: #6b7280;
-        font-size: .9rem;
-        margin: 0;
-    }
-    .related-link {
-        font-size: .9rem;
-        font-weight: 600;
-        color: var(--accent-color);
-        text-decoration: none;
-        white-space: nowrap;
-    }
+    /* ── Related Section ────────────────────────────────────────────────── */
+    .related-section { background: #f4f4f6; padding: 3rem 0 4rem; }
+    .related-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; }
+    .related-title { font-size: 1.5rem; font-weight: 700; color: #111; margin-bottom: .2rem; }
+    .related-subtitle { color: #6b7280; font-size: .9rem; margin: 0; }
+    .related-link { font-size: .9rem; font-weight: 600; color: var(--accent-color); text-decoration: none; white-space: nowrap; }
     .related-link:hover { text-decoration: underline; }
-
-    /* Swiper wrapper with room for nav arrows */
-    .related-swiper-wrapper {
-        position: relative;
-        padding: 0 50px;
-    }
-    .mySwiperRelated {
-        overflow: hidden;
-    }
-    .mySwiperRelated .swiper-slide {
-        height: auto;
-        display: flex;
-    }
-
-    /* Card */
+    .related-swiper-wrapper { position: relative; padding: 0 50px; }
+    .mySwiperRelated { overflow: hidden; }
+    .mySwiperRelated .swiper-slide { height: auto; display: flex; }
     .related-card-link { display: flex; flex: 1; }
-    .related-card {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        background: #fff;
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid rgba(0,0,0,.06);
-        box-shadow: 0 2px 12px rgba(0,0,0,.06);
-        transition: transform .3s ease, box-shadow .3s ease;
-    }
-    .related-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 16px 40px rgba(110,7,7,.14);
-    }
-    .related-card-img {
-        position: relative;
-        height: 195px;
-        overflow: hidden;
-        background: #e9e9e9;
-        flex-shrink: 0;
-    }
-    .related-card-img img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform .5s ease;
-    }
+    .related-card { display: flex; flex-direction: column; width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,.06); box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: transform .3s, box-shadow .3s; }
+    .related-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(110,7,7,.14); }
+    .related-card-img { position: relative; height: 195px; overflow: hidden; background: #e9e9e9; flex-shrink: 0; }
+    .related-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
     .related-card:hover .related-card-img img { transform: scale(1.06); }
-    .related-img-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(0,0,0,.35) 0%, transparent 50%);
-        pointer-events: none;
-    }
-    .related-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        color: #fff;
-        font-size: .72rem;
-        font-weight: 700;
-        letter-spacing: .4px;
-        text-transform: uppercase;
-        padding: 4px 12px;
-        border-radius: 20px;
-    }
-
-    /* Card body */
-    .related-card-body {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        padding: 1.1rem 1.2rem 1rem;
-    }
+    .related-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.35) 0%, transparent 50%); pointer-events: none; }
+    .related-badge { position: absolute; top: 12px; left: 12px; color: #fff; font-size: .72rem; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; }
+    .related-card-body { display: flex; flex-direction: column; flex: 1; padding: 1.1rem 1.2rem 1rem; }
     .related-card-top { flex: 1; }
-    .related-brand {
-        font-size: .78rem;
-        font-weight: 700;
-        letter-spacing: .8px;
-        text-transform: uppercase;
-        color: var(--accent-color);
-        margin-bottom: .15rem;
-    }
-    .related-model {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #111;
-        margin-bottom: .8rem;
-        line-height: 1.3;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .related-card-specs {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .4rem .9rem;
-        margin-bottom: 1rem;
-    }
-    .related-spec {
-        font-size: .8rem;
-        color: #6b7280;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
+    .related-brand { font-size: .78rem; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--accent-color); margin-bottom: .15rem; }
+    .related-model { font-size: 1rem; font-weight: 600; color: #111; margin-bottom: .8rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .related-card-specs { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin-bottom: 1rem; }
+    .related-spec { font-size: .8rem; color: #6b7280; display: flex; align-items: center; gap: 4px; }
     .related-spec i { color: #9ca3af; }
-
-    /* Footer row */
-    .related-card-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-top: .8rem;
-        border-top: 1px solid #f0f0f0;
-        margin-top: auto;
-    }
-    .related-price {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--accent-color);
-    }
-    .related-cta {
-        font-size: .8rem;
-        font-weight: 600;
-        color: #9ca3af;
-        transition: color .2s;
-    }
+    .related-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: .8rem; border-top: 1px solid #f0f0f0; margin-top: auto; }
+    .related-price { font-size: 1.15rem; font-weight: 700; color: var(--accent-color); }
+    .related-cta { font-size: .8rem; font-weight: 600; color: #9ca3af; transition: color .2s; }
     .related-card:hover .related-cta { color: var(--accent-color); }
-
-    /* Nav arrows */
-    .related-nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 40px;
-        height: 40px;
-        background: #fff;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-        color: var(--accent-color);
-        box-shadow: 0 2px 10px rgba(0,0,0,.12);
-        cursor: pointer;
-        z-index: 10;
-        transition: background .2s, box-shadow .2s;
-        user-select: none;
-    }
-    .related-nav:hover {
-        background: var(--accent-color);
-        color: #fff;
-        box-shadow: 0 4px 16px rgba(110,7,7,.3);
-    }
-    .related-prev { left: 0; }
-    .related-next { right: 0; }
+    .related-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--accent-color); box-shadow: 0 2px 10px rgba(0,0,0,.12); cursor: pointer; z-index: 10; transition: background .2s, box-shadow .2s; user-select: none; }
+    .related-nav:hover { background: var(--accent-color); color: #fff; box-shadow: 0 4px 16px rgba(110,7,7,.3); }
+    .related-prev { left: 0; } .related-next { right: 0; }
     .related-nav.swiper-button-disabled { opacity: .35; pointer-events: none; }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-    const swiperThumbs = new Swiper(".mySwiperThumbs", {
-        spaceBetween: 10,
-        slidesPerView: 'auto',
-        freeMode: true,
-        watchSlidesProgress: true,
-    });
-
     const swiperMain = new Swiper(".mySwiperMain", {
         spaceBetween: 10,
         navigation: {
             nextEl: '.mySwiperMain .swiper-button-next',
             prevEl: '.mySwiperMain .swiper-button-prev',
         },
-        thumbs: {
-            swiper: swiperThumbs,
-        },
-        breakpoints: {
-            0: { // Mobile
-                spaceBetween: 5,
-            },
-            768: { // Desktop
-                spaceBetween: 10,
-            }
-        }
     });
+
+    /* ── Custom vertical thumb sync ─────────────────────────────────────── */
+    (function () {
+        var thumbs = document.querySelectorAll('.vd-thumb');
+
+        function syncThumbs(index) {
+            thumbs.forEach(function (th, i) { th.classList.toggle('active', i === index); });
+            var active = document.querySelector('.vd-thumb.active');
+            if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+
+        thumbs.forEach(function (th) {
+            th.addEventListener('click', function () {
+                swiperMain.slideTo(parseInt(this.dataset.index));
+            });
+        });
+
+        swiperMain.on('slideChange', function () { syncThumbs(swiperMain.realIndex); });
+    })();
+
+    /* ── Redirecionar scroll da página para a sidebar ───────────────────── */
+    (function () {
+        var sidebarScroll = document.querySelector('.vd-sidebar-scroll');
+        var layout        = document.querySelector('.vd-layout');
+        if (!sidebarScroll || !layout) return;
+
+        document.addEventListener('wheel', function (e) {
+            var rect = layout.getBoundingClientRect();
+            if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
+            var delta = e.deltaY;
+            var atBot = sidebarScroll.scrollTop + sidebarScroll.clientHeight >= sidebarScroll.scrollHeight - 2;
+            var atTop = sidebarScroll.scrollTop <= 0;
+
+            if (delta > 0 && !atBot) {
+                e.preventDefault();
+                sidebarScroll.scrollTop += delta;
+            } else if (delta < 0 && !atTop) {
+                e.preventDefault();
+                sidebarScroll.scrollTop += delta;
+            }
+        }, { passive: false });
+    })();
 
     new Swiper(".mySwiperRelated", {
         spaceBetween: 24,
