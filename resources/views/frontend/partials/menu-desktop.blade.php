@@ -2,7 +2,10 @@
     <div class="container d-flex justify-content-between align-items-center">
         {{-- Logo --}}
         <a class="navbar-brand-modern" href="{{ route('frontend.home') }}">
-            <img src="{{ asset($logotipo) ?? '/images/default-logo.png' }}" alt="Izzycar" class="navbar-logo-modern" loading="lazy">
+            <picture>
+                <source srcset="{{ asset(preg_replace('/\.(png|jpe?g)$/i', '.webp', $logotipo)) }}" type="image/webp">
+                <img src="{{ asset($logotipo) }}" alt="Izzycar" class="navbar-logo-modern" width="160" height="106" fetchpriority="high">
+            </picture>
         </a>
 
         <div class="collapse navbar-collapse" id="navbarNav">

@@ -3,7 +3,10 @@
     <div class="container d-flex justify-content-between align-items-center">
         {{-- Logo --}}
         <a class="navbar-brand-mobile" href="{{ route('frontend.home') }}">
-            <img src="{{ asset($logotipo) }}" alt="Izzycar" class="navbar-logo-mobile" loading="lazy">
+            <picture>
+                <source srcset="{{ asset(preg_replace('/\.(png|jpe?g)$/i', '.webp', $logotipo)) }}" type="image/webp">
+                <img src="{{ asset($logotipo) }}" alt="Izzycar" class="navbar-logo-mobile" width="121" height="80" fetchpriority="high">
+            </picture>
         </a>
 
         {{-- Hamburger Button --}}
