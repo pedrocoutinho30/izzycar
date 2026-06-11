@@ -90,7 +90,10 @@
                         <i class="bi bi-speedometer2"></i>
                         <span class="vd-sbi-label">Km</span>
                         <span class="vd-sbi-value">
-                            @if($vehicle->kilometers)<span itemprop="mileageFromOdometer">{{ number_format($vehicle->kilometers, 0, ',', '.') }}</span> km@else —@endif
+                            @if($vehicle->kilometers)
+                                <span itemprop="mileageFromOdometer">{{ number_format($vehicle->kilometers, 0, ',', '.') }}</span> km
+                            @else —
+                            @endif
                         </span>
                     </div>
                     <div class="vd-sbi">
@@ -101,12 +104,16 @@
                     <div class="vd-sbi">
                         <i class="bi bi-cpu-fill"></i>
                         <span class="vd-sbi-label">Cilindrada</span>
-                        <span class="vd-sbi-value">@if($cilindrada){{ $cilindrada }} cc@else —@endif</span>
+                        <span class="vd-sbi-value">
+                            @if($cilindrada) {{ $cilindrada }} cc @else — @endif
+                        </span>
                     </div>
                     <div class="vd-sbi">
                         <i class="bi bi-lightning-charge"></i>
                         <span class="vd-sbi-label">Potência</span>
-                        <span class="vd-sbi-value">@if($potencia){{ $potencia }} cv@else —@endif</span>
+                        <span class="vd-sbi-value">
+                            @if($potencia) {{ $potencia }} cv @else — @endif
+                        </span>
                     </div>
                     <div class="vd-sbi">
                         <i class="bi bi-gear-wide-connected"></i>
@@ -117,7 +124,9 @@
                     <div class="vd-sbi vd-sbi-electric">
                         <i class="bi bi-battery-half"></i>
                         <span class="vd-sbi-label">Autonomia</span>
-                        <span class="vd-sbi-value">@if($autonomia){{ $autonomia }} km@else —@endif</span>
+                        <span class="vd-sbi-value">
+                            @if($autonomia) {{ $autonomia }} km @else — @endif
+                        </span>
                     </div>
                     @endif
                 </div>
