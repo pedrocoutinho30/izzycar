@@ -125,7 +125,7 @@
                         <i class="bi bi-battery-half"></i>
                         <span class="vd-sbi-label">Autonomia</span>
                         <span class="vd-sbi-value">
-                            @if($autonomia) {{ $autonomia }} km @else — @endif
+                            @if($autonomia) {{ $autonomia }}  @else — @endif
                         </span>
                     </div>
                     @endif
