@@ -252,19 +252,19 @@
                     <div class="why-image-item why-image-large" style="grid-row: 1 / span 2; grid-column: 1 / 2; height: 100%;">
                         <picture>
                             <source srcset="{{ asset('img/2.webp') }}" type="image/webp">
-                            <img src="{{ asset('img/2.jpg') }}" alt="Profissionalismo Izzycar" loading="lazy" style="height: 100%; width: 100%; object-fit: cover; max-height: 480px;">
+                            <img src="{{ asset('img/2.jpg') }}" alt="Profissionalismo Izzycar" loading="lazy" width="527" height="960" style="height: 100%; width: 100%; object-fit: cover; max-height: 480px;">
                         </picture>
                     </div>
                     <div class="why-image-item" style="grid-row: 1 / 2; grid-column: 2 / 3; height: 100%;">
                         <picture>
                             <source srcset="{{ asset('img/1.webp') }}" type="image/webp">
-                            <img src="{{ asset('img/1.jpg') }}" alt="Qualidade Garantida" loading="lazy" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
+                            <img src="{{ asset('img/1.jpg') }}" alt="Qualidade Garantida" loading="lazy" width="768" height="960" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
                         </picture>
                     </div>
                     <div class="why-image-item" style="grid-row: 2 / 3; grid-column: 2 / 3; height: 100%;">
                         <picture>
                             <source srcset="{{ asset('img/3.webp') }}" type="image/webp">
-                            <img src="{{ asset('img/3.jpg') }}" alt="Experiência Comprovada" loading="lazy" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
+                            <img src="{{ asset('img/3.jpg') }}" alt="Experiência Comprovada" loading="lazy" width="641" height="960" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
                         </picture>
                     </div>
                 </div>

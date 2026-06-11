@@ -6,9 +6,10 @@
     $seoKeys  = trim(($seo->meta_keywords ?? '') . ', ' . ($seo->meta_secundary_keywords ?? ''), ', ');
 @endphp
 
-{{-- Meta padrão --}}
-<title>{{ $seoTitle }}</title>
-<meta name="description" content="{{ $seoDesc }}">
+@section('title', $seoTitle)
+@section('meta_description', $seoDesc)
+
+@push('head')
 @if($seoKeys)
 <meta name="keywords" content="{{ $seoKeys }}">
 @endif
@@ -26,3 +27,4 @@
 <meta name="twitter:title" content="{{ $seo->twitter_title ?? $seo->title ?? config('app.name') }}">
 <meta name="twitter:description" content="{{ $seo->twitter_description ?? $seoDesc }}">
 <meta name="twitter:image" content="{{ $seo->twitter_image ?? $seoImg }}">
+@endpush
