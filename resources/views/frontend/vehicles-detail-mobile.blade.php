@@ -74,83 +74,49 @@
                                 <meta itemprop="availability" content="https://schema.org/InStock" />
                                 <meta itemprop="url" content="{{ url()->current() }}" />
                             </div>
+                            @if($vehicle->purchase_type === 'Geral')
+                            <span class="vd-iva-badge"><i class="bi bi-receipt"></i> IVA Dedutível</span>
+                            @endif
                         @endif
                     </div>
                 </div>
 
-                <div class="vd-specs-grid mb-3">
-                    @if($vehicle->year)
-                    <div class="vd-spec-card" style="--si:0">
-                        <div class="vd-spec-head">
-                            <div class="vd-spec-icon"><i class="bi bi-calendar3"></i></div>
-                            <span class="vd-spec-label">Ano</span>
-                        </div>
-                        <span class="vd-spec-value" itemprop="vehicleModelDate">{{ $vehicle->year }}</span>
+                <div class="vd-specs-bar mb-3">
+                    <div class="vd-sbi">
+                        <i class="bi bi-calendar3"></i>
+                        <span class="vd-sbi-label">Ano</span>
+                        <span class="vd-sbi-value" itemprop="vehicleModelDate">{{ $vehicle->year ?? '—' }}</span>
                     </div>
-                    @endif
-                    @if($vehicle->kilometers)
-                    <div class="vd-spec-card" style="--si:1">
-                        <div class="vd-spec-head">
-                            <div class="vd-spec-icon"><i class="bi bi-speedometer2"></i></div>
-                            <span class="vd-spec-label">Km</span>
-                        </div>
-                        <span class="vd-spec-value">
-                            <span itemprop="mileageFromOdometer">{{ number_format($vehicle->kilometers, 0, ',', '.') }}</span>
-                            <small class="vd-spec-unit">km</small>
-                        </span>
+                    <div class="vd-sbi">
+                        <i class="bi bi-speedometer2"></i>
+                        <span class="vd-sbi-label">Km</span>
+                        <span class="vd-sbi-value">@if($vehicle->kilometers){{ number_format($vehicle->kilometers, 0, ',', '.') }} km@else —@endif</span>
                     </div>
-                    @endif
-                    @if($vehicle->fuel)
-                    <div class="vd-spec-card" style="--si:2">
-                        <div class="vd-spec-head">
-                            <div class="vd-spec-icon"><i class="bi bi-fuel-pump"></i></div>
-                            <span class="vd-spec-label">Combustível</span>
-                        </div>
-                        <span class="vd-spec-value" itemprop="fuelType">{{ $vehicle->fuel }}</span>
+                    <div class="vd-sbi">
+                        <i class="bi bi-fuel-pump"></i>
+                        <span class="vd-sbi-label">Combustível</span>
+                        <span class="vd-sbi-value" itemprop="fuelType">{{ $vehicle->fuel ?? '—' }}</span>
                     </div>
-                    @endif
-                    @if($cilindrada)
-                    <div class="vd-spec-card" style="--si:3">
-                        <div class="vd-spec-head">
-                            <div class="vd-spec-icon"><i class="bi bi-cpu-fill"></i></div>
-                            <span class="vd-spec-label">Cilindrada</span>
-                        </div>
-                        <span class="vd-spec-value" itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification">
-                            <span itemprop="engineDisplacement">{{ $cilindrada }}</span>
-                            <small class="vd-spec-unit">cc</small>
-                        </span>
+                    <div class="vd-sbi">
+                        <i class="bi bi-cpu-fill"></i>
+                        <span class="vd-sbi-label">Cilindrada</span>
+                        <span class="vd-sbi-value">@if($cilindrada){{ $cilindrada }} cc@else —@endif</span>
                     </div>
-                    @endif
-                    @if($potencia)
-                    <div class="vd-spec-card" style="--si:4">
-                        <div class="vd-spec-head">
-                            <div class="vd-spec-icon"><i class="bi bi-lightning-charge"></i></div>
-                            <span class="vd-spec-label">Potência</span>
-                        </div>
-                        <span class="vd-spec-value" itemprop="vehicleEngine" itemscope itemtype="https://schema.org/EngineSpecification">
-                            <span itemprop="enginePower">{{ $potencia }}</span>
-                            <small class="vd-spec-unit">cv</small>
-                        </span>
+                    <div class="vd-sbi">
+                        <i class="bi bi-lightning-charge"></i>
+                        <span class="vd-sbi-label">Potência</span>
+                        <span class="vd-sbi-value">@if($potencia){{ $potencia }} cv@else —@endif</span>
                     </div>
-                    @endif
-                    @if($caixa)
-                    <div class="vd-spec-card" style="--si:5">
-                        <div class="vd-spec-head">
-                            <div class="vd-spec-icon"><i class="bi bi-gear-wide-connected"></i></div>
-                            <span class="vd-spec-label">Transmissão</span>
-                        </div>
-                        <span class="vd-spec-value" itemprop="vehicleTransmission">{{ $caixa }}</span>
+                    <div class="vd-sbi">
+                        <i class="bi bi-gear-wide-connected"></i>
+                        <span class="vd-sbi-label">Transmissão</span>
+                        <span class="vd-sbi-value">{{ $caixa ?: '—' }}</span>
                     </div>
-                    @endif
-                    @if($autonomia && $vehicle->fuel === 'Elétrico' || str_contains($vehicle->fuel ?? '', 'Híbrido'))
-                    <div class="vd-spec-card vd-spec-electric" style="--si:6">
-                        <div class="vd-spec-head">
-                            <div class="vd-spec-icon"><i class="bi bi-battery-half"></i></div>
-                            <span class="vd-spec-label">Autonomia</span>
-                        </div>
-                        <span class="vd-spec-value">
-                            {{ $autonomia }}<small class="vd-spec-unit"> km</small>
-                        </span>
+                    @if($vehicle->fuel === 'Elétrico' || str_contains($vehicle->fuel ?? '', 'Híbrido'))
+                    <div class="vd-sbi vd-sbi-electric">
+                        <i class="bi bi-battery-half"></i>
+                        <span class="vd-sbi-label">Autonomia</span>
+                        <span class="vd-sbi-value">@if($autonomia){{ $autonomia }} km@else —@endif</span>
                     </div>
                     @endif
                 </div>
@@ -217,6 +183,7 @@
     .vd-price-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #9ca3af; margin-bottom: .05rem; }
     .vd-price { font-size: 1.5rem; font-weight: 800; color: var(--accent-color); line-height: 1; }
     .vd-status-badge { display: inline-block; color: #fff; font-size: .82rem; font-weight: 700; padding: .35rem .9rem; border-radius: 20px; }
+    .vd-iva-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .68rem; font-weight: 700; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: .25rem .5rem; margin-top: .3rem; white-space: nowrap; }
 
     /* ── Action buttons ─────────────────────────────────────────────────── */
     .vd-actions { flex-shrink: 0; }
@@ -234,69 +201,27 @@
     .vd-attr-item { display: flex; align-items: flex-start; gap: .4rem; font-size: .83rem; color: #374151; line-height: 1.4; }
     .vd-attr-item i { color: var(--accent-color); font-size: .72rem; flex-shrink: 0; margin-top: .2rem; }
 
-    /* ── Specs Grid ─────────────────────────────────────────────────────── */
-    .vd-specs-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: .5rem;
+    /* ── Specs bar ──────────────────────────────────────────────────────── */
+    .vd-specs-bar {
+        display: flex; flex-wrap: wrap; align-items: stretch;
+        background: #fff; border: 1.5px solid #e9ecef; border-radius: 12px;
+        overflow: hidden; animation: vdSpecUp .4s ease both;
     }
-    .vd-spec-card {
-        background: #f8f9fa;
-        border: 1.5px solid #e9ecef;
-        border-radius: 12px;
-        padding: .65rem .7rem;
-        display: flex;
-        flex-direction: column;
-        gap: .35rem;
-        transition: box-shadow .22s ease, transform .22s ease;
-        animation: vdSpecUp .45s ease both;
-        animation-delay: calc(var(--si, 0) * 60ms);
+    .vd-sbi {
+        flex: 1 1 30%; display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: .15rem; padding: .55rem .3rem; text-align: center;
+        border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; min-width: 0;
     }
-    .vd-spec-head {
-        display: flex;
-        align-items: center;
-        gap: .4rem;
-    }
-    .vd-spec-icon {
-        width: 22px;
-        height: 22px;
-        border-radius: 6px;
-        background: rgba(110,7,7,.08);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--accent-color, #6e0707);
-        font-size: .72rem;
-        flex-shrink: 0;
-    }
-    .vd-spec-label {
-        font-size: .63rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        color: #9ca3af;
-        line-height: 1;
-    }
-    .vd-spec-value {
-        font-size: .92rem;
-        font-weight: 700;
-        color: #111;
-        line-height: 1.2;
-        padding-left: 2px;
-    }
-    .vd-spec-unit {
-        font-size: .7rem;
-        font-weight: 500;
-        color: #6b7280;
-    }
-    .vd-spec-electric { background: #f0fdf4; border-color: #86efac; }
-    .vd-spec-electric .vd-spec-icon { background: rgba(22,163,74,.12); color: #16a34a; }
-    .vd-spec-electric .vd-spec-label { color: #4ade80; }
-    .vd-spec-electric .vd-spec-value { color: #15803d; }
-    .vd-spec-electric .vd-spec-unit { color: #16a34a; }
+    .vd-sbi:nth-child(3n) { border-right: none; }
+    .vd-sbi > i { font-size: .78rem; color: var(--accent-color); }
+    .vd-sbi-label { font-size: .56rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #9ca3af; white-space: nowrap; }
+    .vd-sbi-value { font-size: .78rem; font-weight: 700; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .vd-sbi-electric > i { color: #16a34a; }
+    .vd-sbi-electric .vd-sbi-value { color: #15803d; }
+    .vd-sbi-electric .vd-sbi-label { color: #4ade80; }
     @keyframes vdSpecUp {
-        from { opacity: 0; transform: translateY(10px); }
-        to   { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: none; }
     }
 
     /* Modern Mobile Gallery */

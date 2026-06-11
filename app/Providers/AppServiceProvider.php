@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Menu;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use App\Observers\SeoObserver;
 use App\Observers\SaleObserver;
@@ -38,13 +39,18 @@ class AppServiceProvider extends ServiceProvider
         Vehicle::observe(VehicleObserver::class);
         Expense::observe(ExpenseObserver::class);
         View::composer('*', function ($view) {
-            $menus = Menu::orderBy('order')
-                ->where('show_online', 1)
-                ->with('children_active')
-                ->main()
-                ->get();
+            $menus = Cache::remember('frontend_menus', 300, fn () =>
+                Menu::orderBy('order')
+                    ->where('show_online', 1)
+                    ->with('children_active')
+                    ->main()
+                    ->get()
+            );
 
-            $logo = \App\Models\Setting::where('label', 'logo')->first()->value;
+            $logo = Cache::remember('site_logo', 3600, fn () =>
+                optional(\App\Models\Setting::where('label', 'logo')->first())->value
+            );
+
             $view->with('menus', $menus);
             $view->with('logotipo', "storage/" . $logo);
         });
