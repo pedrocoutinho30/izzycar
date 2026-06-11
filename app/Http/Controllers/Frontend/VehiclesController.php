@@ -235,6 +235,34 @@ class VehiclesController extends Controller
         return view('frontend.vehicles-detail', compact('vehicle', 'attributes', 'potencia', 'caixa', 'cilindrada', 'autonomia', 'last_vehicles'));
     }
 
+    public function vehicleStory($brand, $model, $id)
+    {
+        $vehicle = V3Vehicle::with(['photos', 'attributeValues'])->where('reference', $id)->firstOrFail();
+
+        if (
+            Str::slug($vehicle->brand ?? '') !== $brand ||
+            Str::slug($vehicle->model ?? '') !== $model
+        ) {
+            abort(404);
+        }
+
+        $potencia   = '';
+        $cilindrada = '';
+        $caixa      = '';
+        $autonomia  = '';
+
+        foreach ($vehicle->attributeValues as $attributeValue) {
+            $attribute = VehicleAttribute::find($attributeValue->attribute_id);
+            if (!$attribute) continue;
+            if ($attribute->key === 'potencia')         $potencia   = $attributeValue->value;
+            if ($attribute->key === 'tipo_caixa')       $caixa      = $attributeValue->value;
+            if ($attribute->key === 'cilindrada')       $cilindrada = $attributeValue->value;
+            if ($attribute->key === 'autonomia_eletrica') $autonomia = $attributeValue->value;
+        }
+
+        return view('frontend.vehicles-story', compact('vehicle', 'potencia', 'caixa', 'cilindrada', 'autonomia'));
+    }
+
     // para os filtros
     public function modelsByBrand(Request $request)
     {
