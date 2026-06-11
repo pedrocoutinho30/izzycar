@@ -64,7 +64,7 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::get('/viaturas', [VehiclesController::class, 'vehicles'])->name('vehicles.list');
     Route::get('/viaturas-filtradas', [VehiclesController::class, 'filteredVehicles']);
     Route::get('/viaturas/{brand}/{model}/{id}', [VehiclesController::class, 'vehicleDetails'])->name('vehicles.details');
-    Route::get('/viaturas/{brand}/{model}/{id}/story', [VehiclesController::class, 'vehicleStory'])->name('vehicles.story');
+    // Route::get('/viaturas/{brand}/{model}/{id}/story', [VehiclesController::class, 'vehicleStory'])->name('vehicles.story');
     Route::post('/contact/vehicle', [ContactController::class, 'send'])->name('contact.vehicle');
 
 
