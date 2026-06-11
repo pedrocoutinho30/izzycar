@@ -156,6 +156,7 @@ class VehiclesController extends Controller
         $potencia = "";
         $caixa = "";
         $cilindrada = "";
+        $autonomia = "";
         foreach ($vehicle->attributeValues as $attributeValue) {
 
 
@@ -173,6 +174,9 @@ class VehiclesController extends Controller
             }
             if ($attribute->key == 'cilindrada') {
                 $cilindrada = $attributeValue->value;
+            }
+            if ($attribute->key == 'autonomia_eletrica') {
+                $autonomia = $attributeValue->value;
             }
             // Inicializa o grupo se não existir
             if (!isset($attributes[$group])) {
@@ -228,7 +232,7 @@ class VehiclesController extends Controller
             ->latest()->take(6)->get();
 
 
-        return view('frontend.vehicles-detail', compact('vehicle', 'attributes', 'potencia', 'caixa', 'cilindrada', 'last_vehicles'));
+        return view('frontend.vehicles-detail', compact('vehicle', 'attributes', 'potencia', 'caixa', 'cilindrada', 'autonomia', 'last_vehicles'));
     }
 
     // para os filtros

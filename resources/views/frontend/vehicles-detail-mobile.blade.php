@@ -142,6 +142,17 @@
                         <span class="vd-spec-value" itemprop="vehicleTransmission">{{ $caixa }}</span>
                     </div>
                     @endif
+                    @if($autonomia && $vehicle->fuel === 'Elétrico' || str_contains($vehicle->fuel ?? '', 'Híbrido'))
+                    <div class="vd-spec-card vd-spec-electric" style="--si:6">
+                        <div class="vd-spec-head">
+                            <div class="vd-spec-icon"><i class="bi bi-battery-half"></i></div>
+                            <span class="vd-spec-label">Autonomia</span>
+                        </div>
+                        <span class="vd-spec-value">
+                            {{ $autonomia }}<small class="vd-spec-unit"> km</small>
+                        </span>
+                    </div>
+                    @endif
                 </div>
 
                 <div class="vd-actions mt-3">
@@ -278,6 +289,11 @@
         font-weight: 500;
         color: #6b7280;
     }
+    .vd-spec-electric { background: #f0fdf4; border-color: #86efac; }
+    .vd-spec-electric .vd-spec-icon { background: rgba(22,163,74,.12); color: #16a34a; }
+    .vd-spec-electric .vd-spec-label { color: #4ade80; }
+    .vd-spec-electric .vd-spec-value { color: #15803d; }
+    .vd-spec-electric .vd-spec-unit { color: #16a34a; }
     @keyframes vdSpecUp {
         from { opacity: 0; transform: translateY(10px); }
         to   { opacity: 1; transform: translateY(0); }

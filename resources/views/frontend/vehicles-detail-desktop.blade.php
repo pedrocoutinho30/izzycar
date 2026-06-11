@@ -132,13 +132,24 @@
                         </span>
                     </div>
                     @endif
-                    @if($caixa)
+                    @if($caixa && $autonomia && $vehicle->fuel !== 'Elétrico' && !str_contains($vehicle->fuel ?? '', 'Híbrido Plug-In'))
                     <div class="vd-spec-card" style="--si:5">
                         <div class="vd-spec-head">
                             <div class="vd-spec-icon"><i class="bi bi-gear-wide-connected"></i></div>
                             <span class="vd-spec-label">Transmissão</span>
                         </div>
                         <span class="vd-spec-value" itemprop="vehicleTransmission">{{ $caixa }}</span>
+                    </div>
+                    @endif
+                    @if($autonomia && $vehicle->fuel === 'Elétrico' || str_contains($vehicle->fuel ?? '', 'Híbrido Plug-In'))
+                    <div class="vd-spec-card vd-spec-electric" style="--si:6">
+                        <div class="vd-spec-head">
+                            <div class="vd-spec-icon"><i class="bi bi-battery-half"></i></div>
+                            <span class="vd-spec-label">Autonomia</span>
+                        </div>
+                        <span class="vd-spec-value">
+                            {{ $autonomia }}
+                        </span>
                     </div>
                     @endif
                 </div>
@@ -324,6 +335,11 @@
     .vd-spec-label { font-size: .63rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #9ca3af; line-height: 1; }
     .vd-spec-value { font-size: .92rem; font-weight: 700; color: #111; line-height: 1.2; padding-left: 2px; }
     .vd-spec-unit { font-size: .7rem; font-weight: 500; color: #6b7280; }
+    .vd-spec-electric { background: #f0fdf4; border-color: #86efac; }
+    .vd-spec-electric .vd-spec-icon { background: rgba(22,163,74,.12); color: #16a34a; }
+    .vd-spec-electric .vd-spec-label { color: #4ade80; }
+    .vd-spec-electric .vd-spec-value { color: #15803d; }
+    .vd-spec-electric .vd-spec-unit { color: #16a34a; }
     @keyframes vdSpecUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
 
     /* ── Sidebar ────────────────────────────────────────────────────────── */
