@@ -715,14 +715,7 @@
                 </a>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.testimonials.index') }}" class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
-                    <i class="bi bi-chat-quote"></i>
-                    <span>Testemunhos</span>
-                </a>
-            </div>
             
-
 
             <div class="nav-group-title">Gestão</div>
 
@@ -775,20 +768,6 @@
                 </a>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.news.index') }}" class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
-                    <i class="bi bi-file-richtext"></i>
-                    <span>Notícias</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.newsletter-management.index') }}" class="nav-link {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
-                    <i class="bi bi-newspaper"></i>
-                    <span>Newsletter</span>
-                </a>
-            </div>
-
             <!-- Ferramentas -->
             <div class="nav-group-title">Ferramentas</div>
 
@@ -813,6 +792,36 @@
                 </a>
             </div>
 
+            <!-- CMS -->
+            <div class="nav-group-title">CMS</div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.news.index') }}" class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-richtext"></i>
+                    <span>Notícias</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.testimonials.index') }}" class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
+                    <i class="bi bi-chat-quote"></i>
+                    <span>Testemunhos</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.newsletter-management.index') }}" class="nav-link {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
+                    <i class="bi bi-newspaper"></i>
+                    <span>Newsletter</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.menus.index') }}" class="nav-link {{ request()->routeIs('admin.v2.menus.*') ? 'active' : '' }}">
+                    <i class="bi bi-list-nested"></i>
+                    <span>Menus</span>
+                </a>
+            </div>
             <!-- Parceiros -->
             <div class="nav-group-title">Rede</div>
 

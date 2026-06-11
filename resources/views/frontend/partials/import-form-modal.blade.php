@@ -38,6 +38,7 @@
         border-radius: 24px;
         border: none;
         overflow: hidden;
+        overflow: clip; /* modern browsers: clips visually without creating a scroll container, fixes iOS focus bug */
     }
 
     .modal-header-modern {

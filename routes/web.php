@@ -428,6 +428,19 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     });
 
     // ============================================================
+    // MENUS V2
+    // ============================================================
+    Route::prefix('v2/menus')->name('admin.v2.menus.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\MenuV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\MenuV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\MenuV2Controller::class, 'store'])->name('store');
+        Route::get('/{menu}/edit', [App\Http\Controllers\Admin\MenuV2Controller::class, 'edit'])->name('edit');
+        Route::put('/{menu}', [App\Http\Controllers\Admin\MenuV2Controller::class, 'update'])->name('update');
+        Route::delete('/{menu}', [App\Http\Controllers\Admin\MenuV2Controller::class, 'destroy'])->name('destroy');
+        Route::post('/{menu}/toggle', [App\Http\Controllers\Admin\MenuV2Controller::class, 'toggle'])->name('toggle');
+    });
+
+    // ============================================================
     // PARCEIROS V2
     // ============================================================
     Route::prefix('v2/partners')->name('admin.v2.partners.')->group(function () {

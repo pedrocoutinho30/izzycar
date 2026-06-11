@@ -586,6 +586,10 @@
 
             if (this.value === 'sim') {
                 adLinksBox.classList.remove('d-none');
+                requestAnimationFrame(function() {
+                    var ta = document.getElementById('ad_links');
+                    if (ta) ta.focus();
+                });
             } else if (this.value === 'nao_sei') {
                 preferencesBox.classList.remove('d-none');
             }
