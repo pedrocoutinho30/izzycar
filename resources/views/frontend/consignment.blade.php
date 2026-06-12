@@ -18,251 +18,274 @@
         "name": "Izzycar",
         "url": "https://izzycar.pt"
     },
-    "areaServed": {
-        "@@type": "Country",
-        "name": "Portugal"
-    },
+    "areaServed": { "@@type": "Country", "name": "Portugal" },
     "serviceType": "Consignação Automóvel",
-    "category": "Automóvel",
-    "breadcrumb": {
-        "@@type": "BreadcrumbList",
-        "itemListElement": [
-            {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
-            {"@@type": "ListItem", "position": 2, "name": "Consignação", "item": "https://izzycar.pt/consignacao"}
-        ]
-    }
+    "category": "Automóvel"
 }
 </script>
 @endpush
 
 @section('content')
 
-<!-- Hero Section -->
-<section class="hero-page-section">
-    <div class="hero-overlay"></div>
+{{-- ── HERO ── --}}
+<section class="cs-hero">
+    <div class="cs-hero-overlay"></div>
     <div class="container">
-        <div class="row align-items-center min-vh-50 py-5">
-            <div class="col-lg-8 mx-auto text-center">
-                <span class="hero-badge fade-in-up">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="8.5" cy="7" r="4"></circle>
-                        <polyline points="17 11 19 13 23 9"></polyline>
-                    </svg>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <span class="cs-badge fade-in-up">
+                    <i class="bi bi-handshake"></i>
                     Venda à Consignação
                 </span>
-                <h1 class="hero-title fade-in-up" data-delay="100">{{ $data->contents['title'] }}</h1>
-                <p class="hero-description fade-in-up" data-delay="200">{{ $data->contents['subtitle'] }}</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="section-padding">
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <span class="section-badge fade-in-up">Como Funciona</span>
-            <h2 class="section-title fade-in-up" data-delay="100">Processo de Consignação</h2>
-        </div>
-        <div class="consignment-intro-card fade-in-up" data-delay="200">
-            <div class="intro-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-            </div>
-            <div class="intro-content text-black">
-                <p class="text-black">A Izzycar oferece um serviço completo de venda à consignação, pensado para tornar o processo de venda do seu veículo simples, rápido e transparente.</p>
-
-                <p class="text-black">Com a nossa experiência no mercado automóvel, garantimos que o seu carro é apresentado da melhor forma possível aos potenciais compradores, maximizando o seu valor de venda.</p>
-
-                <p class="text-black">Não perca tempo com negociações intermináveis, visitas inconvenientes ou preocupações com documentação - tratamos de tudo por si!</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Vantagens da Consignação -->
-<section class="section-padding bg-light pt-4">
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <h2 class="section-title-modern">Por que escolher a consignação?</h2>
-            <p class="section-badge fade-in-up">Vantagens exclusivas para si</p>
-
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
-                    </div>
-                    <h5 class="benefit-title">Poupe Tempo</h5>
-                    <p class="benefit-description">Tratamos de todo o processo de venda, desde a publicidade até à entrega final do veículo.</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        </svg>
-                    </div>
-                    <h5 class="benefit-title">Sempre na Sua Posse</h5>
-                    <p class="benefit-description">O carro continua sempre com o proprietário, sem qualquer risco ou entrega a terceiros.</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                    </div>
-                    <h5 class="benefit-title">Sem Custos Iniciais</h5>
-                    <p class="benefit-description">Não é necessário qualquer pagamento para iniciar o processo de venda.</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                            <polyline points="2 17 12 22 22 17"></polyline>
-                            <polyline points="2 12 12 17 22 12"></polyline>
-                        </svg>
-                    </div>
-                    <h5 class="benefit-title">Marketing Profissional</h5>
-                    <p class="benefit-description">Fotografias profissionais e publicidade nas principais plataformas de venda.</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                        </svg>
-                    </div>
-                    <h5 class="benefit-title">Preparação Completa</h5>
-                    <p class="benefit-description">Limpeza profissional e preparação estética do veículo para maximizar o valor.</p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                    </div>
-                    <h5 class="benefit-title">Gestão de Documentação</h5>
-                    <p class="benefit-description">Tratamos do registo de propriedade e todas as formalidades legais necessárias.</p>
+                <h1 class="cs-hero-title fade-in-up" data-delay="100">{{ $data->contents['title'] }}</h1>
+                <p class="cs-hero-sub fade-in-up" data-delay="200">{{ $data->contents['subtitle'] }}</p>
+                <div class="cs-hero-actions fade-in-up" data-delay="300">
+                    <a href="#como-funciona" class="cs-btn-primary">
+                        <i class="bi bi-arrow-down-circle"></i> Ver como funciona
+                    </a>
+                    <a href="{{ route('frontend.contact') }}" class="cs-btn-outline">
+                        <i class="bi bi-telephone"></i> Falar Connosco
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-
-<?php
-$faq = [
-    [
-        'question' => 'O carro fica em vosso nome durante a consignação?',
-        'answer' => '<strong>Não.</strong> O veículo mantém-se sempre em nome do proprietário durante todo o processo de venda.'
-    ],
-    [
-        'question' => 'Tenho de entregar o carro à vossa guarda?',
-        'answer' => 'Não. O carro permanece com o proprietário até existir um comprador interessado e negócio fechado.'
-    ],
-    [
-        'question' => 'Posso continuar a usar o carro enquanto está à venda?',
-        'answer' => 'Sim. Enquanto não existir um acordo de venda, o veículo continua disponível para uso normal do proprietário.'
-    ],
-    [
-        'question' => 'Quem trata dos contactos e das visitas?',
-        'answer' => 'Nós tratamos de todos os contactos e filtramos apenas interessados reais, evitando perdas de tempo.'
-    ],
-    [
-        'question' => 'Como é definido o preço de venda?',
-        'answer' => 'O preço é definido em conjunto com o proprietário, com base numa análise de mercado atual.'
-    ],
-    [
-        'question' => 'Tenho algum custo se o carro não for vendido?',
-        'answer' => 'Não. O nosso serviço só é pago em caso de venda efetiva do veículo.'
-    ],
-    [
-        'question' => 'Quem trata da documentação na venda?',
-        'answer' => 'Acompanhamos todo o processo de venda, garantindo uma transação segura e legal.'
-    ],
-    [
-        'question' => 'O carro pode ser vendido sem o meu consentimento?',
-        'answer' => 'Nunca. Qualquer proposta é sempre apresentada ao proprietário e só avançamos com a sua autorização.'
-    ],
-];
-?>
-<!-- Processo de Consignação -->
-<section class="section-padding pt-4" id="section_faq">
+{{-- ── O QUE É ── --}}
+<section class="cs-section">
     <div class="container">
-        <div class="section-header text-center mb-5">
-            <p class="section-badge fade-in-up">FAQ</p>
-            <h2 class="section-title-modern">Perguntas Frequentes</h2>
-        </div>
-
-        <div class="faq-wrapper-modern">
-            @forelse ($faq ?? [] as $faqItem)
-            <div class="faq-item-modern">
-                <button class="faq-question-modern" type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#collapse-faq-{{ $loop->index + 1 }}"
-                    aria-expanded="false"
-                    aria-controls="collapse-faq-{{ $loop->index + 1 }}">
-                    <span class="faq-number">{{ $loop->index + 1 }}</span>
-                    <span class="faq-question-text">{!! $faqItem['question'] !!}</span>
-                    <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </button>
-                <div id="collapse-faq-{{ $loop->index + 1 }}" class="collapse faq-answer-collapse"
-                    data-bs-parent="#section_faq">
-                    <div class="faq-answer-modern">
-                        <p class="text-black">{!! $faqItem['answer'] !!}</p>
+        <div class="cs-what-grid">
+            <div class="cs-what-text">
+                <span class="cs-label">O que é</span>
+                <h2 class="cs-section-title">Consignação de Venda de Veículos</h2>
+                <p class="cs-lead">A consignação automóvel é uma solução para quem pretende vender o seu veículo sem ter de lidar com anúncios, contactos, visitas, negociações ou burocracias.</p>
+                <p class="cs-body">Ao colocar o seu carro em consignação, <strong>continua a ser o proprietário do veículo</strong> enquanto nós tratamos de todo o processo de venda em seu nome.</p>
+                <a href="{{ route('consignment.evaluation') }}" class="cs-btn-primary mt-4">
+                    Avaliação sem compromisso <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="cs-what-cards">
+                <div class="cs-stat-card">
+                    <div class="cs-stat-icon"><i class="bi bi-key-fill"></i></div>
+                    <div>
+                        <div class="cs-stat-value">Sempre seu</div>
+                        <div class="cs-stat-label">O carro fica consigo</div>
+                    </div>
+                </div>
+                <div class="cs-stat-card">
+                    <div class="cs-stat-icon"><i class="bi bi-currency-euro"></i></div>
+                    <div>
+                        <div class="cs-stat-value">0€ inicial</div>
+                        <div class="cs-stat-label">Só paga quando vende</div>
+                    </div>
+                </div>
+                <div class="cs-stat-card">
+                    <div class="cs-stat-icon"><i class="bi bi-shield-check"></i></div>
+                    <div>
+                        <div class="cs-stat-value">100% seguro</div>
+                        <div class="cs-stat-label">Negociação profissional</div>
+                    </div>
+                </div>
+                <div class="cs-stat-card">
+                    <div class="cs-stat-icon"><i class="bi bi-megaphone-fill"></i></div>
+                    <div>
+                        <div class="cs-stat-value">Máx. exposição</div>
+                        <div class="cs-stat-label">Todos os portais + redes</div>
                     </div>
                 </div>
             </div>
-            @empty
-            <p class="text-center">Nenhuma pergunta frequente disponível no momento.</p>
-            @endforelse
         </div>
-
-
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="cta-section">
+{{-- ── COMO FUNCIONA ── --}}
+<section class="cs-section cs-section-alt" id="como-funciona">
     <div class="container">
-        <div class="row align-items-center">
+        <div class="text-center mb-5">
+            <span class="cs-label">Processo</span>
+            <h2 class="cs-section-title">Como funciona?</h2>
+            <p class="cs-section-sub">Seis passos simples do início ao fim — tratamos de tudo por si.</p>
+        </div>
+
+        <div class="cs-steps">
+
+            <div class="cs-step">
+                <div class="cs-step-num">1</div>
+                <div class="cs-step-body">
+                    <div class="cs-step-icon"><i class="bi bi-search"></i></div>
+                    <div>
+                        <h3 class="cs-step-title">Avaliação do veículo</h3>
+                        <p class="cs-step-desc">Analisamos o estado geral, histórico, quilometragem e valor de mercado para definir um preço competitivo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cs-step">
+                <div class="cs-step-num">2</div>
+                <div class="cs-step-body">
+                    <div class="cs-step-icon"><i class="bi bi-file-earmark-text"></i></div>
+                    <div>
+                        <h3 class="cs-step-title">Assinatura do contrato de consignação</h3>
+                        <p class="cs-step-desc">É celebrado um acordo onde ficam definidos os termos da venda, o valor pretendido e as condições do serviço.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cs-step">
+                <div class="cs-step-num">3</div>
+                <div class="cs-step-body">
+                    <div class="cs-step-icon"><i class="bi bi-camera2"></i></div>
+                    <div>
+                        <h3 class="cs-step-title">Promoção do veículo</h3>
+                        <p class="cs-step-desc">Tratamos da preparação do anúncio, sessão fotográfica, divulgação nos principais portais automóveis e redes sociais.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cs-step">
+                <div class="cs-step-num">4</div>
+                <div class="cs-step-body">
+                    <div class="cs-step-icon"><i class="bi bi-people-fill"></i></div>
+                    <div>
+                        <h3 class="cs-step-title">Gestão dos potenciais compradores</h3>
+                        <p class="cs-step-desc">Recebemos contactos, esclarecemos dúvidas, agendamos visitas e acompanhamos eventuais testes de condução.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cs-step">
+                <div class="cs-step-num">5</div>
+                <div class="cs-step-body">
+                    <div class="cs-step-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div>
+                        <h3 class="cs-step-title">Negociação e venda</h3>
+                        <p class="cs-step-desc">Conduzimos todo o processo de negociação procurando obter o melhor valor possível para o seu veículo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cs-step">
+                <div class="cs-step-num">6</div>
+                <div class="cs-step-body">
+                    <div class="cs-step-icon"><i class="bi bi-check2-circle"></i></div>
+                    <div>
+                        <h3 class="cs-step-title">Tratamento da documentação</h3>
+                        <p class="cs-step-desc">Após a venda, tratamos da documentação necessária para garantir uma transação segura e transparente.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{-- ── VANTAGENS ── --}}
+<section class="cs-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="cs-label">Benefícios</span>
+            <h2 class="cs-section-title">Quais as vantagens?</h2>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4">
+                <div class="cs-benefit">
+                    <i class="bi bi-clock cs-benefit-icon"></i>
+                    <div>
+                        <h5 class="cs-benefit-title">Não perde tempo</h5>
+                        <p class="cs-benefit-desc">Sem anúncios, chamadas ou visitas de curiosos a gerir.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cs-benefit">
+                    <i class="bi bi-eye-slash cs-benefit-icon"></i>
+                    <div>
+                        <h5 class="cs-benefit-title">Sem visitas indesejadas</h5>
+                        <p class="cs-benefit-desc">Filtramos apenas os compradores realmente interessados.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cs-benefit">
+                    <i class="bi bi-broadcast cs-benefit-icon"></i>
+                    <div>
+                        <h5 class="cs-benefit-title">Maior exposição</h5>
+                        <p class="cs-benefit-desc">Divulgação em todos os portais automóveis e redes sociais.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cs-benefit">
+                    <i class="bi bi-person-check cs-benefit-icon"></i>
+                    <div>
+                        <h5 class="cs-benefit-title">Apoio profissional</h5>
+                        <p class="cs-benefit-desc">Acompanhamento especializado em todo o processo de venda.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cs-benefit">
+                    <i class="bi bi-shield-lock cs-benefit-icon"></i>
+                    <div>
+                        <h5 class="cs-benefit-title">Segurança na negociação</h5>
+                        <p class="cs-benefit-desc">Nunca avançamos sem a sua autorização. Decisão sempre sua.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="cs-benefit">
+                    <i class="bi bi-file-earmark-check cs-benefit-icon"></i>
+                    <div>
+                        <h5 class="cs-benefit-title">Documentação tratada</h5>
+                        <p class="cs-benefit-desc">Tratamos de todas as formalidades legais após a venda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ── QUANTO CUSTA ── --}}
+<section class="cs-section cs-section-alt">
+    <div class="container">
+        <div class="row justify-content-center">
             <div class="col-lg-8">
-                <h2 class="cta-title">Pronto para vender o seu veículo?</h2>
-                <p class="cta-description">Entre em contacto connosco e receba uma proposta personalizada sem compromisso.</p>
+                <div class="cs-price-card">
+                    <div class="cs-price-icon"><i class="bi bi-currency-euro"></i></div>
+                    <div>
+                        <span class="cs-label">Transparência total</span>
+                        <h2 class="cs-section-title mt-1 mb-3">Quanto custa?</h2>
+                        <p class="cs-lead mb-0">O serviço de consignação é <strong>remunerado apenas quando o veículo é vendido</strong>, através de uma comissão previamente acordada e totalmente transparente.</p>
+                        <div class="cs-price-highlight mt-4">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Sem custos iniciais &nbsp;·&nbsp;
+                            <i class="bi bi-check-circle-fill"></i>
+                            Comissão acordada &nbsp;·&nbsp;
+                            <i class="bi bi-check-circle-fill"></i>
+                            100% transparente
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-                <a href="{{ route('frontend.contact') }}" class="btn-cta">
-                    <span>Fale Connosco</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
+        </div>
+    </div>
+</section>
+
+{{-- ── CTA ── --}}
+<section class="cs-cta">
+    <div class="container">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-7">
+                <h2 class="cs-cta-title">Quer vender o seu carro?</h2>
+                <p class="cs-cta-sub">Entre em contacto connosco para uma avaliação sem compromisso. Teremos todo o gosto em explicar como podemos ajudá-lo a vender o seu veículo de forma simples, segura e sem preocupações.</p>
+            </div>
+            <div class="col-lg-5 d-flex flex-column flex-sm-row gap-3 justify-content-lg-end">
+                <a href="{{ route('consignment.evaluation') }}" class="cs-cta-btn-primary">
+                    <i class="bi bi-envelope-fill"></i> Pedir Avaliação
+                </a>
+                <a href="https://wa.me/351910000000" class="cs-cta-btn-whatsapp" target="_blank" rel="noopener">
+                    <i class="bi bi-whatsapp"></i> WhatsApp
                 </a>
             </div>
         </div>
@@ -273,491 +296,297 @@ $faq = [
 
 @push('styles')
 <style>
-    /* Hero Section */
-    .hero-page-section {
-        position: relative;
-        background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #111111 100%);
-        overflow: hidden;
-        padding: 3rem 0;
-    }
+    :root { --cs-accent: #6e0707; --cs-accent2: #990000; }
 
-    .hero-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236e0707' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        opacity: 0.3;
-    }
-
-    .min-vh-60 {
-        min-height: 60vh;
-    }
-
-    .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: rgba(110, 7, 7, 0.2);
-        border: 1px solid rgba(110, 7, 7, 0.3);
-        border-radius: 50px;
-        color: #fff;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 2rem;
-    }
-
-    .hero-title {
-        font-size: 3rem;
-        font-weight: 900;
-        color: #fff;
-        line-height: 1.2;
-        margin-bottom: 1.5rem;
-    }
-
-    .hero-description {
-        font-size: 1.2rem;
-        color: rgba(255, 255, 255, 0.8);
-        line-height: 1.8;
-        max-width: 700px;
-        margin: 0 auto;
-    }
-
-    .section-badge {
+    /* ── Shared ── */
+    .cs-label {
         display: inline-block;
-        padding: 8px 20px;
-        background: rgba(110, 7, 7, 0.1);
-        color: #990000;
-        border-radius: 50px;
-        font-size: 0.9rem;
+        font-size: .8rem;
         font-weight: 700;
+        letter-spacing: .1em;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 1rem;
+        color: var(--cs-accent);
+        background: rgba(110,7,7,.08);
+        padding: 4px 14px;
+        border-radius: 50px;
+        margin-bottom: .75rem;
     }
-
-    .section-title {
-        font-size: 2.5rem;
+    .cs-section-title {
+        font-size: 2.2rem;
         font-weight: 800;
         color: #111;
-        margin-bottom: 1rem;
+        line-height: 1.2;
+        margin-bottom: .5rem;
     }
-
-    .fade-in-up {
-        opacity: 0;
-        transform: translateY(30px);
-        animation: fadeInUp 0.8s ease forwards;
+    .cs-section-sub {
+        font-size: 1.1rem;
+        color: #6b7280;
+        margin-top: .5rem;
     }
+    .cs-lead  { font-size: 1.1rem; color: #374151; line-height: 1.8; }
+    .cs-body  { font-size: 1rem;   color: #6b7280;  line-height: 1.8; }
+    .cs-section     { padding: 5rem 0; }
+    .cs-section-alt { padding: 5rem 0; background: #f4f4f6; }
 
-    .fade-in-up[data-delay="100"] {
-        animation-delay: 0.1s;
+    /* ── Buttons ── */
+    .cs-btn-primary {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: var(--cs-accent); color: #fff;
+        padding: 14px 28px; border-radius: 50px;
+        font-weight: 700; font-size: .95rem;
+        text-decoration: none; transition: .25s;
     }
-
-    .fade-in-up[data-delay="200"] {
-        animation-delay: 0.2s;
+    .cs-btn-primary:hover { background: var(--cs-accent2); color: #fff; transform: translateY(-2px); }
+    .cs-btn-outline {
+        display: inline-flex; align-items: center; gap: 8px;
+        border: 2px solid rgba(255,255,255,.4); color: #fff;
+        padding: 13px 28px; border-radius: 50px;
+        font-weight: 700; font-size: .95rem;
+        text-decoration: none; transition: .25s;
     }
+    .cs-btn-outline:hover { border-color: #fff; background: rgba(255,255,255,.1); color: #fff; }
 
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    /* ── Hero ── */
+    .cs-hero {
+        position: relative;
+        background: linear-gradient(135deg, #111 0%, #1a1a1a 60%, #111 100%);
+        padding: 5rem 0 4rem;
+        overflow: hidden;
     }
+    .cs-hero-overlay {
+        position: absolute; inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236e0707' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: .5;
+    }
+    .cs-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 20px;
+        background: rgba(110,7,7,.25); border: 1px solid rgba(110,7,7,.4);
+        border-radius: 50px; color: #fff;
+        font-size: .88rem; font-weight: 600; margin-bottom: 1.5rem;
+    }
+    .cs-hero-title {
+        font-size: 3rem; font-weight: 900; color: #fff;
+        line-height: 1.15; margin-bottom: 1.25rem;
+    }
+    .cs-hero-sub {
+        font-size: 1.15rem; color: rgba(255,255,255,.75);
+        line-height: 1.8; max-width: 640px; margin: 0 auto 2rem;
+    }
+    .cs-hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
-    .consignment-intro-card {
-        background: white;
+    /* ── What grid ── */
+    .cs-what-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+    }
+    .cs-what-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    .cs-stat-card {
+        background: #fff;
+        border: 1.5px solid #e9ecef;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: .25s;
+    }
+    .cs-stat-card:hover { border-color: var(--cs-accent); transform: translateY(-3px); }
+    .cs-stat-icon {
+        width: 48px; height: 48px;
+        background: rgba(110,7,7,.08); border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem; color: var(--cs-accent);
+        flex-shrink: 0;
+    }
+    .cs-stat-value { font-size: 1rem; font-weight: 800; color: #111; }
+    .cs-stat-label { font-size: .8rem; color: #9ca3af; }
+
+    /* ── Steps timeline ── */
+    .cs-steps {
+        max-width: 780px;
+        margin: 0 auto;
+        position: relative;
+    }
+    .cs-steps::before {
+        content: '';
+        position: absolute;
+        left: 28px;
+        top: 0; bottom: 0;
+        width: 2px;
+        background: linear-gradient(to bottom, var(--cs-accent), rgba(110,7,7,.1));
+    }
+    .cs-step {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+        padding-bottom: 2.5rem;
+        position: relative;
+    }
+    .cs-step:last-child { padding-bottom: 0; }
+    .cs-step-num {
+        flex-shrink: 0;
+        width: 58px; height: 58px;
+        background: var(--cs-accent);
+        color: #fff;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.25rem; font-weight: 900;
+        position: relative; z-index: 1;
+        box-shadow: 0 0 0 6px #f4f4f6;
+    }
+    .cs-step-body {
+        flex: 1;
+        background: #fff;
+        border: 1.5px solid #e9ecef;
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        transition: .25s;
+    }
+    .cs-step-body:hover { border-color: var(--cs-accent); transform: translateX(4px); }
+    .cs-step-icon {
+        flex-shrink: 0;
+        width: 44px; height: 44px;
+        background: rgba(110,7,7,.08);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; color: var(--cs-accent);
+    }
+    .cs-step-title { font-size: 1.1rem; font-weight: 700; color: #111; margin-bottom: .4rem; }
+    .cs-step-desc  { font-size: .95rem; color: #6b7280; line-height: 1.7; margin: 0; }
+
+    /* ── Benefits ── */
+    .cs-benefit {
+        background: #fff;
+        border: 1.5px solid #e9ecef;
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        height: 100%;
+        transition: .25s;
+    }
+    .cs-benefit:hover { border-color: var(--cs-accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(110,7,7,.08); }
+    .cs-benefit-icon {
+        font-size: 1.6rem;
+        color: var(--cs-accent);
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .cs-benefit-title { font-size: 1rem; font-weight: 700; color: #111; margin-bottom: .35rem; }
+    .cs-benefit-desc  { font-size: .9rem; color: #6b7280; line-height: 1.6; margin: 0; }
+
+    /* ── Price card ── */
+    .cs-price-card {
+        background: #fff;
+        border: 2px solid var(--cs-accent);
         border-radius: 24px;
         padding: 3rem;
-        border: 2px solid #990000;
         display: flex;
         gap: 2rem;
         align-items: flex-start;
     }
-
-    .intro-icon {
+    .cs-price-icon {
         flex-shrink: 0;
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
+        width: 72px; height: 72px;
+        background: linear-gradient(135deg, var(--cs-accent) 0%, var(--cs-accent2) 100%);
+        border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem; color: #fff;
     }
-
-    .intro-content {
-        flex: 1;
-        font-size: 1.1rem;
-        line-height: 1.8;
-        color: #000000;
+    .cs-price-highlight {
+        display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px;
+        padding: 12px 20px;
+        background: rgba(110,7,7,.06);
+        border-radius: 12px;
+        font-size: .9rem; font-weight: 600; color: var(--cs-accent);
     }
+    .cs-price-highlight .bi { font-size: .85rem; }
 
-    .intro-content p {
-        margin-bottom: 1rem;
-    }
-
-    .section-header-modern {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .section-title-modern {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #111;
-        margin-bottom: 1rem;
-    }
-
-    .section-subtitle-modern {
-        font-size: 1.1rem;
-        color: #6c757d;
-        margin: 0;
-    }
-
-    /* Benefit Cards */
-    .benefit-card {
-        background: white;
-        border-radius: 20px;
-        padding: 2rem;
-        height: 100%;
-        border: 2px solid #f0f0f0;
-        transition: all 0.3s ease;
-    }
-
-    .benefit-card:hover {
-        transform: translateY(-5px);
-        border-color: var(--accent-color);
-        box-shadow: 0 10px 30px rgba(110, 7, 7, 0.1);
-    }
-
-    .benefit-icon {
-        width: 64px;
-        height: 64px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        margin-bottom: 1.5rem;
-    }
-
-    .benefit-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #111;
-        margin-bottom: 1rem;
-    }
-
-    .benefit-description {
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #666;
-        margin: 0;
-    }
-
-    /* Step Cards */
-    .consignment-step-card {
-        background: white;
-        border-radius: 20px;
-        padding: 2rem;
-        height: 100%;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        border: 2px solid transparent;
-    }
-
-    .consignment-step-card:hover {
-        transform: translateY(-5px);
-        border-color: var(--accent-color);
-    }
-
-    .step-number {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        color: white;
-        font-size: 2rem;
-        font-weight: 800;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        opacity: 0.1;
-        transition: all 0.3s ease;
-    }
-
-    .consignment-step-card:hover .step-number {
-        opacity: 0.2;
-        transform: scale(1.1);
-    }
-
-    .step-content {
-        position: relative;
-        z-index: 1;
-    }
-
-    .step-title {
-        font-size: 1.35rem;
-        font-weight: 700;
-        color: #111;
-        margin-bottom: 1rem;
-        line-height: 1.3;
-    }
-
-    .step-description {
-        font-size: 1rem;
-        line-height: 1.7;
-        color: #495057;
-    }
-
-    .step-description p {
-        margin-bottom: 0.75rem;
-    }
-
-    .step-description ul,
-    .step-description ol {
-        padding-left: 1.5rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .step-description li {
-        margin-bottom: 0.5rem;
-    }
-
-    .step-arrow {
-        position: absolute;
-        bottom: 1.5rem;
-        right: 1.5rem;
-        opacity: 0;
-        transform: translateX(-10px);
-        transition: all 0.3s ease;
-        color: var(--accent-color);
-    }
-
-    .consignment-step-card:hover .step-arrow {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    /* CTA Section */
-    .cta-section {
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+    /* ── CTA ── */
+    .cs-cta {
+        background: linear-gradient(135deg, var(--cs-accent) 0%, var(--cs-accent2) 100%);
         padding: 5rem 0;
-        margin-top: 4rem;
+        margin-top: 0;
     }
-
-    .cta-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: white;
-        margin-bottom: 1rem;
+    .cs-cta-title { font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: .75rem; }
+    .cs-cta-sub   { font-size: 1.05rem; color: rgba(255,255,255,.85); line-height: 1.75; margin: 0; }
+    .cs-cta-btn-primary {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: #fff; color: var(--cs-accent);
+        padding: 15px 28px; border-radius: 50px;
+        font-weight: 700; font-size: .95rem;
+        text-decoration: none; transition: .25s;
+        white-space: nowrap;
     }
-
-    .cta-description {
-        font-size: 1.2rem;
-        color: rgba(255, 255, 255, 0.9);
-        margin: 0;
+    .cs-cta-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.25); color: var(--cs-accent); }
+    .cs-cta-btn-whatsapp {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: #25d366; color: #fff;
+        padding: 15px 28px; border-radius: 50px;
+        font-weight: 700; font-size: .95rem;
+        text-decoration: none; transition: .25s;
+        white-space: nowrap;
     }
+    .cs-cta-btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.25); color: #fff; }
 
-    .btn-cta {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 16px 32px;
-        background: white;
-        color: var(--accent-color);
-        border-radius: 50px;
-        font-size: 1.1rem;
-        font-weight: 700;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    /* ── Fade in ── */
+    .fade-in-up {
+        opacity: 0; transform: translateY(28px);
+        animation: csFadeUp .7s ease forwards;
     }
+    .fade-in-up[data-delay="100"] { animation-delay: .1s; }
+    .fade-in-up[data-delay="200"] { animation-delay: .2s; }
+    .fade-in-up[data-delay="300"] { animation-delay: .3s; }
+    @keyframes csFadeUp { to { opacity: 1; transform: translateY(0); } }
 
-    .btn-cta:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        color: var(--accent-color);
-    }
-
+    /* ── Responsive ── */
     @media (max-width: 992px) {
-        .consignment-intro-card {
-            flex-direction: column;
-            padding: 2rem;
-        }
-
-        .intro-icon {
-            width: 64px;
-            height: 64px;
-        }
-
-        .intro-icon svg {
-            width: 32px;
-            height: 32px;
-        }
-
-        .section-title-modern {
-            font-size: 2rem;
-        }
-
-        .cta-title {
-            font-size: 2rem;
-        }
-
-        .cta-description {
-            font-size: 1rem;
-        }
+        .cs-what-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+        .cs-hero-title { font-size: 2.2rem; }
+        .cs-section-title { font-size: 1.85rem; }
+        .cs-price-card { flex-direction: column; padding: 2rem; }
     }
-
     @media (max-width: 768px) {
-        .consignment-intro-card {
-            padding: 1.5rem;
-        }
-
-        .intro-content {
-            font-size: 1rem;
-        }
-
-        .section-title-modern {
-            font-size: 1.75rem;
-        }
-
-        .consignment-step-card {
-            padding: 1.5rem;
-        }
-
-        .step-title {
-            font-size: 1.2rem;
-        }
-
-        .hero-title {
-            font-size: 2rem;
-        }
-
-        .hero-description {
-            font-size: 1rem;
-        }
-
-        .cta-title {
-            font-size: 1.75rem;
-        }
-
-        .cta-section {
-            padding: 3rem 0;
-        }
-    }
-
-    .faq-wrapper-modern {
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    .faq-item-modern {
-        background: white;
-        border-radius: 16px;
-        margin-bottom: 1rem;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-        transition: all 0.3s ease;
-    }
-
-    .faq-item-modern:hover {
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .faq-question-modern {
-        width: 100%;
-        background: white;
-        border: none;
-        padding: 1.5rem 2rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: left;
-    }
-
-    .faq-question-modern:hover {
-        background: #f8f9fa;
-    }
-
-    .faq-number {
-        flex-shrink: 0;
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        color: white;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.9rem;
-    }
-
-    .faq-question-text {
-        flex: 1;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #111;
-    }
-
-    .faq-icon {
-        flex-shrink: 0;
-        color: var(--accent-color);
-        transition: transform 0.3s ease;
-    }
-
-    .faq-question-modern:not(.collapsed) .faq-icon {
-        transform: rotate(180deg);
-    }
-
-    .faq-answer-modern {
-        padding: 0 2rem 1.5rem 5rem;
-        font-size: 1rem;
-        line-height: 1.7;
-        color: #495057;
-    }
-
-    .faq-answer-modern p {
-        margin-bottom: 0.75rem;
-    }
-
-    .faq-answer-modern ul,
-    .faq-answer-modern ol {
-        padding-left: 1.5rem;
-        margin-bottom: 0.75rem;
+        .cs-hero { padding: 3.5rem 0 3rem; }
+        .cs-hero-title { font-size: 1.9rem; }
+        .cs-hero-sub   { font-size: 1rem; }
+        .cs-section { padding: 3.5rem 0; }
+        .cs-section-alt { padding: 3.5rem 0; }
+        .cs-what-cards { grid-template-columns: 1fr 1fr; }
+        .cs-steps::before { left: 22px; }
+        .cs-step-num { width: 46px; height: 46px; font-size: 1rem; }
+        .cs-step-body { padding: 1.25rem; }
+        .cs-cta { padding: 3.5rem 0; }
+        .cs-cta-title { font-size: 1.75rem; }
     }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animationPlayState = 'running';
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.style.animationPlayState = 'running';
+                io.unobserve(e.target);
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
     document.querySelectorAll('.fade-in-up').forEach(el => {
         el.style.animationPlayState = 'paused';
-        observer.observe(el);
+        io.observe(el);
     });
 </script>
 @endpush

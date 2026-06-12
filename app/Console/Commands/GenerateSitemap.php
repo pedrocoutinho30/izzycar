@@ -50,18 +50,7 @@ class GenerateSitemap extends Command
                     ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
                     ->setLastModificationDate($now)
             )
-            ->add(
-                Url::create('/retomas')
-                    ->setPriority(0.8)
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
-                    ->setLastModificationDate($now)
-            )
-            ->add(
-                Url::create('/venda')
-                    ->setPriority(0.8)
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
-                    ->setLastModificationDate($now)
-            )
+           
             // Simulador
             ->add(
                 Url::create('/simulador-custos')
@@ -98,15 +87,15 @@ class GenerateSitemap extends Command
             );
 
         // Viaturas V2 (model: Vehicle)
-        foreach (\App\Models\Vehicle::where('show_online', true)->get() as $vehicle) {
-            $slug = $this->toSlug($vehicle->brand) . '/' . $this->toSlug($vehicle->model) . '/' . $vehicle->reference;
-            $sitemap->add(
-                Url::create("/viaturas/{$slug}")
-                    ->setPriority(0.7)
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                    ->setLastModificationDate($vehicle->updated_at ?? $now)
-            );
-        }
+        // foreach (\App\Models\VehicleV3::where('show_online', true)->get() as $vehicle) {
+        //     $slug = $this->toSlug($vehicle->brand) . '/' . $this->toSlug($vehicle->model) . '/' . $vehicle->reference;
+        //     $sitemap->add(
+        //         Url::create("/viaturas/{$slug}")
+        //             ->setPriority(0.7)
+        //             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+        //             ->setLastModificationDate($vehicle->updated_at ?? $now)
+        //     );
+        // }
 
         // Viaturas V3 (model: V3Vehicle) — se existir e tiver campo show_online
         if (class_exists(\App\Models\V3Vehicle::class)) {
@@ -127,9 +116,20 @@ class GenerateSitemap extends Command
         }
 
         // Notícias individuais
-        $pageType = \App\Models\PageType::where('name', \App\Models\PageType::NEWS)->first();
-        if ($pageType) {
-            foreach (\App\Models\Page::where('page_type_id', $pageType->id)->latest()->get() as $noticia) {
+        // $pageType = \App\Models\PageType::where('name', \App\Models\PageType::NEWS)->first();
+        // if ($pageType) {
+        //     foreach (\App\Models\Page::where('page_type_id', $pageType->id)->latest()->get() as $noticia) {
+        //         $sitemap->add(
+        //             Url::create("/noticias/{$noticia->slug}")
+        //                 ->setPriority(0.7)
+        //                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
+        //                 ->setLastModificationDate($noticia->updated_at ?? $now)
+        //         );
+        //     }
+        // }
+
+            // Notícias individuais (model: NewsArticle)
+            foreach (\App\Models\NewsArticle::published()->latest()->get() as $noticia) {
                 $sitemap->add(
                     Url::create("/noticias/{$noticia->slug}")
                         ->setPriority(0.7)
@@ -137,7 +137,6 @@ class GenerateSitemap extends Command
                         ->setLastModificationDate($noticia->updated_at ?? $now)
                 );
             }
-        }
 
         $sitemap->writeToFile(public_path('sitemap.xml'));
         $this->info('Sitemap gerado com sucesso!');

@@ -78,6 +78,8 @@ Route::middleware(['blockInProd'])->group(function () {
 
     Route::get('/venda', [SellingController::class, 'getSellingPage'])->name('frontend.selling');
     Route::get('/consignacao', [ConsignmentController::class, 'getConsignmentPage'])->name('frontend.consignment');
+    Route::get('/consignacao/avaliacao', [ConsignmentController::class, 'evaluationForm'])->name('consignment.evaluation');
+    Route::post('/consignacao/avaliacao', [ConsignmentController::class, 'submitEvaluation'])->name('consignment.evaluation.submit');
 
     Route::get('/noticias', [NewsController::class, 'getNewsPage'])->name('frontend.news');
 

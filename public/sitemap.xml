@@ -2,81 +2,63 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
     <url>
     <loc>http://localhost</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
             </url>
     <url>
     <loc>http://localhost/viaturas</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
             </url>
     <url>
     <loc>http://localhost/importacao</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
             </url>
     <url>
     <loc>http://localhost/legalizacao</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
             </url>
     <url>
     <loc>http://localhost/consignacao</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://localhost/retomas</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-            </url>
-    <url>
-    <loc>http://localhost/venda</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
     <loc>http://localhost/simulador-custos</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
     <loc>http://localhost/formulario-importacao</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
     <loc>http://localhost/noticias</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
     <loc>http://localhost/politica-privacidade</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
             </url>
     <url>
     <loc>http://localhost/termos-condicoes</loc>
-    <lastmod>2026-06-02T15:43:15+00:00</lastmod>
+    <lastmod>2026-06-12T09:22:20+00:00</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-            </url>
-    <url>
-    <loc>http://localhost/viaturas/mercedes-benz/classe-cla/01E</loc>
-    <lastmod>2025-12-16T17:01:48+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
             </url>
     <url>
     <loc>http://localhost/viaturas/fiat/500e/V3-2026-001</loc>
@@ -86,7 +68,7 @@
             </url>
     <url>
     <loc>http://localhost/viaturas/mercedes-benz/classe-cla/V3-2026-002</loc>
-    <lastmod>2026-05-25T11:20:47+00:00</lastmod>
+    <lastmod>2026-06-11T07:49:11+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
             </url>
@@ -109,62 +91,68 @@
     <priority>0.7</priority>
             </url>
     <url>
+    <loc>http://localhost/viaturas/audi/a4/V3-2026-006</loc>
+    <lastmod>2026-06-11T09:02:24+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/a-pensar-tirar-a-carta-vai-poder-faze-lo-com-um-tutor-a-partir-de-julho</loc>
+    <lastmod>2026-06-10T09:02:17+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
     <loc>http://localhost/noticias/mudancas-iuc</loc>
-    <lastmod>2025-12-12T10:57:06+00:00</lastmod>
+    <lastmod>2026-06-02T18:49:02+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://localhost/noticias/como-escolher-o-seu-proximo-carro-dicas-para-fazer-a-escolha-certa</loc>
-    <lastmod>2025-10-08T15:08:34+00:00</lastmod>
+    <loc>http://localhost/noticias/mercado-marcas-mais-vendidas-portugal-maio-2026</loc>
+    <lastmod>2026-06-04T12:30:33+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
-    <loc>http://localhost/noticias/importar-carros-da-alemanha-ainda-compensa-em-2025</loc>
-    <lastmod>2025-10-08T14:19:52+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-            </url>
-    <url>
-    <loc>http://localhost/noticias/custos-de-manutencao-eletrico-vs-combustao</loc>
-    <lastmod>2025-09-19T09:13:07+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-            </url>
-    <url>
-    <loc>http://localhost/noticias/como-prolongar-a-vida-util-da-bateria-do-seu-carro-eletrico</loc>
-    <lastmod>2025-09-19T09:04:26+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-            </url>
-    <url>
-    <loc>http://localhost/noticias/iuc-2026-novas-regras-de-pagamento-entram-em-vigor-com-prazo-unico-e-possibilidade-de-duas-prestacoes</loc>
-    <lastmod>2025-09-18T20:41:31+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-            </url>
-    <url>
-    <loc>http://localhost/noticias/mobilidade-eletrica-bate-recordes-em-agosto-2025</loc>
-    <lastmod>2025-09-12T09:38:27+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-            </url>
-    <url>
-    <loc>http://localhost/noticias/venda-de-veiculos-eletricos-cresce-face-a-2024</loc>
-    <lastmod>2025-09-12T09:34:34+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-            </url>
-    <url>
-    <loc>http://localhost/noticias/marcas-mais-vendidas-primeiro-semestre-2025</loc>
-    <lastmod>2025-09-12T09:29:21+00:00</lastmod>
+    <loc>http://localhost/noticias/carros-mais-importados-alemanha-portugal-2025</loc>
+    <lastmod>2026-06-03T10:28:41+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
     <url>
     <loc>http://localhost/noticias/crescimento-mercado-automovel</loc>
-    <lastmod>2025-09-12T09:21:48+00:00</lastmod>
+    <lastmod>2026-06-02T18:49:01+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/marcas-mais-vendidas-primeiro-semestre-2025</loc>
+    <lastmod>2026-06-02T18:49:01+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/venda-de-veiculos-eletricos-cresce-face-a-2024</loc>
+    <lastmod>2026-06-02T18:49:01+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/como-prolongar-a-vida-util-da-bateria-do-seu-carro-eletrico</loc>
+    <lastmod>2026-06-02T18:49:01+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/custos-de-manutencao-eletrico-vs-combustao</loc>
+    <lastmod>2026-06-02T18:49:01+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+            </url>
+    <url>
+    <loc>http://localhost/noticias/importar-carros-da-alemanha-ainda-compensa-em-2025</loc>
+    <lastmod>2026-06-02T18:49:01+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
             </url>
