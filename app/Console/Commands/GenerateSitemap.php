@@ -128,6 +128,7 @@ class GenerateSitemap extends Command
         //     }
         // }
 
+        
             // Notícias individuais (model: NewsArticle)
             foreach (\App\Models\NewsArticle::published()->latest()->get() as $noticia) {
                 $sitemap->add(
