@@ -720,6 +720,19 @@
             <div class="nav-group-title">Gestão</div>
 
             <div class="nav-item">
+                <a href="{{ route('admin.v2.consignment-evaluations.index') }}" class="nav-link {{ request()->routeIs('admin.v2.consignment-evaluations.*') ? 'active' : '' }}">
+                    <i class="bi bi-handshake"></i>
+                    <span>Consignações</span>
+                    @php
+                    $newConsignmentsCount = \App\Models\ConsignmentEvaluation::where('status', 'novo')->count();
+                    @endphp
+                    @if($newConsignmentsCount > 0)
+                    <span class="nav-badge">{{ $newConsignmentsCount }}</span>
+                    @endif
+                </a>
+            </div>
+
+            <div class="nav-item">
                 <a href="{{ route('admin.v2.clients.index') }}" class="nav-link {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
                     <i class="bi bi-people"></i>
                     <span>Clientes</span>

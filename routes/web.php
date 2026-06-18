@@ -203,6 +203,14 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     // ============================================================
     // FORMULÁRIOS DE PROPOSTA V2
     // ============================================================
+    Route::prefix('v2/consignment-evaluations')->name('admin.v2.consignment-evaluations.')->group(function () {
+        Route::get('/',                [App\Http\Controllers\Admin\ConsignmentEvaluationController::class, 'index'])->name('index');
+        Route::get('/{id}',            [App\Http\Controllers\Admin\ConsignmentEvaluationController::class, 'show'])->name('show');
+        Route::patch('/{id}/status',   [App\Http\Controllers\Admin\ConsignmentEvaluationController::class, 'updateStatus'])->name('update-status');
+        Route::patch('/{id}/notes',    [App\Http\Controllers\Admin\ConsignmentEvaluationController::class, 'updateNotes'])->name('update-notes');
+        Route::delete('/{id}',         [App\Http\Controllers\Admin\ConsignmentEvaluationController::class, 'destroy'])->name('destroy');
+    });
+
     Route::prefix('v2/form-proposals')->name('admin.v2.form-proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'index'])->name('index');
         Route::get('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'show'])->name('show');

@@ -118,6 +118,12 @@
                            placeholder="ex: e1*2018/858*00123*00">
                 </div>
 
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Nº de Processo IMT</label>
+                    <input type="text" name="num_processo_imt" class="form-control" value="{{ old('num_processo_imt') }}"
+                           placeholder="ex: 2024/123456">
+                </div>
+
                 <div class="col-12">
                     <label class="form-label fw-semibold">Notas</label>
                     <textarea name="notas" class="form-control" rows="3"

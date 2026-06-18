@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\V3VehicleDocument;
 
 class Legalization extends Model
 {
@@ -18,6 +17,7 @@ class Legalization extends Model
         'combustivel',
         'matricula',
         'num_homologacao',
+        'num_processo_imt',
         'notas',
         'steps_completed',
     ];
@@ -37,8 +37,9 @@ class Legalization extends Model
         'guia_transporte' => 'Guia de transporte',
         'cartao_cidadao'  => 'Cartão de cidadão do proprietário',
         'modelo112'       => 'Certificado de inspeção (Modelo 112)',
-        'dav'             => 'DAV (Declaração Aduaneira de Veículo)',
-        'autorizacao'     => 'Documento de autorização de utilização de dados',
+        'dav'                    => 'DAV (Declaração Aduaneira de Veículo)',
+        'autorizacao'            => 'Documento de autorização de utilização de dados',
+        'declaracao_homologacao' => 'Declaração de Homologação',
     ];
 
     // ---------------------------------------------------------------
@@ -84,7 +85,7 @@ class Legalization extends Model
             'titulo'   => 'Entregar Modelo 9 no IMT',
             'link'     => null,
             'link_label' => null,
-            'docs'     => ['coc', 'modelo9', 'dua', 'dav', 'modelo112', 'cartao_cidadao'],
+            'docs'     => ['coc', 'modelo9', 'dua', 'dav', 'modelo112', 'cartao_cidadao', 'declaracao_homologacao'],
             'info'     => null,
         ],
         7 => [
@@ -126,9 +127,7 @@ class Legalization extends Model
     // ---------------------------------------------------------------
     public function hasDocument(string $tipo): bool
     {
-        return V3VehicleDocument::where('v3_vehicle_id', $this->v3_vehicle_id)
-            ->where('tipo', $tipo)
-            ->exists();
+        return $this->documents->contains('tipo', $tipo);
     }
 
     public function isStepCompleted(int $step): bool

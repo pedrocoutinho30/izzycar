@@ -58,8 +58,9 @@ class LegalizationController extends Controller
             'modelo'          => 'required_without:v3_vehicle_id|nullable|string|max:100',
             'combustivel'     => 'required_without:v3_vehicle_id|nullable|string|max:50',
             'matricula'       => 'nullable|string|max:20',
-            'num_homologacao' => 'nullable|string|max:100',
-            'notas'           => 'nullable|string',
+            'num_homologacao'  => 'nullable|string|max:100',
+            'num_processo_imt' => 'nullable|string|max:100',
+            'notas'            => 'nullable|string',
         ]);
 
         // If a V3 vehicle is selected, fill fields from it
@@ -233,8 +234,9 @@ class LegalizationController extends Controller
             'modelo'          => 'nullable|string|max:100',
             'combustivel'     => 'nullable|string|max:50',
             'matricula'       => 'nullable|string|max:20',
-            'num_homologacao' => 'nullable|string|max:100',
-            'notas'           => 'nullable|string',
+            'num_homologacao'  => 'nullable|string|max:100',
+            'num_processo_imt' => 'nullable|string|max:100',
+            'notas'            => 'nullable|string',
         ]);
 
         if (!empty($validated['v3_vehicle_id'])) {

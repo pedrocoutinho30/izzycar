@@ -98,20 +98,27 @@
                     </button>
                 </form>
 
-                @if($legalization->matricula || $legalization->num_homologacao)
+                @if($legalization->matricula || $legalization->num_homologacao || $legalization->num_processo_imt)
                 <div class="border rounded p-2 small bg-light mt-1">
                     @if($legalization->matricula)
-                    <div class="d-flex align-items-center gap-2 {{ $legalization->num_homologacao ? 'mb-1' : '' }}">
+                    <div class="d-flex align-items-center gap-2 mb-1">
                         <i class="bi bi-card-text text-muted"></i>
                         <span class="text-muted">Matrícula:</span>
                         <span class="fw-semibold font-monospace">{{ $legalization->matricula }}</span>
                     </div>
                     @endif
                     @if($legalization->num_homologacao)
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2 mb-1">
                         <i class="bi bi-hash text-muted"></i>
                         <span class="text-muted">Homologação:</span>
                         <span class="fw-semibold font-monospace" style="font-size:.8rem">{{ $legalization->num_homologacao }}</span>
+                    </div>
+                    @endif
+                    @if($legalization->num_processo_imt)
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-file-earmark-text text-muted"></i>
+                        <span class="text-muted">Processo IMT:</span>
+                        <span class="fw-semibold font-monospace" style="font-size:.8rem">{{ $legalization->num_processo_imt }}</span>
                     </div>
                     @endif
                 </div>
@@ -201,6 +208,21 @@
                             @else
                                 <a href="{{ route('admin.legalizations.edit', $legalization) }}" class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 text-decoration-none">
                                     <i class="bi bi-pencil me-1"></i>Preencher Nº de homologação
+                                </a>
+                            @endif
+                        </div>
+                        @endif
+
+                        {{-- Nº de Processo IMT (passo 6) --}}
+                        @if($num === 6)
+                        <div class="mt-2">
+                            @if($legalization->num_processo_imt)
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
+                                    <i class="bi bi-file-earmark-text me-1"></i>Processo IMT: <span class="font-monospace">{{ $legalization->num_processo_imt }}</span>
+                                </span>
+                            @else
+                                <a href="{{ route('admin.legalizations.edit', $legalization) }}" class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 text-decoration-none">
+                                    <i class="bi bi-pencil me-1"></i>Preencher Nº de processo IMT
                                 </a>
                             @endif
                         </div>

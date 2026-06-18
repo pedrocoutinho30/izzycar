@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ConsignmentEvaluation;
 use App\Models\Page;
 use App\Http\Controllers\Frontend\PageController;
 
@@ -118,6 +119,41 @@ class ConsignmentController extends Controller
                     $message->attach($absolutePath);
                 }
             });
+
+            // Guarda na base de dados
+            $relativePhotoPaths = [];
+            foreach ($storedPaths as $absolutePath) {
+                $rel = str_replace(Storage::disk('public')->path(''), '', $absolutePath);
+                $relativePhotoPaths[] = ltrim($rel, '/');
+            }
+
+            ConsignmentEvaluation::create([
+                'reference'       => $ref,
+                'brand'           => $validated['brand'],
+                'model'           => $validated['model'],
+                'version'         => $validated['version'] ?? null,
+                'year'            => $validated['year'],
+                'kilometers'      => $validated['kilometers'],
+                'plate'           => $validated['plate'],
+                'fuel'            => $validated['fuel'],
+                'gearbox'         => $validated['gearbox'],
+                'power'           => $validated['power'] ?? null,
+                'displacement'    => $validated['displacement'] ?? null,
+                'color'           => $validated['color'] ?? null,
+                'condition'       => $validated['condition'],
+                'description'     => $validated['description'] ?? null,
+                'has_service_book'=> $request->has('has_service_book'),
+                'has_2nd_key'     => $request->has('has_2nd_key'),
+                'has_iuc'         => $request->has('has_iuc'),
+                'has_inspection'  => $request->has('has_inspection'),
+                'photos'          => $relativePhotoPaths,
+                'name'            => $validated['name'],
+                'phone'           => $validated['phone'],
+                'email'           => $validated['email'],
+                'location'        => $validated['location'] ?? null,
+                'price_expectation'=> $validated['price_expectation'] ?? null,
+                'status'          => 'novo',
+            ]);
 
         } catch (\Throwable $e) {
             \Log::error('ConsignmentEvaluation: ' . $e->getMessage(), [
