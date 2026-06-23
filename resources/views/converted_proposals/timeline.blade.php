@@ -1,6 +1,6 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Izzycar - Linha do Tempo da Proposta')
+@section('title', 'Izzycar - Linha do Tempo da Cotação')
 
 @section('content')
 
@@ -57,7 +57,7 @@
                                         <polyline points="15 3 21 3 21 9"></polyline>
                                         <line x1="10" y1="14" x2="21" y2="3"></line>
                                     </svg>
-                                    Ver Proposta
+                                    Ver Cotação
                                 </a>
                             </div>
                         </div>
@@ -94,7 +94,7 @@
                                     <line x1="3" y1="10" x2="21" y2="10"></line>
                                 </svg>
                                 <div>
-                                    <span class="info-label">Data da Proposta</span>
+                                    <span class="info-label">Data da Cotação</span>
                                     <span class="info-value">{{ \Carbon\Carbon::parse($convertedProposal->proposal->created_at)->isoFormat('DD-MM-YYYY') }}</span>
                                 </div>
                             </div>

@@ -1,6 +1,6 @@
 @extends('layouts.admin-v2')
 
-@section('title', isset($convertedProposal) ? 'Editar Proposta Convertida' : 'Nova Proposta Convertida')
+@section('title', isset($convertedProposal) ? 'Editar Cotação Convertida' : 'Nova Cotação Convertida')
 
 @section('content')
 
@@ -11,10 +11,10 @@
     @include('components.admin.page-header', [
     'breadcrumbs' => [
     ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-    ['icon' => 'bi bi-people', 'label' => 'Propostas Convertidas', 'href' => route('admin.v2.converted-proposals.index')],
+    ['icon' => 'bi bi-people', 'label' => 'Cotações Convertidas', 'href' => route('admin.v2.converted-proposals.index')],
     ['icon' => '', 'label' => $existAction]
     ],
-    'title' => $existAction . ' Proposta Convertida',
+    'title' => $existAction . ' Cotação Convertida',
     'subtitle' => "Gestão do processo de importação",
     'actionHref' => "",
     'actionLabel' => ''
@@ -287,7 +287,7 @@
                 <!-- BOTÕES DE AÇÃO -->
                 @include('components.admin.action-card', [
                 'cancelButtonHref' => route('admin.v2.converted-proposals.index'),
-                'submitButtonLabel' => isset($convertedProposal) ? 'Atualizar Proposta' : 'Criar Proposta Convertida',
+                'submitButtonLabel' => isset($convertedProposal) ? 'Atualizar Cotação' : 'Criar Cotação Convertida',
                 'timestamps' => isset($convertedProposal) ? [
                 'created_at' => $convertedProposal->created_at,
                 'updated_at' => $convertedProposal->updated_at
@@ -318,12 +318,12 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Proposta Original</label>
+                            <label class="form-label">Cotação Original</label>
                             <select name="proposal_id" class="form-select @error('proposal_id') is-invalid @enderror">
-                                <option value="">Sem proposta associada...</option>
+                                <option value="">Sem cotação associada...</option>
                                 @foreach($proposals as $proposal)
                                 <option value="{{ $proposal->id }}" {{ old('proposal_id', $convertedProposal->proposal_id ?? '') == $proposal->id ? 'selected' : '' }}>
-                                    Proposta #{{ $proposal->id }} - {{ $proposal->brand ?? '' }} {{ $proposal->model ?? '' }}
+                                    Cotação #{{ $proposal->id }} - {{ $proposal->brand ?? '' }} {{ $proposal->model ?? '' }}
                                 </option>
                                 @endforeach
                             </select>

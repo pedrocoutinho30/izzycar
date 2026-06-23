@@ -71,7 +71,7 @@ $settings = \App\Models\Setting::all();
                 <div class="legal-section-content">
                     <p>Podemos recolher os seguintes dados:</p>
                     <ul class="legal-list">
-                        <li>Nome, email e telefone (quando nos contacta ou pede uma proposta)</li>
+                        <li>Nome, email e telefone (quando nos contacta ou pede uma cotação)</li>
                         <li>Dados de navegação (endereço IP, cookies, estatísticas de utilização do site)</li>
                         <li>Informações adicionais fornecidas pelo utilizador nos formulários</li>
                     </ul>
@@ -84,7 +84,7 @@ $settings = \App\Models\Setting::all();
                 <div class="legal-section-content">
                     <p>Os dados recolhidos destinam-se a:</p>
                     <ul class="legal-list">
-                        <li>Responder a pedidos de contacto e enviar propostas</li>
+                        <li>Responder a pedidos de contacto e enviar cotações</li>
                         <li>Gerir pedidos de importação e serviços contratados</li>
                         <li>Enviar comunicações informativas ou comerciais (quando autorizado)</li>
                         <li>Melhorar a experiência de utilização do website</li>

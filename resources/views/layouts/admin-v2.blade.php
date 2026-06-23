@@ -261,7 +261,7 @@
             text-align: center;
         }
 
-        /* Badge de contagem (ex: "5 novas propostas") */
+        /* Badge de contagem (ex: "5 novas cotações") */
         .nav-badge {
             margin-left: auto;
             padding: 0.25rem 0.5rem;
@@ -613,7 +613,7 @@
                 <li>
                     <h6 class="dropdown-header">Notificações</h6>
                 </li>
-                <li><a class="dropdown-item" href="#">Nova proposta recebida</a></li>
+                <li><a class="dropdown-item" href="#">Nova cotação recebida</a></li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>
@@ -674,7 +674,7 @@
             <div class="nav-item">
                 <a href="{{ route('admin.v2.proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text"></i>
-                    <span>Propostas</span>
+                    <span>Cotações</span>
                     @php
                     $pendingCount = \App\Models\Proposal::where('status', 'Pendente')->count();
                     @endphp
@@ -686,7 +686,7 @@
             <div class="nav-item">
                 <a href="{{ route('admin.v2.converted-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.converted-proposals.*') ? 'active' : '' }}">
                     <i class="bi bi-check2-circle"></i>
-                    <span>Propostas Convertidas</span>
+                    <span>Cotações Convertidas</span>
                 </a>
             </div>
             <div class="nav-item">

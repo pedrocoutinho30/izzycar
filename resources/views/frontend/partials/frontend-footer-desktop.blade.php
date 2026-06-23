@@ -92,7 +92,7 @@
                 <div class="cta-card">
                     <div class="cta-content">
                         <h3 class="cta-title">Pronto para importar o seu veículo?</h3>
-                        <p class="cta-subtitle">Comece agora e receba uma proposta personalizada</p>
+                        <p class="cta-subtitle">Comece agora e receba uma cotação personalizada</p>
                     </div>
                     <a href="{{ route('frontend.form-import') }}" class="btn-cta-footer">
                         Quero importar

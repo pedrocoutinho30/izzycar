@@ -26,7 +26,7 @@
     "category": "Automóvel",
     "offers": {
         "@@type": "Offer",
-        "description": "Proposta personalizada de importação automóvel — peça a sua gratuitamente",
+        "description": "Cotação personalizada de importação automóvel — peça a sua gratuitamente",
         "priceCurrency": "EUR",
         "availability": "https://schema.org/InStock",
         "url": "https://izzycar.pt/formulario-importacao"
@@ -65,8 +65,8 @@
                         {{ $data->process_import['subtitle'] }}
                     </p>
                     <div class="hero-actions fade-in-up" data-delay="300">
-                        <a href="#form-proposta" class="btn-hero-primary" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
-                            <span>Pedir Proposta</span>
+                        <a href="#form-cotação" class="btn-hero-primary" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
+                            <span>Pedir Cotação</span>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                                 <polyline points="12 5 19 12 12 19"></polyline>
@@ -140,10 +140,10 @@
             </div>
             <div class="cta-content-import">
                 <h3 class="cta-title-import">Pronto para importar?</h3>
-                <p class="cta-subtitle-import">Receba uma proposta personalizada sem compromisso</p>
+                <p class="cta-subtitle-import">Receba uma cotação personalizada sem compromisso</p>
             </div>
-            <a href="#form-proposta" class="btn-cta-import" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
-                Pedir Proposta
+            <a href="#form-cotação" class="btn-cta-import" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
+                Pedir Cotação
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -234,9 +234,9 @@
         <div class="cta-inline-card">
             <div class="cta-inline-content">
                 <h4 class="cta-inline-title">Comece a sua importação agora</h4>
-                <p class="cta-inline-text">Solicite a sua proposta personalizada</p>
+                <p class="cta-inline-text">Solicite a sua cotação personalizada</p>
             </div>
-            <a href="#form-proposta" class="btn-cta-inline" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
+            <a href="#form-cotação" class="btn-cta-inline" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
                 Quero Importar um Carro
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -320,7 +320,7 @@
                 <h4 class="cta-inline-title">Quer saber quanto custa importar?</h4>
                 <p class="cta-inline-text">Solicite uma simulação detalhada e personalizada</p>
             </div>
-            <a href="#form-proposta" class="btn-cta-inline" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
+            <a href="#form-cotação" class="btn-cta-inline" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
                 Pedir Simulação de Custos
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="5" y1="12" x2="19" y2="12"></line>

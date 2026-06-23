@@ -6,7 +6,7 @@
 
 <div class="container-fluid px-4 py-5">
     <h2 class="mb-4 fw-bold text-primary">
-        Editar Proposta Convertida
+        Editar Cotação Convertida
     </h2>
     <form action="{{ route('converted-proposals.update', $convertedProposal->id) }}" method="POST" class="bg-white p-4 rounded shadow-sm">
         @csrf
@@ -75,7 +75,7 @@
                 @if($convertedProposal->url)
                 <small class="d-block mt-1">
                     <a target="_blank" href="{{ route('proposals.edit', $convertedProposal->proposal_id) }}">
-                        Ver Proposta
+                        Ver Cotação
                     </a>
                 </small>
                 @endif
@@ -297,7 +297,7 @@
                         alert(data.message);
                     }
                 })
-                .catch(err => alert("Ocorreu um erro ao atualizar o estado da proposta."));
+                .catch(err => alert("Ocorreu um erro ao atualizar o estado da cotação."));
         });
     });
 </script>

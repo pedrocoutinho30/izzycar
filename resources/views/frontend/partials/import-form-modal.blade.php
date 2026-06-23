@@ -13,8 +13,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h5 class="modal-title-modern" id="formPropostaLabel">Peça a sua proposta</h5>
-                        <p class="modal-subtitle-modern">Preencha o formulário e receba uma proposta personalizada</p>
+                        <h5 class="modal-title-modern" id="formPropostaLabel">Peça a sua cotação</h5>
+                        <p class="modal-subtitle-modern">Preencha o formulário e receba uma cotação personalizada</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close-modern" data-bs-dismiss="modal" aria-label="Fechar">

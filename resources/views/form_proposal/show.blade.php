@@ -5,7 +5,7 @@
 
 <div class="container-fluid px-4 py-5">
     <h2 class="mb-4 fw-bold text-primary">
-        Ver Formulário Proposta
+        Ver Formulário Cotação
     </h2>
 
     <div class="bg-white p-4 rounded shadow-sm">
@@ -19,7 +19,7 @@
                 <p><strong>Origem:</strong> {{ $form->source }}</p>
             </div>
             <div class="col-md-4 mb-4">
-                <h5 class="mb-3">Detalhes da Proposta</h5>
+                <h5 class="mb-3">Detalhes da Cotação</h5>
 
                 <p><strong>Tipo de Pagamento:</strong> {{ $form->payment_type ?? 'N/A' }}</p>
                 <p><strong>Tempo Expectável de Compra:</strong> {{ $form->estimated_purchase_date ?? 'N/A' }}</p>
@@ -49,7 +49,7 @@
                     <option value="cancelado" {{ $form->status == 'cancelado' ? 'selected' : '' }}>Cancelado</option>
                 </select>
                 @if($form->proposal_id != null)
-                <p><strong>ID da Proposta:</strong> <a href="{{ route('proposals.edit', $form->proposal_id) }}">{{ $form->proposal_id }}</a></p>
+                <p><strong>ID da Cotação:</strong> <a href="{{ route('proposals.edit', $form->proposal_id) }}">{{ $form->proposal_id }}</a></p>
                 @endif
             </div>
 

@@ -178,13 +178,13 @@
         </nav>
         @php
         $menuItemsGestao = [
-        ['route' => 'admin.v2.dashboard', 'icon' => 'fa-tachometer-alt', 'label' => __('Dashboard V2'), 'permission' => 'gerir propostas'],
+        ['route' => 'admin.v2.dashboard', 'icon' => 'fa-tachometer-alt', 'label' => __('Dashboard V2'), 'permission' => 'gerir cotações'],
         ['route' => 'clients.index', 'icon' => 'fa-users', 'label' => __('Clientes'), 'permission' => 'gerir clientes'],
-        ['route' => 'isv.simulator', 'icon' => 'fa-calculator', 'label' => __('Simuldor ISV'), 'permission' => 'gerir propostas'],
+        ['route' => 'isv.simulator', 'icon' => 'fa-calculator', 'label' => __('Simuldor ISV'), 'permission' => 'gerir cotações'],
         ['route' => 'calculator.profit', 'icon' => 'fa-chart-line', 'label' => __('Calculadora de Lucro'), 'permission' => 'gerir vendas'],
-        ['route' => 'form_proposals.index', 'icon' => 'fa-briefcase', 'label' => __('Formulários de Propostas'), 'permission' => 'gerir propostas'],
-        ['route' => 'proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Propostas'), 'permission' => 'gerir propostas'],
-        ['route' => 'converted-proposals.index', 'icon' => 'fa-check-square', 'label' => __('Propostas Convertidas'), 'permission' => 'gerir propostas'],
+        ['route' => 'form_proposals.index', 'icon' => 'fa-briefcase', 'label' => __('Formulários de Cotações'), 'permission' => 'gerir cotações'],
+        ['route' => 'proposals.index', 'icon' => 'fa-file-signature', 'label' => __('Cotações'), 'permission' => 'gerir cotações'],
+        ['route' => 'converted-proposals.index', 'icon' => 'fa-check-square', 'label' => __('Cotações Convertidas'), 'permission' => 'gerir cotações'],
         ['route' => 'vehicles.index', 'icon' => 'fa-car-side', 'label' => __('Veículos'), 'permission' => 'gerir veiculos'],
         ['route' => 'expenses.index', 'icon' => 'fa-file-invoice-dollar','label' => __('Despesas'), 'permission' => 'gerir despesas'],
         ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'label' => __('Vendas'), 'permission' => 'gerir vendas'],

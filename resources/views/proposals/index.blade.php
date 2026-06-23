@@ -5,9 +5,9 @@
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 text-primary mb-0">Propostas</h1>
+                <h1 class="h3 text-primary mb-0">Cotações</h1>
                 <a href="{{ route('proposals.create') }}" class="btn btn-outline-primary shadow-sm">
-                    <i class="fas fa-plus me-1"></i> Adicionar proposta
+                    <i class="fas fa-plus me-1"></i> Adicionar cotação
                 </a>
             </div>
 
@@ -67,7 +67,7 @@
                         <p class="card-text mb-2"><strong>Combustível:</strong> {{ $proposal->fuel }}</p>
                         <div class="d-flex flex-wrap gap-2">
                             <a href="{{ route('proposals.edit', $proposal) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="fas fa-edit"></i></a>
-                            <form action="{{ route('proposals.destroy', $proposal) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta proposta?')">
+                            <form action="{{ route('proposals.destroy', $proposal) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta cotação?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
@@ -125,7 +125,7 @@
                                     <a href="{{ route('proposals.edit', $proposal) }}" class="btn btn-sm btn-outline-secondary me-2" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('proposals.destroy', $proposal) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta proposta?')">
+                                    <form action="{{ route('proposals.destroy', $proposal) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta cotação?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
@@ -137,7 +137,7 @@
                                     </a>
                                     <a href="{{ route('proposals.detail', [
     'proposal_code' => $proposal->proposal_code
-]) }}" class="btn btn-sm btn-primary" title="Ver Proposta">
+]) }}" class="btn btn-sm btn-primary" title="Ver Cotação">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <form action="{{ route('proposals.duplicate', $proposal->id) }}" method="POST" style="display:inline;">

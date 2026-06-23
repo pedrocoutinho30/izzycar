@@ -109,7 +109,7 @@
     <meta name="format-detection" content="telephone=no">
 
     <title>@yield('title', 'Izzycar — Importação Automóvel Chave na Mão | Portugal')</title>
-    <meta name="description" content="@yield('meta_description', 'Izzycar: importação automóvel da Alemanha e Europa chave na mão. ISV, transporte, matrícula — tudo incluído. Peça já a sua proposta gratuita.')">
+    <meta name="description" content="@yield('meta_description', 'Izzycar: importação automóvel da Alemanha e Europa chave na mão. ISV, transporte, matrícula — tudo incluído. Peça já a sua cotação gratuita.')">
     <meta name="author" content="Izzycar">
     <meta name="robots" content="@yield('robots', 'index, follow')">
     <meta name="google-site-verification" content="8ey-yAqrOmo1lTV1ZnDmJdyRs8KDw-XoE128jpKtys4">

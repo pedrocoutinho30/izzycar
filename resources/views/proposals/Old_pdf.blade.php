@@ -86,7 +86,7 @@
 
         <!-- Título centralizado -->
         <div style="flex-grow: 1; text-align: center;">
-            <h2 style="margin: 0;">Proposta de Importação</h2>
+            <h2 style="margin: 0;">Cotação de Importação</h2>
         </div>
     </div>
     <div class="content">
@@ -102,7 +102,7 @@
         }
         $totalCost = $proposal->commission_cost + $proposal->inspection_commission_cost + $proposal->license_plate_cost + $proposal->isv_cost + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost + $proposal->proposed_car_value;
         ?>
-        <h3>Detalhes da Proposta</h3>
+        <h3>Detalhes da Cotação</h3>
         <div class="proposal-details">
             <table width="100%">
                 <tr>
@@ -147,7 +147,7 @@
                     <td><b>{{ round($totalCost, 0) }} €</b></td>
                 </tr>
                 <tr>
-                    <th>Validade da proposta <b>(**)</b></th>
+                    <th>Validade da cotação <b>(**)</b></th>
                     <td>{{ \Carbon\Carbon::parse($proposal->created_at)->addDays(15)->format('d-m-Y') }}</td>
                 </tr>
             </table>
@@ -164,7 +164,7 @@
                 <li>Intermediação</li>
             </ul>
             </p>
-            <p> <b>(**)</b> A concretização da proposta depende sempre da disponibilidade do veículo no país de origem.</p>
+            <p> <b>(**)</b> A concretização da cotação depende sempre da disponibilidade do veículo no país de origem.</p>
 
         </div>
         <div style="page-break-before: always;"></div>

@@ -245,7 +245,7 @@
                     <div class="modern-card-header">
                         <h5 class="modern-card-title">
                             <i class="bi bi-info-circle"></i>
-                            Propostas Associadas
+                            Cotações Associadas
                         </h5>
                     </div>
                     <div class="modern-card-body">
@@ -254,7 +254,7 @@
                             @foreach($client->proposals as $proposal)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <a href="{{ route('admin.v2.proposals.edit', $proposal->id) }}">
-                                    Proposta #{{ $proposal->id }} - {{ $proposal->created_at->format('d/m/Y') }}
+                                    Cotação #{{ $proposal->id }} - {{ $proposal->created_at->format('d/m/Y') }}
                                 </a>
                                 <span class="badge bg-primary rounded-pill">
                                     {{ $proposal->brand }} {{ $proposal->model }}
@@ -263,7 +263,7 @@
                             @endforeach
                         </ul>
                         @else
-                        <p class="mb-0">Nenhuma proposta associada a este cliente.</p>
+                        <p class="mb-0">Nenhuma cotação associada a este cliente.</p>
                         @endif
                     </div>
 

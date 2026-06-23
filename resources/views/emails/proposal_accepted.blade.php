@@ -20,13 +20,13 @@
             <div style="  text-align: center;
             margin-bottom: 20px;">
                 <img src="https://izzycar.pt/storage/settings/logo_redondo.png" alt="Izzycar Logo" style="max-height: 60px; max-width: 60px; margin-bottom: 10px;">
-                <div class="title" style="font-size: 24px; font-weight: bold; color: #fff;">Aceitação de Proposta </div>
+                <div class="title" style="font-size: 24px; font-weight: bold; color: #fff;">Aceitação de Cotação </div>
             </div>
 
             <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Olá <b>{{ $data['client_name']}}</b>,</p>
 
 
-            <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Acabou de aceitar a proposta feita pela <b>Izzycar</b> para a importação do seu novo carro.</p>
+            <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Acabou de aceitar a cotação feita pela <b>Izzycar</b> para a importação do seu novo carro.</p>
 
             <div>
                 <p style="font-size: 16px; margin-bottom: 20px; color: #fff;"><b>Detalhes do carro:</b></p>

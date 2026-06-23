@@ -9,7 +9,7 @@
 @include('components.admin.page-header', [
 'breadcrumbs' => [
 ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-['icon' => 'bi bi-file-earmark-text', 'label' => 'Propostas', 'href' => route('admin.v2.form-proposals.index')],
+['icon' => 'bi bi-file-earmark-text', 'label' => 'Cotações', 'href' => route('admin.v2.form-proposals.index')],
 ['icon' => '', 'label' => 'Detalhes do Formulário']
 ],
 'title' => 'Pedido de ' . $formProposal->name,

@@ -5,7 +5,7 @@
     @include('components.admin.stats-cards', [
         'stats' => [
             [
-                'title' => 'Total Propostas',
+                'title' => 'Total Cotações',
                 'value' => '156',
                 'icon' => 'file-earmark-text',
                 'color' => 'primary',

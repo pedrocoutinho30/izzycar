@@ -5,7 +5,7 @@
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 text-primary mb-0">Formulários de Proposta</h1>
+                <h1 class="h3 text-primary mb-0">Formulários de Cotação</h1>
             </div>
             <div class="table-responsive  d-none d-md-block">
                 <table class="table table-striped table-hover align-middle">

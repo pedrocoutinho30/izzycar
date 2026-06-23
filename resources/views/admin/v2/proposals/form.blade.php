@@ -3,7 +3,7 @@
     PROPOSTAS - FORM (Criar/Editar) V2
     ==================================================================
     
-    Formulário moderno e organizado para criar ou editar propostas
+    Formulário moderno e organizado para criar ou editar cotações
     
     FUNCIONALIDADES:
     - Secções colapsáveis
@@ -18,7 +18,7 @@
 
 @extends('layouts.admin-v2')
 
-@section('title', isset($proposal) ? 'Editar Proposta' : 'Nova Proposta')
+@section('title', isset($proposal) ? 'Editar Cotação' : 'Nova Cotação')
 
 @section('content')
 
@@ -30,10 +30,10 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
 @include('components.admin.page-header', [
 'breadcrumbs' => [
 ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-['icon' => 'bi bi-file-earmark-text', 'label' => 'Propostas', 'href' => route('admin.v2.proposals.index')],
+['icon' => 'bi bi-file-earmark-text', 'label' => 'Cotações', 'href' => route('admin.v2.proposals.index')],
 ['icon' => '', 'label' => $existAction]
 ],
-'title' => $existAction . ' Proposta',
+'title' => $existAction . ' Cotação',
 'subtitle' => "",
 'actionHref' => "",
 'actionLabel' => ''
@@ -611,7 +611,7 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
             {{-- SECÇÃO: Ações --}}
             @include('components.admin.action-card', [
             'cancelButtonHref' => route('admin.v2.proposals.index'),
-            'submitButtonLabel' => isset($proposal) ? 'Atualizar Proposta' : 'Criar Proposta',
+            'submitButtonLabel' => isset($proposal) ? 'Atualizar Cotação' : 'Criar Cotação',
             'timestamps' => isset($proposal) ? [
             'created_at' => $proposal->created_at,
             'updated_at' => $proposal->updated_at

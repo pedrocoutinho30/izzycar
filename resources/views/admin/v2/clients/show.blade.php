@@ -234,12 +234,12 @@
     </div>
 </div>
 
-{{-- ─── Propostas ─── --}}
+{{-- ─── Cotações ─── --}}
 <div class="modern-card mt-2">
     <div class="modern-card-header">
         <h5 class="modern-card-title">
             <i class="bi bi-file-earmark-text"></i>
-            Propostas Enviadas
+            Cotações Enviadas
         </h5>
         <span class="badge bg-secondary rounded-pill">{{ $client->proposals->count() }}</span>
     </div>
@@ -247,7 +247,7 @@
     @if($client->proposals->isEmpty())
         <div class="modern-card-body text-center py-5">
             <i class="bi bi-file-earmark-text text-muted" style="font-size:2.5rem"></i>
-            <p class="text-muted mt-2 mb-0">Sem propostas enviadas para este cliente.</p>
+            <p class="text-muted mt-2 mb-0">Sem cotações enviadas para este cliente.</p>
         </div>
     @else
         <div class="modern-card-body p-0">

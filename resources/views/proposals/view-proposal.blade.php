@@ -28,7 +28,7 @@
 <?php $no_footer = true; ?>
 <meta name="robots" content="noindex, nofollow">
 
-@section('title', $proposal->brand . ' ' . $proposal->model . ' — Proposta de Importação')
+@section('title', $proposal->brand . ' ' . $proposal->model . ' — Cotação de Importação')
 
 @section('content')
 
@@ -43,7 +43,7 @@
     </div>
     <div class="iz-bar__vehicle">{{ $proposal->brand }} {{ $proposal->model }} · <strong>{{ number_format($totalCost, 0, ',', '.') }} €</strong></div>
     @if(!$isAccepted)
-      <button class="iz-bar__cta" onclick="openModal()">Aceitar Proposta</button>
+      <button class="iz-bar__cta" onclick="openModal()">Aceitar Cotação</button>
     @else
       <span class="iz-bar__accepted"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Aceite</span>
     @endif
@@ -61,7 +61,7 @@
   <div class="iz-hero__content">
     <div class="iz-hero__badge">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      Proposta Personalizada · {{ $proposal->proposal_code }} · {{ $client->name }}
+      Cotação Personalizada · {{ $proposal->proposal_code }} · {{ $client->name }}
     </div>
     <h1 class="iz-hero__brand">{{ $proposal->brand }} {{ $proposal->model }}</h1>
     <p class="iz-hero__version">{{ $proposal->version }}</p>
@@ -71,13 +71,13 @@
     </div>
     @if(!$isAccepted)
       <button class="iz-hero__cta" onclick="openModal()">
-        Aceitar Esta Proposta
+        Aceitar Esta Cotação
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     @else
       <div class="iz-hero__accepted-badge">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        Proposta Aceite — Em Processamento
+        Cotação Aceite — Em Processamento
       </div>
     @endif
   </div>
@@ -291,12 +291,12 @@
           @if(!$isAccepted)
           <button class="iz-accept-btn" onclick="openModal()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            Aceitar Esta Proposta
+            Aceitar Esta Cotação
           </button>
           @else
           <div class="iz-accepted-pill">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            Proposta Aceite — Em Processamento
+            Cotação Aceite — Em Processamento
           </div>
           @endif
         </div>
@@ -358,7 +358,7 @@
     <div class="iz-timeline">
       @php
         $steps = [
-          ['num'=>1, 'title'=>'Aprovação',      'desc'=>'Análise da proposta e confirmação de disponibilidade do veículo no stand',              'days'=>'~3 dias'],
+          ['num'=>1, 'title'=>'Aprovação',      'desc'=>'Análise da cotação e confirmação de disponibilidade do veículo no stand',              'days'=>'~3 dias'],
           ['num'=>2, 'title'=>'Pagamento',       'desc'=>'Processamento seguro do pagamento e aquisição formal do veículo',                     'days'=>'~4 dias'],
           ['num'=>3, 'title'=>'Transporte',      'desc'=>'Transporte seguro e segurado do veículo desde o país de origem até Portugal',          'days'=>'~12 dias'],
           ['num'=>4, 'title'=>'Legalização ISV', 'desc'=>'Inspeção técnica, cálculo e pagamento do Imposto Sobre Veículos (ISV)',                'days'=>'~3 dias'],
@@ -475,7 +475,7 @@
       </div>
       <button class="iz-accept-btn iz-accept-btn--large" onclick="openModal()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        Aceitar Esta Proposta
+        Aceitar Esta Cotação
       </button>
     </div>
   </section>
@@ -504,7 +504,7 @@
     <div class="iz-modal__body">
       <div class="iz-modal__info">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <span>Ao aceitar confirma que leu e concordou com todos os termos desta proposta.</span>
+        <span>Ao aceitar confirma que leu e concordou com todos os termos desta cotação.</span>
       </div>
 
       <form id="acceptForm" action="{{ route('proposals.accept', $proposal->id) }}" method="POST">

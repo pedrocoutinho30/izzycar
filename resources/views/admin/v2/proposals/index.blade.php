@@ -3,7 +3,7 @@
     PROPOSTAS - LISTAGEM V2
     ==================================================================
     
-    View moderna de listagem de propostas com:
+    View moderna de listagem de cotações com:
     - Stats cards no topo
     - Filtros avançados
     - Cards adaptativos mobile-first
@@ -16,7 +16,7 @@
 
 @extends('layouts.admin-v2')
 
-@section('title', 'Propostas')
+@section('title', 'Cotações')
 
 @section('content')
 
@@ -24,12 +24,12 @@
 @include('components.admin.page-header', [
 'breadcrumbs' => [
 ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-['icon' => 'bi bi-file-earmark-text', 'label' => 'Propostas', 'href' => ''],
+['icon' => 'bi bi-file-earmark-text', 'label' => 'Cotações', 'href' => ''],
 ],
-'title' => 'Propostas',
-'subtitle' => 'Gerir todas as propostas de importação',
+'title' => 'Cotações',
+'subtitle' => 'Gerir todas as cotações de importação',
 'actionHref' => route('admin.v2.proposals.create'),
-'actionLabel' => 'Nova Proposta'
+'actionLabel' => 'Nova Cotação'
 ])
 <!-- Stats Cards -->
 @include('components.admin.stats-cards', ['stats' => $stats])
@@ -86,7 +86,7 @@ return [$client->id => $client->name];
     <div class="modern-card-header">
         <h5 class="modern-card-title">
             <i class="bi bi-list-ul"></i>
-            Lista de Propostas
+            Lista de Cotações
         </h5>
         <span class="badge bg-secondary rounded-pill">{{ $proposals->total() }} total</span>
     </div>
@@ -145,7 +145,7 @@ return [$client->id => $client->name];
         'color' => 'danger',
         'label' => 'Eliminar',
         'method' => 'DELETE',
-        'confirm' => 'Tem certeza que deseja eliminar esta proposta?'
+        'confirm' => 'Tem certeza que deseja eliminar esta cotação?'
         ]
         ]
         ])
@@ -156,7 +156,7 @@ return [$client->id => $client->name];
 
     @include('components.admin.pagination-footer', [
     'items' => $proposals,
-    'label' => 'propostas'
+    'label' => 'cotações'
     ])
     @else
     <!-- Estado vazio -->
@@ -164,12 +164,12 @@ return [$client->id => $client->name];
         <div class="mb-4">
             <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
         </div>
-        <h4 class="text-muted mb-2">Nenhuma proposta encontrada</h4>
+        <h4 class="text-muted mb-2">Nenhuma cotação encontrada</h4>
         <p class="text-muted mb-4">
             @if(request()->hasAny(['status', 'client_id', 'search', 'date_from', 'date_to']))
-            Não foram encontradas propostas com os filtros aplicados.
+            Não foram encontradas cotações com os filtros aplicados.
             @else
-            Comece por criar a sua primeira proposta.
+            Comece por criar a sua primeira cotação.
             @endif
         </p>
         @if(request()->hasAny(['status', 'client_id', 'search', 'date_from', 'date_to']))
@@ -180,7 +180,7 @@ return [$client->id => $client->name];
         @else
         <a href="{{ route('admin.v2.proposals.create') }}" class="btn btn-primary-modern">
             <i class="bi bi-plus-lg"></i>
-            Criar Primeira Proposta
+            Criar Primeira Cotação
         </a>
         @endif
     </div>
@@ -291,7 +291,7 @@ return [$client->id => $client->name];
                 const newStatus = this.value;
 
                 // TODO: Implementar AJAX request para mudar status
-                console.log(`Mudar status da proposta ${proposalId} para ${newStatus}`);
+                console.log(`Mudar status da cotação ${proposalId} para ${newStatus}`);
             });
         });
     });

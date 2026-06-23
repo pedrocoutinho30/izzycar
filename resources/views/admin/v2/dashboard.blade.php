@@ -282,7 +282,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="chart-container">
-                            <h6 class="text-center mb-3">Novas Propostas</h6>
+                            <h6 class="text-center mb-3">Novas Cotações</h6>
                             <canvas id="proposalsChart"></canvas>
                         </div>
                     </div>
@@ -294,7 +294,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="chart-container">
-                            <h6 class="text-center mb-3">Propostas Convertidas</h6>
+                            <h6 class="text-center mb-3">Cotações Convertidas</h6>
                             <canvas id="convertedProposalsChart"></canvas>
                         </div>
                     </div>
@@ -305,13 +305,13 @@
 </div>
 <!-- Atividade Recente -->
 <div class="row g-4">
-    <!-- Últimas Propostas -->
+    <!-- Últimas Cotações -->
     <div class="col-lg-6">
         <div class="modern-card">
             <div class="modern-card-header">
                 <h5 class="modern-card-title">
                     <i class="bi bi-file-earmark-text"></i>
-                    Últimas Propostas
+                    Últimas Cotações
                 </h5>
                 <a href="{{ route('admin.v2.proposals.index') }}" class="btn btn-sm btn-secondary-modern">
                     Ver Todas
@@ -343,7 +343,7 @@
                     @endforeach
                 </div>
             @else
-                <p class="text-muted text-center py-4">Nenhuma proposta recente</p>
+                <p class="text-muted text-center py-4">Nenhuma cotação recente</p>
             @endif
         </div>
     </div>
@@ -663,7 +663,7 @@ function updateCharts(data) {
 
         updateChart('proposalsChart', data.labels, [
             {
-                label: 'Novas Propostas',
+                label: 'Novas Cotações',
                 data: dataset.proposals,
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
@@ -683,7 +683,7 @@ function updateCharts(data) {
 
         updateChart('convertedProposalsChart', data.labels, [
             {
-                label: 'Propostas Convertidas',
+                label: 'Cotações Convertidas',
                 data: dataset.convertedProposals,
                 backgroundColor: 'rgba(153, 102, 255, 0.5)',
                 borderColor: 'rgba(153, 102, 255, 1)',

@@ -207,7 +207,7 @@
           </a>
           <a href="{{ route('frontend.form-import') }}" class="nd-sb-nav__item nd-sb-nav__item--cta">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Pedir proposta grátis
+            Pedir cotação grátis
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nd-sb-nav__arrow"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
         </nav>

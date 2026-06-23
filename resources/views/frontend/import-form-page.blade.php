@@ -1,15 +1,15 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Pedido de Proposta de Importação Automóvel | Izzycar')
-@section('meta_description', 'Peça já a sua proposta gratuita de importação automóvel. A Izzycar trata de tudo: pesquisa, negociação, transporte, ISV e matrícula. Resposta em 24h.')
+@section('title', 'Pedido de Cotação de Importação Automóvel | Izzycar')
+@section('meta_description', 'Peça já a sua cotação gratuita de importação automóvel. A Izzycar trata de tudo: pesquisa, negociação, transporte, ISV e matrícula. Resposta em 24h.')
 
 @push('head')
 <script type="application/ld+json">
 {
     "@@context": "https://schema.org",
     "@@type": "ContactPage",
-    "name": "Pedido de Proposta de Importação Automóvel",
-    "description": "Formulário para pedido de proposta gratuita de importação automóvel da Alemanha e Europa para Portugal.",
+    "name": "Pedido de Cotação de Importação Automóvel",
+    "description": "Formulário para pedido de cotação gratuita de importação automóvel da Alemanha e Europa para Portugal.",
     "url": "https://izzycar.pt/formulario-importacao",
     "provider": {
         "@@type": "AutoDealer",
@@ -20,7 +20,7 @@
         "@@type": "BreadcrumbList",
         "itemListElement": [
             {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
-            {"@@type": "ListItem", "position": 2, "name": "Pedido de Proposta", "item": "https://izzycar.pt/formulario-importacao"}
+            {"@@type": "ListItem", "position": 2, "name": "Pedido de Cotação", "item": "https://izzycar.pt/formulario-importacao"}
         ]
     }
 }
@@ -38,8 +38,8 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
       Importação Automóvel
     </div>
-    <h1 class="if-hero__title">Peça a sua<br>Proposta de Importação</h1>
-    <p class="if-hero__sub">Preencha o formulário e entraremos em contacto em menos de 24 horas com uma proposta personalizada, sem compromisso.</p>
+    <h1 class="if-hero__title">Peça a sua<br>Cotação de Importação</h1>
+    <p class="if-hero__sub">Preencha o formulário e entraremos em contacto em menos de 24 horas com uma cotação personalizada, sem compromisso.</p>
     <div class="if-hero__pills">
       <span class="if-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Resposta em 24h</span>
       <span class="if-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Sem compromisso</span>
@@ -58,7 +58,7 @@
       </div>
       <div>
         <div class="if-success__title">Pedido enviado com sucesso!</div>
-        <p class="if-success__text">Entraremos em contacto em breve com a sua proposta personalizada.</p>
+        <p class="if-success__text">Entraremos em contacto em breve com a sua cotação personalizada.</p>
       </div>
     </div>
 
@@ -158,7 +158,7 @@
           <div class="if-field">
             <label class="if-label" for="ad_option">
               Tem algum anúncio identificado? <span class="if-req">*</span>
-              <span class="if-hint">Forneça o máximo de informação para uma proposta mais precisa.</span>
+              <span class="if-hint">Forneça o máximo de informação para uma cotação mais precisa.</span>
             </label>
             <select name="ad_option" id="ad_option" class="if-select" required>
               <option value="">Escolha uma opção</option>

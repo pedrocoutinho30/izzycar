@@ -5,14 +5,14 @@
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 text-primary mb-0">Propostas Convertidas</h1>
+                <h1 class="h3 text-primary mb-0">Cotações Convertidas</h1>
             </div>
             @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
             @if($proposals->isEmpty())
-            <p>Sem propostas convertidas ainda. </p>
+            <p>Sem cotações convertidas ainda. </p>
             @else
             <div class="table-responsive  d-none d-md-block">
                 <table class="table table-striped table-hover align-middle">

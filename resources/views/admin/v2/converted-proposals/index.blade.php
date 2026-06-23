@@ -1,6 +1,6 @@
 @extends('layouts.admin-v2')
 
-@section('title', 'Propostas Convertidas')
+@section('title', 'Cotações Convertidas')
 
 @section('content')
 
@@ -8,10 +8,10 @@
 @include('components.admin.page-header', [
 'breadcrumbs' => [
 ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-['icon' => 'bi bi-file-earmark-text', 'label' => 'Propostas Convertidas', 'href' => route('admin.v2.converted-proposals.index')],
+['icon' => 'bi bi-file-earmark-text', 'label' => 'Cotações Convertidas', 'href' => route('admin.v2.converted-proposals.index')],
 ],
-'title' => 'Propostas Convertidas',
-'subtitle' => 'Propostas em processo de concretização',
+'title' => 'Cotações Convertidas',
+'subtitle' => 'Cotações em processo de concretização',
 'actionHref' => '',
 'actionLabel' => ''
 ])
@@ -106,17 +106,17 @@
     'label' => 'Eliminar',
     'color' => 'danger',
     'method' => 'delete',
-    'confirm' => 'Tem a certeza que pretende eliminar esta proposta convertida?'
+    'confirm' => 'Tem a certeza que pretende eliminar esta cotação convertida?'
     ]
     ]
     ])
     @empty
     @include('components.admin.empty-state', [
     'icon' => 'bi-check2-circle',
-    'title' => 'Nenhuma proposta convertida',
-    'description' => 'Ainda não existem propostas convertidas ou não há resultados para os filtros aplicados.',
+    'title' => 'Nenhuma cotação convertida',
+    'description' => 'Ainda não existem cotações convertidas ou não há resultados para os filtros aplicados.',
     'actionUrl' => route('admin.v2.converted-proposals.create'),
-    'actionText' => 'Criar Primeira Proposta Convertida'
+    'actionText' => 'Criar Primeira Cotação Convertida'
     ])
     @endforelse
 </div>

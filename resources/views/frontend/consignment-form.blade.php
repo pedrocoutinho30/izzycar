@@ -1,7 +1,7 @@
 @extends('frontend.partials.layout')
 
 @section('title', 'Avaliar o meu carro para Consignação | Izzycar')
-@section('meta_description', 'Preencha o formulário de avaliação e receba uma proposta de consignação. Tratamos de toda a venda do seu veículo sem custos iniciais.')
+@section('meta_description', 'Preencha o formulário de avaliação e receba uma cotação de consignação. Tratamos de toda a venda do seu veículo sem custos iniciais.')
 
 @push('head')
 <link rel="canonical" href="https://izzycar.pt/consignacao/avaliacao">
@@ -18,7 +18,7 @@
             Consignação de Venda
         </div>
         <h1 class="ef-hero__title">Peça uma avaliação<br>do seu veículo</h1>
-        <p class="ef-hero__sub">Preencha os dados do seu carro e entraremos em contacto em menos de 24 horas com uma proposta sem compromisso.</p>
+        <p class="ef-hero__sub">Preencha os dados do seu carro e entraremos em contacto em menos de 24 horas com uma cotação sem compromisso.</p>
         <div class="ef-hero__pills">
             <span class="ef-pill"><i class="bi bi-check-lg"></i> Resposta em 24h</span>
             <span class="ef-pill"><i class="bi bi-check-lg"></i> Sem compromisso</span>
@@ -35,7 +35,7 @@
             <div class="ef-success__icon"><i class="bi bi-check-lg"></i></div>
             <div>
                 <div class="ef-success__title">Pedido enviado com sucesso!</div>
-                <p class="ef-success__text">Recebemos a sua avaliação. Entraremos em contacto em breve com uma proposta personalizada.</p>
+                <p class="ef-success__text">Recebemos a sua avaliação. Entraremos em contacto em breve com uma cotação personalizada.</p>
             </div>
         </div>
 

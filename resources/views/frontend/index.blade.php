@@ -285,8 +285,8 @@
             <div class="process-step fade-in-up ">
                 <div class="process-number">01</div>
                 <div class="process-content">
-                    <h3>Pedido de Proposta</h3>
-                    <p>Preencha o formulário com as características do carro que deseja. Respondemos em 24h com uma proposta detalhada e transparente.</p>
+                    <h3>Pedido de Cotação</h3>
+                    <p>Preencha o formulário com as características do carro que deseja. Respondemos em 24h com uma cotação detalhada e transparente.</p>
                 </div>
             </div>
 
@@ -430,11 +430,11 @@
             <div class="col-lg-8 text-center">
                 <h2 class="cta-title fade-in-up">Comece a Importar Hoje</h2>
                 <p class="cta-description fade-in-up" data-delay="100">
-                    Peça uma proposta sem compromisso e descubra quanto pode economizar ao importar o seu próximo carro connosco.
+                    Peça uma cotação sem compromisso e descubra quanto pode economizar ao importar o seu próximo carro connosco.
                 </p>
                 <div class="cta-buttons fade-in-up" data-delay="200">
                     <a href="{{ route('frontend.form-import') }}" class="btn-cta-primary">
-                        <span>Pedir Proposta</span>
+                        <span>Pedir Cotação</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>

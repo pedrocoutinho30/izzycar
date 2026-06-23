@@ -1,6 +1,6 @@
 @extends('layouts.admin-v2')
 
-@section('title', 'Formulários de Proposta')
+@section('title', 'Formulários de Cotação')
 
 @section('content')
 
@@ -9,9 +9,9 @@
 @include('components.admin.page-header', [
 'breadcrumbs' => [
 ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-['icon' => 'bi bi-file-earmark-text', 'label' => 'Formulários de Proposta', 'href' => ''],
+['icon' => 'bi bi-file-earmark-text', 'label' => 'Formulários de Cotação', 'href' => ''],
 ],
-'title' => 'Formulários de Proposta',
+'title' => 'Formulários de Cotação',
 'subtitle' => 'Pedidos recebidos através do website',
 'actionHref' => '',
 'actionLabel' => ''
@@ -50,7 +50,7 @@
     <div class="modern-card-header">
         <h5 class="modern-card-title">
             <i class="bi bi-list-ul"></i>
-            Lista de Formulários de Proposta
+            Lista de Formulários de Cotação
         </h5>
         <span class="badge bg-secondary rounded-pill">{{ $formProposals->total() }} total</span>
     </div>
@@ -135,7 +135,7 @@
             @include('components.admin.empty-state', [
                 'icon' => 'bi-envelope',
                 'title' => 'Nenhum formulário encontrado',
-                'description' => 'Não existem formulários de proposta ou não há resultados para os filtros aplicados.'
+                'description' => 'Não existem formulários de cotação ou não há resultados para os filtros aplicados.'
             ])
         @endforelse
     </div>

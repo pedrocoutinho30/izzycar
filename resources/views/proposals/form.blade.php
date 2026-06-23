@@ -5,7 +5,7 @@
 
 <div class="container-fluid px-4 py-5">
     <h2 class="mb-4 fw-bold text-primary">
-        {{ isset($proposal) ? 'Editar Proposta' : 'Criar Proposta' }}
+        {{ isset($proposal) ? 'Editar Cotação' : 'Criar Cotação' }}
     </h2>
 
 
