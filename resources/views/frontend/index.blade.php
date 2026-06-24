@@ -422,6 +422,31 @@
     </div>
 </section>
 
+<!-- Partners Section -->
+@if($partners->isNotEmpty())
+<section class="partners-section">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="section-badge">Parceiros de Confiança</span>
+        </div>
+        <div class="partners-strip">
+            @foreach($partners as $partner)
+                @if($partner->url)
+                <a href="{{ $partner->url }}" target="_blank" rel="noopener noreferrer"
+                   class="partner-logo" title="{{ $partner->name }}">
+                    <img src="{{ asset('storage/' . $partner->image) }}" alt="{{ $partner->name }}">
+                </a>
+                @else
+                <div class="partner-logo" title="{{ $partner->name }}">
+                    <img src="{{ asset('storage/' . $partner->image) }}" alt="{{ $partner->name }}">
+                </div>
+                @endif
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
 <!-- CTA Final Section -->
 <section class="cta-final-section">
     <div class="cta-overlay"></div>
@@ -462,6 +487,40 @@
 
 @push('styles')
 <style>
+    /* ── Partners ── */
+    .partners-section {
+        padding: 3rem 0;
+        border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
+        background: #fff;
+    }
+    .partners-strip {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        flex-wrap: wrap;
+    }
+    .partner-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        opacity: .55;
+        filter: grayscale(100%);
+        transition: opacity .25s, filter .25s;
+    }
+    .partner-logo:hover {
+        opacity: 1;
+        filter: grayscale(0%);
+    }
+    .partner-logo img {
+        height: 40px;
+        width: auto;
+        max-width: 140px;
+        object-fit: contain;
+    }
+
     .min-vh-95 {
         min-height: 95vh;
     }

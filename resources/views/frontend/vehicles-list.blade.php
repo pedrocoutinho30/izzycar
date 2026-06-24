@@ -12,7 +12,7 @@
     <div class="hero-overlay"></div>
     <div class="container">
         <div class="row align-items-center min-vh-50 py-5">
-            <div class="col-lg-8 mx-auto text-center">
+            <div class="col-lg-7">
                 <span class="hero-badge-vehicles fade-in-up">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>
@@ -22,7 +22,7 @@
                     Viaturas Usadas
                 </span>
                 <h1 class="hero-title-vehicles fade-in-up" data-delay="100">
-                    Encontre o Seu <span class="hero-accent">Carro dos Sonhos</span>
+                    Encontre o Seu <span class="hero-accent">Carro</span>
                 </h1>
                 <p class="hero-desc-vehicles fade-in-up" data-delay="200">
                     Viaturas usadas de qualidade, selecionadas com rigor e transparência
@@ -77,12 +77,14 @@
         margin-bottom: 1.5rem;
     }
     .hero-title-vehicles {
-        font-size: 3rem;
+        font-size: clamp(1.8rem, 4.5vw, 3rem);
         font-weight: 900;
         color: #fff;
-        line-height: 1.2;
+        line-height: 1.15;
         margin-bottom: 1rem;
+        white-space: nowrap;
     }
+    @media(max-width:640px) { .hero-title-vehicles { white-space: normal; font-size: 1.7rem; } }
     .hero-title-vehicles .hero-accent {
         color: var(--accent-color);
     }

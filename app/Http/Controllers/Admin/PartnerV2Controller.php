@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Partner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * PartnerV2Controller
@@ -80,7 +81,16 @@ class PartnerV2Controller extends Controller
             'email' => 'nullable|email|max:255',
             'vat' => 'nullable|string|max:50',
             'contact_name' => 'nullable|string|max:255',
+            'url' => 'nullable|url|max:500',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'show_on_site' => 'nullable|boolean',
         ]);
+
+        $validated['show_on_site'] = $request->boolean('show_on_site');
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('partners', 'public');
+        }
 
         Partner::create($validated);
 
@@ -114,7 +124,19 @@ class PartnerV2Controller extends Controller
             'email' => 'nullable|email|max:255',
             'vat' => 'nullable|string|max:50',
             'contact_name' => 'nullable|string|max:255',
+            'url' => 'nullable|url|max:500',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'show_on_site' => 'nullable|boolean',
         ]);
+
+        $validated['show_on_site'] = $request->boolean('show_on_site');
+
+        if ($request->hasFile('image')) {
+            if ($partner->image) {
+                Storage::disk('public')->delete($partner->image);
+            }
+            $validated['image'] = $request->file('image')->store('partners', 'public');
+        }
 
         $partner->update($validated);
 
@@ -128,6 +150,11 @@ class PartnerV2Controller extends Controller
     public function destroy($id)
     {
         $partner = Partner::findOrFail($id);
+
+        if ($partner->image) {
+            Storage::disk('public')->delete($partner->image);
+        }
+
         $partner->delete();
 
         return redirect()->route('admin.v2.partners.index')

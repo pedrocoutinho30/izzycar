@@ -40,6 +40,27 @@
     }
 }
 </script>
+
+@if(!empty($faq['enum']))
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "FAQPage",
+    "mainEntity": [
+        @foreach($faq['enum'] as $i => $faqItem)
+        {
+            "@@type": "Question",
+            "name": "{{ addslashes(strip_tags($faqItem['question'])) }}",
+            "acceptedAnswer": {
+                "@@type": "Answer",
+                "text": "{{ addslashes(strip_tags($faqItem['answer'])) }}"
+            }
+        }{{ !$loop->last ? ',' : '' }}
+        @endforeach
+    ]
+}
+</script>
+@endif
 @endpush
 
 @section('content')
@@ -51,6 +72,11 @@
         <div class="row align-items-center min-vh-50 py-5">
             <div class="col-lg-7">
                 <div class="hero-content">
+                    <nav class="hero-breadcrumb" aria-label="breadcrumb">
+                        <a href="{{ route('frontend.home') }}">Início</a>
+                        <span>/</span>
+                        <span>Importação Automóvel</span>
+                    </nav>
                     <span class="hero-badge fade-in-up">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
@@ -414,6 +440,16 @@
         position: relative;
         z-index: 2;
     }
+
+    .hero-breadcrumb {
+        display: flex; align-items: center; gap: .5rem;
+        font-size: .82rem; color: rgba(255,255,255,.45);
+        margin-bottom: 1rem;
+    }
+    .hero-breadcrumb a { color: rgba(255,255,255,.45); text-decoration: none; }
+    .hero-breadcrumb a:hover { color: #fff; }
+    .hero-breadcrumb span { color: rgba(255,255,255,.25); }
+    .hero-breadcrumb span:last-child { color: rgba(255,255,255,.7); }
 
     .hero-badge {
         display: inline-flex;

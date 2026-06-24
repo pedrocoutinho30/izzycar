@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 use \App\Models\Page;
 use App\Models\Testimonial;
+use App\Models\Partner;
 
 class VehiclesController extends Controller
 {
@@ -43,7 +44,10 @@ class VehiclesController extends Controller
         $page = Page::where('slug', 'homepage')
             ->with('contents')
             ->firstOrFail();
-        return view('frontend.index', compact('vehicles_count', 'last_vehicles', 'vehicles', 'page', 'reviews', 'media' ));
+
+        $partners = Partner::where('show_on_site', true)->whereNotNull('image')->get();
+
+        return view('frontend.index', compact('vehicles_count', 'last_vehicles', 'vehicles', 'page', 'reviews', 'media', 'partners'));
     }
 
     public function vehicles(Request $request)

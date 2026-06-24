@@ -43,7 +43,9 @@
     </div>
         @forelse($partners as $partner)
         @include('components.admin.item-card', [
-        'image' => 'https://ui-avatars.com/api/?name=' . urlencode($partner->name) . '&background=6e0707&color=fff&bold=true',
+        'image' => $partner->image
+            ? asset('storage/' . $partner->image)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($partner->name) . '&background=6e0707&color=fff&bold=true',
         'title' => $partner->name,
         'subtitle' => $partner->contact_name ?? 'Sem contacto definido',
         'badges' => array_filter([
@@ -54,6 +56,10 @@
         $partner->country ? [
         'text' => $partner->country,
         'color' => 'info'
+        ] : null,
+        $partner->show_on_site ? [
+        'text' => 'Visível no site',
+        'color' => 'success'
         ] : null
         ]),
         'meta' => array_filter([
@@ -68,6 +74,10 @@
         $partner->city ? [
         'icon' => 'bi-geo-alt',
         'text' => $partner->city
+        ] : null,
+        $partner->url ? [
+        'icon' => 'bi-link-45deg',
+        'text' => $partner->url
         ] : null
         ]),
         'actions' => [

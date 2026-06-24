@@ -63,6 +63,13 @@
 {{-- ══════ HEADER ══════ --}}
 <header class="nd-header">
   <div class="nd-header__inner">
+    <nav class="nd-breadcrumb" aria-label="breadcrumb">
+      <a href="{{ route('frontend.home') }}">Início</a>
+      <span>/</span>
+      <a href="{{ route('frontend.news') }}">Guias & Notícias</a>
+      <span>/</span>
+      <span>{{ \Illuminate\Support\Str::limit($news->title, 50) }}</span>
+    </nav>
     <a href="{{ route('frontend.news') }}" class="nd-back">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
       Todas as notícias
@@ -312,6 +319,15 @@ document.addEventListener('DOMContentLoaded', function () {
   background: radial-gradient(ellipse at 30% 0%, rgba(110,7,7,.25) 0%, transparent 65%);
 }
 .nd-header__inner { max-width:820px; margin:0 auto; position:relative; }
+
+.nd-breadcrumb {
+  display:flex; align-items:center; gap:.45rem; flex-wrap:wrap;
+  font-size:.78rem; color:rgba(255,255,255,.4); margin-bottom:1.25rem;
+}
+.nd-breadcrumb a { color:rgba(255,255,255,.4); text-decoration:none; transition:color .2s; }
+.nd-breadcrumb a:hover { color:#fff; }
+.nd-breadcrumb span { color:rgba(255,255,255,.25); }
+.nd-breadcrumb span:last-child { color:rgba(255,255,255,.6); }
 
 .nd-back {
   display:inline-flex; align-items:center; gap:.45rem;

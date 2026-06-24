@@ -22,7 +22,7 @@ $existAction = isset($partner) ? 'Editar' : 'Criar';
 
 <!-- FORMULÁRIO -->
 <form action="{{ isset($partner) ? route('admin.v2.partners.update', $partner->id) : route('admin.v2.partners.store') }}"
-    method="POST">
+    method="POST" enctype="multipart/form-data">
     @csrf
     @if(isset($partner))
     @method('PUT')
@@ -76,6 +76,18 @@ $existAction = isset($partner) ? 'Editar' : 'Criar';
                             value="{{ old('country', $partner->country ?? 'Portugal') }}">
                         @error('country')
                         <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Website / URL</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                            <input type="url" name="url" class="form-control @error('url') is-invalid @enderror"
+                                value="{{ old('url', $partner->url ?? '') }}" placeholder="https://www.exemplo.com">
+                        </div>
+                        @error('url')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
@@ -154,10 +166,45 @@ $existAction = isset($partner) ? 'Editar' : 'Criar';
             </div>
         </div>
 
-        <!-- BOTÕES DE AÇÃO -->
+        <!-- SIDEBAR -->
         <div class="col-lg-4">
+            <!-- Imagem -->
+            <div class="modern-card mb-4">
+                <div class="modern-card-header">
+                    <h5 class="modern-card-title">
+                        <i class="bi bi-image"></i>
+                        Imagem / Logótipo
+                    </h5>
+                </div>
+                <div class="partner-img-preview-wrap mb-3">
+                    <img id="partnerImgPreview"
+                         src="{{ isset($partner) && $partner->image ? asset('storage/' . $partner->image) : 'https://ui-avatars.com/api/?name=' . urlencode($partner->name ?? 'P') . '&background=6e0707&color=fff&bold=true&size=200' }}"
+                         alt="Preview"
+                         class="partner-img-preview">
+                </div>
+                <label class="form-label">Carregar imagem</label>
+                <input type="file" name="image" id="partnerImage"
+                       class="form-control @error('image') is-invalid @enderror"
+                       accept="image/jpg,image/jpeg,image/png,image/webp">
+                <div class="form-text">JPG, PNG ou WEBP · máx. 2 MB</div>
+                @error('image')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+
+                <hr class="my-3">
+
+                <div class="form-check form-switch d-flex align-items-center gap-2 ps-0">
+                    <input class="form-check-input ms-0" type="checkbox" role="switch"
+                           name="show_on_site" id="showOnSite" value="1"
+                           {{ old('show_on_site', $partner->show_on_site ?? false) ? 'checked' : '' }}>
+                    <label class="form-check-label fw-semibold" for="showOnSite">
+                        Mostrar no site
+                    </label>
+                </div>
+                <div class="form-text">Se ativo, o parceiro aparece na página pública do site.</div>
+            </div>
+
             <!-- BOTÕES DE AÇÃO -->
-            {{-- SECÇÃO: Ações --}}
             @include('components.admin.action-card', [
             'cancelButtonHref' => route('admin.v2.partners.index'),
             'submitButtonLabel' => isset($partner) ? 'Atualizar Parceiro' : 'Criar Parceiro',
@@ -167,9 +214,29 @@ $existAction = isset($partner) ? 'Editar' : 'Criar';
             ] : null
             ])
         </div>
+    </div>
 </form>
 
+<script>
+document.getElementById('partnerImage').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => document.getElementById('partnerImgPreview').src = e.target.result;
+    reader.readAsDataURL(file);
+});
+</script>
+
 <style>
+    .partner-img-preview-wrap {
+        width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+        background: #f1f3f5; border: 2px dashed #dee2e6;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .partner-img-preview {
+        width: 100%; height: 100%; object-fit: contain; border-radius: 10px;
+    }
+
     .form-card {
         background: #fff;
         border-radius: 12px;

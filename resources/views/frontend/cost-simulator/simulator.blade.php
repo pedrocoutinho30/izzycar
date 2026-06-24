@@ -44,18 +44,20 @@
 {{-- ══════ HERO ══════ --}}
 <section class="sc-hero">
   <div class="sc-hero__overlay"></div>
+  <div class="container">
   <div class="sc-hero__inner">
     <div class="sc-hero__badge">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       Simulador de Custos
     </div>
-    <h1 class="sc-hero__title">Quanto custa importar<br>o seu carro?</h1>
+    <h1 class="sc-hero__title">Quanto custa importar <span class="sc-hero__accent">o seu carro?</span></h1>
     <p class="sc-hero__sub">Preencha os dados do veículo e receba uma estimativa completa no seu email — ISV, transporte e todos os custos incluídos.</p>
     <div class="sc-hero__pills">
       <span class="sc-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Cálculo ISV automático</span>
       <span class="sc-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Enviado por email</span>
       <span class="sc-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Sem compromisso</span>
     </div>
+  </div>
   </div>
 </section>
 
@@ -352,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
   background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%236e0707' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
 }
 .sc-hero__inner {
-  position:relative; max-width:760px; margin:0 auto; text-align:center;
+  position:relative; max-width:700px;
   animation: sc-fadeUp .7s ease-out both;
 }
 .sc-hero__badge {
@@ -364,12 +366,14 @@ document.addEventListener('DOMContentLoaded', function () {
 .sc-hero__title {
   font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight:900;
   color:#fff; line-height:1.15; margin-bottom:1rem; letter-spacing:-.02em;
+  white-space: nowrap;
 }
+.sc-hero__accent { color: var(--accent-color); }
 .sc-hero__sub {
   font-size: clamp(.9rem,2vw,1.1rem); color:rgba(255,255,255,.65);
-  line-height:1.7; max-width:580px; margin:0 auto 1.75rem;
+  line-height:1.7; max-width:580px; margin:0 0 1.75rem;
 }
-.sc-hero__pills { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+.sc-hero__pills { display:flex; gap:.6rem; justify-content:flex-start; flex-wrap:wrap; }
 .sc-pill {
   display:inline-flex; align-items:center; gap:.4rem;
   background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
@@ -475,6 +479,7 @@ document.addEventListener('DOMContentLoaded', function () {
 @media(max-width:640px) {
   .sc-card { padding:1.75rem 1.25rem; }
   .sc-submit { width:100%; justify-content:center; }
+  .sc-hero__title { white-space: normal; }
 }
 </style>
 @endpush

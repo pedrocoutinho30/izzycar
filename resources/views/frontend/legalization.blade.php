@@ -42,7 +42,12 @@
     <div class="hero-overlay"></div>
     <div class="container">
         <div class="row align-items-center min-vh-50 py-5">
-            <div class="col-lg-8 mx-auto text-center">
+            <div class="col-lg-7">
+                <nav class="hero-breadcrumb" aria-label="breadcrumb">
+                    <a href="{{ route('frontend.home') }}">Início</a>
+                    <span>/</span>
+                    <span>Legalização Automóvel</span>
+                </nav>
                 <span class="hero-badge fade-in-up">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -50,7 +55,7 @@
                     </svg>
                     Legalização de Veículos
                 </span>
-                <h1 class="hero-title fade-in-up" data-delay="100">{{ $data->contents['title'] }}</h1>
+                <h1 class="hero-title fade-in-up" data-delay="100">Legalização <span class="hero-accent">Automóvel</span></h1>
                 <p class="hero-description fade-in-up" data-delay="200">{{ $data->contents['subtitle'] }}</p>
             </div>
         </div>
@@ -134,6 +139,16 @@
         min-height: 60vh;
     }
 
+    .hero-breadcrumb {
+        display: flex; align-items: center; gap: .5rem; justify-content: flex-start;
+        font-size: .82rem; color: rgba(255,255,255,.45);
+        margin-bottom: 1rem;
+    }
+    .hero-breadcrumb a { color: rgba(255,255,255,.45); text-decoration: none; }
+    .hero-breadcrumb a:hover { color: #fff; }
+    .hero-breadcrumb span { color: rgba(255,255,255,.25); }
+    .hero-breadcrumb span:last-child { color: rgba(255,255,255,.7); }
+
     .hero-badge {
         display: inline-flex;
         align-items: center;
@@ -149,19 +164,20 @@
     }
 
     .hero-title {
-        font-size: 3rem;
+        font-size: clamp(2rem, 5vw, 3rem);
         font-weight: 900;
         color: #fff;
-        line-height: 1.2;
+        line-height: 1.15;
         margin-bottom: 1.5rem;
+        white-space: nowrap;
     }
+    .hero-accent { color: var(--accent-color); }
 
     .hero-description {
         font-size: 1.2rem;
         color: rgba(255,255,255,0.8);
         line-height: 1.8;
         max-width: 700px;
-        margin: 0 auto;
     }
 
     .section-badge {
@@ -385,7 +401,7 @@
     }
 
     @media (max-width: 768px) {
-        .hero-title { font-size: 2rem; }
+        .hero-title { font-size: 1.8rem; white-space: normal; }
         .hero-description { font-size: 1rem; }
     }
 </style>

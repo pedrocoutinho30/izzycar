@@ -20,5 +20,12 @@ class Partner extends Model
         'email',
         'vat',
         'contact_name',
+        'image',
+        'url',
+        'show_on_site',
+    ];
+
+    protected $casts = [
+        'show_on_site' => 'boolean',
     ];
 }

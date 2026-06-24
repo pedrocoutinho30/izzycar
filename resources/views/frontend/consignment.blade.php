@@ -20,7 +20,14 @@
     },
     "areaServed": { "@@type": "Country", "name": "Portugal" },
     "serviceType": "Consignação Automóvel",
-    "category": "Automóvel"
+    "category": "Automóvel",
+    "breadcrumb": {
+        "@@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+            {"@@type": "ListItem", "position": 2, "name": "Consignação Automóvel", "item": "https://izzycar.pt/consignacao"}
+        ]
+    }
 }
 </script>
 @endpush
@@ -31,21 +38,26 @@
 <section class="cs-hero">
     <div class="cs-hero-overlay"></div>
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
+        <div class="row">
+            <div class="col-lg-7">
+                <nav class="hero-breadcrumb" aria-label="breadcrumb">
+                    <a href="{{ route('frontend.home') }}">Início</a>
+                    <span>/</span>
+                    <span>Consignação Automóvel</span>
+                </nav>
                 <span class="cs-badge fade-in-up">
                     <i class="bi bi-handshake"></i>
                     Venda à Consignação
                 </span>
-                <h1 class="cs-hero-title fade-in-up" data-delay="100">{{ $data->contents['title'] }}</h1>
+                <h1 class="cs-hero-title fade-in-up" data-delay="100">Venda o Seu Carro <span class="cs-hero-accent">à Consignação</span></h1>
                 <p class="cs-hero-sub fade-in-up" data-delay="200">{{ $data->contents['subtitle'] }}</p>
                 <div class="cs-hero-actions fade-in-up" data-delay="300">
                     <a href="#como-funciona" class="cs-btn-primary">
                         <i class="bi bi-arrow-down-circle"></i> Ver como funciona
                     </a>
-                    <a href="{{ route('frontend.contact') }}" class="cs-btn-outline">
+                    <!-- <a href="{{ route('frontend.contact') }}" class="cs-btn-outline">
                         <i class="bi bi-telephone"></i> Falar Connosco
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>
@@ -358,6 +370,16 @@
         background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236e0707' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         opacity: .5;
     }
+    .hero-breadcrumb {
+        display: flex; align-items: center; gap: .5rem;
+        font-size: .82rem; color: rgba(255,255,255,.45);
+        margin-bottom: 1rem; justify-content: flex-start;
+    }
+    .hero-breadcrumb a { color: rgba(255,255,255,.45); text-decoration: none; }
+    .hero-breadcrumb a:hover { color: #fff; }
+    .hero-breadcrumb span { color: rgba(255,255,255,.25); }
+    .hero-breadcrumb span:last-child { color: rgba(255,255,255,.7); }
+
     .cs-badge {
         display: inline-flex; align-items: center; gap: 8px;
         padding: 10px 20px;
@@ -366,14 +388,15 @@
         font-size: .88rem; font-weight: 600; margin-bottom: 1.5rem;
     }
     .cs-hero-title {
-        font-size: 3rem; font-weight: 900; color: #fff;
-        line-height: 1.15; margin-bottom: 1.25rem;
+        font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 900; color: #fff;
+        line-height: 1.15; margin-bottom: 1.25rem; white-space: nowrap;
     }
+    .cs-hero-accent { color: var(--accent-color); }
     .cs-hero-sub {
         font-size: 1.15rem; color: rgba(255,255,255,.75);
-        line-height: 1.8; max-width: 640px; margin: 0 auto 2rem;
+        line-height: 1.8; max-width: 640px; margin: 0 0 2rem;
     }
-    .cs-hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .cs-hero-actions { display: flex; gap: 1rem; justify-content: flex-start; flex-wrap: wrap; }
 
     /* ── What grid ── */
     .cs-what-grid {
@@ -553,13 +576,13 @@
     /* ── Responsive ── */
     @media (max-width: 992px) {
         .cs-what-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-        .cs-hero-title { font-size: 2.2rem; }
+        .cs-hero-title { font-size: 2rem; white-space: normal; }
         .cs-section-title { font-size: 1.85rem; }
         .cs-price-card { flex-direction: column; padding: 2rem; }
     }
     @media (max-width: 768px) {
         .cs-hero { padding: 3.5rem 0 3rem; }
-        .cs-hero-title { font-size: 1.9rem; }
+        .cs-hero-title { font-size: 1.5rem; white-space: normal; }
         .cs-hero-sub   { font-size: 1rem; }
         .cs-section { padding: 3.5rem 0; }
         .cs-section-alt { padding: 3.5rem 0; }

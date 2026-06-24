@@ -24,13 +24,20 @@
 {{-- ══════ HERO ══════ --}}
 <section class="nb-hero">
   <div class="nb-hero__bg"></div>
+  <div class="container">
   <div class="nb-hero__inner">
+    <nav class="nb-hero__breadcrumb" aria-label="breadcrumb">
+      <a href="{{ route('frontend.home') }}">Início</a>
+      <span>/</span>
+      <span>Guias & Notícias</span>
+    </nav>
     <div class="nb-hero__badge">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
       Guias & Notícias
     </div>
-    <h1 class="nb-hero__title">Tudo sobre<br><span class="nb-hero__accent">o mercado automóvel</span></h1>
+    <h1 class="nb-hero__title">Tudo sobre <span class="nb-hero__accent">o mercado automóvel</span></h1>
     <p class="nb-hero__sub">Guias práticos, análises de ISV e as últimas novidades do mercado automóvel europeu.</p>
+  </div>
   </div>
 </section>
 
@@ -179,17 +186,24 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ── Hero ── */
 .nb-hero {
   position:relative; background: var(--nb-dark);
-  padding: 5rem 1.5rem 4rem; overflow:hidden;
-  text-align:center;
+  padding: 5rem 0 4rem; overflow:hidden;
 }
 .nb-hero__bg {
   position:absolute; inset:0; pointer-events:none;
-  background: radial-gradient(ellipse at 50% 0%, rgba(110,7,7,.25) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 30% 0%, rgba(110,7,7,.25) 0%, transparent 65%);
 }
 .nb-hero__inner {
-  position:relative; max-width:700px; margin:0 auto;
+  position:relative; max-width:700px;
   animation: nb-fadeUp .7s ease-out both;
 }
+.nb-hero__breadcrumb {
+  display:flex; align-items:center; gap:.5rem;
+  font-size:.82rem; color:rgba(255,255,255,.45); margin-bottom:1rem;
+}
+.nb-hero__breadcrumb a { color:rgba(255,255,255,.45); text-decoration:none; }
+.nb-hero__breadcrumb a:hover { color:#fff; }
+.nb-hero__breadcrumb span { color:rgba(255,255,255,.25); }
+.nb-hero__breadcrumb span:last-child { color:rgba(255,255,255,.7); }
 .nb-hero__badge {
   display:inline-flex; align-items:center; gap:.45rem;
   background:rgba(110,7,7,.2); border:1px solid rgba(110,7,7,.35);
@@ -197,12 +211,14 @@ document.addEventListener('DOMContentLoaded', function () {
   padding:.4rem 1rem; border-radius:100px; margin-bottom:1.5rem;
 }
 .nb-hero__title {
-  font-size: clamp(2rem, 5vw, 3.2rem); font-weight:900;
+  font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight:900;
   color:#fff; line-height:1.15; margin-bottom:.85rem; letter-spacing:-.02em;
+  white-space: nowrap;
 }
+@media(max-width:640px) { .nb-hero__title { white-space: normal; font-size: clamp(1.4rem, 7vw, 2rem); } }
 .nb-hero__accent { color: var(--nb-brand); }
 .nb-hero__sub {
-  font-size:1rem; color:rgba(255,255,255,.6); line-height:1.7; max-width:520px; margin:0 auto;
+  font-size:1rem; color:rgba(255,255,255,.6); line-height:1.7; max-width:820px;
 }
 
 /* ── Page ── */

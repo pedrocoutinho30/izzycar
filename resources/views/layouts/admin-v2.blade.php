@@ -605,7 +605,7 @@
         
 
         <!-- Notifications -->
-        <div class="dropdown me-3">
+        <div class="dropdown me-3 ms-auto">
             <button class="btn-icon btn-secondary-modern" type="button" data-bs-toggle="dropdown">
                 <i class="bi bi-bell"></i>
             </button>
