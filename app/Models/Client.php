@@ -31,6 +31,8 @@ class Client extends Model
         'converted_at',
         'lead_source',
         'lead_status',
+        'next_followup_at',
+        'followup_note',
     ];
 
     protected $casts = [
@@ -38,6 +40,7 @@ class Client extends Model
         'validate_identification_number' => 'date',
         'is_lead' => 'boolean',
         'converted_at' => 'datetime',
+        'next_followup_at' => 'datetime',
     ];
 
     public function convertToClient(): void
@@ -61,6 +64,17 @@ class Client extends Model
     {
         return $this->hasMany(CostSimulator::class, 'client_id');
     }
+
+    public function activities()
+    {
+        return $this->hasMany(LeadActivity::class, 'client_id')->orderBy('created_at', 'desc');
+    }
+
+    public function latestActivity()
+    {
+        return $this->hasOne(LeadActivity::class, 'client_id')->latestOfMany();
+    }
+
     public function proposals()
     {
         return $this->hasMany(Proposal::class, 'client_id');

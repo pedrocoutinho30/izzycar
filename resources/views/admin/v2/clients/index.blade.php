@@ -18,6 +18,13 @@
 <!-- STATS CARDS -->
 @include('components.admin.stats-cards', ['stats' => $stats])
 
+<div class="d-flex justify-content-end mb-3">
+    <a href="{{ route('admin.v2.export.clients', request()->query()) }}"
+       class="btn btn-outline-success btn-sm" title="Exportar clientes para CSV (abre no Excel)">
+        <i class="bi bi-download me-1"></i> Exportar CSV
+    </a>
+</div>
+
 <!-- FILTROS -->
 @include('components.admin.filter-bar', [
 'filters' => [

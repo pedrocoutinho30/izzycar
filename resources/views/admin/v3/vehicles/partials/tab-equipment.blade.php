@@ -5,7 +5,7 @@
         <div class="text-center py-5 text-muted">
             <i class="bi bi-star fs-1 d-block mb-2"></i>
             Nenhum atributo configurado.<br>
-            <a href="{{ route('admin.v2.vehicles.index') }}" class="small">Gerir atributos</a>
+            <a href="{{ route('admin.v3.vehicles.index') }}" class="small">Ver Viaturas</a>
         </div>
     @else
         <div class="row g-3">

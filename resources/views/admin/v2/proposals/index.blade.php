@@ -34,6 +34,13 @@
 <!-- Stats Cards -->
 @include('components.admin.stats-cards', ['stats' => $stats])
 
+<div class="d-flex justify-content-end mb-3">
+    <a href="{{ route('admin.v2.export.proposals', request()->query()) }}"
+       class="btn btn-outline-success btn-sm" title="Exportar cotações para CSV (abre no Excel)">
+        <i class="bi bi-download me-1"></i> Exportar CSV
+    </a>
+</div>
+
 <!-- Filter Bar -->
 @include('components.admin.filter-bar', [
 'action' => route('admin.v2.proposals.index'),

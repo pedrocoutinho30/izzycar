@@ -795,6 +795,13 @@ class ProposalController extends Controller
         // Se for lead, converter automaticamente em cliente ao aceitar a cotação
         if ($client && $client->is_lead) {
             $client->convertToClient();
+            \App\Models\LeadActivity::log(
+                $client->id,
+                'Lead convertido em cliente',
+                "Convertido automaticamente ao aceitar a cotação #{$proposal->id}.",
+                'bi-person-check-fill',
+                'success'
+            );
         }
 
         $client->update($input);

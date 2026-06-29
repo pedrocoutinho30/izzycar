@@ -196,6 +196,78 @@
             </div>
         </div>
         @endif
+
+        {{-- ── TIMELINE + NOTAS ─────────────────────────────────────────── --}}
+        <div class="modern-card mb-4">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title"><i class="bi bi-clock-history"></i> Timeline & Notas</h5>
+            </div>
+
+            {{-- Formulário para registar nova actividade --}}
+            <div class="timeline-add-form">
+                <form action="{{ route('admin.v2.leads.activity', $lead->id) }}" method="POST">
+                    @csrf
+                    {{-- Tipo de actividade --}}
+                    <div class="timeline-type-tabs" role="group">
+                        @foreach(\App\Models\LeadActivity::TYPES as $key => $cfg)
+                        @if($key !== 'system')
+                        <label class="type-tab {{ $loop->first ? 'active' : '' }}">
+                            <input type="radio" name="type" value="{{ $key }}" {{ $loop->first ? 'checked' : '' }}>
+                            <i class="{{ $cfg['icon'] }}"></i> {{ $cfg['label'] }}
+                        </label>
+                        @endif
+                        @endforeach
+                    </div>
+
+                    {{-- Título / resumo --}}
+                    <input type="text" name="title" class="form-control mt-2 mb-2"
+                        placeholder="Resumo (ex: Liguei, não atendeu / Enviou email com interesse no BMW 320d)"
+                        required maxlength="255">
+
+                    {{-- Detalhe opcional --}}
+                    <textarea name="body" class="form-control mb-2" rows="2"
+                        placeholder="Detalhe adicional (opcional)..." maxlength="2000"></textarea>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-sm btn-primary-modern">
+                            <i class="bi bi-plus-circle me-1"></i> Registar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Lista de actividades --}}
+            @if($activities->isNotEmpty())
+            <div class="timeline-list">
+                @foreach($activities as $act)
+                <div class="timeline-item">
+                    <div class="timeline-icon bg-{{ $act->color }}">
+                        <i class="{{ $act->icon }}"></i>
+                    </div>
+                    <div class="timeline-body">
+                        <div class="timeline-title">{{ $act->title }}</div>
+                        @if($act->body)
+                        <div class="timeline-text">{{ $act->body }}</div>
+                        @endif
+                        <div class="timeline-meta">
+                            {{ $act->created_at->format('d/m/Y H:i') }}
+                            @if($act->user)
+                            · <strong>{{ $act->user->name }}</strong>
+                            @else
+                            · <span class="text-muted">Sistema</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @else
+            <div class="p-4 text-center text-muted small">
+                <i class="bi bi-clock-history d-block fs-4 mb-1"></i>
+                Sem actividade registada. Use o formulário acima para adicionar a primeira nota.
+            </div>
+            @endif
+        </div>
     </div>
 
     {{-- Sidebar --}}
@@ -250,6 +322,62 @@
                     <span class="badge bg-{{ $sc['color'] }} fw-normal">{{ $sc['label'] }}</span>
                 </div>
             </div>
+        </div>
+
+        {{-- Follow-up --}}
+        @php
+            $followupDate = $lead->next_followup_at;
+            $followupState = null;
+            if ($followupDate) {
+                if ($followupDate->isPast())         $followupState = 'atraso';
+                elseif ($followupDate->isToday())    $followupState = 'hoje';
+                else                                 $followupState = 'agendado';
+            }
+            $followupColors = ['atraso' => 'danger', 'hoje' => 'warning', 'agendado' => 'info'];
+            $followupIcons  = ['atraso' => 'bi-exclamation-circle-fill', 'hoje' => 'bi-alarm-fill', 'agendado' => 'bi-calendar-check'];
+        @endphp
+        <div class="modern-card mb-4">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title"><i class="bi bi-alarm"></i> Próximo Follow-up</h5>
+                @if($followupDate)
+                <span class="badge bg-{{ $followupColors[$followupState] }}">
+                    <i class="{{ $followupIcons[$followupState] }} me-1"></i>
+                    {{ $followupState === 'atraso' ? 'Em atraso' : ($followupState === 'hoje' ? 'Hoje' : 'Agendado') }}
+                </span>
+                @endif
+            </div>
+
+            {{-- Mostrar follow-up actual se existir --}}
+            @if($followupDate)
+            <div class="followup-current bg-{{ $followupColors[$followupState] }}-subtle border-{{ $followupColors[$followupState] }}">
+                <div class="followup-current__date">
+                    <i class="bi {{ $followupIcons[$followupState] }} text-{{ $followupColors[$followupState] }}"></i>
+                    {{ $followupDate->format('d/m/Y') }} às {{ $followupDate->format('H:i') }}
+                </div>
+                @if($lead->followup_note)
+                <div class="followup-current__note">{{ $lead->followup_note }}</div>
+                @endif
+            </div>
+            @endif
+
+            {{-- Formulário para agendar / reagendar --}}
+            <form action="{{ route('admin.v2.leads.followup', $lead->id) }}" method="POST" class="p-3">
+                @csrf
+                <label class="form-label small fw-semibold mb-1">
+                    {{ $followupDate ? 'Reagendar para' : 'Agendar contacto' }}
+                    {{-- Dica de utilização --}}
+                    <span class="text-muted fw-normal">— ex: amanhã de manhã para confirmar interesse</span>
+                </label>
+                <input type="datetime-local" name="next_followup_at" class="form-control mb-2"
+                    value="{{ $followupDate ? $followupDate->format('Y-m-d\TH:i') : '' }}"
+                    min="{{ now()->format('Y-m-d\TH:i') }}" required>
+                <input type="text" name="followup_note" class="form-control mb-2"
+                    placeholder="Motivo / o que ficou acordado (opcional)"
+                    value="{{ $lead->followup_note ?? '' }}" maxlength="255">
+                <button type="submit" class="btn btn-warning w-100 btn-sm fw-semibold">
+                    <i class="bi bi-alarm me-1"></i> {{ $followupDate ? 'Reagendar' : 'Agendar Follow-up' }}
+                </button>
+            </form>
         </div>
 
         {{-- Estado da lead --}}
@@ -346,5 +474,57 @@
 .lil-row { display: flex; align-items: center; gap: .6rem; padding: .5rem 0;
            border-bottom: 1px solid #f5f5f5; font-size: .88rem; color: #333; }
 .lil-row:last-child { border-bottom: none; }
+
+/* ── Follow-up ─────────────────────────────────────────────────────── */
+.followup-current {
+    margin: 0 1.25rem .75rem;
+    padding: .65rem .85rem;
+    border-radius: 8px;
+    border-left: 3px solid;
+}
+.followup-current__date { font-size: .88rem; font-weight: 600; display: flex; align-items: center; gap: .4rem; }
+.followup-current__note { font-size: .8rem; color: #555; margin-top: .25rem; }
+
+/* ── Timeline & Notas ──────────────────────────────────────────────── */
+.timeline-add-form { padding: 1rem 1.25rem; border-bottom: 1px solid var(--admin-border); background: #fafafa; }
+
+.timeline-type-tabs { display: flex; gap: .5rem; flex-wrap: wrap; }
+.type-tab {
+    display: flex; align-items: center; gap: .35rem;
+    padding: .3rem .75rem; border-radius: 20px; font-size: .78rem; font-weight: 600;
+    border: 1px solid #dee2e6; background: #fff; cursor: pointer; color: #555;
+    transition: all .15s;
+}
+.type-tab input[type=radio] { display: none; }
+.type-tab:has(input:checked),
+.type-tab.active { background: #111; color: #fff; border-color: #111; }
+
+.timeline-list { padding: .5rem 0; }
+.timeline-item { display: flex; gap: 1rem; padding: .85rem 1.25rem; position: relative; }
+.timeline-item + .timeline-item::before {
+    content: ''; position: absolute; top: 0; left: 2.35rem;
+    width: 1px; height: 100%; background: #f0f0f0;
+}
+.timeline-icon {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8rem; color: #fff; opacity: .9;
+}
+.timeline-body { flex: 1; min-width: 0; }
+.timeline-title { font-size: .88rem; font-weight: 600; color: #111; }
+.timeline-text { font-size: .83rem; color: #555; margin-top: .2rem; white-space: pre-line; }
+.timeline-meta { font-size: .72rem; color: #aaa; margin-top: .3rem; }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+/* Activar tab de tipo ao clicar */
+document.querySelectorAll('.type-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+    });
+});
+</script>
 @endpush

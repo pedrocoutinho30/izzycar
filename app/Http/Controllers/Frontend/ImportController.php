@@ -11,6 +11,8 @@ use App\Models\FormProposal;
 use App\Models\Client;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\ImportFormConfirmationMail;
+use App\Models\LeadActivity;
 use App\Http\Controllers\Frontend\PageController;
 
 class ImportController extends Controller
@@ -60,7 +62,19 @@ class ImportController extends Controller
         //Guardar o formulário de proposta
         $proposal = FormProposal::create($formPropposalData);
 
-        //TO DO:enviar email para cliente
+        // Enviar email de confirmação ao cliente
+        if ($clientExist->email) {
+            Mail::to($clientExist->email)->send(new ImportFormConfirmationMail($proposal, $clientExist));
+        }
+
+        // Registar na timeline
+        LeadActivity::log(
+            $clientExist->id,
+            'Pedido de importação submetido',
+            'Formulário preenchido em izzycar.pt.' . ($proposal->brand ? " Veículo: {$proposal->brand} {$proposal->model}." : '') . ($proposal->budget ? " Orçamento: {$proposal->budget}€." : ''),
+            'bi-envelope-fill',
+            'primary'
+        );
 
         // Montar corpo do email em texto
         $body = "

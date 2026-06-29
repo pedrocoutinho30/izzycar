@@ -30,6 +30,135 @@
 <!-- Stats Cards -->
 @include('components.admin.stats-cards', ['stats' => $stats])
 
+{{-- ══════════════════════════════════════════════════════════
+     AÇÕES PRIORITÁRIAS — O que precisa de atenção agora
+══════════════════════════════════════════════════════════ --}}
+@php
+    $totalPriorities = $leadsSemActividadeCount + $followupsAtrasados->count() + $cotacoesSemResposta->count() + $viaturasEmStockSemPreco;
+@endphp
+@if($totalPriorities > 0)
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="modern-card border-start border-4 border-danger">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title text-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    Ações Prioritárias
+                    <span class="badge bg-danger ms-2">{{ $totalPriorities }}</span>
+                </h5>
+                <small class="text-muted">Itens que precisam da sua atenção hoje</small>
+            </div>
+
+            <div class="row g-3 p-3">
+
+                {{-- Leads sem actividade --}}
+                @if($leadsSemActividadeCount > 0)
+                <div class="col-md-6 col-xl-3">
+                    <div class="p-3 rounded-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="rounded-circle bg-warning bg-opacity-25 d-flex align-items-center justify-content-center" style="width:36px;height:36px">
+                                <i class="bi bi-person-clock text-warning fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold fs-5 lh-1">{{ $leadsSemActividadeCount }}</div>
+                                <div class="small text-muted">Lead(s) sem contacto</div>
+                            </div>
+                        </div>
+                        <p class="small text-muted mb-2">Sem actividade há mais de 3 dias.</p>
+                        @foreach($leadsSemActividadeLista->take(3) as $lead)
+                        <a href="{{ route('admin.v2.leads.show', $lead->id) }}" class="d-block small text-truncate text-dark mb-1">
+                            <i class="bi bi-person me-1 text-warning"></i>{{ $lead->name }}
+                        </a>
+                        @endforeach
+                        <a href="{{ route('admin.v2.leads.index') }}" class="btn btn-sm btn-warning mt-2 w-100">
+                            Ver Todas as Leads
+                        </a>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Follow-ups em atraso --}}
+                @if($followupsAtrasados->count() > 0)
+                <div class="col-md-6 col-xl-3">
+                    <div class="p-3 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="rounded-circle bg-danger bg-opacity-25 d-flex align-items-center justify-content-center" style="width:36px;height:36px">
+                                <i class="bi bi-alarm text-danger fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold fs-5 lh-1">{{ $followupsAtrasados->count() }}</div>
+                                <div class="small text-muted">Follow-up(s) em atraso</div>
+                            </div>
+                        </div>
+                        <p class="small text-muted mb-2">Lembretes passados sem resposta.</p>
+                        @foreach($followupsAtrasados->take(3) as $lead)
+                        <a href="{{ route('admin.v2.leads.show', $lead->id) }}" class="d-block small text-truncate text-dark mb-1">
+                            <i class="bi bi-alarm me-1 text-danger"></i>{{ $lead->name }}
+                            <span class="text-muted">· {{ $lead->next_followup_at->diffForHumans() }}</span>
+                        </a>
+                        @endforeach
+                        <a href="{{ route('admin.v2.leads.kanban') }}" class="btn btn-sm btn-danger mt-2 w-100">
+                            Ver Kanban de Leads
+                        </a>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Cotações sem resposta --}}
+                @if($cotacoesSemResposta->count() > 0)
+                <div class="col-md-6 col-xl-3">
+                    <div class="p-3 rounded-3 bg-info bg-opacity-10 border border-info border-opacity-25 h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="rounded-circle bg-info bg-opacity-25 d-flex align-items-center justify-content-center" style="width:36px;height:36px">
+                                <i class="bi bi-hourglass-split text-info fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold fs-5 lh-1">{{ $cotacoesSemResposta->count() }}</div>
+                                <div class="small text-muted">Cotação(ões) sem resposta</div>
+                            </div>
+                        </div>
+                        <p class="small text-muted mb-2">Pendentes ou sem resposta há +5 dias.</p>
+                        @foreach($cotacoesSemResposta->take(3) as $proposal)
+                        <a href="{{ route('admin.v2.proposals.edit', $proposal->id) }}" class="d-block small text-truncate text-dark mb-1">
+                            <i class="bi bi-file-earmark-text me-1 text-info"></i>
+                            {{ $proposal->brand }} {{ $proposal->model }}
+                            @if($proposal->client) · {{ $proposal->client->name }} @endif
+                        </a>
+                        @endforeach
+                        <a href="{{ route('admin.v2.proposals.index', ['status' => 'Pendente']) }}" class="btn btn-sm btn-info mt-2 w-100">
+                            Ver Cotações
+                        </a>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Viaturas sem preço --}}
+                @if($viaturasEmStockSemPreco > 0)
+                <div class="col-md-6 col-xl-3">
+                    <div class="p-3 rounded-3 bg-secondary bg-opacity-10 border border-secondary border-opacity-25 h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="rounded-circle bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center" style="width:36px;height:36px">
+                                <i class="bi bi-tag text-secondary fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold fs-5 lh-1">{{ $viaturasEmStockSemPreco }}</div>
+                                <div class="small text-muted">Viatura(s) sem preço</div>
+                            </div>
+                        </div>
+                        <p class="small text-muted mb-2">Em stock mas sem preço de venda definido.</p>
+                        <a href="{{ route('admin.v3.vehicles.index', ['status' => 'em_stock']) }}" class="btn btn-sm btn-secondary mt-2 w-100">
+                            Ver Viaturas
+                        </a>
+                    </div>
+                </div>
+                @endif
+
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 <!-- Tarefas da Semana -->
 <div class="row g-4 mb-4">
     <div class="col-12">

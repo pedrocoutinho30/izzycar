@@ -8,6 +8,7 @@ use App\Http\Controllers\Frontend\ImportSimulatorController as ImportSimulator;
 use App\Mail\CostSimulatorResultMail;
 use App\Models\Client;
 use App\Models\CostSimulator;
+use App\Models\LeadActivity;
 use App\Models\Setting;
 use App\Models\Brand;
 use Illuminate\Support\Facades\Mail;
@@ -170,6 +171,15 @@ class CostSimulatorController extends Controller
         // Email ao cliente com link para os resultados
         $resultUrl = route('frontend.cost-simulator.result', $token);
         Mail::to($client->email)->send(new CostSimulatorResultMail($costSimulator, $client->name, $resultUrl));
+
+        // Registar na timeline
+        LeadActivity::log(
+            $client->id,
+            'Simulação de custos submetida',
+            ($costSimulator->brand ? "{$costSimulator->brand} {$costSimulator->model} — " : '') . "Total estimado: {$custoTotal}€.",
+            'bi-calculator-fill',
+            'info'
+        );
 
         return redirect()->route('frontend.cost-simulator')
             ->with('pending_email', $client->email);

@@ -131,11 +131,10 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     Route::resource('suppliers', SupplierController::class);
     Route::resource('partners', PartnerController::class);
 
-    Route::resource('vehicles', VehicleController::class);
+    // V1 veículos removido — sistema consolidado em V3
     Route::resource('vehicle-attributes', VehicleAttributeController::class);
     Route::patch('/vehicle-attributes/{id}/update-group', [VehicleAttributeController::class, 'updateGroup'])->name('vehicle-attributes.update-group');
     Route::post('/vehicle-attributes/sort', [VehicleAttributeController::class, 'sort'])->name('vehicle-attributes.sort');
-    Route::get('vehicles/{vehicle}/profit', 'VehicleController@profit')->name('vehicles.profit');
 
 
 
@@ -171,6 +170,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     // ============================================================
     Route::get('v2/dashboard', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'index'])->name('admin.v2.dashboard');
     Route::get('v2/dashboard/chart-data', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'getChartData'])->name('admin.v2.dashboard.chart-data');
+    Route::get('v2/api/new-leads', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'newLeadsApi'])->name('admin.v2.api.new-leads');
 
     // ============================================================
     // DASHBOARD FINANCEIRO
@@ -193,11 +193,25 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     // ============================================================
     // LEADS V2
     // ============================================================
+    // Log de auditoria
+    Route::get('v2/audit-log', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('admin.v2.audit-log');
+    Route::get('v2/manual', [App\Http\Controllers\Admin\ManualController::class, 'index'])->name('admin.v2.manual');
+
+    // Exportações CSV
+    Route::prefix('v2/export')->name('admin.v2.export.')->group(function () {
+        Route::get('/leads',     [App\Http\Controllers\Admin\ExportController::class, 'leads'])->name('leads');
+        Route::get('/clients',   [App\Http\Controllers\Admin\ExportController::class, 'clients'])->name('clients');
+        Route::get('/proposals', [App\Http\Controllers\Admin\ExportController::class, 'proposals'])->name('proposals');
+    });
+
     Route::prefix('v2/leads')->name('admin.v2.leads.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\LeadV2Controller::class, 'index'])->name('index');
+        Route::get('/kanban', [App\Http\Controllers\Admin\LeadV2Controller::class, 'kanban'])->name('kanban');
         Route::get('/{id}', [App\Http\Controllers\Admin\LeadV2Controller::class, 'show'])->name('show');
         Route::post('/{id}/convert', [App\Http\Controllers\Admin\LeadV2Controller::class, 'convert'])->name('convert');
         Route::post('/{id}/status', [App\Http\Controllers\Admin\LeadV2Controller::class, 'updateStatus'])->name('status');
+        Route::post('/{id}/activity', [App\Http\Controllers\Admin\LeadV2Controller::class, 'storeActivity'])->name('activity');
+        Route::post('/{id}/followup', [App\Http\Controllers\Admin\LeadV2Controller::class, 'saveFollowup'])->name('followup');
         Route::delete('/{id}', [App\Http\Controllers\Admin\LeadV2Controller::class, 'destroy'])->name('destroy');
     });
 
@@ -293,20 +307,14 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     });
 
     // ============================================================
-    // VEÍCULOS V2
+    // VEÍCULOS V2 → redireccionamento para V3 (sistema unificado)
     // ============================================================
     Route::prefix('v2/vehicles')->name('admin.v2.vehicles.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'index'])->name('index');
-        Route::get('/create', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'create'])->name('create');
-        Route::post('/', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'edit'])->name('edit');
-        Route::put('/{id}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'update'])->name('update');
-        Route::delete('/{id}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'destroy'])->name('destroy');
-        Route::get('list', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'list'])->name('list');
-        // Documents
-        Route::post('/{id}/documentos', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'uploadDocument'])->name('upload-document');
-        Route::get('/{id}/documentos/{document}/download', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'downloadDocument'])->name('download-document');
-        Route::delete('/{id}/documentos/{document}', [App\Http\Controllers\Admin\VehicleV2Controller::class, 'deleteDocument'])->name('delete-document');
+        Route::get('/{any?}', fn() => redirect()->route('admin.v3.vehicles.index'))->name('index')->where('any', '.*');
+        // Aliases de named routes usados em views antigas
+        Route::get('/create', fn() => redirect()->route('admin.v3.vehicles.create'))->name('create');
+        Route::get('/list',   fn() => redirect()->route('admin.v3.vehicles.index'))->name('list');
+        Route::get('/{id}/edit', fn($id) => redirect()->route('admin.v3.vehicles.edit', $id))->name('edit');
     });
 
     // ============================================================

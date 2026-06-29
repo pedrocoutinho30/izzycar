@@ -17,6 +17,20 @@
 
 @include('components.admin.stats-cards', ['stats' => $stats])
 
+{{-- Toggle lista / kanban + exportação --}}
+<div class="d-flex justify-content-end mb-3 gap-2">
+    <a href="{{ route('admin.v2.leads.index') }}" class="btn btn-primary-modern btn-sm">
+        <i class="bi bi-list-ul me-1"></i> Vista de Lista
+    </a>
+    <a href="{{ route('admin.v2.leads.kanban') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-kanban me-1"></i> Pipeline Kanban
+    </a>
+    <a href="{{ route('admin.v2.export.leads', request()->query()) }}"
+       class="btn btn-outline-success btn-sm" title="Exportar leads visíveis para CSV (abre no Excel)">
+        <i class="bi bi-download me-1"></i> Exportar CSV
+    </a>
+</div>
+
 @include('components.admin.filter-bar', [
     'filters' => [
         [

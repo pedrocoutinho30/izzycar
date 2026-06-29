@@ -34,6 +34,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Proposal;
 use App\Models\Client;
+use App\Models\LeadActivity;
 use App\Models\Brand;
 use App\Models\VehicleAttribute;
 use App\Models\ProposalAttributeValue;
@@ -269,7 +270,16 @@ class ProposalV2Controller extends Controller
             $this->handleImageUpload($proposal, $request->file('image'));
         }
 
-        // Redirect com mensagem de sucesso
+        // Registar na timeline do cliente/lead
+        $vehicle = implode(' ', array_filter([$proposal->brand, $proposal->model, $proposal->version]));
+        LeadActivity::log(
+            $proposal->client_id,
+            "Cotação #{$proposal->id} criada" . ($vehicle ? " — {$vehicle}" : ''),
+            $proposal->total_price ? "Valor total: " . number_format($proposal->total_price, 0, ',', '.') . " €." : '',
+            'bi-file-earmark-text-fill',
+            'primary'
+        );
+
         return redirect()
             ->route('admin.v2.proposals.index')
             ->with('success', 'Proposta criada com sucesso!');
@@ -383,6 +393,8 @@ class ProposalV2Controller extends Controller
             $validated['other_links'] = json_encode($validated['other_links']);
         }
 
+        $oldStatus = $proposal->status;
+
         // Atualizar proposta
         $proposal->update($validated);
 
@@ -409,7 +421,25 @@ class ProposalV2Controller extends Controller
             $this->handleImageUpload($proposal, $request->file('image'));
         }
 
-        // Redirect
+        // Registar mudança de estado na timeline (só se mudou)
+        $newStatus = $proposal->fresh()->status;
+        if ($oldStatus !== $newStatus) {
+            $statusColors = [
+                'Pendente'     => 'secondary',
+                'Enviado'      => 'primary',
+                'Aprovada'     => 'success',
+                'Reprovada'    => 'danger',
+                'Sem resposta' => 'warning',
+            ];
+            LeadActivity::log(
+                $proposal->client_id,
+                "Cotação #{$proposal->id}: estado alterado para {$newStatus}",
+                '',
+                'bi-arrow-repeat',
+                $statusColors[$newStatus] ?? 'secondary'
+            );
+        }
+
         return redirect()
             ->route('admin.v2.proposals.index')
             ->with('success', 'Proposta atualizada com sucesso!');

@@ -719,27 +719,14 @@
 
             <div class="nav-group-title">Gestão</div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.consignment-evaluations.index') }}" class="nav-link {{ request()->routeIs('admin.v2.consignment-evaluations.*') ? 'active' : '' }}">
-                    <i class="bi bi-handshake"></i>
-                    <span>Consignações</span>
-                    @php
-                    $newConsignmentsCount = \App\Models\ConsignmentEvaluation::where('status', 'novo')->count();
-                    @endphp
-                    @if($newConsignmentsCount > 0)
-                    <span class="nav-badge">{{ $newConsignmentsCount }}</span>
-                    @endif
-                </a>
-            </div>
+            {{-- Consignações: oculto temporariamente --}}
 
             <div class="nav-item">
                 <a href="{{ route('admin.v2.leads.index') }}" class="nav-link {{ request()->routeIs('admin.v2.leads.*') ? 'active' : '' }}">
                     <i class="bi bi-funnel"></i>
                     <span>Leads</span>
                     @php $leadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
-                    @if($leadsCount > 0)
-                    <span class="nav-badge">{{ $leadsCount }}</span>
-                    @endif
+                    <span class="nav-badge" id="leads-nav-badge" {{ $leadsCount === 0 ? 'style=display:none' : '' }}>{{ $leadsCount }}</span>
                 </a>
             </div>
 
@@ -751,16 +738,9 @@
             </div>
 
             <div class="nav-item">
-                <a href="{{ route('admin.v2.vehicles.index') }}" class="nav-link {{ request()->routeIs('admin.v2.vehicles.*') ? 'active' : '' }}">
-                    <i class="bi bi-car-front"></i>
-                    <span>Veículos</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
                 <a href="{{ route('admin.v3.vehicles.index') }}" class="nav-link {{ request()->routeIs('admin.v3.vehicles.*') ? 'active' : '' }}">
                     <i class="bi bi-car-front-fill"></i>
-                    <span>Veículos V3</span>
+                    <span>Viaturas</span>
                 </a>
             </div>
 
@@ -912,6 +892,13 @@
             </div>
 
             <div class="nav-item">
+                <a href="{{ route('admin.v2.audit-log') }}" class="nav-link {{ request()->routeIs('admin.v2.audit-log') ? 'active' : '' }}">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Log de Auditoria</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
                 <a href="{{ route('admin.v2.roles.index') }}" class="nav-link {{ request()->routeIs('admin.v2.roles.*') ? 'active' : '' }}">
                     <i class="bi bi-person-badge"></i>
                     <span>Perfis</span>
@@ -922,6 +909,13 @@
                 <a href="{{ route('admin.v2.permissions.index') }}" class="nav-link {{ request()->routeIs('admin.v2.permissions.*') ? 'active' : '' }}">
                     <i class="bi bi-key"></i>
                     <span>Permissões</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.manual') }}" class="nav-link {{ request()->routeIs('admin.v2.manual') ? 'active' : '' }}">
+                    <i class="bi bi-book"></i>
+                    <span>Manual de Utilizador</span>
                 </a>
             </div>
         </nav>
@@ -1042,6 +1036,84 @@
 
         // Expor função globalmente
         window.showToast = showToast;
+
+        /**
+         * NOTIFICAÇÕES DE NOVAS LEADS
+         * Polling a cada 30s. Quando chega uma lead nova:
+         *  - Mostra toast no backoffice
+         *  - Envia notificação nativa do browser (se autorizado)
+         *  - Actualiza o badge do menu
+         */
+        (function initLeadNotifications() {
+            const POLL_INTERVAL = 30000; // 30 segundos
+            const API_URL       = '{{ route("admin.v2.api.new-leads") }}';
+            const LEADS_URL     = '{{ route("admin.v2.leads.index") }}';
+            const BADGE_EL      = document.getElementById('leads-nav-badge');
+
+            let lastCheck = Date.now();
+
+            // Pede permissão para notificações do browser
+            if ('Notification' in window && Notification.permission === 'default') {
+                // Pede permissão só quando o utilizador interage pela primeira vez
+                document.addEventListener('click', function askOnce() {
+                    Notification.requestPermission();
+                    document.removeEventListener('click', askOnce);
+                }, { once: true });
+            }
+
+            function sendBrowserNotif(lead) {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    const n = new Notification('Nova Lead — Izzycar', {
+                        body: lead.name + ' submeteu um pedido.',
+                        icon: '/favicon.ico',
+                        tag:  'lead-' + lead.id,
+                    });
+                    n.onclick = () => { window.focus(); window.location.href = lead.url; };
+                    setTimeout(() => n.close(), 8000);
+                }
+            }
+
+            function updateBadge(count) {
+                if (!BADGE_EL) return;
+                if (count > 0) {
+                    BADGE_EL.textContent = count;
+                    BADGE_EL.style.display = '';
+                } else {
+                    BADGE_EL.style.display = 'none';
+                }
+            }
+
+            async function poll() {
+                try {
+                    const res  = await fetch(API_URL + '?since=' + lastCheck, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) return;
+                    const data = await res.json();
+
+                    // Actualiza badge com total activo
+                    updateBadge(data.total_active);
+
+                    // Notifica por cada nova lead
+                    if (data.count > 0) {
+                        data.leads.forEach(lead => {
+                            sendBrowserNotif(lead);
+                        });
+                        showToast(
+                            data.count === 1
+                                ? `Nova lead: <strong><a href="${data.leads[0].url}" class="text-white">${data.leads[0].name}</a></strong>`
+                                : `${data.count} novas leads! <a href="${LEADS_URL}" class="text-white">Ver todas</a>`,
+                            'info'
+                        );
+                    }
+
+                    lastCheck = data.timestamp;
+                } catch (e) {
+                    // Falha silenciosa — não interrompe o utilizador
+                }
+            }
+
+            // Só pollar se o utilizador está autenticado (layout admin)
+            setInterval(poll, POLL_INTERVAL);
+        })();
     </script>
 
     @stack('scripts')

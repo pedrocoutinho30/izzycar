@@ -25,6 +25,7 @@ use App\Models\Proposal;
 use App\Models\FormProposal;
 use App\Models\ConvertedProposal;
 use App\Models\Client;
+use App\Models\V3Vehicle;
 use App\Models\Vehicle;
 use App\Models\Sale;
 use App\Models\Expense;
@@ -102,6 +103,56 @@ class DashboardV2Controller extends Controller
                 'link' => route('admin.v2.sales.index')
             ]
         ];
+
+        // ============================================================
+        // MÉTRICAS ACCIONÁVEIS — O QUE PRECISA DE ATENÇÃO HOJE
+        // ============================================================
+
+        // Leads activas sem qualquer actividade registada há mais de 3 dias
+        $leadsAtivas = Client::where('is_lead', true)
+            ->whereIn('lead_status', ['nova', 'em_contacto'])
+            ->pluck('id');
+
+        $leadsComActividadeRecente = \App\Models\LeadActivity::whereIn('client_id', $leadsAtivas)
+            ->where('created_at', '>=', now()->subDays(3))
+            ->pluck('client_id')
+            ->unique();
+
+        $leadsSemActividade = $leadsAtivas->diff($leadsComActividadeRecente);
+        $leadsSemActividadeCount = $leadsSemActividade->count();
+
+        // Follow-ups em atraso
+        $followupsAtrasados = Client::where('is_lead', true)
+            ->whereNotNull('next_followup_at')
+            ->where('next_followup_at', '<', now())
+            ->with('latestActivity')
+            ->orderBy('next_followup_at')
+            ->get();
+
+        // Cotações pendentes ou sem resposta há mais de 5 dias
+        $cotacoesSemResposta = Proposal::whereIn('status', ['Pendente', 'Sem resposta'])
+            ->where('updated_at', '<', now()->subDays(5))
+            ->with('client')
+            ->orderBy('updated_at')
+            ->take(10)
+            ->get();
+
+        // Viaturas em stock sem preço de venda definido
+        $viaturasEmStockSemPreco = V3Vehicle::where('status', 'em_stock')
+            ->where(function ($q) {
+                $q->whereNull('asking_price')->orWhere('asking_price', 0);
+            })
+            ->count();
+
+        // Leads activas hoje (para o badge do menu)
+        $totalLeadsActivas = Client::where('is_lead', true)
+            ->whereIn('lead_status', ['nova', 'em_contacto'])
+            ->count();
+
+        // Leads sem actividade — lista para mostrar (máx 10)
+        $leadsSemActividadeLista = Client::whereIn('id', $leadsSemActividade->take(10))
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // ============================================================
         // ATIVIDADE RECENTE
@@ -190,8 +241,45 @@ class DashboardV2Controller extends Controller
             'recentSales',
             'proposalsChart',
             'alerts',
-            'weekTasks'
+            'weekTasks',
+            // Métricas accionáveis
+            'leadsSemActividadeCount',
+            'leadsSemActividadeLista',
+            'followupsAtrasados',
+            'cotacoesSemResposta',
+            'viaturasEmStockSemPreco',
+            'totalLeadsActivas'
         ));
+    }
+
+    /**
+     * API de polling para notificações — devolve leads criadas após `since` (timestamp Unix)
+     */
+    public function newLeadsApi(Request $request)
+    {
+        $since = $request->query('since')
+            ? Carbon::createFromTimestampMs((int) $request->query('since'))
+            : now()->subMinute();
+
+        $newLeads = Client::where('is_lead', true)
+            ->where('created_at', '>', $since)
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'name', 'created_at']);
+
+        $totalActive = Client::where('is_lead', true)
+            ->whereNotIn('lead_status', ['fria', 'perdida'])
+            ->count();
+
+        return response()->json([
+            'count'        => $newLeads->count(),
+            'total_active' => $totalActive,
+            'leads'        => $newLeads->map(fn ($l) => [
+                'id'   => $l->id,
+                'name' => $l->name,
+                'url'  => route('admin.v2.leads.show', $l->id),
+            ]),
+            'timestamp' => now()->timestampMs,
+        ]);
     }
 
     /**
