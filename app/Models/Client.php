@@ -27,13 +27,26 @@ class Client extends Model
         'observation',
         'data_processing_consent',
         'newsletter_consent',
+        'is_lead',
+        'converted_at',
+        'lead_source',
+        'lead_status',
     ];
 
-    // Definindo os tipos de dados para a tabela
     protected $casts = [
         'birth_date' => 'date',
         'validate_identification_number' => 'date',
+        'is_lead' => 'boolean',
+        'converted_at' => 'datetime',
     ];
+
+    public function convertToClient(): void
+    {
+        $this->update([
+            'is_lead' => false,
+            'converted_at' => now(),
+        ]);
+    }
 
     public function client()
     {

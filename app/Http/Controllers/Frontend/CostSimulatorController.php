@@ -104,7 +104,9 @@ class CostSimulatorController extends Controller
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
                 'phone' => $normalizedPhone,
-                'origin' => 'Simulador de Custos'
+                'origin' => 'Simulador de Custos',
+                'is_lead' => true,
+                'lead_source' => 'simulador',
             ]);
         }
         // $request->validate([

@@ -151,8 +151,8 @@ class ProposalV2Controller extends Controller
      */
     public function create()
     {
-        // Obter clientes para dropdown
-        $clients = Client::orderBy('name')->get();
+        $clients = Client::where('is_lead', false)->orderBy('name')->get();
+        $leads   = Client::where('is_lead', true)->orderBy('name')->get();
 
         // Obter marcas com modelos
         $brands = Brand::with(['models' => function ($query) {
@@ -180,7 +180,7 @@ class ProposalV2Controller extends Controller
             'iuc_cost' => 0,
         ];
 
-        return view('admin.v2.proposals.form', compact('clients', 'brands', 'attributes', 'defaults'));
+        return view('admin.v2.proposals.form', compact('clients', 'leads', 'brands', 'attributes', 'defaults'));
     }
 
     /**
@@ -287,11 +287,10 @@ class ProposalV2Controller extends Controller
      */
     public function edit($id)
     {
-        // Obter proposta com relacionamentos
         $proposal = Proposal::with('attributeValues')->findOrFail($id);
 
-        // Obter clientes para dropdown
-        $clients = Client::orderBy('name')->get();
+        $clients = Client::where('is_lead', false)->orderBy('name')->get();
+        $leads   = Client::where('is_lead', true)->orderBy('name')->get();
 
         // Obter marcas com modelos
         $brands = Brand::with(['models' => function ($query) {
@@ -324,7 +323,7 @@ class ProposalV2Controller extends Controller
             'commission_cost' => 861,
         ];
 
-        return view('admin.v2.proposals.form', compact('proposal', 'clients', 'brands', 'attributes', 'attributeValues', 'images', 'defaults'));
+        return view('admin.v2.proposals.form', compact('proposal', 'clients', 'leads', 'brands', 'attributes', 'attributeValues', 'images', 'defaults'));
     }
 
     /**

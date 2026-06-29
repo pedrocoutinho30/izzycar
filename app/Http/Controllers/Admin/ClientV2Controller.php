@@ -25,7 +25,7 @@ class ClientV2Controller extends Controller
      */
     public function index(Request $request)
     {
-        $query = Client::orderBy('created_at', 'desc');
+        $query = Client::where('is_lead', false)->orderBy('created_at', 'desc');
 
         // Filtros
         if ($request->filled('search')) {
@@ -46,10 +46,10 @@ class ClientV2Controller extends Controller
 
         // Stats
         $stats = [
-            ['title' => 'Total Clientes', 'value' => Client::count(), 'icon' => 'people', 'color' => 'primary'],
-            ['title' => 'Novos Este Mês', 'value' => Client::whereMonth('created_at', now()->month)->count(), 'icon' => 'person-plus', 'color' => 'success'],
-            ['title' => 'Particulares', 'value' => Client::where('client_type', 'Particular')->count(), 'icon' => 'person', 'color' => 'info'],
-            ['title' => 'Empresas', 'value' => Client::where('client_type', 'Empresa')->count(), 'icon' => 'building', 'color' => 'warning'],
+            ['title' => 'Total Clientes', 'value' => Client::where('is_lead', false)->count(), 'icon' => 'people', 'color' => 'primary'],
+            ['title' => 'Convertidos este Mês', 'value' => Client::where('is_lead', false)->whereMonth('converted_at', now()->month)->count(), 'icon' => 'person-check', 'color' => 'success'],
+            ['title' => 'Particulares', 'value' => Client::where('is_lead', false)->where('client_type', 'Particular')->count(), 'icon' => 'person', 'color' => 'info'],
+            ['title' => 'Empresas', 'value' => Client::where('is_lead', false)->where('client_type', 'Empresa')->count(), 'icon' => 'building', 'color' => 'warning'],
         ];
 
         return view('admin.v2.clients.index', compact('clients', 'stats'));

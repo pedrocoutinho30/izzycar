@@ -44,6 +44,8 @@ class ImportController extends Controller
                 'origin' => $formPropposalData['source'],
                 'data_processing_consent' => $dataProcessingConsent,
                 'newsletter_consent' => $newsletterConsent,
+                'is_lead' => true,
+                'lead_source' => 'importacao',
             ]);
         } else {
             $clientExist->update([

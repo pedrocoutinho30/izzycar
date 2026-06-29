@@ -69,6 +69,14 @@ class FormProposalV2Controller extends Controller
 
         $formProposal->update(['status' => $request->status]);
 
+        // Quando convertido, marcar o cliente como cliente real
+        if ($request->status === 'convertido' && $formProposal->client_id) {
+            $client = \App\Models\Client::find($formProposal->client_id);
+            if ($client && $client->is_lead) {
+                $client->convertToClient();
+            }
+        }
+
         return redirect()->back()->with('success', 'Estado atualizado!');
     }
 

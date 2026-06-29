@@ -72,16 +72,29 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                         <select
                             name="client_id"
                             id="client_id"
-                            class="form-select @error('client_id') is-invalid @enderror"
+                            class="@error('client_id') is-invalid @enderror"
                             required>
-                            <option value="">Selecione um cliente</option>
-                            @foreach($clients as $client)
-                            <option
-                                value="{{ $client->id }}"
-                                {{ (old('client_id', $proposal->client_id ?? '') == $client->id) ? 'selected' : '' }}>
-                                {{ $client->name }}
-                            </option>
-                            @endforeach
+                            <option value="">Selecione um cliente ou lead...</option>
+                            @if($clients->isNotEmpty())
+                            <optgroup label="Clientes">
+                                @foreach($clients as $c)
+                                <option value="{{ $c->id }}"
+                                    {{ (old('client_id', $proposal->client_id ?? '') == $c->id) ? 'selected' : '' }}>
+                                    {{ $c->name }}{{ $c->email ? ' — ' . $c->email : '' }}
+                                </option>
+                                @endforeach
+                            </optgroup>
+                            @endif
+                            @if($leads->isNotEmpty())
+                            <optgroup label="Leads">
+                                @foreach($leads as $l)
+                                <option value="{{ $l->id }}"
+                                    {{ (old('client_id', $proposal->client_id ?? '') == $l->id) ? 'selected' : '' }}>
+                                    {{ $l->name }}{{ $l->email ? ' — ' . $l->email : '' }}
+                                </option>
+                                @endforeach
+                            </optgroup>
+                            @endif
                         </select>
                         @error('client_id')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -697,7 +710,15 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
 @endsection
 
 @push('styles')
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
 <style>
+    .ts-wrapper { width: 100%; }
+    .ts-wrapper .ts-control { border: 1px solid #dee2e6; border-radius: .375rem; min-height: 38px; }
+    .ts-wrapper.focus .ts-control { border-color: #86b7fe; box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); }
+    .ts-wrapper .ts-dropdown .optgroup-header {
+        font-size: .7rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .08em; color: #aaa; padding: .4rem .75rem .2rem;
+    }
     /* Image preview */
     .image-preview {
         width: 100%;
@@ -843,6 +864,22 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        new TomSelect('#client_id', {
+            placeholder: 'Pesquisar cliente ou lead...',
+            searchField: ['text'],
+            maxOptions: 200,
+            plugins: ['dropdown_input'],
+            render: {
+                option: function(data, escape) {
+                    return '<div>' + escape(data.text) + '</div>';
+                }
+            }
+        });
+    });
+</script>
 <script>
     /**
      * ==============================================================

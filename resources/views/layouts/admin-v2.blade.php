@@ -733,6 +733,17 @@
             </div>
 
             <div class="nav-item">
+                <a href="{{ route('admin.v2.leads.index') }}" class="nav-link {{ request()->routeIs('admin.v2.leads.*') ? 'active' : '' }}">
+                    <i class="bi bi-funnel"></i>
+                    <span>Leads</span>
+                    @php $leadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
+                    @if($leadsCount > 0)
+                    <span class="nav-badge">{{ $leadsCount }}</span>
+                    @endif
+                </a>
+            </div>
+
+            <div class="nav-item">
                 <a href="{{ route('admin.v2.clients.index') }}" class="nav-link {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
                     <i class="bi bi-people"></i>
                     <span>Clientes</span>

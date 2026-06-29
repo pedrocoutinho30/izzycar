@@ -190,6 +190,17 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     // ============================================================
     // CLIENTES V2
     // ============================================================
+    // ============================================================
+    // LEADS V2
+    // ============================================================
+    Route::prefix('v2/leads')->name('admin.v2.leads.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\LeadV2Controller::class, 'index'])->name('index');
+        Route::get('/{id}', [App\Http\Controllers\Admin\LeadV2Controller::class, 'show'])->name('show');
+        Route::post('/{id}/convert', [App\Http\Controllers\Admin\LeadV2Controller::class, 'convert'])->name('convert');
+        Route::post('/{id}/status', [App\Http\Controllers\Admin\LeadV2Controller::class, 'updateStatus'])->name('status');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\LeadV2Controller::class, 'destroy'])->name('destroy');
+    });
+
     Route::prefix('v2/clients')->name('admin.v2.clients.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ClientV2Controller::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\ClientV2Controller::class, 'create'])->name('create');

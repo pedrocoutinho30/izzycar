@@ -792,6 +792,11 @@ class ProposalController extends Controller
 
         $client = Client::find($proposal->client_id);
 
+        // Se for lead, converter automaticamente em cliente ao aceitar a cotação
+        if ($client && $client->is_lead) {
+            $client->convertToClient();
+        }
+
         $client->update($input);
 
         // 1. Atualizar estado
