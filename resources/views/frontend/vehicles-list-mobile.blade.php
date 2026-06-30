@@ -94,7 +94,10 @@
                         @if($vehicle->kilometers)<span>{{ number_format($vehicle->kilometers, 0, ',', ' ') }} km</span>@endif
                     </div>
                     @if($vehicle->asking_price && !in_array($vehicle->status, ['reservado', 'vendido']))
-                    <div class="vlm-price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }} €</div>
+                    <div class="vlm-price-row">
+                        <span class="vlm-price-label">Preço</span>
+                        <span class="vlm-price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }} €</span>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -146,7 +149,9 @@
 .vlm-sub { font-weight: 400; color: #666; font-size: .8rem; }
 .vlm-specs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
 .vlm-specs span { background: #f5f5f5; border-radius: 10px; font-size: .7rem; color: #555; padding: 2px 8px; }
-.vlm-price { font-size: 1.1rem; font-weight: 800; color: var(--accent-color); }
+.vlm-price-row { display: flex; align-items: baseline; gap: .4rem; margin-top: .5rem; padding-top: .5rem; border-top: 1px solid #f0f0f0; }
+.vlm-price-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #aaa; }
+.vlm-price { font-size: 1.25rem; font-weight: 900; color: var(--accent-color); line-height: 1; letter-spacing: -.02em; }
 .vlm-price-contact { font-size: .82rem; color: #888; font-style: italic; }
 
 /* ── Loading skeleton ──────────────────────────────── */
@@ -206,7 +211,7 @@
             : v.status === 'vendido'
             ? `<span class="vlm-badge-vendido">Vendido</span>` : '';
         const price = v.asking_price && v.status !== 'reservado' && v.status !== 'vendido'
-            ? `<div class="vlm-price">${fmt(v.asking_price)} €</div>`
+            ? `<div class="vlm-price-row"><span class="vlm-price-label">Preço</span><span class="vlm-price">${fmt(v.asking_price)} €</span></div>`
             : ``;
         const sub = v.sub_model ? ` <span class="vlm-sub">${v.sub_model}</span>` : '';
         const specs = [

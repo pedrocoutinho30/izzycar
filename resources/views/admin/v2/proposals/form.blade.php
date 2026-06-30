@@ -18,13 +18,13 @@
 
 @extends('layouts.admin-v2')
 
-@section('title', isset($proposal) ? 'Editar Cotação' : 'Nova Cotação')
+@section('title', isset($proposal->id) ? 'Editar Cotação' : 'Nova Cotação')
 
 @section('content')
 
 <!-- Page Header -->
 @php
-$existAction = isset($proposal) ? 'Editar' : 'Criar';
+$existAction = isset($proposal->id) ? 'Editar' : 'Criar';
 @endphp
 <!-- Page Header -->
 @include('components.admin.page-header', [
@@ -39,15 +39,33 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
 'actionLabel' => ''
 ])
 
+@if(isset($formProposal))
+<div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-left:4px solid #3b82f6;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+    <i class="bi bi-envelope-fill" style="font-size:1.3rem;color:#3b82f6;flex-shrink:0"></i>
+    <div style="flex:1">
+        <strong style="display:block;font-size:0.9rem;color:#1e40af">Cotação a partir do formulário de {{ $formProposal->name }}</strong>
+        <span style="font-size:0.8rem;color:#3b82f6">Os dados foram pré-preenchidos com as preferências do pedido. Confirma e completa antes de guardar.</span>
+    </div>
+    <a href="{{ route('admin.v2.form-proposals.show', $formProposal->id) }}"
+       style="font-size:0.8rem;font-weight:600;color:#3b82f6;text-decoration:none;padding:0.4rem 0.8rem;border:1.5px solid #3b82f6;border-radius:8px;white-space:nowrap">
+        <i class="bi bi-arrow-left"></i> Ver formulário
+    </a>
+</div>
+@endif
+
 <!-- Formulário -->
 <form
-    action="{{ isset($proposal) ? route('admin.v2.proposals.update', $proposal->id) : route('admin.v2.proposals.store') }}"
+    action="{{ isset($proposal) && isset($proposal->id) ? route('admin.v2.proposals.update', $proposal->id) : route('admin.v2.proposals.store') }}"
     method="POST"
     enctype="multipart/form-data"
     id="proposalForm">
     @csrf
-    @if(isset($proposal))
+    @if(isset($proposal) && isset($proposal->id))
     @method('PUT')
+    @endif
+
+    @if(isset($formProposal))
+    <input type="hidden" name="form_proposal_id" value="{{ $formProposal->id }}">
     @endif
 
     <div class="row g-4">
@@ -624,15 +642,15 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
             {{-- SECÇÃO: Ações --}}
             @include('components.admin.action-card', [
             'cancelButtonHref' => route('admin.v2.proposals.index'),
-            'submitButtonLabel' => isset($proposal) ? 'Atualizar Cotação' : 'Criar Cotação',
-            'timestamps' => isset($proposal) ? [
+            'submitButtonLabel' => isset($proposal->id) ? 'Atualizar Cotação' : 'Criar Cotação',
+            'timestamps' => isset($proposal->id) ? [
             'created_at' => $proposal->created_at,
             'updated_at' => $proposal->updated_at
             ] : null
             ])
 
             {{-- SECÇÃO: Partilhar Cotação (só aparece ao editar) --}}
-            @isset($proposal)
+            @if(isset($proposal->id))
             <div class="modern-card" id="shareCard">
                 <div class="modern-card-header">
                     <h5 class="modern-card-title">
@@ -705,7 +723,7 @@ $existAction = isset($proposal) ? 'Editar' : 'Criar';
                 </div>
                 @endif
             </div>
-            @endisset
+            @endif
 
             {{-- SECÇÃO: Upload de Imagem --}}
             <div class="modern-card">

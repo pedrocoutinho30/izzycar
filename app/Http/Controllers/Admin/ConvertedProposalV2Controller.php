@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ProposalStatusUpdatedMail;
 use App\Models\ConvertedProposal;
 use App\Models\Client;
 use App\Models\Proposal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * ConvertedProposalV2Controller
@@ -158,8 +160,9 @@ class ConvertedProposalV2Controller extends Controller
         $convertedProposal = ConvertedProposal::with(['client', 'proposal'])->findOrFail($id);
         $clients = Client::orderBy('name')->get();
         $proposals = Proposal::orderBy('created_at', 'desc')->get();
-        
-        return view('admin.v2.converted-proposals.form', compact('convertedProposal', 'clients', 'proposals'));
+        $statusHistory = $convertedProposal->statusHistories()->orderBy('created_at', 'desc')->get();
+
+        return view('admin.v2.converted-proposals.form', compact('convertedProposal', 'clients', 'proposals', 'statusHistory'));
     }
 
     /**
@@ -210,7 +213,15 @@ class ConvertedProposalV2Controller extends Controller
             'observacoes' => 'nullable|string',
         ]);
 
+        $oldStatus = $convertedProposal->status;
         $convertedProposal->update($validated);
+
+        if ($convertedProposal->wasChanged('status') && $convertedProposal->client) {
+            $client = $convertedProposal->client;
+            Mail::to($client->email)->send(
+                new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $convertedProposal->status, $client->name, $convertedProposal->matricula_destino)
+            );
+        }
 
         return redirect()->route('admin.v2.converted-proposals.index')
                         ->with('success', 'Proposta convertida atualizada com sucesso!');

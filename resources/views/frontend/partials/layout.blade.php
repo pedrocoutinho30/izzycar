@@ -174,48 +174,97 @@
     @include('frontend.partials.frontend-footer')
     @endif
 
-    {{-- ── WhatsApp Button Fixo ── --}}
+    {{-- ── Floating Action Buttons ── --}}
     @php $wa_phone = preg_replace('/\D/', '', $iz_phone ?? ''); @endphp
-    @if($wa_phone)
-    <a href="https://wa.me/{{ $wa_phone }}?text=Ol%C3%A1%2C+gostaria+de+obter+mais+informa%C3%A7%C3%B5es."
-       class="wa-float-btn"
-       target="_blank"
-       rel="noopener"
-       aria-label="Contactar via WhatsApp"
-       title="Fale Connosco no WhatsApp">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" width="28" height="28">
-            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
-        </svg>
-    </a>
+    <div class="fab-stack" id="fabStack">
+        {{-- Voltar ao topo --}}
+        <button class="fab fab--top" id="fabTop" aria-label="Voltar ao topo" title="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+
+        {{-- Telefone --}}
+        @if($iz_phone)
+        <a href="tel:{{ $iz_phone }}" class="fab fab--phone" aria-label="Ligar agora" title="Ligar agora">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </a>
+        @endif
+
+        {{-- WhatsApp --}}
+        @if($wa_phone)
+        <a href="https://wa.me/{{ $wa_phone }}?text=Ol%C3%A1%2C+gostaria+de+obter+mais+informa%C3%A7%C3%B5es."
+           class="fab fab--wa" target="_blank" rel="noopener" aria-label="WhatsApp" title="Fale connosco no WhatsApp">
+            <svg viewBox="0 0 448 512" fill="currentColor" width="24" height="24"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+        </a>
+        @endif
+    </div>
+
     <style>
-    .wa-float-btn {
+    .fab-stack {
         position: fixed;
         bottom: 1.75rem;
         right: 1.75rem;
         z-index: 9999;
-        width: 56px;
-        height: 56px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .fab {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none;
+        border: none; cursor: pointer;
+        transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+    }
+    .fab:hover { transform: scale(1.12); }
+
+    /* Voltar ao topo — escondido até fazer scroll */
+    .fab--top {
+        background: rgba(30,30,30,.85);
+        backdrop-filter: blur(8px);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(0,0,0,.3);
+        opacity: 0; pointer-events: none;
+        transform: translateY(8px);
+    }
+    .fab--top.visible {
+        opacity: 1; pointer-events: auto;
+        transform: translateY(0);
+    }
+    .fab--top:hover { background: #111; color: #fff; }
+
+    /* Telefone */
+    .fab--phone {
+        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(110,7,7,.4);
+    }
+    .fab--phone:hover { box-shadow: 0 6px 24px rgba(110,7,7,.55); color: #fff; }
+
+    /* WhatsApp */
+    .fab--wa {
         background: #25d366;
         color: #fff;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 20px rgba(37,211,102,.45);
-        transition: transform .2s, box-shadow .2s;
-        text-decoration: none;
+        box-shadow: 0 4px 16px rgba(37,211,102,.4);
     }
-    .wa-float-btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 28px rgba(37,211,102,.6);
-        color: #fff;
-    }
+    .fab--wa:hover { box-shadow: 0 6px 24px rgba(37,211,102,.55); color: #fff; }
+
     @media (max-width: 768px) {
-        .wa-float-btn { bottom: 1.25rem; right: 1.25rem; width: 50px; height: 50px; }
-        .wa-float-btn svg { width: 24px; height: 24px; }
+        .fab-stack { bottom: 1.25rem; right: 1.25rem; gap: 0.6rem; }
+        .fab { width: 46px; height: 46px; }
+        .fab svg { width: 20px; height: 20px; }
     }
     </style>
-    @endif
+    <script>
+    (function() {
+        const topBtn = document.getElementById('fabTop');
+        if (!topBtn) return;
+        window.addEventListener('scroll', function() {
+            topBtn.classList.toggle('visible', window.scrollY > 300);
+        }, { passive: true });
+    })();
+    </script>
 
     <!-- JAVASCRIPT FILES -->
     <script src="{{ asset('js/jquery.min.js') }}"></script>

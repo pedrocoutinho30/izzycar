@@ -181,10 +181,13 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     Route::prefix('v2/proposals')->name('admin.v2.proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'create'])->name('create');
+        Route::get('/create-from-form/{formProposalId}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'createFromForm'])->name('createFromForm');
         Route::post('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'store'])->name('store');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'destroy'])->name('destroy');
+        Route::patch('/{id}/status', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/bulk-reject', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'bulkReject'])->name('bulkReject');
     });
 
     // ============================================================

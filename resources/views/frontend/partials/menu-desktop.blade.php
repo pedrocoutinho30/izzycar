@@ -35,6 +35,7 @@
                 @endif
                 @endforeach
             </ul>
+            <a href="{{ route('frontend.form-import') }}" class="nav-cta-btn">Pedir Cotação</a>
         </div>
     </div>
 </nav>
@@ -175,10 +176,36 @@
     transform: scaleY(1);
 }
 
+/* CTA Button Navbar */
+.nav-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 1.25rem;
+    padding: 0.55rem 1.5rem;
+    background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border-radius: 50px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    box-shadow: 0 4px 18px rgba(110,7,7,0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    flex-shrink: 0;
+}
+.nav-cta-btn:hover {
+    background: linear-gradient(135deg, #b30000 0%, #990000 100%);
+    box-shadow: 0 6px 26px rgba(110,7,7,0.65);
+    transform: translateY(-1px);
+    color: #fff !important;
+}
+
 @media (max-width: 992px) {
     .navbar-logo-modern {
         height: 40px;
     }
+    .nav-cta-btn { display: none; }
 }
 </style>
 

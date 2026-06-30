@@ -116,6 +116,16 @@
                             </span>
                             @endif
                         </div>
+                        @if($vehicle->status === 'reservado')
+                        <div class="vl-price-row"><span class="vl-footer-badge vl-footer-badge--reservado">Reservado</span></div>
+                        @elseif($vehicle->status === 'vendido')
+                        <div class="vl-price-row"><span class="vl-footer-badge vl-footer-badge--vendido">Vendido</span></div>
+                        @elseif($vehicle->asking_price)
+                        <div class="vl-price-row">
+                            <span class="vl-price-label">Preço</span>
+                            <span class="vl-price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }} €</span>
+                        </div>
+                        @endif
                         <div class="vl-card-footer">
                             <span class="vl-cta">Ver detalhes <i class="bi bi-arrow-right"></i></span>
                             <div class="vl-card-actions">
@@ -133,13 +143,6 @@
                                         onclick="event.stopPropagation(); event.preventDefault(); vlShare(this.dataset.url, this.dataset.title)">
                                     <i class="bi bi-share"></i>
                                 </button>
-                                @if($vehicle->status === 'reservado')
-                                <span class="vl-footer-badge vl-footer-badge--reservado">Reservado</span>
-                                @elseif($vehicle->status === 'vendido')
-                                <span class="vl-footer-badge vl-footer-badge--vendido">Vendido</span>
-                                @elseif($vehicle->asking_price)
-                                <span class="vl-price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }} €</span>
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -302,10 +305,27 @@
 .vl-footer-badge--reservado { background: #fef3c7; color: #92400e; }
 .vl-footer-badge--vendido   { background: #fee2e2; color: #991b1b; }
 .vl-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.vl-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.6rem 0 0.5rem;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 0.6rem;
+}
+.vl-price-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #aaa;
+}
 .vl-price {
-    font-size: 1.45rem;
-    font-weight: 800;
+    font-size: 1.6rem;
+    font-weight: 900;
     color: var(--accent-color);
+    line-height: 1;
+    letter-spacing: -.02em;
 }
 .vl-price-contact {
     font-size: 1rem;
@@ -437,12 +457,12 @@ window.vlShare = function(url, title) {
             : v.status === 'vendido'
             ? `<span class="vl-badge-vendido">Vendido</span>` : '';
 
-        const footerRight = v.status === 'reservado'
-            ? `<span class="vl-footer-badge vl-footer-badge--reservado">Reservado</span>`
+        const priceRow = v.status === 'reservado'
+            ? `<div class="vl-price-row"><span class="vl-footer-badge vl-footer-badge--reservado">Reservado</span></div>`
             : v.status === 'vendido'
-            ? `<span class="vl-footer-badge vl-footer-badge--vendido">Vendido</span>`
+            ? `<div class="vl-price-row"><span class="vl-footer-badge vl-footer-badge--vendido">Vendido</span></div>`
             : v.asking_price
-            ? `<span class="vl-price">${fmt(v.asking_price)} €</span>`
+            ? `<div class="vl-price-row"><span class="vl-price-label">Preço</span><span class="vl-price">${fmt(v.asking_price)} €</span></div>`
             : ``;
 
         const specs = [
@@ -476,9 +496,10 @@ window.vlShare = function(url, title) {
                         ${version}
                         <div class="vl-specs">${specs}</div>
                     </div>
+                    ${priceRow}
                     <div class="vl-card-footer">
                         <span class="vl-cta">Ver detalhes <i class="bi bi-arrow-right"></i></span>
-                        <div class="vl-card-actions">${waBtn}${shareBtn}${footerRight}</div>
+                        <div class="vl-card-actions">${waBtn}${shareBtn}</div>
                     </div>
                 </div>
             </div>

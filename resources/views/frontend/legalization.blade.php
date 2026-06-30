@@ -42,7 +42,7 @@
     <div class="hero-overlay"></div>
     <div class="container">
         <div class="row align-items-center min-vh-50 py-5">
-            <div class="col-lg-7">
+            <div class="col-lg-6">
                 <nav class="hero-breadcrumb" aria-label="breadcrumb">
                     <a href="{{ route('frontend.home') }}">Início</a>
                     <span>/</span>
@@ -58,11 +58,71 @@
                 <h1 class="hero-title fade-in-up" data-delay="100">Legalização <span class="hero-accent">Automóvel</span></h1>
                 <p class="hero-description fade-in-up" data-delay="200">{{ $data->contents['subtitle'] }}</p>
             </div>
+
+            <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center">
+                <div class="hero-legal-card fade-in-up" data-delay="300">
+                    <div class="hero-legal-card-header">
+                        <div class="hero-legal-card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                        </div>
+                        <span>Legalização Automóvel</span>
+                    </div>
+                    <div class="hero-legal-items">
+                        <div class="hero-legal-item">
+                            <div class="hero-legal-item-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <div>
+                                <div class="hero-legal-item-title">ISV calculado e pago</div>
+                                <div class="hero-legal-item-sub">Sem surpresas fiscais</div>
+                            </div>
+                        </div>
+                        <div class="hero-legal-item">
+                            <div class="hero-legal-item-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </div>
+                            <div>
+                                <div class="hero-legal-item-title">2 a 4 semanas</div>
+                                <div class="hero-legal-item-sub">Prazo médio do processo</div>
+                            </div>
+                        </div>
+                        <div class="hero-legal-item">
+                            <div class="hero-legal-item-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            </div>
+                            <div>
+                                <div class="hero-legal-item-title">IPO, IMT e matrícula</div>
+                                <div class="hero-legal-item-sub">Toda a documentação incluída</div>
+                            </div>
+                        </div>
+                        <div class="hero-legal-item">
+                            <div class="hero-legal-item-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            </div>
+                            <div>
+                                <div class="hero-legal-item-title">100% legal em Portugal</div>
+                                <div class="hero-legal-item-sub">Conformidade garantida</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-legal-card-footer">
+                        <a href="{{ route('frontend.form-import') }}" class="hero-legal-cta">
+                            Pedir cotação gratuita
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="section-padding">
+<section class="section-padding section-intro-legal">
     <div class="container">
         <div class="section-header text-center mb-5">
             <span class="section-badge fade-in-up">Como Funciona</span>
@@ -85,11 +145,12 @@
     </div>
 </section>
 
-<section class="section-padding pt-0">
+<section class="section-padding legalization-steps-section">
     <div class="container">
-        <div class="section-header-modern">
-            <h2 class="section-title-modern">Passos para legalizar o seu veículo</h2>
-            <p class="section-subtitle-modern">Processo simplificado em etapas claras</p>
+        <div class="section-header text-center mb-5">
+            <span class="section-badge fade-in-up">Passo a Passo</span>
+            <h2 class="section-title fade-in-up" data-delay="100">Passos para legalizar o seu veículo</h2>
+            <p class="section-description fade-in-up" data-delay="200">Processo simplificado em etapas claras</p>
         </div>
 
         <div class="row g-4">
@@ -110,6 +171,32 @@
                 </div>
             </div>
             @endforeach
+        </div>
+    </div>
+</section>
+
+<section class="legalization-cta-section">
+    <div class="container">
+        <div class="legalization-cta-card">
+            <div class="legalization-cta-content">
+                <h2 class="legalization-cta-title">Pronto para legalizar o seu veículo?</h2>
+                <p class="legalization-cta-subtitle">A nossa equipa trata de todo o processo por si — rápido, transparente e sem surpresas.</p>
+            </div>
+            <div class="legalization-cta-actions">
+                <a href="{{ route('frontend.form-import') }}" class="btn-legalization-primary">
+                    Pedir cotação gratuita
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+                <a href="tel:{{ optional(\App\Models\Setting::where('label', 'phone')->first())->value }}" class="btn-legalization-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    Ligar agora
+                </a>
+            </div>
         </div>
     </div>
 </section>
@@ -216,193 +303,397 @@
         }
     }
 
+    /* Card flutuante do hero */
+    .hero-legal-card {
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 24px;
+        padding: 2.25rem;
+        width: 100%;
+        max-width: 380px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+        position: relative;
+        animation: floatLegalCard 5s ease-in-out infinite;
+    }
+
+    .hero-legal-card::before {
+        content: '';
+        position: absolute;
+        top: -1px; left: 30px; right: 30px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        pointer-events: none;
+    }
+
+    @keyframes floatLegalCard {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(-10px); }
+    }
+
+    .hero-legal-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        padding-bottom: 1.25rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .hero-legal-card-icon {
+        flex-shrink: 0;
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(153,0,0,0.45);
+    }
+
+    .hero-legal-card-header > span {
+        color: rgba(255,255,255,0.9);
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .hero-legal-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.875rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-legal-item {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        padding: 0.875rem 1rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 12px;
+        transition: all 0.25s ease;
+    }
+
+    .hero-legal-item:hover {
+        background: rgba(255,255,255,0.09);
+        border-color: rgba(153,0,0,0.35);
+    }
+
+    .hero-legal-item-icon {
+        flex-shrink: 0;
+        width: 34px; height: 34px;
+        background: rgba(153,0,0,0.2);
+        border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        color: #ff8080;
+    }
+
+    .hero-legal-item-title {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.92);
+        line-height: 1.2;
+    }
+
+    .hero-legal-item-sub {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.5);
+        margin-top: 0.1rem;
+    }
+
+    .hero-legal-card-footer {
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .hero-legal-cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.85rem 1.5rem;
+        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border-radius: 50px;
+        text-decoration: none;
+        box-shadow: 0 4px 16px rgba(153,0,0,0.45);
+        transition: all 0.25s ease;
+    }
+
+    .hero-legal-cta:hover {
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 22px rgba(153,0,0,0.6);
+    }
+
+    /* Secção intro */
+    #section_description_import,
+    .section-intro-legal {
+        background: linear-gradient(160deg, #f7f7f7 0%, #fafafa 60%, #f5f5f5 100%);
+    }
+
     .legalization-intro-card {
-        background: white;
+        background: #ffffff;
         border-radius: 24px;
         padding: 3rem;
-        /* box-shadow: 0 10px 40px rgba(0,0,0,0.08); */
-        border: 2px solid #990000;
+        box-shadow: 0 6px 28px rgba(0,0,0,0.07);
+        border: 1px solid rgba(0,0,0,0.05);
+        border-top: 4px solid #990000;
         display: flex;
         gap: 2rem;
         align-items: flex-start;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .legalization-intro-card::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 200px; height: 200px;
+        background: radial-gradient(ellipse at top right, rgba(153,0,0,0.04) 0%, transparent 70%);
+        pointer-events: none;
     }
 
     .intro-icon {
         flex-shrink: 0;
-        width: 80px;
-        height: 80px;
+        width: 72px; height: 72px;
         background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
         color: white;
+        box-shadow: 0 6px 18px rgba(110,7,7,0.35);
+        position: relative; z-index: 1;
     }
 
     .intro-content {
         flex: 1;
-        font-size: 1.1rem;
-        line-height: 1.8;
+        font-size: 1.05rem;
+        line-height: 1.85;
         color: #333;
+        position: relative; z-index: 1;
     }
 
-    .intro-content p {
-        margin-bottom: 1rem;
-    }
+    .intro-content p { margin-bottom: 1rem; }
 
-    .section-header-modern {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .section-title-modern {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #111;
-        margin-bottom: 1rem;
-    }
-
-    .section-subtitle-modern {
-        font-size: 1.1rem;
-        color: #6c757d;
-        margin: 0;
+    /* Secção passos */
+    .legalization-steps-section {
+        background: linear-gradient(160deg, #ffffff 0%, #f9f9f9 50%, #f5f5f5 100%);
     }
 
     .legalization-step-card {
-        background: white;
-        border-radius: 20px;
+        background: #ffffff;
+        border-radius: 18px;
         padding: 2rem;
         height: 100%;
-        /* box-shadow: 0 10px 40px rgba(0,0,0,0.08); */
+        box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+        border: 1px solid rgba(0,0,0,0.06);
+        border-top: 3px solid transparent;
         transition: all 0.3s ease;
         position: relative;
-        overflow: hidden;
-        border: 2px solid transparent;
     }
 
     .legalization-step-card:hover {
-        transform: translateY(-5px);
-        /* box-shadow: 0 15px 50px rgba(0,0,0,0.12); */
-        border-color: var(--accent-color);
+        border-top-color: #990000;
+        transform: translateY(-4px);
+        box-shadow: 0 10px 32px rgba(0,0,0,0.11);
     }
 
     .step-number {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        color: white;
-        font-size: 2rem;
-        font-weight: 800;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
-        opacity: 0.1;
-        transition: all 0.3s ease;
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        color: #fff;
+        font-size: 0.95rem;
+        font-weight: 800;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(153,0,0,0.35);
+        margin-bottom: 1.25rem;
+        position: static;
+        opacity: 1;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
     }
 
     .legalization-step-card:hover .step-number {
-        opacity: 0.2;
-        transform: scale(1.1);
+        box-shadow: 0 6px 18px rgba(153,0,0,0.5);
+        transform: scale(1.06);
     }
 
-    .step-content {
-        position: relative;
-        z-index: 1;
-    }
+    .step-content { position: relative; }
 
     .step-title {
-        font-size: 1.35rem;
+        font-size: 1.15rem;
         font-weight: 700;
         color: #111;
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
         line-height: 1.3;
     }
 
     .step-description {
-        font-size: 1rem;
-        line-height: 1.7;
-        color: #495057;
+        font-size: 0.97rem;
+        line-height: 1.75;
+        color: #555;
     }
 
-    .step-description p {
-        margin-bottom: 0.75rem;
-    }
+    .step-description p { margin-bottom: 0.6rem; }
 
     .step-description ul,
     .step-description ol {
-        padding-left: 1.5rem;
-        margin-bottom: 0.75rem;
+        padding-left: 1.4rem;
+        margin-bottom: 0.6rem;
     }
 
-    .step-description li {
-        margin-bottom: 0.5rem;
-    }
+    .step-description li { margin-bottom: 0.4rem; }
 
-    .step-arrow {
-        position: absolute;
-        bottom: 1.5rem;
-        right: 1.5rem;
-        opacity: 0;
-        transform: translateX(-10px);
-        transition: all 0.3s ease;
-        color: var(--accent-color);
-    }
-
-    .legalization-step-card:hover .step-arrow {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    .step-arrow { display: none; }
 
     @media (max-width: 992px) {
         .legalization-intro-card {
             flex-direction: column;
             padding: 2rem;
         }
-
-        .intro-icon {
-            width: 64px;
-            height: 64px;
-        }
-
-        .intro-icon svg {
-            width: 32px;
-            height: 32px;
-        }
-
-        .section-title-modern {
-            font-size: 2rem;
-        }
+        .intro-icon { width: 60px; height: 60px; }
+        .intro-icon svg { width: 30px; height: 30px; }
     }
 
     @media (max-width: 768px) {
-        .legalization-intro-card {
-            padding: 1.5rem;
-        }
-
-        .intro-content {
-            font-size: 1rem;
-        }
-
-        .section-title-modern {
-            font-size: 1.75rem;
-        }
-
-        .legalization-step-card {
-            padding: 1.5rem;
-        }
-
-        .step-title {
-            font-size: 1.2rem;
-        }
+        .legalization-intro-card { padding: 1.5rem; }
+        .intro-content { font-size: 1rem; }
+        .legalization-step-card { padding: 1.5rem; }
+        .step-title { font-size: 1.1rem; }
     }
 
     @media (max-width: 768px) {
         .hero-title { font-size: 1.8rem; white-space: normal; }
         .hero-description { font-size: 1rem; }
+    }
+
+    /* CTA Section */
+    .legalization-cta-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
+    }
+
+    .legalization-cta-card {
+        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        border-radius: 24px;
+        padding: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        box-shadow: 0 20px 60px rgba(110, 7, 7, 0.4);
+    }
+
+    .legalization-cta-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.75rem;
+    }
+
+    .legalization-cta-subtitle {
+        font-size: 1.05rem;
+        color: rgba(255, 255, 255, 0.85);
+        margin: 0;
+    }
+
+    .legalization-cta-actions {
+        display: flex;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .btn-legalization-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 1rem 2rem;
+        background: white;
+        color: #6e0707;
+        font-weight: 700;
+        font-size: 1rem;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+    }
+
+    .btn-legalization-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        color: #6e0707;
+    }
+
+    .btn-legalization-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 1rem 2rem;
+        background: transparent;
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        border-radius: 50px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .btn-legalization-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: white;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 992px) {
+        .legalization-cta-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 2.5rem;
+        }
+
+        .legalization-cta-title {
+            font-size: 1.6rem;
+        }
+
+        .legalization-cta-actions {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .legalization-cta-section {
+            padding: 3rem 0;
+        }
+
+        .legalization-cta-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .legalization-cta-title {
+            font-size: 1.35rem;
+        }
+
+        .legalization-cta-actions {
+            flex-direction: column;
+        }
+
+        .btn-legalization-primary,
+        .btn-legalization-secondary {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 @endpush

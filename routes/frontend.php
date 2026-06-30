@@ -37,18 +37,7 @@ Route::get('/simulador-custos/resultado/{token}', [CostSimulatorController::clas
 // API pública
 Route::get('/extras', [ExtrasController::class, 'index'])->name('api.extras');
 Route::get('/brands-models', [BrandsModelsController::class, 'index'])->name('api.brands-models');
-Route::get('teste', function () {
 
-    $convertedProposal = \App\Models\ConvertedProposal::first();
-    $data = [
-        'client_name' => "nome do cliente",
-        'brand' => $convertedProposal->brand,
-        'model' => $convertedProposal->modelCar,
-        'version' => $convertedProposal->version,
-        'car_image' => null,
-    ];
-    return view('emails.proposal_accepted', ['data' => $data]);
-});
 Route::middleware(['blockInProd'])->group(function () {
     Route::get('/sobre-nos', [PageController::class, 'aboutUs'])->name('frontend.about-us');
     Route::get('/servicos', [PageController::class, 'services'])->name('frontend.services');

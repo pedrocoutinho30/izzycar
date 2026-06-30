@@ -47,6 +47,28 @@
     </div>
 </section>
 
+<section class="vehicles-cta-section">
+    <div class="container">
+        <div class="vehicles-cta-inner">
+            <div class="vehicles-cta-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+            </div>
+            <div class="vehicles-cta-text">
+                <h3 class="vehicles-cta-title">Não encontra o que procura?</h3>
+                <p class="vehicles-cta-sub">Importamos o carro que quer, do país que escolher — com total transparência e sem surpresas.</p>
+            </div>
+            <a href="{{ route('frontend.form-import') }}" class="vehicles-cta-btn">
+                Pedir importação personalizada
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+</section>
+
 @endsection
 
 @push('styles')
@@ -94,6 +116,63 @@
         line-height: 1.8;
     }
     .min-vh-50 { min-height: 40vh; }
+
+    /* CTA Importação */
+    .vehicles-cta-section {
+        padding: 3rem 0 4rem;
+        background: #0f0f0f;
+    }
+    .vehicles-cta-inner {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        background: linear-gradient(135deg, rgba(110,7,7,.15) 0%, rgba(153,0,0,.08) 100%);
+        border: 1px solid rgba(110,7,7,.25);
+        border-radius: 20px;
+        padding: 2.5rem;
+    }
+    .vehicles-cta-icon {
+        flex-shrink: 0;
+        width: 72px; height: 72px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(110,7,7,.2);
+        border-radius: 50%;
+        color: #cc3333;
+    }
+    .vehicles-cta-text { flex: 1; }
+    .vehicles-cta-title {
+        font-size: 1.4rem; font-weight: 800;
+        color: #fff; margin-bottom: .4rem;
+    }
+    .vehicles-cta-sub {
+        font-size: .95rem; color: rgba(255,255,255,.65); margin: 0;
+    }
+    .vehicles-cta-btn {
+        flex-shrink: 0;
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        color: #fff; font-weight: 700; font-size: .95rem;
+        border-radius: 50px; text-decoration: none;
+        transition: all .3s ease;
+        box-shadow: 0 6px 20px rgba(110,7,7,.35);
+        white-space: nowrap;
+    }
+    .vehicles-cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(110,7,7,.45);
+        color: #fff;
+    }
+    @media (max-width: 768px) {
+        .vehicles-cta-inner {
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            gap: 1.5rem;
+        }
+        .vehicles-cta-btn { width: 100%; justify-content: center; }
+    }
+
     .fade-in-up {
         opacity: 0;
         transform: translateY(24px);

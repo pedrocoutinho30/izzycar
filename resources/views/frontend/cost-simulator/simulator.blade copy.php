@@ -89,7 +89,7 @@
                         <input type="number" name="cilindrada" id="cilindrada" class="form-control-modern" placeholder="ex: 2000">
                     </div>
                     <div class="col-md-4">
-                        <label for="tipo_medicao" class="form-label-modern">Método de homologação CO2<span class="required-star">*</span></label>
+                        <label for="tipo_medicao" class="form-label-modern">Método de homolog. CO2<span class="required-star">*</span></label>
                         <select name="tipo_medicao" id="tipo_medicao" class="form-control-modern">
                             <option value="WLTP">WLTP</option>
                             <option value="NEDC">NEDC</option>

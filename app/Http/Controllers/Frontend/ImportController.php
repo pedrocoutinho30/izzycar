@@ -20,14 +20,15 @@ class ImportController extends Controller
     public function submitFormImport(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:50',
-            'email' => 'required|email',
-            'message' => 'nullable|string',
-            'payment_type' => 'required|in:pronto_pagamento,financiamento',
+            'name'                    => 'required|string|max:255',
+            'phone'                   => ['required', 'string', 'max:20', 'regex:/^(\+351|00351|351)?[\s\-]?[29]\d{8}$/'],
+            'email'                   => 'required|email:rfc',
+            'source'                  => 'nullable|string|max:100',
+            'message'                 => 'nullable|string|max:2000',
+            'payment_type'            => 'required|in:pronto_pagamento,financiamento',
             'estimated_purchase_date' => 'required|in:imediato,1_3_meses,3_6_meses,pesquisar',
             'data_processing_consent' => 'accepted',
-            'newsletter_consent' => 'nullable|boolean',
+            'newsletter_consent'      => 'nullable|boolean',
         ]);
 
         // Aqui podes gravar na BD
@@ -43,7 +44,7 @@ class ImportController extends Controller
                 'name' => $formPropposalData['name'],
                 'phone' => $formPropposalData['phone'],
                 'email' => $formPropposalData['email'],
-                'origin' => $formPropposalData['source'],
+                'origin' => $formPropposalData['source'] ?? null,
                 'data_processing_consent' => $dataProcessingConsent,
                 'newsletter_consent' => $newsletterConsent,
                 'is_lead' => true,

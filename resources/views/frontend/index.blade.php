@@ -55,8 +55,17 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5">
+            <div class="col-lg-5 d-none d-lg-flex align-items-center justify-content-center">
                 <div class="hero-image-wrapper fade-in-up" data-delay="300">
+                    <div class="hero-glow"></div>
+                    <picture>
+                        <source srcset="{{ asset('img/hero.webp') }}" type="image/webp">
+                        <img src="{{ asset('img/2.jpg') }}"
+                             alt="Importação automóvel Izzycar"
+                             class="hero-image"
+                             width="500" height="600"
+                             loading="eager">
+                    </picture>
                 </div>
             </div>
         </div>
@@ -195,7 +204,7 @@
 </section>
 
 <!-- Why Choose Us Section -->
-<section class="why-section section-padding bg-light">
+<section class="why-section section-padding">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-5 mb-lg-0">
@@ -281,37 +290,29 @@
             <p class="section-description fade-in-up" data-delay="200">Do contacto inicial à entrega do seu carro</p>
         </div>
 
-        <div class="process-timeline">
-            <div class="process-step fade-in-up ">
-                <div class="process-number">01</div>
-                <div class="process-content">
-                    <h3>Pedido de Cotação</h3>
-                    <p>Preencha o formulário com as características do carro que deseja. Respondemos em 24h com uma cotação detalhada e transparente.</p>
-                </div>
+        <div class="process-steps-grid">
+            <div class="process-step-card fade-in-up">
+                <div class="process-step-num">01</div>
+                <h3>Pedido de Cotação</h3>
+                <p>Preencha o formulário com as características do carro que deseja. Respondemos em 24h com uma cotação detalhada e transparente.</p>
             </div>
 
-            <div class="process-step fade-in-up" data-delay="100">
-                <div class="process-number">02</div>
-                <div class="process-content">
-                    <h3>Procura e Seleção</h3>
-                    <p>Procuramos o veículo perfeito para si nos melhores mercados europeus. Inspecionamos e enviamos relatório fotográfico completo.</p>
-                </div>
+            <div class="process-step-card fade-in-up" data-delay="100">
+                <div class="process-step-num">02</div>
+                <h3>Procura e Seleção</h3>
+                <p>Procuramos o veículo perfeito para si nos melhores mercados europeus. Inspecionamos e enviamos relatório fotográfico completo.</p>
             </div>
 
-            <div class="process-step fade-in-up" data-delay="200">
-                <div class="process-number">03</div>
-                <div class="process-content">
-                    <h3>Compra e Transporte</h3>
-                    <p>Após aprovação, compramos e tratamos do transporte seguro até Portugal. Acompanhe todo o processo em tempo real.</p>
-                </div>
+            <div class="process-step-card fade-in-up" data-delay="200">
+                <div class="process-step-num">03</div>
+                <h3>Compra e Transporte</h3>
+                <p>Após aprovação, compramos e tratamos do transporte seguro até Portugal. Acompanhe todo o processo em tempo real.</p>
             </div>
 
-            <div class="process-step fade-in-up" data-delay="300">
-                <div class="process-number">04</div>
-                <div class="process-content">
-                    <h3>Legalização e Entrega</h3>
-                    <p>Tratamos de toda a papelada, inspeção e matrícula. Recebe o seu carro pronto a conduzir, com documentação completa.</p>
-                </div>
+            <div class="process-step-card fade-in-up" data-delay="300">
+                <div class="process-step-num">04</div>
+                <h3>Legalização e Entrega</h3>
+                <p>Tratamos de toda a papelada, inspeção e matrícula. Recebe o seu carro pronto a conduzir, com documentação completa.</p>
             </div>
         </div>
 
@@ -663,10 +664,37 @@
         text-align: center;
     }
 
+    .hero-glow {
+        position: absolute;
+        inset: -20%;
+        background: radial-gradient(ellipse at 50% 60%, rgba(153,0,0,0.28) 0%, rgba(200,60,0,0.1) 40%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+        filter: blur(20px);
+        animation: glowPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+        0%, 100% { opacity: 0.7; transform: scale(1); }
+        50%       { opacity: 1;   transform: scale(1.06); }
+    }
+
+    .hero-image-wrapper picture,
+    .hero-image-wrapper img {
+        position: relative;
+        z-index: 1;
+    }
+
     .hero-image {
         max-width: 100%;
-        height: auto;
-        filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.5));
+        height: 580px;
+        width: 100%;
+        object-fit: cover;
+        object-position: center top;
+        border-radius: 24px;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+        border: 2px solid rgba(110,7,7,0.3);
     }
 
     .scroll-indicator {
@@ -693,39 +721,70 @@
     /* Trust Section */
     .trust-section {
         padding: 3rem 0;
-        background: white;
+        background: linear-gradient(135deg, #0d0d0d 0%, #111111 50%, #0d0d0d 100%);
     }
 
     .trust-content {
         padding: 2rem;
         border-radius: 24px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        background: transparent;
     }
 
     .trust-item {
         text-align: center;
-        padding: 1.5rem;
+        padding: 1.75rem 1.5rem;
+        background: rgba(255,255,255,0.04);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .trust-item:hover {
+        background: rgba(255,255,255,0.07);
+        border-color: rgba(153,0,0,0.4);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(153,0,0,0.2);
+        transform: translateY(-3px);
     }
 
     .trust-item svg {
-        color: #990000;
+        color: var(--accent-color);
         margin-bottom: 1rem;
     }
 
     .trust-item h4 {
         font-size: 1.2rem;
         font-weight: 700;
-        color: #111;
+        color: #fff;
         margin-bottom: 0.5rem;
     }
 
     .trust-item p {
         font-size: 0.95rem;
-        color: #6c757d;
+        color: rgba(255,255,255,0.6);
         margin: 0;
     }
 
     /* Services Section */
+    .services-section {
+        background: linear-gradient(135deg, #111111 0%, #161616 50%, #111111 100%);
+    }
+
+    .services-section .section-title {
+        color: #fff;
+    }
+
+    .services-section .section-description {
+        color: rgba(255,255,255,0.65);
+    }
+
+    .services-section .section-badge {
+        background: rgba(153,0,0,0.2);
+        color: #ff8080;
+    }
+
     .section-padding {
         padding: 5rem 0;
     }
@@ -758,19 +817,23 @@
     }
 
     .service-card {
-        background: white;
+        background: rgba(255,255,255,0.04);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
         padding: 2.5rem;
         border-radius: 20px;
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+        transition: all 0.35s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
     }
 
     .service-card:hover {
-        border-color: #990000;
-        transform: translateY(-5px);
+        background: rgba(255,255,255,0.07);
+        border-color: rgba(153,0,0,0.45);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(153,0,0,0.25);
+        transform: translateY(-6px);
     }
 
     .service-icon-wrapper {
@@ -796,13 +859,13 @@
     .service-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #111;
+        color: #fff;
         margin-bottom: 1rem;
     }
 
     .service-description {
         font-size: 1rem;
-        color: #6c757d;
+        color: rgba(255,255,255,0.65);
         line-height: 1.7;
         margin-bottom: 1.5rem;
         flex: 1;
@@ -812,42 +875,77 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: #990000;
+        color: #ff8080;
         font-weight: 700;
         text-decoration: none;
-        transition: gap 0.3s ease;
+        transition: gap 0.3s ease, color 0.2s ease;
     }
 
     .service-link:hover {
         gap: 12px;
-        color: #6e0707;
+        color: #ff6060;
     }
 
     /* Why Section */
+    /* Why Section — override bg-light */
+    .why-section {
+        background: linear-gradient(160deg, #ffffff 0%, #fafafa 55%, #fff7f7 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .why-section::before {
+        content: '';
+        position: absolute;
+        top: -80px;
+        right: -80px;
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(ellipse at center, rgba(153,0,0,0.06) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .why-section::after {
+        content: '';
+        position: absolute;
+        bottom: -60px;
+        left: -60px;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(ellipse at center, rgba(153,0,0,0.04) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
     .why-content {
         padding-right: 2rem;
+        position: relative;
+        z-index: 1;
     }
 
     .why-description {
-        font-size: 1.1rem;
-        color: #6c757d;
-        line-height: 1.8;
+        font-size: 1.05rem;
+        color: #555;
+        line-height: 1.85;
         margin-bottom: 2rem;
     }
 
     .why-feature {
         display: flex;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-        padding: 1.5rem;
-        background: white;
-        border-radius: 16px;
+        gap: 1.25rem;
+        margin-bottom: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid rgba(0,0,0,0.06);
+        border-left: 3px solid transparent;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
         transition: all 0.3s ease;
     }
 
     .why-feature:hover {
-        transform: translateX(10px);
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transform: translateX(6px);
+        border-left-color: #990000;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.09);
     }
 
     .why-feature-icon {
@@ -859,6 +957,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 4px 14px rgba(110,7,7,0.35);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .why-feature:hover .why-feature-icon {
+        transform: scale(1.08);
+        box-shadow: 0 6px 20px rgba(110,7,7,0.5);
     }
 
     .why-feature-icon svg {
@@ -866,28 +971,38 @@
     }
 
     .why-feature-content h4 {
-        font-size: 1.2rem;
+        font-size: 1.05rem;
         font-weight: 700;
         color: #111;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
     }
 
     .why-feature-content p {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         color: #6c757d;
         margin: 0;
+        line-height: 1.6;
     }
 
     .why-image-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
+        position: relative;
+        z-index: 1;
     }
 
     .why-image-item {
-        border-radius: 16px;
+        border-radius: 18px;
         overflow: hidden;
-        /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); */
+        box-shadow: 0 8px 30px rgba(0,0,0,0.13);
+        border: 2px solid rgba(255,255,255,0.9);
+        transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .why-image-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 14px 40px rgba(0,0,0,0.18);
     }
 
     .why-image-large {
@@ -898,56 +1013,91 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        display: block;
     }
 
     /* Process Section */
-    .process-timeline {
+    .process-section {
+        background: linear-gradient(160deg, #f7f7f7 0%, #fafafa 50%, #f5f5f5 100%);
         position: relative;
-        max-width: 900px;
+        overflow: hidden;
+    }
+
+    .process-section::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        left: -100px;
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(ellipse at center, rgba(153,0,0,0.05) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .process-steps-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        position: relative;
+        max-width: 1100px;
         margin: 0 auto;
     }
 
-    .process-step {
-        display: flex;
-        gap: 2rem;
-        margin-bottom: 3rem;
-        position: relative;
-    }
-
-    .process-step:not(:last-child)::after {
+    /* Horizontal connector line */
+    .process-steps-grid::before {
         content: '';
         position: absolute;
-        left: 35px;
-        top: 80px;
-        width: 2px;
-        height: calc(100% + 3rem);
-        background: linear-gradient(180deg, #990000 0%, rgba(153, 0, 0, 0.2) 100%);
+        top: 30px;
+        left: calc(30px + 1.5rem / 2);
+        right: calc(30px + 1.5rem / 2);
+        height: 2px;
+        background: linear-gradient(90deg, #990000 0%, rgba(153,0,0,0.15) 100%);
+        z-index: 0;
     }
 
-    .process-number {
-        flex-shrink: 0;
-        width: 70px;
-        height: 70px;
+    .process-step-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 2rem 1.5rem 1.75rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+        border: 1px solid rgba(0,0,0,0.06);
+        border-top: 3px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
+    }
+
+    .process-step-card:hover {
+        border-top-color: #990000;
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.11);
+    }
+
+    .process-step-num {
+        width: 60px;
+        height: 60px;
         background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 800;
-        color: white;
-        box-shadow: 0 5px 20px rgba(153, 0, 0, 0.3);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(153,0,0,0.4);
+        margin-bottom: 1.25rem;
+        border: 3px solid #ffffff;
     }
 
-    .process-content h3 {
-        font-size: 1.5rem;
+    .process-step-card h3 {
+        font-size: 1.05rem;
         font-weight: 700;
         color: #111;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.6rem;
     }
 
-    .process-content p {
-        font-size: 1rem;
+    .process-step-card p {
+        font-size: 0.9rem;
         color: #6c757d;
         line-height: 1.7;
         margin: 0;
@@ -1302,18 +1452,12 @@
             font-size: 1.75rem;
         }
 
-        .process-step {
-            flex-direction: column;
-            gap: 1rem;
+        .process-steps-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
 
-        .process-step:not(:last-child)::after {
-            display: none !important;
-        }
-
-        .process-step:not(:last-child)::after {
-            left: 35px;
-            top: 80px;
+        .process-steps-grid::before {
+            display: none;
         }
 
         .cta-title {
@@ -1328,6 +1472,12 @@
         .btn-cta-outline {
             width: 100%;
             justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .process-steps-grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>

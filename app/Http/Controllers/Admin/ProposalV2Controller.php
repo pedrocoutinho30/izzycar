@@ -32,6 +32,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\FormProposal;
 use App\Models\Proposal;
 use App\Models\Client;
 use App\Models\LeadActivity;
@@ -66,8 +67,17 @@ class ProposalV2Controller extends Controller
      */
     public function index(Request $request)
     {
+        $staleStatuses = ['Pendente', 'Enviado'];
+        $staleCutoff   = now()->subDays(30);
+
         // Iniciar query builder
         $query = Proposal::with('client')->orderBy('created_at', 'desc');
+
+        // FILTRO: Cotações antigas sem resposta (>30 dias, Pendente ou Enviado)
+        if ($request->boolean('stale')) {
+            $query->whereIn('status', $staleStatuses)
+                  ->where('created_at', '<', $staleCutoff);
+        }
 
         // FILTRO: Status
         if ($request->filled('status')) {
@@ -103,8 +113,13 @@ class ProposalV2Controller extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        // Paginar resultados (10 por página)
-        $proposals = $query->paginate(10)->withQueryString();
+        // Paginar resultados (15 por página)
+        $proposals = $query->paginate(15)->withQueryString();
+
+        // Contagem de cotações antigas sem resposta (para alerta)
+        $staleCount = Proposal::whereIn('status', $staleStatuses)
+                              ->where('created_at', '<', $staleCutoff)
+                              ->count();
 
         // Obter lista de clientes para filtro
         $clients = Client::orderBy('name')->get();
@@ -138,7 +153,7 @@ class ProposalV2Controller extends Controller
         ];
 
         // Retornar view com dados
-        return view('admin.v2.proposals.index', compact('proposals', 'clients', 'stats'));
+        return view('admin.v2.proposals.index', compact('proposals', 'clients', 'stats', 'staleCount'));
     }
 
     /**
@@ -184,6 +199,60 @@ class ProposalV2Controller extends Controller
         return view('admin.v2.proposals.form', compact('clients', 'leads', 'brands', 'attributes', 'defaults'));
     }
 
+    public function createFromForm($formProposalId)
+    {
+        $formProposal = FormProposal::findOrFail($formProposalId);
+
+        $clients = Client::where('is_lead', false)->orderBy('name')->get();
+        $leads   = Client::where('is_lead', true)->orderBy('name')->get();
+        $brands  = Brand::with(['models' => function ($q) { $q->orderBy('name'); }])->get();
+
+        $groupOrder = AttributeGroup::orderBy('order')->get()->pluck('name')->toArray();
+        $attributes = VehicleAttribute::orderBy('order')->get()
+            ->groupBy('attribute_group')
+            ->sortBy(fn ($group, $key) => array_search($key, $groupOrder));
+
+        $defaults = [
+            'transport_cost'             => 1250,
+            'ipo_cost'                   => 100,
+            'imt_cost'                   => 65,
+            'registration_cost'          => 55,
+            'isv_cost'                   => 0,
+            'license_plate_cost'         => 40,
+            'inspection_commission_cost' => 350,
+            'commission_cost'            => 861,
+            'iuc_cost'                   => 0,
+        ];
+
+        // Objeto pré-preenchido com dados do formulário
+        $proposal = (object) [
+            'client_id'           => $formProposal->client_id,
+            'brand'               => $formProposal->brand,
+            'model'               => $formProposal->model,
+            'version'             => $formProposal->version,
+            'fuel'                => $formProposal->fuel,
+            'proposed_car_value'  => $formProposal->budget,
+            'proposed_car_mileage'=> $formProposal->km_max,
+            'notes'               => $formProposal->message,
+            'status'              => 'Pendente',
+            'url'                 => null,
+            'year'                => null,
+            'mileage'             => null,
+            'engine_capacity'     => null,
+            'co2'                 => null,
+            'value'               => null,
+            'proposed_car_year_month' => null,
+            'proposed_car_notes'  => null,
+            'proposed_car_features' => null,
+            'other_links'         => null,
+            'images'              => null,
+        ];
+
+        return view('admin.v2.proposals.form', compact(
+            'clients', 'leads', 'brands', 'attributes', 'defaults', 'proposal', 'formProposal'
+        ));
+    }
+
     /**
      * ==============================================================
      * STORE - Guardar nova proposta
@@ -198,6 +267,7 @@ class ProposalV2Controller extends Controller
     {
         // Validar dados do formulário
         $validated = $request->validate([
+            'form_proposal_id' => 'nullable|exists:form_proposals,id',
             'client_id' => 'required|exists:clients,id',
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
@@ -229,8 +299,9 @@ class ProposalV2Controller extends Controller
             'iuc_cost' => 'nullable|numeric|min:0',
         ]);
 
-        // Remover 'image' do validated para não tentar salvar no banco
-        unset($validated['image']);
+        // Remover campos que não vão para a tabela proposals
+        $formProposalId = $validated['form_proposal_id'] ?? null;
+        unset($validated['image'], $validated['form_proposal_id']);
 
         // Gerar código único para a proposta
         $validated['proposal_code'] = strtoupper(substr($validated['brand'], 0, 1) .
@@ -268,6 +339,17 @@ class ProposalV2Controller extends Controller
         // Processar upload de imagem (se existir)
         if ($request->hasFile('image')) {
             $this->handleImageUpload($proposal, $request->file('image'));
+        }
+
+        // Ligar ao formulário de origem e marcar como convertido
+        if ($formProposalId) {
+            $formProposal = FormProposal::find($formProposalId);
+            if ($formProposal) {
+                $formProposal->update([
+                    'proposal_id' => $proposal->id,
+                    'status'      => 'convertido',
+                ]);
+            }
         }
 
         // Registar na timeline do cliente/lead
@@ -507,5 +589,31 @@ class ProposalV2Controller extends Controller
         // Guardar caminho canónico (large AVIF) no banco de dados.
         $proposal->images = $path;
         $proposal->save();
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate(['status' => 'required|string|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta']);
+
+        $proposal = Proposal::findOrFail($id);
+        $proposal->status = $request->status;
+        $proposal->save();
+
+        return response()->json(['success' => true, 'status' => $proposal->status]);
+    }
+
+    public function bulkReject(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            Proposal::whereIn('status', ['Pendente', 'Enviado'])
+                    ->where('created_at', '<', now()->subDays(30))
+                    ->update(['status' => 'Reprovada']);
+        } else {
+            Proposal::whereIn('id', $ids)->update(['status' => 'Reprovada']);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

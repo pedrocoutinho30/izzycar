@@ -70,7 +70,7 @@
     <div class="hero-overlay"></div>
     <div class="container">
         <div class="row align-items-center min-vh-50 py-5">
-            <div class="col-lg-7">
+            <div class="col-lg-6">
                 <div class="hero-content">
                     <nav class="hero-breadcrumb" aria-label="breadcrumb">
                         <a href="{{ route('frontend.home') }}">Início</a>
@@ -105,6 +105,44 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center">
+                <div class="hero-stats-card fade-in-up" data-delay="300">
+                    <div class="hero-stats-card-header">
+                        <div class="hero-stats-card-icon">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                            </svg>
+                        </div>
+                        <span>Importação Automóvel</span>
+                    </div>
+                    <div class="hero-stats-grid">
+                        <div class="hero-stat-item">
+                            <span class="hero-stat-value">30%</span>
+                            <span class="hero-stat-label">Poupança média</span>
+                        </div>
+                        <div class="hero-stat-item">
+                            <span class="hero-stat-value">3–6</span>
+                            <span class="hero-stat-label">Semanas entrega</span>
+                        </div>
+                        <div class="hero-stat-item">
+                            <span class="hero-stat-value">10+</span>
+                            <span class="hero-stat-label">Países de origem</span>
+                        </div>
+                        <div class="hero-stat-item">
+                            <span class="hero-stat-value">100%</span>
+                            <span class="hero-stat-label">Processo garantido</span>
+                        </div>
+                    </div>
+                    <div class="hero-stats-card-footer">
+                        <div class="hero-stats-reviews">
+                            <!-- <span class="hero-stars">★★★★★</span>
+                            <span>Avaliação 5 estrelas no Google</span> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -116,39 +154,42 @@
             <div class="col-lg-3 col-md-6">
                 <div class="trust-badge-item fade-in-up">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        <polyline points="9 12 11 14 15 10"></polyline>
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                     </svg>
-                    <h4>Processo Seguro</h4>
-                    <p>100% Transparente</p>
+                    <h4>Resposta em 24h</h4>
+                    <p>Cotação personalizada rápida</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="trust-badge-item fade-in-up" data-delay="100">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <h4>3-6 Semanas</h4>
-                    <p>Entrega Média</p>
+                    <h4>Inspeção de Origem</h4>
+                    <p>Verificamos antes de comprar</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="trust-badge-item fade-in-up" data-delay="200">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                     </svg>
-                    <h4>Zero Preocupações</h4>
-                    <p>Tratamos de Tudo</p>
+                    <h4>Sem Custos Escondidos</h4>
+                    <p>Orçamento fixo e transparente</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="trust-badge-item fade-in-up" data-delay="300">
-                    <span style="font-size:48px; color:var(--accent-color); font-weight:700;">€</span>
-
-                    <h4>Até 30% Poupança</h4>
-                    <p>Melhor Preço</p>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <h4>Suporte Dedicado</h4>
+                    <p>Acompanhamento do início ao fim</p>
                 </div>
             </div>
         </div>
@@ -193,7 +234,7 @@
     </div>
 </section>
 
-<section class="section-padding bg-light" id="section_why_import">
+<section class="section-padding" id="section_why_import">
     <div class="container">
         <div class="section-header text-center mb-5">
             <span class="section-badge fade-in-up">Nossas Vantagens</span>
@@ -232,10 +273,10 @@
     </div>
 </section>
 
-<section class="section-padding" id="section_import">
+<section class="section-padding section-import-steps" id="section_import">
     <div class="container">
         <div class="section-header text-center mb-5">
-
+            <span class="section-badge fade-in-up">Passo a Passo</span>
             <h2 class="section-title fade-in-up" data-delay="100">Como Importamos o Seu Carro</h2>
             <p class="section-description fade-in-up" data-delay="200">Processo detalhado do início ao fim</p>
         </div>
@@ -361,13 +402,24 @@
 
 <section class="section-padding" id="section_faq">
     <div class="container">
-        <div class="section-header text-center mb-5">
+        <div class="section-header text-center mb-4">
             <span class="section-badge fade-in-up">FAQ</span>
             <h2 class="section-title fade-in-up" data-delay="100">Perguntas Frequentes</h2>
             <p class="section-description fade-in-up" data-delay="200">Tire as suas dúvidas sobre importação</p>
         </div>
 
-        <div class="faq-wrapper-modern">
+        @if(!empty($faq['enum']))
+        <div class="faq-controls text-center mb-4">
+            <button type="button" id="faq-toggle-all" class="btn-faq-toggle" data-expanded="false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+                <span>Expandir Tudo</span>
+            </button>
+        </div>
+        @endif
+
+        <div class="faq-wrapper-modern" id="faq-list">
             @forelse ($faq['enum'] ?? [] as $faqItem)
             <div class="faq-item-modern">
                 <button class="faq-question-modern" type="button"
@@ -381,8 +433,7 @@
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                 </button>
-                <div id="collapse-faq-{{ $loop->index }}" class="collapse faq-answer-collapse"
-                    data-bs-parent="#section_faq">
+                <div id="collapse-faq-{{ $loop->index }}" class="collapse faq-answer-collapse">
                     <div class="faq-answer-modern">
                         {!! $faqItem['answer'] !!}
                     </div>
@@ -529,42 +580,166 @@
         color: white;
     }
 
+    /* Hero Stats Card */
+    .hero-stats-card {
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 28px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 380px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
+        position: relative;
+        animation: floatCard 5s ease-in-out infinite;
+    }
+
+    .hero-stats-card::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 30px;
+        right: 30px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        pointer-events: none;
+    }
+
+    @keyframes floatCard {
+        0%, 100% { transform: translateY(0px); }
+        50%       { transform: translateY(-12px); }
+    }
+
+    .hero-stats-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .hero-stats-card-icon {
+        flex-shrink: 0;
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(153,0,0,0.45);
+    }
+
+    .hero-stats-card-header > span {
+        color: rgba(255,255,255,0.92);
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .hero-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .hero-stat-item {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 14px;
+        padding: 1.25rem 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .hero-stat-item:hover {
+        background: rgba(255,255,255,0.09);
+        border-color: rgba(153,0,0,0.4);
+    }
+
+    .hero-stat-value {
+        display: block;
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 0.4rem;
+        letter-spacing: -0.02em;
+    }
+
+    .hero-stat-label {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.6);
+        font-weight: 500;
+        line-height: 1.3;
+    }
+
+    .hero-stats-card-footer {
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .hero-stats-reviews {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .hero-stars {
+        color: #fbbf24;
+        font-size: 1rem;
+        letter-spacing: 2px;
+    }
+
+    .hero-stats-reviews > span:last-child {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.7);
+        font-weight: 500;
+    }
+
     /* Trust Badges */
     .trust-badges-section {
         padding: 3rem 0;
-        background: white;
+        background: linear-gradient(135deg, #0d0d0d 0%, #111111 50%, #0d0d0d 100%);
     }
 
     .trust-badge-item {
         text-align: center;
         padding: 2rem 1.5rem;
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        background: rgba(255,255,255,0.04);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.08);
         border-radius: 16px;
         height: 100%;
         transition: all 0.3s ease;
-        border: 2px solid transparent;
     }
 
     .trust-badge-item:hover {
-        border-color: #990000;
-        transform: translateY(-5px);
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(153,0,0,0.4);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(153,0,0,0.2);
+        transform: translateY(-4px);
     }
 
     .trust-badge-item svg {
-        color: #990000;
+        color: var(--accent-color);
         margin-bottom: 1rem;
     }
 
     .trust-badge-item h4 {
         font-size: 1.1rem;
         font-weight: 700;
-        color: #111;
+        color: #fff;
         margin-bottom: 0.5rem;
     }
 
     .trust-badge-item p {
         font-size: 0.9rem;
-        color: #6c757d;
+        color: rgba(255,255,255,0.6);
         margin: 0;
     }
 
@@ -690,16 +865,37 @@
     }
 
     /* Import Description */
+    /* Como Funciona section */
+    #section_description_import {
+        background: linear-gradient(160deg, #f7f7f7 0%, #fafafa 60%, #f5f5f5 100%);
+        position: relative;
+    }
+
     .import-description-card {
-        background: white;
+        background: #ffffff;
         border-radius: 24px;
         padding: 3rem;
-        /* box-shadow: 0 10px 40px rgba(0,0,0,0.08); */
+        box-shadow: 0 6px 30px rgba(0,0,0,0.07);
+        border: 1px solid rgba(0,0,0,0.05);
+        border-top: 4px solid #990000;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .import-description-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(ellipse at top right, rgba(153,0,0,0.04) 0%, transparent 70%);
+        pointer-events: none;
     }
 
     .import-description-content {
-        font-size: 1.1rem;
-        line-height: 1.8;
+        font-size: 1.05rem;
+        line-height: 1.85;
         color: #333;
     }
 
@@ -724,11 +920,12 @@
         content: "";
         position: absolute;
         left: 0;
-        top: 0.6rem;
-        width: 8px;
-        height: 8px;
-        background: var(--accent-color);
+        top: 0.55rem;
+        width: 9px;
+        height: 9px;
+        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
         border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(153,0,0,0.35);
     }
 
     /* Section Header Import */
@@ -750,23 +947,41 @@
         margin: 0;
     }
 
+    /* Why Import Section */
+    #section_why_import {
+        background: linear-gradient(160deg, #f7f7f7 0%, #fafafa 50%, #fff7f7 100%);
+        position: relative;
+    }
+
+    #section_why_import::before {
+        content: '';
+        position: absolute;
+        top: -80px;
+        right: -80px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(ellipse at center, rgba(153,0,0,0.05) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
     /* Why Import Cards */
     .why-import-card {
-        background: white;
+        background: #ffffff;
         border-radius: 20px;
         padding: 2rem;
         height: 100%;
-        /* box-shadow: 0 10px 40px rgba(0,0,0,0.08); */
+        box-shadow: 0 4px 20px rgba(0,0,0,0.07);
         transition: all 0.3s ease;
         display: flex;
         gap: 1.5rem;
-        border: 2px solid transparent;
+        border: 1px solid rgba(0,0,0,0.06);
+        border-left: 3px solid transparent;
     }
 
     .why-import-card:hover {
-        transform: translateY(-5px);
-        /* box-shadow: 0 15px 50px rgba(0,0,0,0.12); */
-        border-color: var(--accent-color);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 36px rgba(0,0,0,0.11);
+        border-left-color: #990000;
     }
 
     .why-import-icon {
@@ -779,11 +994,13 @@
         align-items: center;
         justify-content: center;
         color: white;
+        box-shadow: 0 4px 16px rgba(110,7,7,0.35);
         transition: all 0.3s ease;
     }
 
     .why-import-card:hover .why-import-icon {
         transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 6px 22px rgba(110,7,7,0.5);
     }
 
     .why-import-content {
@@ -867,6 +1084,11 @@
 
     .btn-cta-inline:hover svg {
         transform: translateX(5px);
+    }
+
+    /* Section Como Importamos */
+    .section-import-steps {
+        background: linear-gradient(160deg, #ffffff 0%, #f9f9f9 50%, #f5f5f5 100%);
     }
 
     /* INNOVATIVE COST CARDS */
@@ -1214,6 +1436,36 @@
             font-size: 0.95rem;
         }
     }
+
+    /* FAQ Toggle Button */
+    .btn-faq-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.625rem 1.5rem;
+        background: transparent;
+        color: #555;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border: 1px solid #ddd;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-faq-toggle:hover {
+        background: rgba(110, 7, 7, 0.08);
+        border-color: rgba(110, 7, 7, 0.4);
+        color: #6e0707;
+    }
+
+    .btn-faq-toggle svg {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-faq-toggle[data-expanded="true"] svg {
+        transform: rotate(180deg);
+    }
 </style>
 @endpush
 
@@ -1292,5 +1544,37 @@
                 slidesPerView: 3,
             }
         }
+    });
+
+    // FAQ Expandir/Fechar Tudo — corre após Bootstrap estar disponível
+    window.addEventListener('load', function() {
+        const faqToggleBtn = document.getElementById('faq-toggle-all');
+        if (!faqToggleBtn) return;
+
+        faqToggleBtn.addEventListener('click', function() {
+            const expanded = this.dataset.expanded === 'true';
+            const collapses = document.querySelectorAll('#faq-list .faq-answer-collapse');
+
+            collapses.forEach(function(el) {
+                const bsCollapse = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
+                expanded ? bsCollapse.hide() : bsCollapse.show();
+            });
+
+            this.dataset.expanded = expanded ? 'false' : 'true';
+            this.querySelector('span').textContent = expanded ? 'Expandir Tudo' : 'Fechar Tudo';
+        });
+
+        // Sincroniza o botão quando um item muda individualmente
+        const syncBtn = function() {
+            const allOpen = Array.from(document.querySelectorAll('#faq-list .faq-answer-collapse'))
+                .every(function(c) { return c.classList.contains('show'); });
+            faqToggleBtn.dataset.expanded = allOpen ? 'true' : 'false';
+            faqToggleBtn.querySelector('span').textContent = allOpen ? 'Fechar Tudo' : 'Expandir Tudo';
+        };
+
+        document.querySelectorAll('#faq-list .faq-answer-collapse').forEach(function(el) {
+            el.addEventListener('shown.bs.collapse', syncBtn);
+            el.addEventListener('hidden.bs.collapse', syncBtn);
+        });
     });
 </script>

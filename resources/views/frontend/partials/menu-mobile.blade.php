@@ -54,6 +54,15 @@
                 @endif
                 @endforeach
             </ul>
+            <div class="mobile-cta-wrapper">
+                <a href="{{ route('frontend.form-import') }}" class="mobile-cta-btn">
+                    Pedir Cotação
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -250,6 +259,34 @@
 
 .mobile-menu-modern::-webkit-scrollbar-thumb:hover {
     background: rgba(110, 7, 7, 0.7);
+}
+
+/* Mobile CTA Button */
+.mobile-cta-wrapper {
+    padding: 1.5rem 0 0.5rem;
+}
+.mobile-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(110,7,7,0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    letter-spacing: 0.03em;
+}
+.mobile-cta-btn:hover,
+.mobile-cta-btn:active {
+    color: #fff;
+    transform: scale(1.02);
+    box-shadow: 0 6px 28px rgba(110,7,7,0.7);
 }
 </style>
 

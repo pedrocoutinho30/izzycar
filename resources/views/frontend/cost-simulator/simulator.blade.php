@@ -139,12 +139,12 @@
           </div>
 
           <div class="sc-field sc-field--conditional" id="wrap_cilindrada">
-            <label class="sc-label" for="cilindrada">Cilindrada (cc) <span class="sc-req">*</span></label>
+            <label class="sc-label" for="cilindrada"><span>Cilindrada (cc) <span class="sc-req">*</span></span><span class="sc-tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Volume total dos cilindros do motor em centímetros cúbicos (cc). Encontra este valor no livro de serviço, título de registo ou ficha técnica do veículo."><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span></label>
             <input type="number" name="cilindrada" id="cilindrada" class="sc-input" placeholder="ex: 1998" value="{{ old('cilindrada') }}">
           </div>
 
           <div class="sc-field sc-field--conditional" id="wrap_tipo_medicao">
-            <label class="sc-label" for="tipo_medicao">Método de homologação CO₂ <span class="sc-req">*</span></label>
+            <label class="sc-label" for="tipo_medicao"><span>Método de homolog. CO₂ <span class="sc-req">*</span></span><span class="sc-tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="WLTP é o ciclo de ensaio mais recente (obrigatório desde set. 2018). NEDC é o método antigo. Verifique na ficha técnica ou documento de homologação do veículo."><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span></label>
             <select name="tipo_medicao" id="tipo_medicao" class="sc-select">
               <option value="WLTP" {{ old('tipo_medicao','WLTP')=='WLTP'?'selected':'' }}>WLTP (após 2018)</option>
               <option value="NEDC" {{ old('tipo_medicao')=='NEDC'?'selected':'' }}>NEDC (antes de 2018)</option>
@@ -152,15 +152,15 @@
           </div>
 
           <div class="sc-field sc-field--conditional" id="wrap_co2">
-            <label class="sc-label" for="co2">CO₂ (g/km) <span class="sc-req">*</span></label>
+            <label class="sc-label" for="co2"><span>CO₂ (g/km) <span class="sc-req">*</span></span><span class="sc-tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Emissões de dióxido de carbono em gramas por quilómetro. Este valor afeta diretamente o ISV. Encontra-o na ficha técnica, certificado de conformidade (COC) ou no registo do veículo."><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span></label>
             <input type="number" name="co2" id="co2" class="sc-input" placeholder="ex: 120" value="{{ old('co2') }}">
           </div>
 
           <div class="sc-field sc-field--conditional" id="emissao_particulas_container" style="display:none">
-            <label class="sc-label" for="emissao_particulas">Emissão de partículas (g/km) <span class="sc-req">*</span></label>
+            <label class="sc-label" for="emissao_particulas"><span>Emissão de partículas(g/km) <span class="sc-req">*</span></span><span class="sc-tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Emissão de partículas sólidas do motor (aplicável a motores Diesel). Motores Euro 6 emitem tipicamente ≤ 0.0001 g/km. Consulte a ficha técnica ou o certificado de conformidade (COC)."><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span></label>
             <select name="emissao_particulas" id="emissao_particulas" class="sc-select">
-              <option value="+0.0001" {{ old('emissao_particulas','+0.0001')=='+0.0001'?'selected':'' }}>&gt; 0.0001 g/km</option>
-              <option value="-0.0001" {{ old('emissao_particulas')=='-0.0001'?'selected':'' }}>&le; 0.0001 g/km</option>
+              <option value="+0.0001" {{ old('emissao_particulas','+0.0001')=='+0.0001'?'selected':'' }}>Alto — &gt; 0.0001 g/km (Euro 5 ou anterior)</option>
+              <option value="-0.0001" {{ old('emissao_particulas')=='-0.0001'?'selected':'' }}>Baixo — &le; 0.0001 g/km (Euro 6)</option>
             </select>
           </div>
 
@@ -242,6 +242,11 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+  /* ── Tooltips ── */
+  document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+    new bootstrap.Tooltip(el, { trigger: 'hover focus' });
+  });
 
   /* ── Brand/Model cascade ── */
   const brandSel = document.getElementById('brand');
@@ -431,6 +436,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .sc-label {
   font-size:.75rem; font-weight:700; color:#374151;
   text-transform:uppercase; letter-spacing:.05em; margin-bottom:.45rem;
+  display:flex; align-items:center; gap:5px;
 }
 .sc-req { color: var(--sc-brand); }
 .sc-input, .sc-select {
@@ -480,6 +486,19 @@ document.addEventListener('DOMContentLoaded', function () {
   .sc-card { padding:1.75rem 1.25rem; }
   .sc-submit { width:100%; justify-content:center; }
   .sc-hero__title { white-space: normal; }
+}
+
+.sc-tooltip-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: rgba(153,0,0,0.7);
+  cursor: help;
+  transition: color 0.2s ease;
+}
+
+.sc-tooltip-icon:hover {
+  color: rgba(255,255,255,0.8);
 }
 </style>
 @endpush

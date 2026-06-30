@@ -95,6 +95,17 @@
     ]),
     'actions' => [
     [
+    'href' => route('converted-proposals.timeline', [
+        'brand' => $converted->brand ?? 'veiculo',
+        'model' => $converted->modelCar ?? 'modelo',
+        'version' => $converted->version ?? 'versao',
+        'id' => $converted->id,
+    ]),
+    'icon' => 'bi-clock-history',
+    'label' => 'Acompanhamento',
+    'color' => 'info'
+    ],
+    [
     'href' => route('admin.v2.converted-proposals.edit', $converted->id),
     'icon' => 'bi-pencil',
     'label' => 'Editar',

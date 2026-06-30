@@ -53,7 +53,7 @@ class ProposalController extends Controller
         $proposals = $query->orderBy('created_at', 'desc')->paginate(10);
 
         // Obter a lista de clientes para o filtro
-        $clients = Client::all();
+        $clients = Client::orderBy('name')->get();
 
         return view('proposals.index', compact('proposals', 'clients', 'status', 'clientId'));
     }
@@ -63,7 +63,7 @@ class ProposalController extends Controller
 
 
 
-        $clients = Client::all(); // To select a client
+        $clients = Client::orderBy('name')->get(); // To select a client
         // Definir a ordem desejada dos grupos
 
 
@@ -289,7 +289,7 @@ class ProposalController extends Controller
 
     public function edit(Proposal $proposal)
     {
-        $clients = Client::all(); // To select a client
+        $clients = Client::orderBy('name')->get(); // To select a client
         $images = [];
         if ($proposal->images) {
             $images = $proposal->images;
@@ -894,7 +894,7 @@ class ProposalController extends Controller
     }
     public function sentWhatsapp($id)
     {
-        dd($id);
+        return response()->json(['status' => 'ok']);
     }
 
 
@@ -905,7 +905,7 @@ class ProposalController extends Controller
         $form = $request->all()['form'];
         $proposal = new Proposal();
         $proposal->proposal_code =
-            strtoupper(substr($$form['brand'], 0, 1)) .
+            strtoupper(substr($form['brand'] ?? 'X', 0, 1)) .
             strtoupper(substr($form['model'], 0, 1)) .
             Str::random(8);
         $proposal->client_id = $form['client_id'] ?? null;

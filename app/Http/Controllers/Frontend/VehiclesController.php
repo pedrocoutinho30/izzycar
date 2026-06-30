@@ -154,7 +154,7 @@ class VehiclesController extends Controller
     public function vehicleDetails($brand, $model, $id)
     {
 
-        $vehicle = V3Vehicle::with(['photos', 'attributeValues'])->where('reference', $id)->firstOrFail();
+        $vehicle = V3Vehicle::with(['photos', 'attributeValues.attribute'])->where('reference', $id)->firstOrFail();
         $attributes = [];
 
         $potencia = "";
@@ -163,8 +163,7 @@ class VehiclesController extends Controller
         $autonomia = "";
         foreach ($vehicle->attributeValues as $attributeValue) {
 
-
-            $attribute = VehicleAttribute::find($attributeValue->attribute_id);
+            $attribute = $attributeValue->attribute ?? VehicleAttribute::find($attributeValue->attribute_id);
             if (!$attribute) continue;
 
             $group = $attribute->attribute_group ?? 'Outros'; // fallback caso esteja vazio
@@ -241,7 +240,7 @@ class VehiclesController extends Controller
 
     public function vehicleStory($brand, $model, $id)
     {
-        $vehicle = V3Vehicle::with(['photos', 'attributeValues'])->where('reference', $id)->firstOrFail();
+        $vehicle = V3Vehicle::with(['photos', 'attributeValues.attribute'])->where('reference', $id)->firstOrFail();
 
         if (
             Str::slug($vehicle->brand ?? '') !== $brand ||
@@ -256,7 +255,7 @@ class VehiclesController extends Controller
         $autonomia  = '';
 
         foreach ($vehicle->attributeValues as $attributeValue) {
-            $attribute = VehicleAttribute::find($attributeValue->attribute_id);
+            $attribute = $attributeValue->attribute ?? VehicleAttribute::find($attributeValue->attribute_id);
             if (!$attribute) continue;
             if ($attribute->key === 'potencia')         $potencia   = $attributeValue->value;
             if ($attribute->key === 'tipo_caixa')       $caixa      = $attributeValue->value;

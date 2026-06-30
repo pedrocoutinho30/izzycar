@@ -46,7 +46,7 @@ class SaleController extends Controller
     public function create()
     {
         $vehicles = Vehicle::all();
-        $clients = Client::all();
+        $clients = Client::orderBy('name')->get();
         return view('sales.form', compact('vehicles', 'clients'));
     }
 
@@ -144,7 +144,7 @@ class SaleController extends Controller
     public function edit(Sale $sale)
     {
         $vehicles = Vehicle::all();
-        $clients = Client::all();
+        $clients = Client::orderBy('name')->get();
         return view('sales.form', compact('sale', 'vehicles', 'clients'));
     }
 

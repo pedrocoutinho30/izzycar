@@ -18,6 +18,7 @@ use App\Models\VehicleAttribute;
 use App\Models\VehicleAttributeValue;
 use App\Services\SaleCalculator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\ImageManager;
@@ -82,6 +83,8 @@ class V3VehicleController extends Controller
             'status'    => 'em_stock',
         ]);
 
+        $this->clearVehicleCache();
+
         return redirect()->route('admin.v3.vehicles.edit', $vehicle->id)
             ->with('success', 'Veículo criado. Complete a informação nas tabs abaixo.');
     }
@@ -124,6 +127,7 @@ class V3VehicleController extends Controller
         Storage::disk('public')->deleteDirectory("v3-vehicles/{$vehicle->id}");
 
         $vehicle->delete();
+        $this->clearVehicleCache();
 
         return redirect()->route('admin.v3.vehicles.index')
             ->with('success', 'Veículo eliminado.');
@@ -189,6 +193,7 @@ class V3VehicleController extends Controller
             $validated['day'] = null;
         }
         $vehicle->update($validated);
+        $this->clearVehicleCache();
 
         return response()->json(['success' => true, 'message' => 'Informação geral guardada.']);
     }
@@ -266,7 +271,7 @@ class V3VehicleController extends Controller
         $vehicle = V3Vehicle::findOrFail($id);
 
         $request->validate([
-            'ficheiro' => 'required|file|max:20480',
+            'ficheiro' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp|max:20480',
             'tipo'     => 'nullable|string|max:50',
             'titulo'   => 'nullable|string|max:255',
         ]);
@@ -885,5 +890,12 @@ class V3VehicleController extends Controller
         $document->delete();
 
         return back()->with('success', 'Documento removido.')->with('return_tab', 'legalization');
+    }
+
+    private function clearVehicleCache(): void
+    {
+        Cache::forget('v3vehicles');
+        Cache::forget('v3vehicles_count');
+        Cache::forget('v3last_vehicles');
     }
 }

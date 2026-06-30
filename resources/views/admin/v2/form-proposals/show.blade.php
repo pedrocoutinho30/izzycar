@@ -9,13 +9,13 @@
 @include('components.admin.page-header', [
 'breadcrumbs' => [
 ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-['icon' => 'bi bi-file-earmark-text', 'label' => 'Cotações', 'href' => route('admin.v2.form-proposals.index')],
+['icon' => 'bi bi-file-earmark-text', 'label' => 'Formulários', 'href' => route('admin.v2.form-proposals.index')],
 ['icon' => '', 'label' => 'Detalhes do Formulário']
 ],
 'title' => 'Pedido de ' . $formProposal->name,
-'subtitle' => "",
-'actionHref' => "",
-'actionLabel' => ''
+'subtitle' => $formProposal->brand ? ($formProposal->brand . ' ' . ($formProposal->model ?? '') . ($formProposal->version ? ' · ' . $formProposal->version : '')) : 'Sem preferência de veículo',
+'actionHref' => $formProposal->proposal_id ? route('admin.v2.proposals.edit', $formProposal->proposal_id) : route('admin.v2.proposals.createFromForm', $formProposal->id),
+'actionLabel' => $formProposal->proposal_id ? 'Ver Cotação' : 'Criar Cotação'
 ])
 
 

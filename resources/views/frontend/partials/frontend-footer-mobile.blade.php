@@ -74,7 +74,7 @@
                 <span>•</span>
                 <a href="{{ route('frontend.terms') }}" target="_blank" class="legal-mobile-link">Termos</a>
             </div>
-            <p class="footer-mobile-copy">© 2025 Izzycar</p>
+            <p class="footer-mobile-copy">© {{ now()->year }} Izzycar</p>
         </div>
     </div>
 </footer>
