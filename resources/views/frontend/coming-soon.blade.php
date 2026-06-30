@@ -232,7 +232,7 @@
                 </svg>
             </a>
         </div>
-        <p>© 2025 IzzyCar. Todos os direitos reservados.</p>
+        <p>© 2026 IzzyCar. Todos os direitos reservados.</p>
     </div>
 
 </body>

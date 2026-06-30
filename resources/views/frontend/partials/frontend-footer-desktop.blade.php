@@ -110,7 +110,7 @@
     <div class="footer-bottom">
         <div class="container">
             <div class="footer-bottom-content">
-                <p class="footer-copyright">© 2025 Izzycar. Todos os direitos reservados.</p>
+                <p class="footer-copyright">© 2026 Izzycar. Todos os direitos reservados.</p>
                 <div class="footer-legal">
                     <a href="{{ route('frontend.privacy') }}" target="_blank" class="legal-link">Política de Privacidade</a>
                     <span class="separator">•</span>
