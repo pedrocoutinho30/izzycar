@@ -1,8 +1,6 @@
 @extends('frontend.partials.layout')
 
-@include('frontend.partials.seo', [
-'seo' => $data->seo
-])
+{{-- SEO estático --}}
 
 @push('head')
 <script type="application/ld+json">
@@ -41,13 +39,14 @@
 }
 </script>
 
-@if(!empty($faq['enum']))
+@php $faqItems = $cms['faq']?->data ?? []; @endphp
+@if(!empty($faqItems))
 <script type="application/ld+json">
 {
     "@@context": "https://schema.org",
     "@@type": "FAQPage",
     "mainEntity": [
-        @foreach($faq['enum'] as $i => $faqItem)
+        @foreach($faqItems as $i => $faqItem)
         {
             "@@type": "Question",
             "name": "{{ addslashes(strip_tags($faqItem['question'])) }}",
@@ -85,10 +84,10 @@
                         Importação Chave na Mão
                     </span>
                     <h1 class="hero-title fade-in-up" data-delay="100">
-                        {{ $data->process_import['title'] }}
+                        {{ $cms['hero']?->title ?? 'Importação Automóvel Chave na Mão' }}
                     </h1>
                     <p class="hero-description fade-in-up" data-delay="200">
-                        {{ $data->process_import['subtitle'] }}
+                        {{ $cms['hero']?->subtitle ?? 'A forma segura e descomplicada de importar o seu próximo carro.' }}
                     </p>
                     <div class="hero-actions fade-in-up" data-delay="300">
                         <a href="#form-cotação" class="btn-hero-primary" data-bs-toggle="modal" data-bs-target="#formPropostaModal">
@@ -187,7 +186,7 @@
         </div>
         <div class="import-description-card fade-in-up" data-delay="200">
             <div class="import-description-content">
-                {!!$data->process_import['description']!!}
+                {!! $cms['intro']?->body ?? '' !!}
             </div>
         </div>
     </div>
@@ -202,7 +201,7 @@
         </div>
 
         <div class="row g-4">
-            @foreach ($why_import['enum_why_import'] as $index => $item)
+            @foreach ($cms['why_import']?->data ?? [] as $index => $item)
             <div class="col-md-6">
                 <div class="why-import-card">
                     <div class="why-import-icon">
@@ -223,7 +222,7 @@
                     </div>
                     <div class="why-import-content">
                         <h5 class="why-import-title">{{ $item['title'] }}</h5>
-                        <div class="why-import-description">{!! $item['content'] !!}</div>
+                        <div class="why-import-description">{!! $item['text'] ?? '' !!}</div>
                     </div>
                 </div>
             </div>
@@ -242,13 +241,13 @@
 
         <div id="desktop-content">
             @include('frontend.partials.vertical-tabs', [
-            'data' => $data->process_import['process_import'],
+            'data' => $cms['process']?->data ?? [],
             'title' => "Passo a passo",
             ])
         </div>
         <div id="mobile-content">
             @include('frontend.partials.accordion-mobile', [
-            'data' => $data->process_import['process_import'],
+            'data' => $cms['process']?->data ?? [],
             'title' => "Passo a passo",
             ])
         </div>
@@ -273,7 +272,7 @@
     </div>
 </section>
 
-@if(!empty($data_custos))
+@if(!empty($cms['costs']?->data))
 <section class="section-padding bg-light" id="section_import_costs">
     <div class="container">
         <div class="section-header text-center mb-5">
@@ -283,7 +282,7 @@
         </div>
 
         <div class="row g-4">
-            @foreach ($data_custos['enum'] as $index => $cost)
+            @foreach ($cms['costs']->data as $index => $cost)
             @php
             $icons = [
             '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -319,19 +318,13 @@
                     </div>
                     <h5 class="cost-card-title">{{ $cost['title'] }}</h5>
                     <div class="cost-card-content">
-                        {!! $cost['content'] ?? 'Informação detalhada sobre este custo' !!}
+                        {!! $cost['text'] ?? 'Informação detalhada sobre este custo' !!}
                     </div>
+                    @if(!empty($cost['badge']))
                     <div class="cost-card-footer">
-                        <span class="cost-learn-more">
-                            @if($cost['title'] == 'Inspeção, Matrícula e Legalização' || $cost['title'] == 'Valor do Transporte' || $cost['title'] == 'Honorários do Serviço' )
-                            Incluído no serviço
-                            @elseif($cost['title'] == 'Imposto Único de Circulação (IUC)' || $cost['title'] == 'Imposto Sobre Veículos (ISV)' )
-                            Pago às autoridades portuguesas
-                            @elseif($cost['title'] == 'Preço da Viatura' )
-                            Direto ao vendedor
-                            @endif
-                        </span>
+                        <span class="cost-learn-more">{{ $cost['badge'] }}</span>
                     </div>
+                    @endif
                 </div>
             </div>
             @endforeach
@@ -368,14 +361,14 @@
         </div>
 
         <div class="faq-wrapper-modern">
-            @forelse ($faq['enum'] ?? [] as $faqItem)
+            @forelse ($faqItems as $faqItem)
             <div class="faq-item-modern">
                 <button class="faq-question-modern" type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#collapse-faq-{{ $loop->index }}"
                     aria-expanded="false"
                     aria-controls="collapse-faq-{{ $loop->index }}">
-                    <span class="faq-number">{{ str_pad($faqItem['order'], 2, '0', STR_PAD_LEFT) }}</span>
+                    <span class="faq-number">{{ str_pad($loop->index + 1, 2, '0', STR_PAD_LEFT) }}</span>
                     <span class="faq-question-text">{{ strip_tags($faqItem['question']) }}</span>
                     <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use \App\Models\Page;
 use App\Models\Testimonial;
 use App\Models\Partner;
+use App\Models\CmsPage;
 
 class VehiclesController extends Controller
 {
@@ -47,7 +48,10 @@ class VehiclesController extends Controller
 
         $partners = Partner::where('show_on_site', true)->whereNotNull('image')->get();
 
-        return view('frontend.index', compact('vehicles_count', 'last_vehicles', 'vehicles', 'page', 'reviews', 'media', 'partners'));
+        $cmsPage = CmsPage::where('slug', 'home')->with('activeBlocks')->first();
+        $cms     = $cmsPage ? $cmsPage->activeBlocks->keyBy('name') : collect();
+
+        return view('frontend.index', compact('vehicles_count', 'last_vehicles', 'vehicles', 'page', 'reviews', 'media', 'partners', 'cms'));
     }
 
     public function vehicles(Request $request)

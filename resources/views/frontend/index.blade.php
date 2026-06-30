@@ -17,14 +17,13 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
                         </svg>
-                        Importação Automóvel Chave na Mão
+                        {{ $cms['hero']?->body ?? 'Importação Automóvel Chave na Mão' }}
                     </span>
                     <h1 class="hero-title fade-in-up" data-delay="100">
-                        O Seu Carro dos Sonhos,<br>
-                        <span class="text-gradient">Ao Melhor Preço</span>
+                        {!! $cms['hero']?->title ?? 'O Seu Carro dos Sonhos,<br><span class="text-gradient">Ao Melhor Preço</span>' !!}
                     </h1>
                     <p class="hero-description fade-in-up" data-delay="200">
-                        Especializados em importação de veículos de toda a Europa, oferecemos um serviço completo e transparente. Desde a procura até à entrega, cuidamos de cada detalhe para que o seu carro chegue pronto a conduzir.
+                        {{ $cms['hero']?->subtitle ?? 'Especializados em importação de veículos de toda a Europa, oferecemos um serviço completo e transparente. Desde a procura até à entrega, cuidamos de cada detalhe para que o seu carro chegue pronto a conduzir.' }}
                     </p>
                     <div class="hero-actions fade-in-up" data-delay="300">
                         <a href="{{ route('frontend.form-import') }}" class="btn-hero-primary">
@@ -73,47 +72,15 @@
     <div class="container">
         <div class="trust-content">
             <div class="row align-items-center">
+                @foreach ($cms['trust_badges']?->data ?? [] as $i => $badge)
                 <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <div class="trust-item fade-in-up">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                            <polyline points="9 12 11 14 15 10"></polyline>
-                        </svg>
-                        <h4>100% Seguro</h4>
-                        <p>Processo transparente e garantido</p>
+                    <div class="trust-item fade-in-up" {{ $i > 0 ? 'data-delay="' . ($i * 100) . '"' : '' }}>
+                        <i class="bi {{ $badge['icon'] ?? 'bi-check-circle' }}" style="font-size:48px; color:var(--accent-color);"></i>
+                        <h4>{{ $badge['title'] }}</h4>
+                        <p>{{ $badge['text'] }}</p>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <div class="trust-item fade-in-up" data-delay="100">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
-                        <h4>Entrega Rápida</h4>
-                        <p>3-6 semanas em média</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <div class="trust-item fade-in-up" data-delay="200">
-
-                        <span style="font-size:48px; color:var(--accent-color); font-weight:700;">€</span>
-
-
-                        <h4>Melhor Preço</h4>
-                        <p>Economize até 30%</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="trust-item fade-in-up" data-delay="300">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="8.5" cy="7" r="4"></circle>
-                            <polyline points="17 11 19 13 23 9"></polyline>
-                        </svg>
-                        <h4>Suporte Total</h4>
-                        <p>Do início ao fim</p>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
@@ -124,72 +91,31 @@
     <div class="container">
         <div class="section-header text-center mb-5">
             <span class="section-badge fade-in-up">Nossos Serviços</span>
-            <h2 class="section-title fade-in-up" data-delay="100">Como Podemos Ajudar</h2>
-            <p class="section-description fade-in-up" data-delay="200">Oferecemos uma gama completa de serviços para tornar a sua importação simples e segura</p>
+            <h2 class="section-title fade-in-up" data-delay="100">{{ $cms['services']?->title ?? 'Os Nossos Serviços' }}</h2>
+            <p class="section-description fade-in-up" data-delay="200">{{ $cms['services']?->subtitle ?? 'Soluções completas para importar e legalizar o seu automóvel' }}</p>
         </div>
 
         <div class="row g-4">
+            @foreach ($cms['services']?->data ?? [] as $i => $service)
             <div class="col-lg-6 col-md-6">
-                <div class="service-card fade-in-up">
+                <div class="service-card fade-in-up" {{ $i > 0 ? 'data-delay="' . ($i * 100) . '"' : '' }}>
                     <div class="service-icon-wrapper">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                        </svg>
+                        <i class="bi {{ $service['icon'] ?? 'bi-star' }}" style="font-size:40px;"></i>
                     </div>
-                    <h3 class="service-title">Importação Chave na Mão</h3>
-                    <p class="service-description">Tratamos de todo o processo: procura, compra, transporte, legalização e entrega. Recebe o seu carro pronto a conduzir.</p>
-                    <a href="{{ route('frontend.import') }}" class="service-link">
-                        Saber mais
+                    <h3 class="service-title">{{ $service['title'] }}</h3>
+                    <p class="service-description">{{ $service['text'] }}</p>
+                    @if(!empty($service['link']))
+                    <a href="{{ $service['link'] }}" class="service-link">
+                        {{ $service['button_text'] ?? 'Saber mais' }}
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
                     </a>
+                    @endif
                 </div>
             </div>
-
-            <div class="col-lg-6 col-md-6">
-                <div class="service-card fade-in-up" data-delay="100">
-                    <div class="service-icon-wrapper">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                    </div>
-                    <h3 class="service-title">Legalização de Veículos</h3>
-                    <p class="service-description">Já tem o carro? Tratamos da inspeção, matrícula e toda a documentação necessária para legalizar o seu veículo em Portugal.</p>
-                    <a href="{{ route('frontend.legalization') }}" class="service-link">
-                        Saber mais
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </a>
-                </div>
-            </div>
-
-            <!-- <div class="col-lg-4 col-md-6">
-                <div class="service-card fade-in-up" data-delay="200">
-                    <div class="service-icon-wrapper">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                    </div>
-                    <h3 class="service-title">Venda de Carros</h3>
-                    <p class="service-description">Carros nacionais e importados prontos para entrega imediata. Veículos inspecionados e com garantia.</p>
-                    <a href="" class="service-link">
-                        Ver stock
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </a>
-                </div>
-            </div> -->
+            @endforeach
         </div>
     </div>
 </section>
@@ -201,47 +127,25 @@
             <div class="col-lg-6 mb-5 mb-lg-0">
                 <div class="why-content">
                     <span class="section-badge fade-in-up">Porque Escolher-nos</span>
-                    <h2 class="section-title fade-in-up" data-delay="100">Experiência e Confiança<br>ao Seu Serviço</h2>
+                    <h2 class="section-title fade-in-up" data-delay="100">{{ $cms['why_us']?->title ?? 'Experiência e Confiança ao Seu Serviço' }}</h2>
                     <p class="why-description fade-in-up" data-delay="200">
-                        A Izzycar é a sua parceira de confiança para importação de veículos. Trabalhamos com transparência total, sem custos escondidos.
+                        {{ $cms['why_us']?->subtitle ?? 'A Izzycar é a sua parceira de confiança para importação de veículos. Trabalhamos com transparência total, sem custos escondidos.' }}
                     </p>
 
                     <div class="why-features">
-                        <div class="why-feature fade-in-up" data-delay="300">
+                        @foreach ($cms['why_us']?->data ?? [] as $i => $feature)
+                        <div class="why-feature fade-in-up" data-delay="{{ 300 + ($i * 100) }}">
                             <div class="why-feature-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             </div>
                             <div class="why-feature-content">
-                                <h4>Processo Transparente</h4>
-                                <p>Acompanhamento em tempo real de todas as etapas da importação</p>
+                                <h4>{{ $feature['title'] }}</h4>
+                                <p>{{ $feature['text'] }}</p>
                             </div>
                         </div>
-
-                        <div class="why-feature fade-in-up" data-delay="400">
-                            <div class="why-feature-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </div>
-                            <div class="why-feature-content">
-                                <h4>Inspeção Rigorosa</h4>
-                                <p>Todos os veículos são inspecionados antes da compra</p>
-                            </div>
-                        </div>
-
-                        <div class="why-feature fade-in-up" data-delay="500">
-                            <div class="why-feature-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </div>
-                            <div class="why-feature-content">
-                                <h4>Apoio Personalizado</h4>
-                                <p>Equipa dedicada disponível para esclarecer todas as suas dúvidas</p>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -277,47 +181,25 @@
     <div class="container">
         <div class="section-header text-center mb-5">
             <span class="section-badge fade-in-up">Como Funciona</span>
-            <h2 class="section-title fade-in-up" data-delay="100">Simples em 4 Passos</h2>
-            <p class="section-description fade-in-up" data-delay="200">Do contacto inicial à entrega do seu carro</p>
+            <h2 class="section-title fade-in-up" data-delay="100">{{ $cms['process']?->title ?? 'Como Funciona' }}</h2>
+            <p class="section-description fade-in-up" data-delay="200">{{ $cms['process']?->subtitle ?? 'Em 4 passos simples, o seu carro importado chega às suas mãos' }}</p>
         </div>
 
         <div class="process-timeline">
-            <div class="process-step fade-in-up ">
-                <div class="process-number">01</div>
+            @foreach ($cms['process']?->data ?? [] as $i => $step)
+            <div class="process-step fade-in-up" {{ $i > 0 ? 'data-delay="' . ($i * 100) . '"' : '' }}>
+                <div class="process-number">{{ $step['number'] ?? str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</div>
                 <div class="process-content">
-                    <h3>Pedido de Cotação</h3>
-                    <p>Preencha o formulário com as características do carro que deseja. Respondemos em 24h com uma cotação detalhada e transparente.</p>
+                    <h3>{{ $step['title'] }}</h3>
+                    <p>{{ $step['text'] }}</p>
                 </div>
             </div>
-
-            <div class="process-step fade-in-up" data-delay="100">
-                <div class="process-number">02</div>
-                <div class="process-content">
-                    <h3>Procura e Seleção</h3>
-                    <p>Procuramos o veículo perfeito para si nos melhores mercados europeus. Inspecionamos e enviamos relatório fotográfico completo.</p>
-                </div>
-            </div>
-
-            <div class="process-step fade-in-up" data-delay="200">
-                <div class="process-number">03</div>
-                <div class="process-content">
-                    <h3>Compra e Transporte</h3>
-                    <p>Após aprovação, compramos e tratamos do transporte seguro até Portugal. Acompanhe todo o processo em tempo real.</p>
-                </div>
-            </div>
-
-            <div class="process-step fade-in-up" data-delay="300">
-                <div class="process-number">04</div>
-                <div class="process-content">
-                    <h3>Legalização e Entrega</h3>
-                    <p>Tratamos de toda a papelada, inspeção e matrícula. Recebe o seu carro pronto a conduzir, com documentação completa.</p>
-                </div>
-            </div>
+            @endforeach
         </div>
 
         <div class="text-center mt-5 fade-in-up" data-delay="400">
-            <a href="{{ route('frontend.import') }}" class="btn-cta-modern">
-                Ver Processo Detalhado
+            <a href="{{ $cms['process']?->button_url ?? route('frontend.import') }}" class="btn-cta-modern">
+                {{ $cms['process']?->button_text ?? 'Ver Processo Detalhado' }}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -453,32 +335,34 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <h2 class="cta-title fade-in-up">Comece a Importar Hoje</h2>
+                <h2 class="cta-title fade-in-up">{{ $cms['cta_final']?->title ?? 'Comece a Importar Hoje' }}</h2>
                 <p class="cta-description fade-in-up" data-delay="100">
-                    Peça uma cotação sem compromisso e descubra quanto pode economizar ao importar o seu próximo carro connosco.
+                    {{ $cms['cta_final']?->subtitle ?? 'Peça uma cotação sem compromisso e descubra quanto pode economizar ao importar o seu próximo carro connosco.' }}
                 </p>
                 <div class="cta-buttons fade-in-up" data-delay="200">
-                    <a href="{{ route('frontend.form-import') }}" class="btn-cta-primary">
-                        <span>Pedir Cotação</span>
+                    <a href="{{ $cms['cta_final']?->button_url ?? route('frontend.form-import') }}" class="btn-cta-primary">
+                        <span>{{ $cms['cta_final']?->button_text ?? 'Pedir Cotação' }}</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
                     </a>
-                    <a href="{{ route('frontend.cost-simulator') }}" class="btn-cta-outline">
+                    <a href="{{ $cms['cta_final']?->button2_url ?? route('frontend.cost-simulator') }}" class="btn-cta-outline">
                         <span>€</span>
-                        <span>Simular Custos</span>
+                        <span>{{ $cms['cta_final']?->button2_text ?? 'Simular Custos' }}</span>
                     </a>
                 </div>
+                @if($cms['cta_final']?->body)
                 <div class="cta-contact fade-in-up" data-delay="300">
                     <p>Ou contacte-nos diretamente:</p>
-                    <a href="tel:+351912345678" class="cta-phone">
+                    <a href="tel:{{ preg_replace('/\s+/', '', $cms['cta_final']->body) }}" class="cta-phone">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                         </svg>
-                        +351 928 459 346
+                        {{ $cms['cta_final']->body }}
                     </a>
                 </div>
+                @endif
             </div>
         </div>
     </div>

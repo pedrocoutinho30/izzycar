@@ -146,7 +146,7 @@
                     aria-labelledby="{{ $headingId }}"
                     data-bs-parent="#{{ $accordionId }}">
                     <div class="process-accordion-body">
-                        {!! $item['content'] !!}
+                        {!! $item['content'] ?? $item['text'] ?? '' !!}
                         @if(!empty($item['image']))
                         <div class="process-accordion-image">
                             <img src="{{ asset('storage/' . $item['image']) }}" 

@@ -212,7 +212,7 @@
                 @endphp
                 <div class="process-content-inner {{ $index === 0 ? 'active' : '' }}" id="pane-import-{{ $slug }}">
                     <div class="process-content-text">
-                        {!! $tab['content'] !!}
+                        {!! $tab['content'] ?? $tab['text'] ?? '' !!}
                     </div>
                     @if(!empty($tab['image']))
                     <div class="process-content-image">

@@ -800,6 +800,13 @@
             <div class="nav-group-title">CMS</div>
 
             <div class="nav-item">
+                <a href="{{ route('admin.v2.cms.index') }}" class="nav-link {{ request()->routeIs('admin.v2.cms.*') ? 'active' : '' }}">
+                    <i class="bi bi-layout-text-window-reverse"></i>
+                    <span>Gestor de Conteúdo</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
                 <a href="{{ route('admin.news.index') }}" class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
                     <i class="bi bi-file-richtext"></i>
                     <span>Notícias</span>

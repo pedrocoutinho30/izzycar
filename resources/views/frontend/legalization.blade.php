@@ -1,8 +1,6 @@
 @extends('frontend.partials.layout')
 
-@include('frontend.partials.seo', [
-'seo' => $data->seo
-])
+{{-- SEO estático para esta página --}}
 
 @push('head')
 <script type="application/ld+json">
@@ -56,7 +54,7 @@
                     Legalização de Veículos
                 </span>
                 <h1 class="hero-title fade-in-up" data-delay="100">Legalização <span class="hero-accent">Automóvel</span></h1>
-                <p class="hero-description fade-in-up" data-delay="200">{{ $data->contents['subtitle'] }}</p>
+                <p class="hero-description fade-in-up" data-delay="200">{{ $cms['hero']?->subtitle ?? 'Tratamos de todo o processo de legalização do seu veículo importado em Portugal.' }}</p>
             </div>
         </div>
     </div>
@@ -79,7 +77,7 @@
                 </svg>
             </div>
             <div class="intro-content">
-                {!!$data->contents['content']!!}
+                {!! $cms['intro']?->body ?? '' !!}
             </div>
         </div>
     </div>
@@ -93,13 +91,13 @@
         </div>
 
         <div class="row g-4">
-            @foreach ($data->contents['enum'] as $index => $item)
+            @foreach ($cms['steps']?->data ?? [] as $index => $item)
             <div class="col-md-6">
                 <div class="legalization-step-card">
-                    <div class="step-number">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</div>
+                    <div class="step-number">{{ $item['number'] ?? str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</div>
                     <div class="step-content">
                         <h5 class="step-title">{{ $item['title'] }}</h5>
-                        <div class="step-description">{!! $item['content'] !!}</div>
+                        <div class="step-description">{!! $item['text'] ?? '' !!}</div>
                     </div>
                     <div class="step-arrow">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

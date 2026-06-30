@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use  \App\Models\Page;
+use App\Models\CmsPage;
 use App\Models\Brand;
 use App\Models\FormProposal;
 use App\Models\Client;
@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ImportFormConfirmationMail;
 use App\Models\LeadActivity;
-use App\Http\Controllers\Frontend\PageController;
 
 class ImportController extends Controller
 {
@@ -127,102 +126,11 @@ class ImportController extends Controller
 
     public function getImportPage()
     {
-        // Obtém a página de importação
-        // Verifica se a página existe e carrega os conteúdos
-        // Se não existir, retorna um erro 404
+        $brands = Brand::with(['models' => fn($q) => $q->orderBy('name')])->get();
 
-        $brands = Brand::with(['models' => function ($query) {
-            $query->orderBy('name');
-        }])->get();
-        $data = Page::where('slug', 'importacoes')
-            ->with('contents')
-            ->firstOrFail();
+        $cmsPage = CmsPage::where('slug', 'importacao')->with('activeBlocks')->first();
+        $cms     = $cmsPage ? $cmsPage->activeBlocks->keyBy('name') : collect();
 
-
-
-        $data->process_import = $data->contents->mapWithKeys(function ($content) {
-            //verifica se o campo é enum  e se for obtem o page com os valores do campo que será um array
-            if ($content->field_name == 'process_import') {
-                $content->field_name = 'process_import';
-
-                $pageController = new PageController();
-                $contentEnum = $pageController->getEnumValues($content->field_value);
-
-                return [$content->field_name => $contentEnum];
-            }
-            return [$content->field_name => $content->field_value];
-        });
-
-
-
-        $why_import = $data->contents->mapWithKeys(function ($content) {
-            //verifica se o campo é enum  e se for obtem o page com os valores do campo que será um array
-            if ($content->field_name == 'why_import') {
-                $content->field_name = 'enum_why_import';
-
-                $pageController = new PageController();
-                $contentEnum = $pageController->getEnumValues($content->field_value);
-
-                return [$content->field_name => $contentEnum];
-            }
-            return [];
-        });
-
-        $faq = $data->contents->mapWithKeys(function ($content) {
-            //verifica se o campo é enum  e se for obtem o page com os valores do campo que será um array
-            if ($content->field_name == 'enum_faq') {
-                $content->field_name = 'enum';
-
-                $pageController = new PageController();
-                $contentEnum = $pageController->getEnumValues($content->field_value);
-
-                return [$content->field_name => $contentEnum];
-            }
-            return [];
-        });
-
-        $items = $faq['enum'] ?? [];
-        usort($items, function ($a, $b) {
-            return (int)$a['order'] <=> (int)$b['order'];
-        });
-
-        $faq['enum'] = $items;
-
-
-
-        // $data_custos = Page::where('slug', 'custos-do-processo-de-importacao')
-        //     ->with('contents')
-        //     ->firstOrFail();
-
-        // $data_custos->contents = $data_custos->contents->mapWithKeys(function ($content) {
-        //     //verifica se o campo é enum  e se for obtem o page com os valores do campo que será um array
-        //     if ($content->field_name == 'enum_custos_importação') {
-        //         $content->field_name = 'enum';
-
-        //         $pageController = new PageController();
-        //         $contentEnum = $pageController->getEnumValues($content->field_value);
-
-        //         return [$content->field_name => $contentEnum];
-        //     }
-        //     return [$content->field_name => $content->field_value];
-        // });
-
-
-
-        $data_custos = $data->contents->mapWithKeys(function ($content) {
-            //verifica se o campo é enum  e se for obtem o page com os valores do campo que será um array
-            if ($content->field_name == 'import_cost') {
-                $content->field_name = 'enum';
-
-                $pageController = new PageController();
-                $contentEnum = $pageController->getEnumValues($content->field_value);
-
-                return [$content->field_name => $contentEnum];
-            }
-            return [];
-        });
-
-
-        return view('frontend.import', compact('data', 'data_custos', 'faq', 'why_import', 'brands'));
+        return view('frontend.import', compact('cms', 'brands'));
     }
 }

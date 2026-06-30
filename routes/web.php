@@ -197,6 +197,35 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     Route::get('v2/audit-log', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('admin.v2.audit-log');
     Route::get('v2/manual', [App\Http\Controllers\Admin\ManualController::class, 'index'])->name('admin.v2.manual');
 
+    // ============================================================
+    // CMS — Gestor de Conteúdo
+    Route::prefix('v2/cms')->name('admin.v2.cms.')->group(function () {
+        Route::get('/',                                      [App\Http\Controllers\Admin\CmsAdminController::class, 'index'])->name('index');
+        Route::get('/nova-pagina',                           [App\Http\Controllers\Admin\CmsAdminController::class, 'createPage'])->name('create-page');
+        Route::post('/nova-pagina',                          [App\Http\Controllers\Admin\CmsAdminController::class, 'storePage'])->name('store-page');
+
+        // Gestor de tipos de bloco
+        Route::prefix('tipos')->name('block-types.')->group(function () {
+            Route::get('/',              [App\Http\Controllers\Admin\CmsBlockTypeController::class, 'index'])->name('index');
+            Route::get('/novo',          [App\Http\Controllers\Admin\CmsBlockTypeController::class, 'create'])->name('create');
+            Route::post('/',             [App\Http\Controllers\Admin\CmsBlockTypeController::class, 'store'])->name('store');
+            Route::get('/{blockType}',   [App\Http\Controllers\Admin\CmsBlockTypeController::class, 'edit'])->name('edit');
+            Route::put('/{blockType}',   [App\Http\Controllers\Admin\CmsBlockTypeController::class, 'update'])->name('update');
+            Route::delete('/{blockType}',[App\Http\Controllers\Admin\CmsBlockTypeController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::get('/{page}',                                [App\Http\Controllers\Admin\CmsAdminController::class, 'page'])->name('page');
+        Route::put('/{page}',                                [App\Http\Controllers\Admin\CmsAdminController::class, 'updatePage'])->name('update-page');
+        Route::delete('/{page}',                             [App\Http\Controllers\Admin\CmsAdminController::class, 'destroyPage'])->name('destroy-page');
+        Route::get('/{page}/novo-bloco',                     [App\Http\Controllers\Admin\CmsAdminController::class, 'createBlock'])->name('create-block');
+        Route::post('/{page}/blocos',                        [App\Http\Controllers\Admin\CmsAdminController::class, 'storeBlock'])->name('store-block');
+        Route::get('/{page}/blocos/{block}/editar',          [App\Http\Controllers\Admin\CmsAdminController::class, 'editBlock'])->name('edit-block');
+        Route::put('/{page}/blocos/{block}',                 [App\Http\Controllers\Admin\CmsAdminController::class, 'updateBlock'])->name('update-block');
+        Route::delete('/{page}/blocos/{block}',              [App\Http\Controllers\Admin\CmsAdminController::class, 'destroyBlock'])->name('destroy-block');
+        Route::patch('/{page}/blocos/{block}/toggle',        [App\Http\Controllers\Admin\CmsAdminController::class, 'toggleBlock'])->name('toggle-block');
+        Route::post('/{page}/blocos/reorder',                [App\Http\Controllers\Admin\CmsAdminController::class, 'reorderBlocks'])->name('reorder-blocks');
+    });
+
     // Exportações CSV
     Route::prefix('v2/export')->name('admin.v2.export.')->group(function () {
         Route::get('/leads',     [App\Http\Controllers\Admin\ExportController::class, 'leads'])->name('leads');
