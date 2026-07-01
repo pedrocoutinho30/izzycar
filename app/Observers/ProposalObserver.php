@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\AuditLog;
+use App\Models\LeadActivity;
 use App\Models\Proposal;
 
 class ProposalObserver
@@ -18,6 +19,21 @@ class ProposalObserver
         $ignored = ['updated_at', 'created_at'];
         $dirty = array_diff_key($proposal->getDirty(), array_flip($ignored));
         if (empty($dirty)) return;
+
+        // Converter lead em cliente quando cotação é aprovada
+        if ($proposal->wasChanged('status') && $proposal->status === 'Aprovada') {
+            $client = $proposal->client;
+            if ($client && $client->is_lead) {
+                $client->convertToClient();
+                LeadActivity::log(
+                    $client->id,
+                    'Lead convertido em cliente',
+                    "Cotação #{$proposal->id} aprovada — lead convertido automaticamente em cliente.",
+                    'bi-person-check-fill',
+                    'success'
+                );
+            }
+        }
 
         $vehicle = implode(' ', array_filter([$proposal->brand, $proposal->model, $proposal->version]));
         AuditLog::recordUpdated(

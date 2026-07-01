@@ -11,9 +11,15 @@ class Newsletter extends Model
 
     protected $fillable = [
         'title',
+        'template',
         'subtitle',
         'text',
         'sent_at',
+    ];
+
+    const TEMPLATES = [
+        'standard'           => 'Newsletter com Ofertas',
+        'custos-importacao'  => 'Guia de Custos de Importação',
     ];
 
     protected $casts = [

@@ -144,9 +144,16 @@
                             <strong>{{ $newsletter->title }}</strong>
                         </li>
                         <li class="mb-2">
-                            <i class="bi bi-envelope-paper text-info me-2"></i>
+                            <i class="bi bi-layout-text-window-reverse text-info me-2"></i>
+                            @php $templateLabels = \App\Models\Newsletter::TEMPLATES; @endphp
+                            {{ $templateLabels[$newsletter->template] ?? $newsletter->template }}
+                        </li>
+                        @if($newsletter->template === 'standard')
+                        <li class="mb-2">
+                            <i class="bi bi-envelope-paper text-secondary me-2"></i>
                             {{ $newsletter->offers->count() }} oferta(s)
                         </li>
+                        @endif
                         <li class="mb-2">
                             <i class="bi bi-people text-secondary me-2"></i>
                             {{ $clients->count() }} clientes disponíveis

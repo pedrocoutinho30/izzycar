@@ -68,7 +68,14 @@
                         </span>
                     @endif
                 </div>
-                <div class="mt-3">
+                <div class="mb-2">
+                    @php $templateLabels = \App\Models\Newsletter::TEMPLATES; @endphp
+                    <small class="text-muted d-block">
+                        <i class="bi bi-layout-text-window-reverse me-1"></i>
+                        <strong>Template:</strong> {{ $templateLabels[$newsletter->template] ?? $newsletter->template }}
+                    </small>
+                </div>
+                <div class="mt-2">
                     <small class="text-muted">
                         <i class="bi bi-calendar3"></i> Criada em {{ $newsletter->created_at->format('d/m/Y') }}
                     </small>
@@ -78,6 +85,7 @@
     </div>
 </div>
 
+@if($newsletter->template === 'standard')
 <div class="modern-card">
     <div class="modern-card-header">
         <h5 class="modern-card-title">
@@ -148,4 +156,5 @@
         ])
     @endforelse
 </div>
+@endif
 @endsection

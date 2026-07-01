@@ -128,6 +128,14 @@
                         'icon' => 'bi-eye',
                         'label' => 'Ver Detalhes',
                         'color' => 'primary'
+                    ],
+                    [
+                        'href' => route('admin.v2.form-proposals.destroy', $form->id),
+                        'icon' => 'bi-trash',
+                        'label' => 'Eliminar',
+                        'color' => 'danger',
+                        'method' => 'delete',
+                        'confirm' => 'Tem a certeza que pretende eliminar este formulário?'
                     ]
                 ]
             ])

@@ -185,8 +185,15 @@
             <label class="sc-label" for="valor_carro">Valor do carro (€) <span class="sc-req">*</span></label>
             <div class="sc-input-prefix">
               <span class="sc-prefix">€</span>
-              <input type="number" name="valor_carro" id="valor_carro" class="sc-input sc-input--prefixed" placeholder="25 000" value="{{ old('valor_carro') }}" required>
+              <input type="text" inputmode="decimal" name="valor_carro" id="valor_carro"
+                     class="sc-input sc-input--prefixed"
+                     placeholder="30 000"
+                     autocomplete="off"
+                     value="{{ old('valor_carro') ? number_format((float) old('valor_carro'), 0, ',', '.') : '' }}"
+                     required>
             </div>
+            <p class="sc-valor-hint" id="valor_carro_hint"></p>
+            @error('valor_carro')<p class="sc-error">{{ $message }}</p>@enderror
           </div>
         </div>
       </div>
@@ -315,6 +322,99 @@ document.addEventListener('DOMContentLoaded', function () {
   combustivel.addEventListener('change', update);
   tipoVeiculo.addEventListener('change', update);
   update();
+
+  /* ── Valor do carro: normalização e feedback ── */
+  (function () {
+    const input = document.getElementById('valor_carro');
+    const hint  = document.getElementById('valor_carro_hint');
+    const MIN   = 500;
+    const MAX   = 999999;
+
+    function parseValue(str) {
+      str = str.trim().replace(/\s/g, '');
+      // Ambos separadores: 30.000,50 → decimal=vírgula, milhares=ponto
+      if (str.includes('.') && str.includes(',')) {
+        str = str.replace(/\./g, '').replace(',', '.');
+      // Só ponto: 30.000 (milhares PT) vs 30.5 (decimal EN)
+      } else if (str.includes('.') && !str.includes(',')) {
+        const parts = str.split('.');
+        const lastPart = parts[parts.length - 1];
+        if (parts.length > 1 && lastPart.length === 3) {
+          str = str.replace(/\./g, ''); // separador de milhares
+        }
+        // else: decimal normal, deixar como está
+      // Só vírgula: 30,000 (milhares EN) vs 30,5 (decimal PT)
+      } else if (str.includes(',') && !str.includes('.')) {
+        const parts = str.split(',');
+        if (parts.length === 2 && parts[1].length === 3) {
+          str = str.replace(',', ''); // separador de milhares
+        } else {
+          str = str.replace(',', '.'); // decimal PT
+        }
+      }
+      return parseFloat(str);
+    }
+
+    function formatPT(n) {
+      return n.toLocaleString('pt-PT', { maximumFractionDigits: 0 });
+    }
+
+    function setHint(val) {
+      if (isNaN(val) || val <= 0) {
+        hint.textContent = 'Insira um valor válido (ex: 30 000)';
+        hint.className = 'sc-valor-hint is-error';
+      } else if (val < MIN) {
+        hint.textContent = 'Valor mínimo: ' + formatPT(MIN) + ' €';
+        hint.className = 'sc-valor-hint is-error';
+      } else if (val > MAX) {
+        hint.textContent = 'Valor máximo: ' + formatPT(MAX) + ' €';
+        hint.className = 'sc-valor-hint is-error';
+      } else {
+        hint.textContent = '✓ ' + formatPT(val) + ' €';
+        hint.className = 'sc-valor-hint is-valid';
+      }
+    }
+
+    input.addEventListener('input', function () {
+      const val = parseValue(this.value);
+      if (!isNaN(val) && val > 0) {
+        setHint(val);
+      } else {
+        hint.textContent = '';
+        hint.className = 'sc-valor-hint';
+      }
+    });
+
+    input.addEventListener('blur', function () {
+      const val = parseValue(this.value);
+      if (!isNaN(val) && val > 0) {
+        this.value = formatPT(val); // formata no ecrã: 30.000
+        // guarda valor limpo no dataset para submissão
+        this.dataset.rawValue = Math.round(val);
+        setHint(val);
+      }
+    });
+
+    // Antes de submeter: normaliza o campo para número limpo
+    document.getElementById('scForm').addEventListener('submit', function (e) {
+      const val = parseValue(input.value);
+      if (isNaN(val) || val < MIN || val > MAX) {
+        e.preventDefault();
+        input.classList.add('sc-input--error');
+        setHint(val);
+        input.focus();
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      input.value = Math.round(val); // submete sempre número limpo ex: 30000
+    }, true); // capture=true para correr antes do loading state
+
+    // Se já tem valor (old()), mostra hint imediatamente
+    if (input.value) {
+      const val = parseValue(input.value);
+      if (!isNaN(val) && val > 0) setHint(val);
+    }
+  })();
 
   /* ── Submit loading state ── */
   document.getElementById('scForm').addEventListener('submit', function () {
@@ -496,9 +596,12 @@ document.addEventListener('DOMContentLoaded', function () {
   cursor: help;
   transition: color 0.2s ease;
 }
+.sc-tooltip-icon:hover { color: rgba(255,255,255,0.8); }
 
-.sc-tooltip-icon:hover {
-  color: rgba(255,255,255,0.8);
+.sc-valor-hint {
+  font-size:.72rem; color: var(--sc-gray); margin:.3rem 0 0; min-height:1rem;
 }
+.sc-valor-hint.is-valid { color:#16a34a; font-weight:600; }
+.sc-valor-hint.is-error { color:#ef4444; }
 </style>
 @endpush

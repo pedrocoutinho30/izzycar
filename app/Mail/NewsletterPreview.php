@@ -41,14 +41,15 @@ class NewsletterPreview extends Mailable
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
-        return new Content(
-            view: 'emails.newsletter-preview',
-        );
+        $viewMap = [
+            'custos-importacao' => 'emails.newsletter-custos-importacao',
+        ];
+
+        $view = $viewMap[$this->newsletter->template] ?? 'emails.newsletter-preview';
+
+        return new Content(view: $view);
     }
 
     /**

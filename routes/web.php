@@ -243,11 +243,15 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'index'])->name('index');
         Route::get('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'show'])->name('show');
         Route::patch('/{id}/status', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'updateStatus'])->name('update-status');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'destroy'])->name('destroy');
     });
 
     // ============================================================
     // NEWSLETTER
     // ============================================================
+    Route::get('/v2/email-preview/newsletter-custos-importacao', fn() => view('emails.newsletter-custos-importacao'))
+        ->name('admin.v2.email-preview.newsletter-custos-importacao');
+
     // Route::post('v2/newsletter/send', [App\Http\Controllers\Admin\NewsletterController::class, 'send'])->name('admin.v2.newsletter.send');
     
     // Newsletter Management (Unified)

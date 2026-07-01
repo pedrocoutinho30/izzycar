@@ -110,19 +110,47 @@ class CostSimulatorController extends Controller
                 'lead_source' => 'simulador',
             ]);
         }
-        // $request->validate([
-        //     'valor_carro' => 'required|numeric|min:0',
-        //     'name' => 'required|string|max:255',
-        //     'email' => 'required|email|max:255',
-        //     'phone' => 'nullable|string|max:20',
-        // ]);
-        // Cálculo do ISV 
+        // Normalizar e validar valor do carro
+        $valorCarroRaw = $request->input('valor_carro', '');
+        $valorCarroRaw = trim($valorCarroRaw);
+        $valorCarroRaw = preg_replace('/\s/', '', $valorCarroRaw);
+
+        if (str_contains($valorCarroRaw, '.') && str_contains($valorCarroRaw, ',')) {
+            // 30.000,50 → decimal=vírgula, milhares=ponto
+            $valorCarroRaw = str_replace('.', '', $valorCarroRaw);
+            $valorCarroRaw = str_replace(',', '.', $valorCarroRaw);
+        } elseif (str_contains($valorCarroRaw, '.') && !str_contains($valorCarroRaw, ',')) {
+            $parts = explode('.', $valorCarroRaw);
+            if (count($parts) > 1 && strlen(end($parts)) === 3) {
+                $valorCarroRaw = str_replace('.', '', $valorCarroRaw); // 30.000 → milhares
+            }
+        } elseif (str_contains($valorCarroRaw, ',') && !str_contains($valorCarroRaw, '.')) {
+            $parts = explode(',', $valorCarroRaw);
+            if (count($parts) === 2 && strlen($parts[1]) === 3) {
+                $valorCarroRaw = str_replace(',', '', $valorCarroRaw); // 30,000 → milhares EN
+            } else {
+                $valorCarroRaw = str_replace(',', '.', $valorCarroRaw); // 30,5 → decimal PT
+            }
+        }
+
+        $valorCarroRaw = preg_replace('/[^\d.]/', '', $valorCarroRaw);
+        $valorCarro = (float) $valorCarroRaw;
+
+        if ($valorCarro < 500 || $valorCarro > 999999) {
+            return back()->withInput()->withErrors([
+                'valor_carro' => 'O valor do carro deve estar entre 500€ e 999.999€.',
+            ]);
+        }
+
+        $valorCarro = round($valorCarro);
+        $request->merge(['valor_carro' => $valorCarro]);
+
+        // Cálculo do ISV
         $importSimulator = new ImportSimulator();
         $dataIsv = $importSimulator->calcular($request)->getData();
 
         $tableIsv = $dataIsv->html;
         $isv = $dataIsv->isv;
-        $valorCarro = $request->input('valor_carro');
         $commission_cost = Setting::where('label', 'commission_cost')->first()->value;
         $inspection_commission_cost = Setting::where('label', 'inspection_commission_cost')->first()->value;
         $transporte = Setting::where('label', 'custo_transporte')->first()->value;

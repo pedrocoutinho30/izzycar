@@ -34,9 +34,10 @@ class NewsletterManagementController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+            'title'    => ['required', 'string', 'max:255'],
+            'template' => ['required', 'string', 'in:' . implode(',', array_keys(Newsletter::TEMPLATES))],
             'subtitle' => ['nullable', 'string', 'max:255'],
-            'text' => ['nullable', 'string'],
+            'text'     => ['nullable', 'string'],
         ]);
 
         $newsletter = Newsletter::create($data);
@@ -65,9 +66,10 @@ class NewsletterManagementController extends Controller
         $newsletter = Newsletter::findOrFail($id);
 
         $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+            'title'    => ['required', 'string', 'max:255'],
+            'template' => ['required', 'string', 'in:' . implode(',', array_keys(Newsletter::TEMPLATES))],
             'subtitle' => ['nullable', 'string', 'max:255'],
-            'text' => ['nullable', 'string'],
+            'text'     => ['nullable', 'string'],
         ]);
 
         $newsletter->update($data);
@@ -92,11 +94,19 @@ class NewsletterManagementController extends Controller
         $newsletter = Newsletter::with(['offers' => function ($query) {
             $query->where('is_active', true);
         }])->findOrFail($id);
+
         $previewClient = [
-            'email' => 'izzycarpt@gmail.com"',
+            'email' => 'izzycarpt@gmail.com',
             'name' => 'Preview Client',
         ];
-        return view('emails.newsletter-preview', compact('newsletter', 'previewClient'));
+
+        $viewMap = [
+            'custos-importacao' => 'emails.newsletter-custos-importacao',
+        ];
+
+        $view = $viewMap[$newsletter->template] ?? 'emails.newsletter-preview';
+
+        return view($view, compact('newsletter', 'previewClient'));
     }
     public function sendPage($id)
     {
