@@ -364,15 +364,12 @@ document.addEventListener('DOMContentLoaded', function () {
   margin-top:2rem;
 }
 .nd-hero-img-inner {
-  position:relative;
-  padding-top:43.75%; /* 7/16 × 100 */
   border-radius:16px; overflow:hidden;
   box-shadow:0 16px 48px rgba(0,0,0,.2);
+  line-height:0;
 }
 .nd-hero-img {
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  object-fit:cover; object-position:center top;
+  width:100%; height:auto;
   display:block;
 }
 
@@ -559,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function () {
   .nd-article { padding:1.5rem; }
   .nd-header { padding:2.5rem 1.25rem 2.5rem; }
   .nd-hero-img-wrap { padding:0 1rem; }
-  .nd-hero-img-inner { padding-top:56.25%; /* 9/16 × 100 */ }
+  .nd-hero-img-inner { padding-top:0; }
   .nd-layout { padding:1.5rem 1rem 3rem; }
 }
 </style>

@@ -19,7 +19,7 @@
             .cost-val       { font-size: 13px !important; }
             .example-box    { padding: 20px !important; }
             .cta-btn        { font-size: 15px !important; padding: 14px 28px !important; }
-            .col-half       { display: block !important; width: 100% !important; text-align: center !important; margin-bottom: 10px !important; }
+            .col-fuel       { display: block !important; width: 100% !important; max-width: 100% !important; text-align: center !important; margin-bottom: 12px !important; box-sizing: border-box !important; }
             .divider-col    { display: none !important; }
         }
     </style>
@@ -204,9 +204,9 @@
                    style="background:#fffbeb;border-radius:10px;border:1px solid #fde68a;padding:0;">
                 <tr>
                     <td style="padding:16px 20px;">
-                        <p style="margin:0 0 6px;font-size:13px;font-weight:800;color:#92400e;">⚠️ O ISV é o que mais varia — e o que mais importa calcular</p>
+                        <p style="margin:0 0 6px;font-size:13px;font-weight:800;color:#92400e;">⚠️ O ISV é o que mais varia — e onde está a maior diferença</p>
                         <p style="margin:0;font-size:13px;line-height:1.6;color:#78350f;">
-                            O ISV é calculado com base nas emissões de CO₂ e na cilindrada do motor. Um diesel com 150g CO₂ pode pagar 3–5× mais ISV do que um híbrido plug-in equivalente. Carros elétricos pagam ISV zero.
+                            O ISV é calculado com base nas emissões de CO₂ e na cilindrada do motor. Um diesel com 150g CO₂ pode pagar 3–5× mais ISV do que um híbrido plug-in equivalente. Carros elétricos pagam ISV zero — e ainda têm IUC zero todos os anos, o que representa uma poupança adicional de 400€ a 600€/ano face a um carro a gasolina equivalente.
                         </p>
                     </td>
                 </tr>
@@ -224,7 +224,7 @@
                 <tr>
                     <td style="border-left:4px solid #990000;padding-left:12px;">
                         <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#990000;">Caso prático</p>
-                        <h2 style="margin:4px 0 0;font-size:20px;font-weight:800;color:#111;">BMW 320d · 2021 · Diesel</h2>
+                        <h2 style="margin:4px 0 0;font-size:20px;font-weight:800;color:#111;">Mercedes EQS 450+ AMG Line · 2023 · Elétrico</h2>
                     </td>
                 </tr>
             </table>
@@ -236,7 +236,7 @@
                 <tr>
                     <td style="padding:28px 28px 8px;">
                         <p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.45);">Características</p>
-                        <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.75);">135g CO₂ · Automático · 2.0d · Preço de origem 28.000€</p>
+                        <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.75);">Elétrico · AMG Line · 80.000km · Origem: Alemanha</p>
                     </td>
                 </tr>
                 <tr>
@@ -246,21 +246,21 @@
 
                             <tr>
                                 <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:rgba(255,255,255,0.7);">Carro (origem)</td>
-                                <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:#fff;text-align:right;font-weight:600;">28.000€</td>
+                                <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:#fff;text-align:right;font-weight:600;">56.000€</td>
                             </tr>
                             <tr>
-                                <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:rgba(255,255,255,0.7);">ISV (diesel 135g CO₂)</td>
-                                <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:#ff6b6b;text-align:right;font-weight:600;">~3.400€</td>
+                                <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:rgba(255,255,255,0.7);">ISV</td>
+                                <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:#4ade80;text-align:right;font-weight:700;">0€ ✓</td>
                             </tr>
                             <tr>
                                 <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:rgba(255,255,255,0.7);">Transporte, inspeção e legalização completa</td>
-                                <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:#fff;text-align:right;font-weight:600;">~2.900€</td>
+                                <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:14px;color:#fff;text-align:right;font-weight:600;">~2.200€</td>
                             </tr>
 
                             <!-- Total -->
                             <tr>
                                 <td style="padding:16px 0 8px;font-size:16px;font-weight:800;color:#fff;">Total em Portugal</td>
-                                <td style="padding:16px 0 8px;font-size:22px;font-weight:800;color:#fff;text-align:right;">~34.300€</td>
+                                <td style="padding:16px 0 8px;font-size:22px;font-weight:800;color:#fff;text-align:right;">~58.200€</td>
                             </tr>
                         </table>
                     </td>
@@ -273,11 +273,11 @@
                             <tr>
                                 <td>
                                     <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.7);">Preço equivalente em stand português</p>
-                                    <p style="margin:4px 0 0;font-size:14px;color:#fff;">O mesmo BMW 320d 2021 está entre <strong>38.000€ e 42.000€</strong> no mercado nacional</p>
+                                    <p style="margin:4px 0 0;font-size:14px;color:#fff;">O mesmo Mercedes EQS 450+ 2023 está a partir de <strong>70.000€</strong> no mercado nacional. Mais IUC: <strong>0€/ano</strong> para sempre.</p>
                                 </td>
                                 <td style="text-align:right;white-space:nowrap;padding-left:16px;">
                                     <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.7);">Poupança estimada</p>
-                                    <p style="margin:4px 0 0;font-size:22px;font-weight:800;color:#fff;">~4.000€</p>
+                                    <p style="margin:4px 0 0;font-size:22px;font-weight:800;color:#fff;">~11.800€+</p>
                                 </td>
                             </tr>
                         </table>
@@ -307,24 +307,24 @@
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                     <!-- Diesel -->
-                    <td class="col-half" width="32%" valign="top"
-                        style="background:#fff5f5;border-radius:10px;border:1px solid #fecaca;padding:18px 16px;">
+                    <td class="col-fuel" valign="top"
+                        style="width:32%;background:#fff5f5;border-radius:10px;border:1px solid #fecaca;padding:18px 16px;">
                         <p style="margin:0 0 6px;font-size:20px;">⛽</p>
                         <p style="margin:0 0 4px;font-size:14px;font-weight:800;color:#991b1b;">Diesel</p>
                         <p style="margin:0;font-size:12px;line-height:1.5;color:#7f1d1d;">ISV mais elevado. CO₂ alto penaliza bastante.</p>
                     </td>
-                    <td class="divider-col" width="2%"></td>
+                    <td class="divider-col" style="width:2%;"></td>
                     <!-- Híbrido -->
-                    <td class="col-half" width="32%" valign="top"
-                        style="background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;padding:18px 16px;">
+                    <td class="col-fuel" valign="top"
+                        style="width:32%;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;padding:18px 16px;">
                         <p style="margin:0 0 6px;font-size:20px;">🔋</p>
                         <p style="margin:0 0 4px;font-size:14px;font-weight:800;color:#14532d;">Híbrido Plug-in</p>
                         <p style="margin:0;font-size:12px;line-height:1.5;color:#166534;">ISV reduzido. Excelente custo-benefício na importação.</p>
                     </td>
-                    <td class="divider-col" width="2%"></td>
+                    <td class="divider-col" style="width:2%;"></td>
                     <!-- Elétrico -->
-                    <td class="col-half" width="32%" valign="top"
-                        style="background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;padding:18px 16px;">
+                    <td class="col-fuel" valign="top"
+                        style="width:32%;background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;padding:18px 16px;">
                         <p style="margin:0 0 6px;font-size:20px;">⚡</p>
                         <p style="margin:0 0 4px;font-size:14px;font-weight:800;color:#1e3a8a;">Elétrico</p>
                         <p style="margin:0;font-size:12px;line-height:1.5;color:#1e40af;">ISV zero. IUC também zero. A opção mais vantajosa fiscalmente, de longe.</p>
