@@ -277,7 +277,7 @@
                                 </td>
                                 <td style="text-align:right;white-space:nowrap;padding-left:16px;">
                                     <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.7);">Poupança estimada</p>
-                                    <p style="margin:4px 0 0;font-size:22px;font-weight:800;color:#fff;">~11.800€+</p>
+                                    <p style="margin:4px 0 0;font-size:22px;font-weight:800;color:#fff;">~11.800€</p>
                                 </td>
                             </tr>
                         </table>

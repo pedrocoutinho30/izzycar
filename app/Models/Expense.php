@@ -17,6 +17,7 @@ class Expense extends Model
         // References
         'vehicle_id',
         'v3_vehicle_id',
+        'legalization_id',
         'client_id',
         'partner_id',
         // Description & financials
@@ -52,14 +53,8 @@ class Expense extends Model
     public static function movementTypes(): array
     {
         return [
-            'expense'    => 'Despesa',
-            'income'     => 'Receita',
-            'transfer'   => 'Transferência',
-            'salary'     => 'Salário',
-            'commission' => 'Comissão',
-            'tax'        => 'Imposto',
-            'refund'     => 'Reembolso',
-            'other'      => 'Outro',
+            'expense' => 'Despesa',
+            'income'  => 'Receita',
         ];
     }
 
@@ -145,6 +140,11 @@ class Expense extends Model
     public function partner()
     {
         return $this->belongsTo(Partner::class);
+    }
+
+    public function legalization()
+    {
+        return $this->belongsTo(Legalization::class);
     }
 
     // ── Auto-sync from Sale ──────────────────────────────────────────────────

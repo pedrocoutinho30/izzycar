@@ -2,6 +2,15 @@
 
 @section('title', isset($movement) ? 'Editar Movimento' : 'Novo Movimento')
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<style>
+    .ts-wrapper { width: 100%; }
+    .ts-wrapper .ts-control { border: 1px solid #dee2e6; border-radius: .375rem; min-height: 38px; }
+    .ts-wrapper.focus .ts-control { border-color: #86b7fe; box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); }
+</style>
+@endpush
+
 @section('content')
 
 @php
@@ -39,23 +48,23 @@
                 <div class="modern-card-body">
                     <div class="row g-3">
 
-                        <div class="col-md-6">
-                            <label class="form-label required fw-semibold">Tipo de Movimento</label>
+                        <div class="col-md-4">
+                            <label class="form-label required fw-semibold">Tipo</label>
                             <select name="movement_type" id="movement_type"
                                     class="form-select @error('movement_type') is-invalid @enderror" required>
-                                @foreach(\App\Models\Expense::movementTypes() as $val => $label)
-                                    <option value="{{ $val }}"
-                                        {{ old('movement_type', $movement->movement_type ?? 'expense') === $val ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
-                                @endforeach
+                                <option value="expense" {{ old('movement_type', $movement->movement_type ?? 'expense') === 'expense' ? 'selected' : '' }}>
+                                    Despesa
+                                </option>
+                                <option value="income" {{ old('movement_type', $movement->movement_type ?? '') === 'income' ? 'selected' : '' }}>
+                                    Receita
+                                </option>
                             </select>
                             @error('movement_type')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-8">
                             <label class="form-label fw-semibold">Categoria</label>
                             <select name="category" id="category"
                                     class="form-select @error('category') is-invalid @enderror">
@@ -68,6 +77,32 @@
                                 @endforeach
                             </select>
                             @error('category')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Campo condicional: Legalização associada (só aparece quando categoria = legalization) --}}
+                        <div class="col-12" id="legalization_field" style="display:none;">
+                            <label class="form-label fw-semibold">
+                                Legalização associada
+                                <span class="text-muted fw-normal">(opcional — para legalizações sem importação)</span>
+                            </label>
+                            <select name="legalization_id" id="legalization_id"
+                                    class="form-select @error('legalization_id') is-invalid @enderror">
+                                <option value="">Sem legalização associada</option>
+                                @foreach($legalizations as $leg)
+                                    @php
+                                        $legLabel = $leg->marca . ' ' . $leg->modelo;
+                                        if ($leg->matricula) $legLabel .= ' — ' . $leg->matricula;
+                                        if ($leg->client) $legLabel .= ' (' . $leg->client->name . ')';
+                                    @endphp
+                                    <option value="{{ $leg->id }}"
+                                        {{ old('legalization_id', $movement->legalization_id ?? '') == $leg->id ? 'selected' : '' }}>
+                                        #{{ $leg->id }} — {{ $legLabel }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('legalization_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -313,6 +348,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
 <script>
 (function () {
     const amountInput  = document.getElementById('amount');
@@ -339,6 +375,29 @@
     amountInput.addEventListener('input',  recalc);
     vatSelect.addEventListener('change', recalc);
     recalc();
+
+    // Mostrar/esconder campo de legalização consoante categoria
+    // (usamos a instância TomSelect para limpar o valor quando se esconde)
+    const categorySelect    = document.getElementById('category');
+    const legalizationField = document.getElementById('legalization_field');
+    let tsLegal             = null; // instância criada depois do Tom Select estar pronto
+
+    function toggleLegalizationField() {
+        const show = categorySelect.value === 'legalization';
+        legalizationField.style.display = show ? '' : 'none';
+        if (!show && tsLegal) tsLegal.clear();
+    }
+
+    categorySelect.addEventListener('change', toggleLegalizationField);
+    toggleLegalizationField();
+
+    // Tom Select — selects com pesquisa
+    const tsOpts = { plugins: ['dropdown_input'], maxOptions: 300, searchField: ['text'] };
+
+    new TomSelect('#v3_vehicle_id', { ...tsOpts, placeholder: 'Pesquisar veículo...' });
+    new TomSelect('#client_id',     { ...tsOpts, placeholder: 'Pesquisar cliente...' });
+    new TomSelect('#partner_id',    { ...tsOpts, placeholder: 'Pesquisar parceiro...' });
+    tsLegal = new TomSelect('#legalization_id', { ...tsOpts, placeholder: 'Pesquisar legalização...' });
 
     // Image preview
     document.getElementById('attachment').addEventListener('change', function () {

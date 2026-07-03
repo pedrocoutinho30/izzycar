@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Expense;
+use App\Models\Legalization;
 use App\Models\Partner;
 use App\Models\V3Vehicle;
 use Illuminate\Http\Request;
@@ -160,11 +161,15 @@ class MovementV2Controller extends Controller
 
     public function create()
     {
-        $vehicles = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
-        $partners = Partner::orderBy('name')->get();
-        $clients  = Client::select('id', 'name')->orderBy('name')->get();
+        $vehicles      = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
+        $partners      = Partner::orderBy('name')->get();
+        $clients       = Client::select('id', 'name')->orderBy('name')->get();
+        $legalizations = Legalization::with('client')
+            ->select('id', 'client_id', 'marca', 'modelo', 'matricula')
+            ->orderByDesc('id')
+            ->get();
 
-        return view('admin.v2.movements.form', compact('vehicles', 'partners', 'clients'));
+        return view('admin.v2.movements.form', compact('vehicles', 'partners', 'clients', 'legalizations'));
     }
 
     // ── Store ──────────────────────────────────────────────────────────────
@@ -198,11 +203,15 @@ class MovementV2Controller extends Controller
                 ->with('error', 'Este movimento foi gerado automaticamente e não pode ser editado aqui. Edite a venda ou o veículo correspondente.');
         }
 
-        $vehicles = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
-        $partners = Partner::orderBy('name')->get();
-        $clients  = Client::select('id', 'name')->orderBy('name')->get();
+        $vehicles      = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
+        $partners      = Partner::orderBy('name')->get();
+        $clients       = Client::select('id', 'name')->orderBy('name')->get();
+        $legalizations = Legalization::with('client')
+            ->select('id', 'client_id', 'marca', 'modelo', 'matricula')
+            ->orderByDesc('id')
+            ->get();
 
-        return view('admin.v2.movements.form', compact('movement', 'vehicles', 'partners', 'clients'));
+        return view('admin.v2.movements.form', compact('movement', 'vehicles', 'partners', 'clients', 'legalizations'));
     }
 
     // ── Update ─────────────────────────────────────────────────────────────
@@ -267,11 +276,12 @@ class MovementV2Controller extends Controller
     private function validateMovement(Request $request, $ignoreId = null): array
     {
         return $request->validate([
-            'movement_type'  => 'required|string|max:50',
-            'category'       => 'nullable|string|max:100',
-            'v3_vehicle_id'  => 'nullable|exists:v3_vehicles,id',
-            'client_id'      => 'nullable|exists:clients,id',
-            'partner_id'     => 'nullable|exists:partners,id',
+            'movement_type'   => 'required|in:expense,income',
+            'category'        => 'nullable|string|max:100',
+            'v3_vehicle_id'   => 'nullable|exists:v3_vehicles,id',
+            'legalization_id' => 'nullable|exists:legalizations,id',
+            'client_id'       => 'nullable|exists:clients,id',
+            'partner_id'      => 'nullable|exists:partners,id',
             'title'          => 'required|string|max:255',
             'amount'         => 'required|numeric|min:0',
             'vat_rate'       => 'nullable|numeric|min:0|max:100',
