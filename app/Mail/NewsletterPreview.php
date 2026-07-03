@@ -49,7 +49,10 @@ class NewsletterPreview extends Mailable
 
         $view = $viewMap[$this->newsletter->template] ?? 'emails.newsletter-preview';
 
-        return new Content(view: $view);
+        return new Content(view: $view, with: [
+            'email' => $this->previewClient['email'] ?? '',
+            'name'  => $this->previewClient['name']  ?? '',
+        ]);
     }
 
     /**

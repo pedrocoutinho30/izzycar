@@ -426,7 +426,7 @@
             </p>
             <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.25);">
                 Recebeu este email porque está na nossa lista de contactos.<br>
-                <a href="https://izzycar.pt/newsletter/unsubscribe" style="color:rgba(255,255,255,0.35);text-decoration:underline;">Cancelar subscrição</a>
+                <a href="{{ route('newsletter.unsubscribe') }}?email={{ urlencode($email ?? '') }}&name={{ urlencode($name ?? '') }}" style="color:rgba(255,255,255,0.35);text-decoration:underline;">Cancelar subscrição</a>
             </p>
         </td>
     </tr>

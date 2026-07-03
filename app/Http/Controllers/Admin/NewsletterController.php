@@ -17,48 +17,44 @@ class NewsletterController extends Controller
     public function unsubscribe(Request $request)
     {
         $data = $request->validate([
-            'email' => ['required', 'email'],
-            'name' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email'],
+            'name'  => ['nullable', 'string', 'max:255'],
         ]);
-        // Buscar cliente na base de dados
-        $client = Client::query()
-            ->where('email', $data['email'])
-            ->first();
 
-        // Se o cliente existir, atualizar newsletter_consent para false
-        if ($client) {
-            $client->update(['newsletter_consent' => false]);
-            Log::info('Newsletter consent atualizado para false', [
-                'client_id' => $client->id,
-                'email' => $client->email
-            ]);
-        }
+        $email = $data['email'] ?? null;
 
-        // Enviar email ao admin
-        $adminEmail = config('mail.from.address');
+        if ($email) {
+            $client = Client::where('email', $email)->first();
 
-        if (!empty($adminEmail)) {
-            try {
-                Mail::to($adminEmail)->send(
-                    new NewsletterUnsubscribeNotification(
-                        $data['email'],
-                        $client?->name ?? $data['name'] ?? 'N/A'
-                    )
-                );
-                
-                Log::info('Email de notificação de unsubscribe enviado ao admin', [
-                    'email' => $data['email']
+            if ($client) {
+                $client->update(['newsletter_consent' => false]);
+                Log::info('Newsletter consent atualizado para false', [
+                    'client_id' => $client->id,
+                    'email'     => $client->email,
                 ]);
-            } catch (\Exception $e) {
-                Log::error('Erro ao enviar email de notificação de unsubscribe', [
-                    'error' => $e->getMessage(),
-                    'email' => $data['email']
-                ]);
+            }
+
+            $adminEmail = config('mail.from.address');
+
+            if (!empty($adminEmail)) {
+                try {
+                    Mail::to($adminEmail)->send(
+                        new NewsletterUnsubscribeNotification(
+                            $email,
+                            $client?->name ?? $data['name'] ?? 'N/A'
+                        )
+                    );
+                    Log::info('Email de notificação de unsubscribe enviado ao admin', ['email' => $email]);
+                } catch (\Exception $e) {
+                    Log::error('Erro ao enviar notificação de unsubscribe', [
+                        'error' => $e->getMessage(),
+                        'email' => $email,
+                    ]);
+                }
             }
         }
 
-        return response()
-            ->view('newsletter.unsubscribe');
+        return response()->view('newsletter.unsubscribe');
     }
 
 
