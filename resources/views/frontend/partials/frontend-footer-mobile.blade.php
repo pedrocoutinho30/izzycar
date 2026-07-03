@@ -56,6 +56,22 @@
             </a>
         </div>
 
+        <!-- Newsletter Subscribe -->
+        <div class="footer-mobile-newsletter">
+            <h5 class="footer-mobile-title">Newsletter</h5>
+            <p class="footer-mobile-nl-sub">Receba ofertas e novidades do mercado automóvel europeu.</p>
+            <form id="footerNewsletterFormMobile">
+                @csrf
+                <input type="text" name="name" placeholder="O seu nome" class="nl-mobile-input" autocomplete="name">
+                <input type="email" name="email" placeholder="O seu email" class="nl-mobile-input" required autocomplete="email">
+                <button type="submit" class="nl-mobile-btn">
+                    Subscrever
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+            </form>
+            <p class="nl-mobile-feedback" id="footerNlFeedbackMobile" style="display:none;"></p>
+        </div>
+
         <!-- CTA -->
         <div class="footer-mobile-cta">
             <a href="{{ route('frontend.form-import') }}" class="btn-mobile-cta">
@@ -264,4 +280,64 @@
         color: #6c757d;
         font-size: 0.85rem;
     }
+
+    /* Newsletter mobile */
+    .footer-mobile-newsletter { margin-bottom: 1.5rem; }
+    .footer-mobile-nl-sub { font-size: .82rem; color: #b8b8b8; margin: .25rem 0 .85rem; }
+    .nl-mobile-input {
+        display: block; width: 100%; margin-bottom: .5rem;
+        padding: .6rem .9rem; border-radius: 8px;
+        background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+        color: white; font-size: .9rem;
+    }
+    .nl-mobile-input::placeholder { color: rgba(255,255,255,0.4); }
+    .nl-mobile-input:focus { outline: none; border-color: rgba(255,255,255,0.35); }
+    .nl-mobile-btn {
+        display: inline-flex; align-items: center; gap: .4rem;
+        padding: .6rem 1.2rem; border-radius: 8px; border: none; cursor: pointer;
+        background: #990000; color: white; font-weight: 700; font-size: .88rem;
+    }
+    .nl-mobile-feedback { font-size: .8rem; margin-top: .5rem; }
+    .nl-mobile-feedback.success { color: #4ade80; }
+    .nl-mobile-feedback.error   { color: #f87171; }
 </style>
+<script>
+(function () {
+    const form     = document.getElementById('footerNewsletterFormMobile');
+    const feedback = document.getElementById('footerNlFeedbackMobile');
+    if (!form) return;
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const btn = form.querySelector('.nl-mobile-btn');
+        btn.disabled = true;
+        feedback.style.display = 'none';
+
+        const formData = new FormData(form);
+
+        try {
+            const res  = await fetch('{{ route("newsletter.subscribe") }}', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': formData.get('_token') },
+                body: formData,
+            });
+            const data = await res.json();
+            feedback.style.display = '';
+            if (res.ok && data.success) {
+                feedback.className = 'nl-mobile-feedback success';
+                feedback.textContent = 'Subscrito! Obrigado.';
+                form.reset();
+            } else {
+                feedback.className = 'nl-mobile-feedback error';
+                feedback.textContent = data.message ?? 'Erro. Tente novamente.';
+                btn.disabled = false;
+            }
+        } catch {
+            feedback.style.display = '';
+            feedback.className = 'nl-mobile-feedback error';
+            feedback.textContent = 'Erro. Tente novamente.';
+            btn.disabled = false;
+        }
+    });
+})();
+</script>

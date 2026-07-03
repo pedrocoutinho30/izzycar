@@ -227,12 +227,33 @@
         </div>
       </div>
 
+      {{-- ── CONSENTIMENTO ── --}}
+      <div class="sc-consent-wrap sc-reveal">
+        <div class="sc-check">
+          <input type="checkbox" id="data_processing_consent" name="data_processing_consent" value="1" required
+                 class="sc-check-input @error('data_processing_consent') sc-check-input--error @enderror"
+                 {{ old('data_processing_consent') ? 'checked' : '' }}>
+          <label for="data_processing_consent" class="sc-check-label">
+            Li e aceito o tratamento dos meus dados pessoais conforme a
+            <a href="{{ route('frontend.privacy') }}" target="_blank" class="sc-check-link">Política de Privacidade</a>
+            <span class="sc-req">*</span>
+          </label>
+        </div>
+        @error('data_processing_consent')
+          <p class="sc-error" style="margin-top:.25rem;">{{ $message }}</p>
+        @enderror
+        <div class="sc-check" style="margin-top:.6rem;">
+          <input type="checkbox" id="newsletter_consent" name="newsletter_consent" value="1"
+                 class="sc-check-input"
+                 {{ old('newsletter_consent', '1') ? 'checked' : '' }}>
+          <label for="newsletter_consent" class="sc-check-label">
+            Quero receber novidades e oportunidades por email
+          </label>
+        </div>
+      </div>
+
       {{-- ── SUBMIT ── --}}
       <div class="sc-submit-wrap sc-reveal">
-        <div class="sc-privacy">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Os seus dados são usados apenas para enviar o resultado. Não serão partilhados.
-        </div>
         <button type="submit" class="sc-submit" id="scSubmit">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           Simular Custos
@@ -559,13 +580,20 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .sc-input--prefixed { padding-left:2.2rem; }
 
+/* ── Consent ── */
+.sc-consent-wrap { margin-bottom:1.25rem; }
+.sc-check { display:flex; align-items:flex-start; gap:.55rem; }
+.sc-check-input {
+  width:16px; height:16px; flex-shrink:0; margin-top:.15rem;
+  accent-color:var(--sc-brand); cursor:pointer;
+}
+.sc-check-input--error { outline:2px solid #ef4444; border-radius:3px; }
+.sc-check-label { font-size:.82rem; color:var(--sc-gray); line-height:1.5; cursor:pointer; }
+.sc-check-link { color:var(--sc-brand); text-decoration:underline; }
+.sc-check-link:hover { color:#7a0000; }
+
 /* ── Submit ── */
 .sc-submit-wrap { text-align:center; }
-.sc-privacy {
-  display:inline-flex; align-items:center; gap:.45rem;
-  color: var(--sc-gray); font-size:.78rem; margin-bottom:1.25rem;
-}
-.sc-privacy svg { flex-shrink:0; color:#9ca3af; }
 .sc-submit {
   display:inline-flex; align-items:center; gap:.7rem;
   padding:1rem 2.5rem; border-radius:12px;

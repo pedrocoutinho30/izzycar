@@ -69,12 +69,15 @@ class CostSimulatorController extends Controller
                     }
                 },
             ],
+            'data_processing_consent' => ['required', 'accepted'],
         ], [
             'name.required' => 'O nome é obrigatório.',
             'name.min' => 'O nome deve ter pelo menos 3 caracteres.',
             'email.required' => 'O email é obrigatório.',
             'email.email' => 'Por favor, insira um email válido.',
             'phone.required' => 'O telefone é obrigatório.',
+            'data_processing_consent.required' => 'É necessário aceitar o tratamento de dados para continuar.',
+            'data_processing_consent.accepted' => 'É necessário aceitar o tratamento de dados para continuar.',
         ]);
 
         // Se a validação falhou, Laravel automaticamente redireciona de volta com os erros e old() input
@@ -91,23 +94,28 @@ class CostSimulatorController extends Controller
             ->orWhere('phone', $normalizedPhone)
             ->first();
 
+        $newsletterConsent      = $request->boolean('newsletter_consent');
+        $dataProcessingConsent  = true;
+
         if ($existingClient) {
-            // Atualizar dados do cliente existente
             $existingClient->update([
-                'name' => $request->input('name'),
+                'name'  => $request->input('name'),
                 'email' => $request->input('email'),
                 'phone' => $normalizedPhone,
+                'data_processing_consent' => $dataProcessingConsent,
+                'newsletter_consent'      => $newsletterConsent || $existingClient->newsletter_consent,
             ]);
             $client = $existingClient;
         } else {
-            // Criar novo cliente
             $client = Client::create([
-                'name' => $request->input('name'),
-                'email' => $request->input('email'),
-                'phone' => $normalizedPhone,
-                'origin' => 'Simulador de Custos',
-                'is_lead' => true,
-                'lead_source' => 'simulador',
+                'name'                    => $request->input('name'),
+                'email'                   => $request->input('email'),
+                'phone'                   => $normalizedPhone,
+                'origin'                  => 'Simulador de Custos',
+                'is_lead'                 => true,
+                'lead_source'             => 'simulador',
+                'data_processing_consent' => $dataProcessingConsent,
+                'newsletter_consent'      => $newsletterConsent,
             ]);
         }
         // Normalizar e validar valor do carro

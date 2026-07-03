@@ -62,6 +62,9 @@ Auth::routes();
 Route::get('/newsletter/unsubscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'unsubscribe'])
     ->name('newsletter.unsubscribe');
 
+Route::post('/newsletter/subscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'subscribe'])
+    ->name('newsletter.subscribe');
+
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
     Lfm::routes();
 });

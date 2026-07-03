@@ -87,6 +87,26 @@
                 </div>
             </div>
 
+            <!-- Newsletter Subscribe -->
+            <div class="footer-newsletter">
+                <div class="newsletter-inner">
+                    <div class="newsletter-text">
+                        <h4 class="newsletter-title">Subscreva a nossa newsletter</h4>
+                        <p class="newsletter-sub">Receba ofertas de importação, dicas e novidades do mercado automóvel europeu.</p>
+                    </div>
+                    <form class="newsletter-form" id="footerNewsletterForm">
+                        @csrf
+                        <input type="text" name="name" placeholder="O seu nome" class="nl-input nl-input--name" autocomplete="name">
+                        <input type="email" name="email" placeholder="O seu email" class="nl-input" required autocomplete="email">
+                        <button type="submit" class="nl-btn">
+                            Subscrever
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </button>
+                    </form>
+                    <p class="nl-feedback" id="footerNlFeedback" style="display:none;"></p>
+                </div>
+            </div>
+
             <!-- CTA Section -->
             <div class="footer-cta">
                 <div class="cta-card">
@@ -268,9 +288,50 @@
         color: white;
     }
 
-    .footer-cta {
+    /* Newsletter */
+    .footer-newsletter {
         margin-top: 3rem;
         padding-top: 3rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .newsletter-inner {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    .newsletter-text { flex: 1; min-width: 200px; }
+    .newsletter-title { font-size: 1.1rem; font-weight: 700; color: white; margin-bottom: .35rem; }
+    .newsletter-sub   { font-size: .88rem; color: #b8b8b8; margin: 0; }
+    .newsletter-form  { display: flex; gap: .6rem; flex: 1.5; min-width: 300px; flex-wrap: wrap; }
+    .nl-input {
+        flex: 1; min-width: 150px;
+        padding: .6rem 1rem; border-radius: 8px;
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+        color: white; font-size: .9rem;
+    }
+    .nl-input::placeholder { color: rgba(255,255,255,0.4); }
+    .nl-input:focus { outline: none; border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.12); }
+    .nl-input--name { max-width: 160px; }
+    .nl-btn {
+        display: inline-flex; align-items: center; gap: .45rem;
+        padding: .6rem 1.4rem; border-radius: 8px; border: none; cursor: pointer;
+        background: #990000; color: white; font-weight: 700; font-size: .9rem;
+        transition: background .2s, transform .2s;
+        white-space: nowrap;
+    }
+    .nl-btn:hover { background: #7a0000; transform: translateY(-1px); }
+    .nl-feedback { font-size: .82rem; margin-top: .5rem; width: 100%; }
+    .nl-feedback.success { color: #4ade80; }
+    .nl-feedback.error   { color: #f87171; }
+
+    .footer-cta {
+        margin-top: 2rem;
+        padding-top: 2rem;
         border-top: 1px solid rgba(255,255,255,0.1);
     }
 
@@ -411,5 +472,47 @@
         .cta-subtitle {
             font-size: 0.9rem;
         }
+        .nl-input--name { max-width: 100%; }
+        .newsletter-form { flex-direction: column; }
     }
 </style>
+<script>
+(function () {
+    const form     = document.getElementById('footerNewsletterForm');
+    const feedback = document.getElementById('footerNlFeedback');
+    if (!form) return;
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const btn  = form.querySelector('.nl-btn');
+        btn.disabled = true;
+        feedback.style.display = 'none';
+
+        const formData = new FormData(form);
+
+        try {
+            const res  = await fetch('{{ route("newsletter.subscribe") }}', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': formData.get('_token') },
+                body: formData,
+            });
+            const data = await res.json();
+            feedback.style.display = '';
+            if (res.ok && data.success) {
+                feedback.className = 'nl-feedback success';
+                feedback.textContent = 'Subscrito com sucesso! Obrigado.';
+                form.reset();
+            } else {
+                feedback.className = 'nl-feedback error';
+                feedback.textContent = data.message ?? 'Ocorreu um erro. Tente novamente.';
+                btn.disabled = false;
+            }
+        } catch {
+            feedback.style.display = '';
+            feedback.className = 'nl-feedback error';
+            feedback.textContent = 'Ocorreu um erro. Tente novamente.';
+            btn.disabled = false;
+        }
+    });
+})();
+</script>
