@@ -6,12 +6,12 @@
   $finalPay      = $settings->where('label', 'final_payment')->first()?->value ?? '50%';
 
   $totalCost     = $proposal->commission_cost + $proposal->inspection_commission_cost
-                 + $proposal->license_plate_cost + $proposal->isv_cost + $proposal->iuc_cost
+                 + $proposal->license_plate_cost + $proposal->isv_cost
                  + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost
                  + $proposal->transport_cost + $proposal->proposed_car_value;
 
   $totalNoVat    = $proposal->commission_cost + $proposal->inspection_commission_cost
-                 + $proposal->license_plate_cost + $proposal->isv_cost + $proposal->iuc_cost
+                 + $proposal->license_plate_cost + $proposal->isv_cost
                  + $proposal->registration_cost + $proposal->imt_cost + $proposal->ipo_cost
                  + $proposal->transport_cost + ($proposal->proposed_car_value / 1.19);
 
@@ -239,22 +239,6 @@
               </div>
             </div>
 
-            @if($proposal->iuc_cost > 0)
-            <div class="iz-cost-row">
-              <div class="iz-cost-row__left">
-                <div class="iz-cost-row__icon" style="background:#fff4e6">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e67700" stroke-width="2"><path d="M17 4.5C15.5 3.6 13.8 3 12 3 8 3 5 6 5 10s3 7 7 7c1.8 0 3.5-.6 5-1.5"/><line x1="3" y1="9" x2="15" y2="9"/><line x1="3" y1="11" x2="15" y2="11"/></svg>
-                </div>
-                <div>
-                  <div class="iz-cost-row__name">IUC</div>
-                  <div class="iz-cost-row__hint">Imposto único de circulação</div>
-                </div>
-              </div>
-              <div class="iz-cost-row__value" data-count="{{ (int)$proposal->iuc_cost }}">
-                {{ number_format($proposal->iuc_cost, 0, ',', '.') }} €
-              </div>
-            </div>
-            @endif
 
             <div class="iz-cost-row iz-cost-row--service">
               <div class="iz-cost-row__left">
@@ -263,7 +247,7 @@
                 </div>
                 <div>
                   <div class="iz-cost-row__name">Serviço Izzycar</div>
-                  <div class="iz-cost-row__hint">Transporte · IPO · IMT · Matrícula · Gestão</div>
+                  <div class="iz-cost-row__hint">Inspeção na origem · Transporte · IPO · IMT · Matrícula · Gestão</div>
                 </div>
               </div>
               <div class="iz-cost-row__value" data-count="{{ (int)$serviceCost }}">
@@ -275,6 +259,16 @@
           <div class="iz-costs__total-wrap">
             <div class="iz-costs__total-label">Total Chave na Mão</div>
             <div class="iz-costs__total" data-count="{{ (int)$totalCost }}">{{ number_format($totalCost, 0, ',', '.') }} €</div>
+          </div>
+
+          <div class="iz-iuc-note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>
+              <strong>Nota:</strong> O valor apresentado não inclui o IUC, uma vez que este é um imposto anual da responsabilidade do proprietário e é pago após a matrícula portuguesa, dentro do prazo legal.
+              @if($proposal->iuc_cost > 0)
+                Valor estimado: <strong>{{ number_format($proposal->iuc_cost, 0, ',', '.') }} €/ano</strong>.
+              @endif
+            </span>
           </div>
 
           @if($isElectric)
@@ -574,8 +568,8 @@
             <span>{{ number_format($proposal->proposed_car_value, 0, ',', '.') }} €</span>
           </div>
           <div class="iz-modal__summary-row">
-            <span>Impostos (ISV + IUC)</span>
-            <span>{{ number_format($proposal->isv_cost + $proposal->iuc_cost, 0, ',', '.') }} €</span>
+            <span>Impostos (ISV)</span>
+            <span>{{ number_format($proposal->isv_cost, 0, ',', '.') }} €</span>
           </div>
           <div class="iz-modal__summary-row">
             <span>Serviço Izzycar</span>
@@ -904,6 +898,15 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
 }
 .iz-costs__total-label { font-size:.8rem; font-weight:500; color:rgba(255,255,255,.75); }
 .iz-costs__total { font-size:1.6rem; font-weight:800; color:#fff; text-shadow: 0 1px 4px rgba(0,0,0,.25); }
+
+.iz-iuc-note {
+  display:flex; gap:.6rem; align-items:flex-start;
+  background:#fafafa; border:1px solid #e5e7eb; border-radius:10px;
+  padding:.9rem 1rem; margin-bottom:1.25rem;
+  font-size:.8rem; color:#6b7280; line-height:1.5;
+}
+.iz-iuc-note svg { flex-shrink:0; margin-top:2px; color:#9ca3af; }
+.iz-iuc-note strong { color:#374151; }
 
 .iz-business-box {
   background:linear-gradient(135deg,#f0fdf4,#dcfce7);
