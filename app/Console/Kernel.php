@@ -33,7 +33,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('google:sync-reviews')->hourly();
 
         // Enviar email diário às 21h com follow-ups de amanhã
-        $schedule->command('leads:followup-reminder')->dailyAt('21:00');
+        $schedule->command('leads:followup-reminder')->dailyAt('14:12');
     }
 
     /**
