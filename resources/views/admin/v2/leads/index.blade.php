@@ -11,8 +11,8 @@
     ],
     'title' => 'Leads',
     'subtitle' => 'Potenciais clientes que ainda não foram convertidos',
-    'actionHref' => '',
-    'actionLabel' => ''
+    'actionHref' => route('admin.v2.leads.create'),
+    'actionLabel' => 'Nova Lead'
 ])
 
 @include('components.admin.stats-cards', ['stats' => $stats])

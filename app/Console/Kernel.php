@@ -31,6 +31,9 @@ class Kernel extends ConsoleKernel
 
         // Sincronizar reviews do Google Business Profile — de hora a hora
         $schedule->command('google:sync-reviews')->hourly();
+
+        // Enviar email diário às 21h com follow-ups de amanhã
+        $schedule->command('leads:followup-reminder')->dailyAt('21:00');
     }
 
     /**

@@ -18,6 +18,43 @@ class LeadV2Controller extends Controller
             ->whereNotIn('lead_status', ['fria', 'perdida']);
     }
 
+    public function create()
+    {
+        return view('admin.v2.leads.create');
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'nullable|email|max:255',
+            'phone'       => 'nullable|string|max:50',
+            'origin'      => 'nullable|string|max:255',
+            'lead_source' => 'nullable|string|max:255',
+            'lead_status' => 'nullable|in:nova,em_contacto,fria,perdida',
+            'observation' => 'nullable|string|max:2000',
+        ]);
+
+        $lead = Client::create([
+            ...$data,
+            'is_lead'     => true,
+            'lead_source' => $data['lead_source'] ?? 'manual',
+            'lead_status' => $data['lead_status'] ?? 'nova',
+            'origin'      => $data['origin'] ?? 'Manual BO',
+        ]);
+
+        LeadActivity::log(
+            $lead->id,
+            'Lead criado manualmente',
+            'Criado por ' . (auth()->user()->name ?? '—') . '.',
+            'bi-plus-circle-fill',
+            'success'
+        );
+
+        return redirect()->route('admin.v2.leads.show', $lead->id)
+            ->with('success', 'Lead criado com sucesso.');
+    }
+
     public function index(Request $request)
     {
         $query = Client::where('is_lead', true)->orderBy('created_at', 'desc');

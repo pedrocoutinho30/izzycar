@@ -167,6 +167,7 @@
         <div class="modern-card mb-4">
             <div class="modern-card-header">
                 <h5 class="modern-card-title"><i class="bi bi-calculator"></i> Simulações de Custos</h5>
+                <span class="badge bg-secondary rounded-pill">{{ $simulators->count() }}</span>
             </div>
             @foreach($simulators as $sim)
             <div class="lead-activity-item">
@@ -183,6 +184,47 @@
                         @if($sim->total_cost) <span class="lad-tag lad-tag--accent">Total: €{{ number_format($sim->total_cost, 0, ',', '.') }}</span> @endif
                     </div>
                 </div>
+                <a href="{{ route('admin.v2.cost-simulators.show', $sim->id) }}"
+                   class="btn btn-icon btn-secondary-modern ms-auto flex-shrink-0" title="Ver simulação completa">
+                    <i class="bi bi-arrow-up-right-square"></i>
+                </a>
+            </div>
+            @endforeach
+        </div>
+        @endif
+
+        {{-- Cotações associadas --}}
+        @if($lead->proposals->isNotEmpty())
+        <div class="modern-card mb-4">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title"><i class="bi bi-file-earmark-text"></i> Cotações</h5>
+                <span class="badge bg-secondary rounded-pill">{{ $lead->proposals->count() }}</span>
+            </div>
+            @foreach($lead->proposals->sortByDesc('created_at') as $proposal)
+            @php
+                $pStatusColors = ['Pendente' => 'warning', 'Aprovada' => 'success', 'Recusada' => 'danger', 'Sem resposta' => 'secondary', 'Expirada' => 'secondary'];
+                $pColor = $pStatusColors[$proposal->status] ?? 'secondary';
+            @endphp
+            <div class="lead-activity-item align-items-center">
+                <div class="lad-icon" style="background:rgba(13,110,253,.1);color:#0d6efd;">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <div class="lad-body">
+                    <div class="lad-title">{{ trim(($proposal->brand ?? '') . ' ' . ($proposal->model ?? '—')) }}</div>
+                    <div class="lad-meta">{{ $proposal->created_at->format('d/m/Y') }}</div>
+                    <div class="lad-tags">
+                        <span class="lad-tag badge bg-{{ $pColor }}-subtle text-{{ $pColor }} border border-{{ $pColor }}-subtle">
+                            {{ $proposal->status ?? 'Pendente' }}
+                        </span>
+                        @if($proposal->value)
+                            <span class="lad-tag lad-tag--accent">{{ number_format($proposal->value, 0, ',', '.') }} €</span>
+                        @endif
+                    </div>
+                </div>
+                <a href="{{ route('admin.v2.proposals.edit', $proposal->id) }}"
+                   class="btn btn-icon btn-primary-modern ms-auto flex-shrink-0" title="Ver cotação">
+                    <i class="bi bi-arrow-up-right-square"></i>
+                </a>
             </div>
             @endforeach
         </div>

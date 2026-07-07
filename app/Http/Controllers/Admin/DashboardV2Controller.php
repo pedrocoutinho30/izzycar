@@ -144,6 +144,19 @@ class DashboardV2Controller extends Controller
             })
             ->count();
 
+        // Follow-ups de hoje e amanhã
+        $followupsHoje = Client::where('is_lead', true)
+            ->whereNotNull('next_followup_at')
+            ->whereDate('next_followup_at', today())
+            ->orderBy('next_followup_at')
+            ->get();
+
+        $followupsAmanha = Client::where('is_lead', true)
+            ->whereNotNull('next_followup_at')
+            ->whereDate('next_followup_at', today()->addDay())
+            ->orderBy('next_followup_at')
+            ->get();
+
         // Leads activas hoje (para o badge do menu)
         $totalLeadsActivas = Client::where('is_lead', true)
             ->whereIn('lead_status', ['nova', 'em_contacto'])
@@ -235,6 +248,8 @@ class DashboardV2Controller extends Controller
             ->get();
 
         return view('admin.v2.dashboard', compact(
+            'followupsHoje',
+            'followupsAmanha',
             'stats',
             'recentProposals',
             'recentFormProposals',

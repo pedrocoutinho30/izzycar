@@ -101,6 +101,8 @@ class ClientV2Controller extends Controller
         $client = Client::with([
             'proposals',
             'sale.v3Vehicle',
+            'costSimulators',
+            'activities',
         ])->findOrFail($id);
 
         return view('admin.v2.clients.show', compact('client'));

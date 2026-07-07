@@ -212,6 +212,8 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
 
     Route::prefix('v2/leads')->name('admin.v2.leads.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\LeadV2Controller::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\LeadV2Controller::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\LeadV2Controller::class, 'store'])->name('store');
         Route::get('/kanban', [App\Http\Controllers\Admin\LeadV2Controller::class, 'kanban'])->name('kanban');
         Route::get('/{id}', [App\Http\Controllers\Admin\LeadV2Controller::class, 'show'])->name('show');
         Route::post('/{id}/convert', [App\Http\Controllers\Admin\LeadV2Controller::class, 'convert'])->name('convert');
