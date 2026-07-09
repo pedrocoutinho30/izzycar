@@ -1,7 +1,47 @@
 @extends('frontend.partials.layout')
 
-@section('title', 'Carros Usados em Portugal | Compra e Venda | IzzyCar')
-@section('meta_description', 'Encontre carros usados de qualidade em Portugal. A IzzyCar oferece opções confiáveis para compra e venda de veículos, com garantia e transparência.')
+@section('title', 'Carros Usados em Portugal | Compra e Venda | Izzycar')
+@section('meta_description', 'Encontre carros usados de qualidade em Portugal. A Izzycar oferece opções confiáveis para compra e venda de veículos, com garantia e transparência.')
+
+@push('head')
+<link rel="canonical" href="{{ url('/viaturas') }}" />
+
+{{-- Open Graph --}}
+<meta property="og:type"        content="website" />
+<meta property="og:locale"      content="pt_PT" />
+<meta property="og:site_name"   content="Izzycar" />
+<meta property="og:url"         content="{{ url('/viaturas') }}" />
+<meta property="og:title"       content="Carros Usados em Portugal | Izzycar" />
+<meta property="og:description" content="Encontre carros usados de qualidade em Portugal. Viaturas selecionadas com rigor pela Izzycar — especialista em importação automóvel." />
+<meta property="og:image"       content="{{ asset('storage/settings/logo_redondo.png') }}" />
+
+{{-- Twitter Card --}}
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:title"       content="Carros Usados em Portugal | Izzycar" />
+<meta name="twitter:description" content="Encontre carros usados de qualidade em Portugal. Viaturas selecionadas com rigor pela Izzycar." />
+<meta name="twitter:image"       content="{{ asset('storage/settings/logo_redondo.png') }}" />
+
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@@type": "ListItem",
+            "position": 1,
+            "name": "Início",
+            "item": "{{ url('/') }}"
+        },
+        {
+            "@@type": "ListItem",
+            "position": 2,
+            "name": "Carros Usados",
+            "item": "{{ url('/viaturas') }}"
+        }
+    ]
+}
+</script>
+@endpush
 
 
 @php use Illuminate\Support\Str; @endphp

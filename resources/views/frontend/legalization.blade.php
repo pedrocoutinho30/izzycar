@@ -16,23 +16,53 @@
     "provider": {
         "@@type": "AutoDealer",
         "name": "Izzycar",
-        "url": "https://izzycar.pt"
+        "url": "https://izzycar.pt",
+        "sameAs": ["https://www.facebook.com/profile.php?id=61572831810539","https://www.instagram.com/izzycarpt/"]
     },
-    "areaServed": {
-        "@@type": "Country",
-        "name": "Portugal"
-    },
+    "areaServed": {"@@type": "Country", "name": "Portugal"},
     "serviceType": "Legalização Automóvel",
     "category": "Automóvel",
-    "breadcrumb": {
-        "@@type": "BreadcrumbList",
-        "itemListElement": [
-            {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
-            {"@@type": "ListItem", "position": 2, "name": "Legalização Automóvel", "item": "https://izzycar.pt/legalizacao"}
-        ]
+    "offers": {
+        "@@type": "Offer",
+        "description": "Serviço de legalização automóvel — peça a sua cotação gratuitamente",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "url": "https://izzycar.pt/legalizacao"
     }
 }
 </script>
+
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+        {"@@type": "ListItem", "position": 2, "name": "Legalização Automóvel", "item": "https://izzycar.pt/legalizacao"}
+    ]
+}
+</script>
+
+@if(!empty($data->contents['enum']))
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "HowTo",
+    "name": "Como legalizar um carro importado em Portugal",
+    "description": "Passos para legalizar um veículo importado em Portugal: inspeção, ISV, IPO, IMT e matrícula portuguesa.",
+    "step": [
+        @foreach($data->contents['enum'] as $i => $step)
+        {
+            "@@type": "HowToStep",
+            "position": {{ $i + 1 }},
+            "name": "{{ addslashes($step['title']) }}",
+            "text": "{{ addslashes(strip_tags($step['content'])) }}"
+        }{{ !$loop->last ? ',' : '' }}
+        @endforeach
+    ]
+}
+</script>
+@endif
 @endpush
 
 @section('content')

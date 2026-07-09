@@ -41,8 +41,8 @@
         },
         "address": {
             "@@type": "PostalAddress",
-            "addressCountry": "PT",
-            "addressLocality": "Portugal"
+            "addressCountry": "PT"@if($iz_address),
+            "streetAddress": "{{ $iz_address }}"@endif
         },
         "hasOfferCatalog": {
             "@@type": "OfferCatalog",

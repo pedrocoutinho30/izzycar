@@ -11,12 +11,45 @@
     "description": "Guias, análises e notícias sobre importação automóvel, ISV e mercado de carros em Portugal.",
     "url": "https://izzycar.pt/noticias",
     "publisher": {
-        "@@type": "AutoDealer",
+        "@@type": "Organization",
         "name": "Izzycar",
-        "url": "https://izzycar.pt"
+        "url": "https://izzycar.pt",
+        "logo": {"@@type": "ImageObject", "url": "https://izzycar.pt/storage/settings/logo_redondo.png"}
     }
 }
 </script>
+
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+        {"@@type": "ListItem", "position": 2, "name": "Guias & Notícias", "item": "https://izzycar.pt/noticias"}
+    ]
+}
+</script>
+
+@if($news->isNotEmpty())
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "ItemList",
+    "name": "Artigos Izzycar — Importação Automóvel",
+    "url": "https://izzycar.pt/noticias",
+    "itemListElement": [
+        @foreach($news->take(10) as $i => $article)
+        {
+            "@@type": "ListItem",
+            "position": {{ $i + 1 }},
+            "url": "{{ route('frontend.news-details', $article->slug) }}",
+            "name": "{{ addslashes($article->title) }}"
+        }{{ !$loop->last ? ',' : '' }}
+        @endforeach
+    ]
+}
+</script>
+@endif
 @endpush
 
 @section('content')

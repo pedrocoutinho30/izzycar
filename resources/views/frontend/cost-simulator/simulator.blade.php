@@ -19,24 +19,33 @@
     "provider": {
         "@@type": "AutoDealer",
         "name": "Izzycar",
-        "url": "https://izzycar.pt"
-    },
-    "breadcrumb": {
-        "@@type": "BreadcrumbList",
-        "itemListElement": [
-            {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
-            {"@@type": "ListItem", "position": 2, "name": "Simulador de Custos", "item": "https://izzycar.pt/simulador-custos"}
-        ]
+        "url": "https://izzycar.pt",
+        "sameAs": ["https://www.facebook.com/profile.php?id=61572831810539","https://www.instagram.com/izzycarpt/"]
     }
+}
+</script>
+
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+        {"@@type": "ListItem", "position": 2, "name": "Simulador de Custos", "item": "https://izzycar.pt/simulador-custos"}
+    ]
 }
 </script>
 @endpush
 
 @include('frontend.partials.seo', [
 'seo' => (object)[
-  'meta_image'       => '',
-  'title'            => 'Simulador de Custos de Importação',
+  'meta_image'       => 'https://izzycar.pt/storage/settings/logo_redondo.png',
+  'canonical_url'    => url('/simulador-custos'),
+  'title'            => 'Simulador de Custos de Importação Automóvel',
   'meta_description' => 'Simule os custos de importar o seu carro para Portugal. Estimativa detalhada e transparente, incluindo ISV, transporte e todos os encargos. Sem surpresas.',
+  'og_title'         => 'Simulador de Custos de Importação | Izzycar',
+  'og_description'   => 'Calcule gratuitamente o ISV, transporte, IPO e todos os encargos de importar o seu carro. Resultado enviado por email, sem compromisso.',
+  'og_type'          => 'website',
 ]])
 
 @section('content')

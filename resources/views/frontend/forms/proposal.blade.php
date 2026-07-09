@@ -205,32 +205,14 @@
                     <input type="text" name="color" id="color" class="form-control">
                 </div>
 
-                <!-- <div class="col-md-6">
-                      <label for="budget" class="form-label">Budget<span class="required-star">*</span></label>
-                      <select class="form-control" id="budget" name="budget">
-                          <option value="">Escolha uma opção</option>
-                          <option value="10k_15k">10.000€ - 15.000€</option>
-                          <option value="15k_20k">15.000€ - 20.000€</option>
-                          <option value="20k_25k">20.000€ - 25.000€</option>
-                          <option value="25k_30k">25.000€ - 30.000€</option>
-                          <option value="30k_40k">30.000€ - 40.000€</option>
-                          <option value="40k_50k">40.000€ - 50.000€</option>
-                          <option value="50k_60k">50.000€ - 60.000€</option>
-                          <option value="60k_70k">60.000€ - 70.000€</option>
-                          <option value="70k_80k">70.000€ - 80.000€</option>
-                          <option value="80k+">Mais de 80.000€</option>
-                      </select>
-                  </div> -->
-
-
-                <div class="col-md-6">
-                    <label for="budget" class="form-label">Budget <span class="text-danger">*</span></label>
-                    <div class="position-relative">
-                        <input type="range" min="10000" max="100000" step="1000" value="40000" class="form-range" name="budget" id="budgetSlider">
-                        <span id="budgetValue" class="position-absolute" style="top:25px; left:50%; transform:translateX(-50%);  font-weight:bold;">
-                            40.000€
-                        </span>
-
+                <div class="col-auto">
+                    <label for="budget" class="form-label">Budget máximo <span class="text-danger">*</span></label>
+                    <div class="input-group" style="width:170px">
+                        <input type="number" name="budget" id="budget"
+                               class="form-control"
+                               placeholder="ex: 23000"
+                               min="1000" step="500" required>
+                        <span class="input-group-text">€</span>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -282,23 +264,6 @@
         <script>
             document.addEventListener('DOMContentLoaded', function() {
 
-                const slider = document.getElementById('budgetSlider');
-                const budgetValue = document.getElementById('budgetValue');
-
-                slider.addEventListener('input', function() {
-                    let value = parseInt(this.value);
-
-                    // Se o usuário chegar no máximo, mostra "+81.000€"
-                    if (value >= parseInt(this.max)) {
-                        budgetValue.textContent = "+100.000€";
-                    } else {
-                        budgetValue.textContent = value.toLocaleString() + "€";
-                    }
-
-                    // posiciona o valor acima do slider
-                    const percent = (value - this.min) / (this.max - this.min);
-                    budgetValue.style.left = `calc(${percent * 100}% )`;
-                });
                 const form = document.querySelector('#contactModal form');
                 const submitBtn = document.getElementById('contactSubmitProposalBtn');
                 if (form && submitBtn) {
@@ -402,56 +367,6 @@
         background-size: 16px;
         padding-right: 3rem;
         appearance: none;
-    }
-
-    /* Budget Slider */
-    #budgetSlider {
-        width: 100%;
-        height: 8px;
-        background: linear-gradient(to right, #e9ecef 0%, var(--accent-color) 0%);
-        border-radius: 10px;
-        outline: none;
-        transition: background 0.3s ease;
-    }
-
-    #budgetSlider::-webkit-slider-thumb {
-        appearance: none;
-        width: 24px;
-        height: 24px;
-        background: white;
-        border: 3px solid var(--accent-color);
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(110, 7, 7, 0.3);
-    }
-
-    #budgetSlider::-webkit-slider-thumb:hover {
-        transform: scale(1.2);
-        box-shadow: 0 4px 12px rgba(110, 7, 7, 0.4);
-    }
-
-    #budgetSlider::-moz-range-thumb {
-        width: 24px;
-        height: 24px;
-        background: white;
-        border: 3px solid var(--accent-color);
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(110, 7, 7, 0.3);
-    }
-
-    #budgetValue {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        background: var(--accent-color);
-        color: white;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 1rem;
-        box-shadow: 0 2px 8px rgba(110, 7, 7, 0.3);
-        transition: all 0.3s ease;
     }
 
     /* Radio Buttons */
@@ -561,9 +476,9 @@
             padding: 1rem 2rem;
         }
 
-        #budgetValue {
-            font-size: 0.9rem;
-            padding: 0.4rem 0.8rem;
+        .budget-chip {
+            padding: .4rem .7rem;
+            font-size: .8rem;
         }
     }
 </style>

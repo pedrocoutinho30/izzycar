@@ -30,9 +30,10 @@
     "@@context": "https://schema.org",
     "@@type": "Article",
     "headline": "{{ addslashes($articleTitle) }}",
-    "image": "{{ $articleImg }}",
+    "description": "{{ addslashes(strip_tags($news->seo_description ?: ($news->subtitle ?? ''))) }}",
+    "image": {"@@type": "ImageObject", "url": "{{ $articleImg }}", "width": 1200, "height": 630},
     "datePublished": "{{ $articleDate }}",
-    "dateModified": "{{ $articleDate }}",
+    "dateModified": "{{ !empty($news->updated_at) ? \Carbon\Carbon::parse($news->updated_at)->toIso8601String() : $articleDate }}",
     "author": {
         "@@type": "Organization",
         "name": "Izzycar",
@@ -41,12 +42,30 @@
     "publisher": {
         "@@type": "Organization",
         "name": "Izzycar",
+        "url": "https://izzycar.pt",
         "logo": {
             "@@type": "ImageObject",
-            "url": "https://izzycar.pt/storage/settings/logo_redondo.png"
+            "url": "https://izzycar.pt/storage/settings/logo_redondo.png",
+            "width": 192,
+            "height": 192
         }
     },
-    "mainEntityOfPage": "https://izzycar.pt/noticias/{{ $news->slug ?? '' }}"
+    "mainEntityOfPage": {
+        "@@type": "WebPage",
+        "@@id": "{{ url()->current() }}"
+    }
+}
+</script>
+
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+        {"@@type": "ListItem", "position": 2, "name": "Guias & Notícias", "item": "https://izzycar.pt/noticias"},
+        {"@@type": "ListItem", "position": 3, "name": "{{ addslashes($articleTitle) }}", "item": "{{ url()->current() }}"}
+    ]
 }
 </script>
 @endpush

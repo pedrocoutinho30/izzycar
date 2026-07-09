@@ -241,11 +241,12 @@
                 <label class="if-label" for="color">Cor de preferência</label>
                 <input type="text" name="color" id="color" class="if-input" placeholder="ex: Preto, Branco, Azul...">
               </div>
-              <div class="if-field if-field--full">
-                <label class="if-label" for="budgetSlider">Budget <span class="if-req">*</span></label>
-                <div class="if-slider-wrap">
-                  <input type="range" min="10000" max="100000" step="1000" value="40000" class="if-slider" name="budget" id="budgetSlider">
-                  <span id="budgetValue" class="if-slider__val">40.000 €</span>
+              <div class="if-field">
+                <label class="if-label" for="budget">Budget máximo <span class="if-req">*</span></label>
+                <div class="input-group" style="width:180px">
+                  <input type="number" name="budget" id="budget" class="if-input"
+                         placeholder="ex: 23000" min="1000" step="500" required>
+                  <span class="input-group-text">€</span>
                 </div>
               </div>
               <div class="if-field if-field--full">
@@ -363,20 +364,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  /* ── Budget slider ── */
-  const slider = document.getElementById('budgetSlider');
-  const valEl  = document.getElementById('budgetValue');
-  if (slider && valEl) {
-    function updateSlider() {
-      const v   = parseInt(slider.value);
-      const pct = (v - slider.min) / (slider.max - slider.min);
-      slider.style.setProperty('--pct', pct);
-      valEl.textContent = (v >= parseInt(slider.max)) ? '+100.000 €' : v.toLocaleString('pt-PT') + ' €';
-      valEl.style.left = `calc(${pct * 100}%)`;
-    }
-    slider.addEventListener('input', updateSlider);
-    updateSlider();
-  }
 
   /* ── AJAX submit ── */
   const form    = document.getElementById('importForm');
@@ -545,6 +532,8 @@ document.addEventListener('DOMContentLoaded', function () {
   border-color: var(--if-brand);
   box-shadow:0 0 0 3px rgba(110,7,7,.1);
 }
+.input-group .if-input { border-radius:10px 0 0 10px; border-right:0; flex:1 1 auto; width:1%; min-width:0; }
+.input-group .input-group-text { border-radius:0 10px 10px 0; border:1.5px solid var(--if-border); border-left:0; background:#f8f8f8; font-weight:600; }
 .if-textarea { resize:vertical; min-height:90px; }
 
 /* ── Conditional boxes ── */
@@ -554,34 +543,6 @@ document.addEventListener('DOMContentLoaded', function () {
   border-radius:14px; padding:1.5rem;
 }
 
-/* ── Slider ── */
-.if-slider-wrap { position:relative; padding-bottom:2.5rem; }
-.if-slider {
-  width:100%; height:6px; border-radius:10px; outline:none;
-  background: linear-gradient(to right, var(--if-brand) calc(var(--pct,0.3) * 100%), var(--if-border) 0);
-  appearance:none; cursor:pointer;
-}
-.if-slider::-webkit-slider-thumb {
-  appearance:none; width:22px; height:22px;
-  background:#fff; border:3px solid var(--if-brand);
-  border-radius:50%; cursor:pointer;
-  box-shadow:0 2px 8px rgba(110,7,7,.25);
-  transition:transform .15s;
-}
-.if-slider::-webkit-slider-thumb:hover { transform:scale(1.2); }
-.if-slider::-moz-range-thumb {
-  width:22px; height:22px; background:#fff;
-  border:3px solid var(--if-brand); border-radius:50%;
-  cursor:pointer; box-shadow:0 2px 8px rgba(110,7,7,.25);
-}
-.if-slider__val {
-  position:absolute; top:18px;
-  transform:translateX(-50%);
-  background: var(--if-brand); color:#fff;
-  padding:.3rem .8rem; border-radius:8px;
-  font-size:.8rem; font-weight:700; white-space:nowrap;
-  pointer-events:none;
-}
 
 /* ── Radio group ── */
 .if-radio-group { display:flex; gap:1rem; flex-wrap:wrap; }

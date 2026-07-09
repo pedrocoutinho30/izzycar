@@ -16,12 +16,10 @@
     "provider": {
         "@@type": "AutoDealer",
         "name": "Izzycar",
-        "url": "https://izzycar.pt"
+        "url": "https://izzycar.pt",
+        "sameAs": ["https://www.facebook.com/profile.php?id=61572831810539","https://www.instagram.com/izzycarpt/"]
     },
-    "areaServed": {
-        "@@type": "Country",
-        "name": "Portugal"
-    },
+    "areaServed": {"@@type": "Country", "name": "Portugal"},
     "serviceType": "Importação Automóvel",
     "category": "Automóvel",
     "offers": {
@@ -29,17 +27,43 @@
         "description": "Cotação personalizada de importação automóvel — peça a sua gratuitamente",
         "priceCurrency": "EUR",
         "availability": "https://schema.org/InStock",
-        "url": "https://izzycar.pt/formulario-importacao"
-    },
-    "breadcrumb": {
-        "@@type": "BreadcrumbList",
-        "itemListElement": [
-            {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
-            {"@@type": "ListItem", "position": 2, "name": "Importação Automóvel", "item": "https://izzycar.pt/importacao"}
-        ]
+        "url": "https://izzycar.pt/importacao"
     }
 }
 </script>
+
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
+        {"@@type": "ListItem", "position": 2, "name": "Importação Automóvel", "item": "https://izzycar.pt/importacao"}
+    ]
+}
+</script>
+
+@if(!empty($data->process_import['process_import']))
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "HowTo",
+    "name": "Como importar um carro da Europa para Portugal",
+    "description": "Processo completo passo a passo para importar um veículo da Alemanha ou Europa para Portugal, incluindo transporte, ISV, IPO e matrícula.",
+    "estimatedCost": {"@@type": "MonetaryAmount", "currency": "EUR", "description": "Varia conforme o veículo e país de origem"},
+    "step": [
+        @foreach($data->process_import['process_import'] as $i => $step)
+        {
+            "@@type": "HowToStep",
+            "position": {{ $i + 1 }},
+            "name": "{{ addslashes($step['title']) }}",
+            "text": "{{ addslashes(strip_tags($step['content'])) }}"
+        }{{ !$loop->last ? ',' : '' }}
+        @endforeach
+    ]
+}
+</script>
+@endif
 
 @if(!empty($faq['enum']))
 <script type="application/ld+json">

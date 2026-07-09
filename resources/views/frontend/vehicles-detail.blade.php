@@ -16,9 +16,9 @@
     );
     $ogTitle = $vehicleFullName
              . ($vehicle->year ? ' ' . $vehicle->year : '')
-             . ' | IzzyCar';
+             . ' | Izzycar';
 
-    $descParts = [$vehicleFullName . ' à venda na IzzyCar.'];
+    $descParts = [$vehicleFullName . ' à venda na Izzycar.'];
     if ($vehicle->year)         $descParts[] = 'Ano ' . $vehicle->year . '.';
     if ($vehicle->kilometers)   $descParts[] = number_format($vehicle->kilometers, 0, ',', '.') . ' km.';
     if ($vehicle->fuel)         $descParts[] = ucfirst($vehicle->fuel) . '.';
@@ -39,7 +39,7 @@
         'url'      => $currentUrl,
         'seller'   => [
             '@type'     => 'AutoDealer',
-            'name'      => 'IzzyCar',
+            'name'      => 'Izzycar',
             'url'       => 'https://izzycar.pt',
             'telephone' => '+351928459346',
         ],
@@ -68,14 +68,14 @@
     }
 @endphp
 
-@section('title', $vehicleFullName . ($vehicle->year ? ' ' . $vehicle->year : '') . ' Usado à Venda | IzzyCar')
+@section('title', $vehicleFullName . ($vehicle->year ? ' ' . $vehicle->year : '') . ' Usado à Venda | Izzycar')
 @section('meta_description', $ogDescription)
 
 @push('head')
 {{-- Open Graph (Facebook, WhatsApp, LinkedIn, etc.) --}}
 <meta property="og:type"             content="product" />
 <meta property="og:locale"           content="pt_PT" />
-<meta property="og:site_name"        content="IzzyCar" />
+<meta property="og:site_name"        content="Izzycar" />
 <meta property="og:url"              content="{{ $currentUrl }}" />
 <meta property="og:title"            content="{{ $ogTitle }}" />
 <meta property="og:description"      content="{{ $ogDescription }}" />
@@ -96,6 +96,33 @@
 
 {{-- Schema.org Structured Data --}}
 <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
+
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@@type": "ListItem",
+            "position": 1,
+            "name": "Início",
+            "item": "{{ url('/') }}"
+        },
+        {
+            "@@type": "ListItem",
+            "position": 2,
+            "name": "Carros Usados",
+            "item": "{{ url('/viaturas') }}"
+        },
+        {
+            "@@type": "ListItem",
+            "position": 3,
+            "name": "{{ $vehicleFullName }}{{ $vehicle->year ? ' ' . $vehicle->year : '' }}",
+            "item": "{{ $currentUrl }}"
+        }
+    ]
+}
+</script>
 @endpush
 
 @section('content')

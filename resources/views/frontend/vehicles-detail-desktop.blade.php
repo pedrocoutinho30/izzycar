@@ -474,10 +474,12 @@
         const lbCount = document.getElementById('vl-lb-counter');
         let current = 0;
 
+        const vehicleName = '{{ addslashes($vehicle->brand . ' ' . $vehicle->model) }}';
         function show(index) {
             current = index;
             lbImg.style.opacity = '0';
             lbImg.src = photos[current];
+            lbImg.alt = vehicleName + ' — foto ' + (index + 1);
             lbImg.onload = () => { lbImg.style.opacity = '1'; };
             lbCount.textContent = (current + 1) + ' / ' + photos.length;
             lbPrev.classList.toggle('lb-hidden', current === 0);
