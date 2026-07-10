@@ -373,16 +373,15 @@
     $avatarColors = ['#990000','#1a73e8','#34A853','#F9AB00','#7B1FA2','#0F9D58','#E64A19','#00838F'];
     $delays = [100, 200, 300, 200, 300, 400];
 @endphp
-        <div class="row g-4">
+        <div class="row g-4" id="reviewsGrid">
             @forelse($reviews as $index => $review)
             @if($review->comment !== '' && $review->comment !== null)
-                
             @php
                 $initial = mb_strtoupper(mb_substr($review->name, 0, 1));
                 $color   = $avatarColors[$index % count($avatarColors)];
                 $delay   = $delays[$index % count($delays)];
             @endphp
-            <div class="col-lg-4 col-md-6 fade-in-up" data-delay="{{ $delay }}">
+            <div class="col-lg-4 col-md-6 fade-in-up review-col" data-delay="{{ $delay }}" data-index="{{ $index }}">
                 <div class="review-card">
                     <div class="review-header">
                         <div class="reviewer-avatar" style="background: {{ $color }};">{{ $initial }}</div>
@@ -415,13 +414,55 @@
                 </div>
             </div>
             @endif
-
             @empty
             <div class="col-12 text-center text-muted py-4">Ainda não há testemunhos disponíveis.</div>
             @endforelse
         </div>
+
+        <div class="text-center mt-4" id="reviewsLoadMore" style="display:none">
+            <button type="button" class="btn-load-more-reviews" id="btnLoadMoreReviews">
+                Ver mais opiniões
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+        </div>
     </div>
 </section>
+
+<script>
+(function () {
+    var cols   = Array.from(document.querySelectorAll('.review-col'));
+    var btn    = document.getElementById('btnLoadMoreReviews');
+    var wrap   = document.getElementById('reviewsLoadMore');
+    var shown  = 0;
+
+    function perPage() {
+        return window.innerWidth >= 992 ? 3 : 2;
+    }
+
+    function showNext() {
+        var n = perPage();
+        var end = Math.min(shown + n, cols.length);
+        for (var i = shown; i < end; i++) {
+            cols[i].style.display = '';
+        }
+        shown = end;
+        if (shown >= cols.length) wrap.style.display = 'none';
+    }
+
+    function init() {
+        var n = perPage();
+        cols.forEach(function (c) { c.style.display = 'none'; });
+        shown = 0;
+        showNext();
+        wrap.style.display = cols.length > n ? '' : 'none';
+    }
+
+    btn.addEventListener('click', showNext);
+
+    init();
+    window.addEventListener('resize', init);
+})();
+</script>
 
 <!-- Partners Section -->
 @if($partners->isNotEmpty())
@@ -1166,12 +1207,32 @@
         height: 100%;
         display: flex;
         flex-direction: column;
+        touch-action: pan-y;
     }
 
     .review-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
         border-color: #dadada;
+    }
+
+    .btn-load-more-reviews {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .65rem 1.75rem;
+        border-radius: 50px;
+        border: 2px solid var(--accent-color);
+        background: transparent;
+        color: var(--accent-color);
+        font-size: .9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .btn-load-more-reviews:hover {
+        background: var(--accent-color);
+        color: #fff;
     }
 
     .review-header {
