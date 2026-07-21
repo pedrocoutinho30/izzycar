@@ -12,27 +12,29 @@
     ],
     'title' => $client->name,
     'subtitle' => 'Detalhe do cliente',
-    'actionHref' => route('admin.v2.clients.edit', $client->id),
+    'extraActions' => [
+        ['href' => route('admin.v2.proposals.create', ['client_id' => $client->id]), 'label' => 'Nova Cotação',    'icon' => 'bi-file-earmark-plus', 'class' => 'btn-secondary-modern'],
+        ['href' => route('admin.v2.sales.create',     ['client_id' => $client->id]), 'label' => 'Registar Venda', 'icon' => 'bi-cash-coin',         'class' => 'btn-secondary-modern'],
+    ],
+    'actionHref'  => route('admin.v2.clients.edit', $client->id),
     'actionLabel' => 'Editar Cliente',
 ])
 
-{{-- Ações rápidas --}}
-<div class="d-flex flex-wrap gap-2 mb-4">
-    <a href="{{ route('admin.v2.proposals.create', ['client_id' => $client->id]) }}"
-       class="btn btn-primary-modern">
-        <i class="bi bi-file-earmark-plus me-1"></i> Nova Cotação
-    </a>
-    <a href="{{ route('admin.v2.sales.create', ['client_id' => $client->id]) }}"
-       class="btn btn-success-modern">
-        <i class="bi bi-cash-coin me-1"></i> Registar Venda
-    </a>
-</div>
-
 <div class="row g-4">
 
-    {{-- ─── Informações do cliente ─── --}}
+    {{-- ─── Sidebar esquerda ─── --}}
     <div class="col-lg-4">
-        <div class="modern-card h-100">
+
+        {{-- Flash message --}}
+        @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        {{-- Informações do cliente --}}
+        <div class="modern-card mb-4">
             <div class="modern-card-header">
                 <h5 class="modern-card-title">
                     <i class="bi bi-person-circle"></i>
@@ -109,19 +111,34 @@
                         </div>
                     </li>
                     @endif
-                    <li class="mb-0 d-flex align-items-start gap-2">
+                    <li class="mb-3 d-flex align-items-start gap-2">
                         <i class="bi bi-calendar text-muted mt-1"></i>
                         <div>
                             <small class="text-muted d-block">Registado em</small>
                             {{ $client->created_at->format('d/m/Y') }}
                         </div>
                     </li>
+                    <li class="mb-0 d-flex align-items-start gap-2">
+                        <i class="bi bi-shield-check text-muted mt-1"></i>
+                        <div>
+                            <small class="text-muted d-block">Consentimentos</small>
+                            <div class="d-flex flex-wrap gap-2 mt-1">
+                                <span class="badge {{ $client->data_processing_consent ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary border border-secondary-subtle' }}">
+                                    <i class="bi {{ $client->data_processing_consent ? 'bi-check-circle' : 'bi-dash-circle' }} me-1"></i>Dados
+                                </span>
+                                <span class="badge {{ $client->newsletter_consent ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary border border-secondary-subtle' }}">
+                                    <i class="bi {{ $client->newsletter_consent ? 'bi-check-circle' : 'bi-dash-circle' }} me-1"></i>Newsletter
+                                </span>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
+
     </div>
 
-    {{-- ─── Consentimentos & observações ─── --}}
+    {{-- ─── Coluna principal ─── --}}
     <div class="col-lg-8">
         @if($client->observation)
         <div class="modern-card mb-4">
@@ -137,42 +154,57 @@
         </div>
         @endif
 
-        {{-- Consentimentos --}}
+        {{-- Follow-up --}}
+        @php
+            $followupDate = $client->next_followup_at;
+            $followupState = null;
+            if ($followupDate) {
+                if ($followupDate->isPast())      $followupState = 'atraso';
+                elseif ($followupDate->isToday()) $followupState = 'hoje';
+                else                              $followupState = 'agendado';
+            }
+            $followupColors = ['atraso' => 'danger', 'hoje' => 'warning', 'agendado' => 'info'];
+            $followupIcons  = ['atraso' => 'bi-exclamation-circle-fill', 'hoje' => 'bi-alarm-fill', 'agendado' => 'bi-calendar-check'];
+        @endphp
         <div class="modern-card mb-4">
             <div class="modern-card-header">
-                <h5 class="modern-card-title">
-                    <i class="bi bi-shield-check"></i>
-                    Consentimentos
-                </h5>
+                <h5 class="modern-card-title"><i class="bi bi-alarm"></i> Próximo Follow-up</h5>
+                @if($followupDate)
+                <span class="badge bg-{{ $followupColors[$followupState] }}">
+                    <i class="{{ $followupIcons[$followupState] }} me-1"></i>
+                    {{ $followupState === 'atraso' ? 'Em atraso' : ($followupState === 'hoje' ? 'Hoje' : 'Agendado') }}
+                </span>
+                @endif
             </div>
-            <div class="modern-card-body">
-                <div class="d-flex gap-4">
-                    <div>
-                        <small class="text-muted d-block">Tratamento de Dados</small>
-                        @if($client->data_processing_consent)
-                            <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                <i class="bi bi-check-circle me-1"></i>Aceite
-                            </span>
-                        @else
-                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
-                                <i class="bi bi-dash-circle me-1"></i>Não aceite
-                            </span>
-                        @endif
-                    </div>
-                    <div>
-                        <small class="text-muted d-block">Newsletter</small>
-                        @if($client->newsletter_consent)
-                            <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                <i class="bi bi-check-circle me-1"></i>Aceite
-                            </span>
-                        @else
-                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
-                                <i class="bi bi-dash-circle me-1"></i>Não aceite
-                            </span>
-                        @endif
-                    </div>
+
+            @if($followupDate)
+            <div class="followup-current bg-{{ $followupColors[$followupState] }}-subtle border-{{ $followupColors[$followupState] }}">
+                <div class="followup-current__date">
+                    <i class="bi {{ $followupIcons[$followupState] }} text-{{ $followupColors[$followupState] }}"></i>
+                    {{ $followupDate->format('d/m/Y') }} às {{ $followupDate->format('H:i') }}
                 </div>
+                @if($client->followup_note)
+                <div class="followup-current__note">{{ $client->followup_note }}</div>
+                @endif
             </div>
+            @endif
+
+            <form action="{{ route('admin.v2.clients.followup', $client->id) }}" method="POST" class="p-3">
+                @csrf
+                <label class="form-label small fw-semibold mb-1">
+                    {{ $followupDate ? 'Reagendar para' : 'Agendar contacto' }}
+                    <span class="text-muted fw-normal">— ex: amanhã para confirmar interesse</span>
+                </label>
+                <input type="datetime-local" name="next_followup_at" class="form-control mb-2"
+                    value="{{ $followupDate ? $followupDate->format('Y-m-d\TH:i') : '' }}"
+                    min="{{ now()->format('Y-m-d\TH:i') }}" required>
+                <input type="text" name="followup_note" class="form-control mb-2"
+                    placeholder="Motivo / o que ficou acordado (opcional)"
+                    value="{{ $client->followup_note ?? '' }}" maxlength="255">
+                <button type="submit" class="btn btn-warning w-100 btn-sm fw-semibold">
+                    <i class="bi bi-alarm me-1"></i> {{ $followupDate ? 'Reagendar' : 'Agendar Follow-up' }}
+                </button>
+            </form>
         </div>
 
         {{-- Vendas associadas --}}
@@ -327,6 +359,71 @@
                 </table>
             </div>
         </div>
+    @endif
+</div>
+
+{{-- ─── Timeline & Notas ─── --}}
+<div class="modern-card mt-4 mb-4">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title"><i class="bi bi-clock-history"></i> Timeline & Notas</h5>
+    </div>
+
+    {{-- Formulário para registar nova atividade --}}
+    <div class="timeline-add-form">
+        <form action="{{ route('admin.v2.clients.activity', $client->id) }}" method="POST">
+            @csrf
+            <div class="timeline-type-tabs" role="group">
+                @foreach(\App\Models\LeadActivity::TYPES as $key => $cfg)
+                @if($key !== 'system')
+                <label class="type-tab {{ $loop->first ? 'active' : '' }}">
+                    <input type="radio" name="type" value="{{ $key }}" {{ $loop->first ? 'checked' : '' }}>
+                    <i class="{{ $cfg['icon'] }}"></i> {{ $cfg['label'] }}
+                </label>
+                @endif
+                @endforeach
+            </div>
+            <input type="text" name="title" class="form-control mt-2 mb-2"
+                placeholder="Resumo (ex: Liguei, não atendeu / Enviou mensagem no WhatsApp com interesse)"
+                required maxlength="255">
+            <textarea name="body" class="form-control mb-2" rows="2"
+                placeholder="Detalhe adicional (opcional)..." maxlength="2000"></textarea>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-sm btn-primary-modern">
+                    <i class="bi bi-plus-circle me-1"></i> Registar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @if($activities->isNotEmpty())
+    <div class="timeline-list">
+        @foreach($activities as $act)
+        <div class="timeline-item">
+            <div class="timeline-icon bg-{{ $act->color }}">
+                <i class="{{ $act->icon }}"></i>
+            </div>
+            <div class="timeline-body">
+                <div class="timeline-title">{{ $act->title }}</div>
+                @if($act->body)
+                <div class="timeline-text">{{ $act->body }}</div>
+                @endif
+                <div class="timeline-meta">
+                    {{ $act->created_at->format('d/m/Y H:i') }}
+                    @if($act->user)
+                    · <strong>{{ $act->user->name }}</strong>
+                    @else
+                    · <span class="text-muted">Sistema</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+    @else
+    <div class="p-4 text-center text-muted small">
+        <i class="bi bi-clock-history d-block fs-4 mb-1"></i>
+        Sem atividade registada. Use o formulário acima para adicionar a primeira nota.
+    </div>
     @endif
 </div>
 
@@ -525,5 +622,85 @@
 a.iz-timeline-title:hover { color: var(--admin-primary, #b30000); text-decoration: underline; }
 .iz-timeline-title--plain { color: #333; }
 .iz-timeline-sub { font-size: .8rem; color: #6c757d; margin-top: .15rem; }
+
+/* ── Follow-up card ── */
+.followup-current {
+    margin: 0 1rem .25rem;
+    border-radius: 8px;
+    border-left: 4px solid;
+    padding: .75rem 1rem;
+}
+.followup-current__date { font-size: .9rem; font-weight: 600; display: flex; align-items: center; gap: .4rem; }
+.followup-current__note { font-size: .82rem; color: #555; margin-top: .35rem; }
+
+/* ── Activity timeline form (mirrors leads) ── */
+.timeline-add-form {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fafafa;
+}
+.timeline-type-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+}
+.type-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+    border: 1.5px solid #dee2e6;
+    background: #fff;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #495057;
+    transition: all .15s;
+}
+.type-tab input[type="radio"] { display: none; }
+.type-tab:has(input:checked),
+.type-tab.active {
+    border-color: var(--admin-primary, #b30000);
+    background: var(--admin-primary, #b30000);
+    color: #fff;
+}
+.timeline-list { padding: .5rem 1rem; }
+.timeline-item {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+    padding: .75rem 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+.timeline-item:last-child { border-bottom: none; }
+.timeline-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+    color: #fff;
+    flex-shrink: 0;
+    opacity: .9;
+}
+.timeline-body { flex: 1; min-width: 0; }
+.timeline-title { font-weight: 600; font-size: .88rem; color: #1a1a1a; }
+.timeline-text { font-size: .82rem; color: #555; margin-top: .2rem; }
+.timeline-meta { font-size: .75rem; color: #999; margin-top: .3rem; }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+// Highlight selected type tab on click
+document.querySelectorAll('.type-tab').forEach(function(label) {
+    label.addEventListener('click', function() {
+        document.querySelectorAll('.type-tab').forEach(function(l) { l.classList.remove('active'); });
+        label.classList.add('active');
+    });
+});
+</script>
 @endpush

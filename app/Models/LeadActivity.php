@@ -23,11 +23,13 @@ class LeadActivity extends Model
     // email   → registo de email enviado/recebido
     // meeting → registo de reunião ou visita presencial
     public const TYPES = [
-        'system'  => ['label' => 'Sistema',  'icon' => 'bi-gear-fill',       'color' => 'secondary'],
-        'note'    => ['label' => 'Nota',     'icon' => 'bi-sticky-fill',     'color' => 'warning'],
-        'call'    => ['label' => 'Chamada',  'icon' => 'bi-telephone-fill',  'color' => 'info'],
-        'email'   => ['label' => 'Email',    'icon' => 'bi-envelope-fill',   'color' => 'primary'],
-        'meeting' => ['label' => 'Reunião',  'icon' => 'bi-people-fill',     'color' => 'success'],
+        'system'    => ['label' => 'Sistema',   'icon' => 'bi-gear-fill',          'color' => 'secondary'],
+        'note'      => ['label' => 'Nota',      'icon' => 'bi-sticky-fill',        'color' => 'warning'],
+        'call'      => ['label' => 'Chamada',   'icon' => 'bi-telephone-fill',     'color' => 'info'],
+        'email'     => ['label' => 'Email',     'icon' => 'bi-envelope-fill',      'color' => 'primary'],
+        'whatsapp'  => ['label' => 'WhatsApp',  'icon' => 'bi-whatsapp',           'color' => 'success'],
+        'facebook'  => ['label' => 'Facebook',  'icon' => 'bi-facebook',           'color' => 'info'],
+        'meeting'   => ['label' => 'Reunião',   'icon' => 'bi-people-fill',        'color' => 'success'],
     ];
 
     public function client()

@@ -230,6 +230,8 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::get('/{id}', [App\Http\Controllers\Admin\ClientV2Controller::class, 'show'])->name('show');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\ClientV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\ClientV2Controller::class, 'update'])->name('update');
+        Route::post('/{id}/followup', [App\Http\Controllers\Admin\ClientV2Controller::class, 'saveFollowup'])->name('followup');
+        Route::post('/{id}/activity', [App\Http\Controllers\Admin\ClientV2Controller::class, 'storeActivity'])->name('activity');
         Route::delete('/{id}', [App\Http\Controllers\Admin\ClientV2Controller::class, 'destroy'])->name('destroy');
     });
 
@@ -526,6 +528,15 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'destroy'])->name('destroy');
         Route::post('/sort', [App\Http\Controllers\Admin\VehicleAttributeV2Controller::class, 'sort'])->name('sort');
+    });
+
+    // ============================================================
+    // RELATÓRIOS V2
+    // ============================================================
+    Route::prefix('v2/reports')->name('admin.v2.reports.')->group(function () {
+        Route::get('/',                          [App\Http\Controllers\Admin\ReportsController::class, 'index'])->name('index');
+        Route::get('/{year}/{month}/download',   [App\Http\Controllers\Admin\ReportsController::class, 'download'])->name('download');
+        Route::post('/gerar',                    [App\Http\Controllers\Admin\ReportsController::class, 'generate'])->name('generate');
     });
 
     // ============================================================

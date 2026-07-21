@@ -1,11 +1,12 @@
 @php
-    $actionHref  = $actionHref  ?? null;
-    $actionLabel = $actionLabel ?? null;
+    $actionHref   = $actionHref   ?? null;
+    $actionLabel  = $actionLabel  ?? null;
     $action2Href  = $action2Href  ?? null;
     $action2Label = $action2Label ?? null;
     $action2Icon  = $action2Icon  ?? 'bi-arrow-right';
-    $subtitle = $subtitle ?? null;
-    $breadcrumbs = $breadcrumbs ?? [];
+    $extraActions = $extraActions ?? [];
+    $subtitle     = $subtitle     ?? null;
+    $breadcrumbs  = $breadcrumbs  ?? [];
 @endphp
 
 <div class="page-header">
@@ -32,8 +33,14 @@
             @endif
         </div>
 
-        @if ($actionHref || $action2Href)
+        @if ($actionHref || $action2Href || count($extraActions))
         <div class="d-flex gap-2 flex-wrap">
+            @foreach($extraActions as $xa)
+            <a href="{{ $xa['href'] }}" class="btn {{ $xa['class'] ?? 'btn-secondary-modern' }}">
+                @if(!empty($xa['icon']))<i class="bi {{ $xa['icon'] }} me-1"></i>@endif
+                {{ $xa['label'] }}
+            </a>
+            @endforeach
             @if ($action2Href)
             <a href="{{ $action2Href }}" class="btn btn-secondary-modern">
                 <i class="bi {{ $action2Icon }} me-1"></i>
@@ -42,7 +49,7 @@
             @endif
             @if ($actionHref)
             <a href="{{ $actionHref }}" class="btn btn-primary-modern">
-                <i class="bi bi-plus-lg me-1"></i>
+                <i class="bi bi-pencil me-1"></i>
                 {{ $actionLabel }}
             </a>
             @endif

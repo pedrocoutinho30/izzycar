@@ -25,7 +25,7 @@ class FollowupReminderMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Follow-ups de amanhã — ' . $this->data,
+            subject: 'Lembrete de follow-up — ' . $this->data,
         );
     }
 

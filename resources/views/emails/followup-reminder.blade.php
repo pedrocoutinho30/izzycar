@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Follow-ups de amanhã</title>
+    <title>Lembrete de follow-up</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 580px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
@@ -28,11 +28,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Follow-ups de amanhã</h1>
+            <h1>Lembrete de follow-up</h1>
             <p>{{ $data }} — {{ $followups->count() }} agendado{{ $followups->count() != 1 ? 's' : '' }}</p>
         </div>
         <div class="body">
-            <div class="section-title">Leads para contactar amanhã</div>
+            <div class="section-title">Leads para contactar agora</div>
 
             @forelse($followups as $lead)
             <div class="lead-row">
@@ -54,7 +54,7 @@
                 </div>
             </div>
             @empty
-            <div class="empty">Nenhum follow-up agendado para amanhã.</div>
+            <div class="empty">Nenhum follow-up para este momento.</div>
             @endforelse
         </div>
         <div class="footer">

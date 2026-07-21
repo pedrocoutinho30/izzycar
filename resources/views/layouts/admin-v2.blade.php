@@ -772,6 +772,13 @@
                 </a>
             </div>
 
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.reports.index') }}" class="nav-link {{ request()->routeIs('admin.v2.reports.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Relatórios</span>
+                </a>
+            </div>
+
             <!-- Ferramentas -->
             <div class="nav-group-title">Ferramentas</div>
 

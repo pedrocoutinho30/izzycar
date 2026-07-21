@@ -10,26 +10,30 @@ use Illuminate\Support\Facades\Mail;
 class SendFollowupReminder extends Command
 {
     protected $signature = 'leads:followup-reminder';
-    protected $description = 'Envia email diário com os follow-ups agendados para amanhã';
+    protected $description = 'Envia email de lembrete no minuto exato em que cada follow-up está agendado';
 
     public function handle(): int
     {
-        $amanha = today()->addDay();
+        $agora = now();
+        $limite = $agora->copy()->addMinute();
 
-        $followups = Client::where('is_lead', true)
-            ->whereNotNull('next_followup_at')
-            ->whereDate('next_followup_at', $amanha)
+        $followups = Client::whereNotNull('next_followup_at')
+            ->whereBetween('next_followup_at', [$agora, $limite])
             ->orderBy('next_followup_at')
             ->get();
+
+        if ($followups->isEmpty()) {
+            return Command::SUCCESS;
+        }
 
         $adminEmail = config('mail.admin_address', env('MAIL_FROM_ADDRESS', 'geral@izzycar.com'));
 
         Mail::to($adminEmail)->send(new FollowupReminderMail(
             $followups,
-            $amanha->format('d/m/Y')
+            $agora->format('d/m/Y H:i')
         ));
 
-        $this->info("Email enviado para {$adminEmail} com {$followups->count()} follow-up(s) para {$amanha->format('d/m/Y')}.");
+        $this->info("Email enviado para {$adminEmail} com {$followups->count()} follow-up(s) para as {$agora->format('H:i')}.");
 
         return Command::SUCCESS;
     }

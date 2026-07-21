@@ -16,6 +16,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\LeadActivity;
 use Illuminate\Http\Request;
 
 class ClientV2Controller extends Controller
@@ -102,10 +103,50 @@ class ClientV2Controller extends Controller
             'proposals',
             'sale.v3Vehicle',
             'costSimulators',
-            'activities',
+            'activities.user',
         ])->findOrFail($id);
 
-        return view('admin.v2.clients.show', compact('client'));
+        $activities = $client->activities;
+
+        return view('admin.v2.clients.show', compact('client', 'activities'));
+    }
+
+    public function saveFollowup(Request $request, $id)
+    {
+        $client = Client::findOrFail($id);
+        $request->validate([
+            'next_followup_at' => 'required|date|after:now',
+            'followup_note'    => 'nullable|string|max:255',
+        ]);
+
+        $client->update([
+            'next_followup_at' => $request->next_followup_at,
+            'followup_note'    => $request->followup_note,
+        ]);
+
+        LeadActivity::log(
+            $client->id,
+            'Follow-up agendado para ' . \Carbon\Carbon::parse($request->next_followup_at)->format('d/m/Y H:i'),
+            $request->followup_note ?? '',
+            'bi-alarm-fill',
+            'warning'
+        );
+
+        return back()->with('success', 'Follow-up agendado.');
+    }
+
+    public function storeActivity(Request $request, $id)
+    {
+        $client = Client::findOrFail($id);
+        $request->validate([
+            'type'  => 'required|in:note,call,email,whatsapp,facebook,meeting',
+            'title' => 'required|string|max:255',
+            'body'  => 'nullable|string|max:2000',
+        ]);
+
+        LeadActivity::logManual($client->id, $request->type, $request->title, $request->body ?? '');
+
+        return back()->with('success', 'Atividade registada.');
     }
 
     /**
@@ -113,7 +154,7 @@ class ClientV2Controller extends Controller
      */
     public function edit($id)
     {
-        $client = Client::findOrFail($id);
+        $client = Client::with(['proposals', 'sale', 'costSimulators'])->findOrFail($id);
         return view('admin.v2.clients.form', compact('client'));
     }
 
@@ -145,7 +186,7 @@ class ClientV2Controller extends Controller
 
         $client->update($validated);
 
-        return redirect()->route('admin.v2.clients.index')
+        return redirect()->route('admin.v2.clients.show', $client->id)
             ->with('success', 'Cliente atualizado com sucesso!');
     }
 

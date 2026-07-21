@@ -208,7 +208,7 @@ class LeadV2Controller extends Controller
     {
         $lead = Client::findOrFail($id);
         $request->validate([
-            'type'  => 'required|in:note,call,email,meeting',
+            'type'  => 'required|in:note,call,email,whatsapp,facebook,meeting',
             'title' => 'required|string|max:255',
             'body'  => 'nullable|string|max:2000',
         ]);
