@@ -14,7 +14,7 @@
     'subtitle' => $legalization->marca . ' ' . $legalization->modelo,
 ])
 
-<div class="modern-card" style="max-width:680px">
+<div class="modern-card" style="max-width:960px">
     <div class="modern-card-header">
         <h5 class="modern-card-title"><i class="bi bi-pencil me-1"></i> Dados do processo</h5>
     </div>
@@ -157,7 +157,22 @@
                     </div>
                 </div>
 
-                <div class="col-12 d-flex gap-2">
+                {{-- ── Dados para o Modelo 9 IMT ───────────────────────── --}}
+                @php $m9 = $legalization->modelo9_dados ?? []; @endphp
+                <div class="col-12">
+                    <hr class="my-2">
+                    <label class="form-label fw-semibold mb-1">Dados para o Modelo 9 IMT</label>
+                    <div class="form-text mb-2">
+                        Nenhum destes campos é obrigatório — usa o que tiveres disponível. Marca, modelo, combustível,
+                        matrícula e nº de homologação já vêm dos campos acima e não precisam de ser repetidos.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    @include('admin.v2.legalizations.partials.modelo9-fields', ['m9' => $m9, 'idPrefix' => 'edit'])
+                </div>
+
+                <div class="col-12 d-flex gap-2 mt-3">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-lg me-1"></i> Guardar alterações
                     </button>

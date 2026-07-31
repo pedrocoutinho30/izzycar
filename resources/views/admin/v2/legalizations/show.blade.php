@@ -90,6 +90,9 @@
                 <a href="{{ route('admin.legalizations.edit', $legalization) }}" class="btn btn-outline-primary btn-sm">
                     <i class="bi bi-pencil me-1"></i> Editar dados
                 </a>
+                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modelo9Modal">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Modelo 9 IMT
+                </button>
                 <div class="input-group input-group-sm">
                     <input type="text" class="form-control font-monospace" id="trackingLinkInput" value="{{ $legalization->trackingUrl() }}" readonly>
                     <button class="btn btn-outline-secondary" type="button" onclick="copyTrackingLink()" title="Copiar link de acompanhamento">
@@ -364,6 +367,38 @@
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-cloud-upload me-1"></i> Carregar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- ================================================================
+     MODAL — GERAR MODELO 9 IMT
+     ================================================================ --}}
+<div class="modal fade" id="modelo9Modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-file-earmark-pdf me-1"></i> Gerar Modelo 9 IMT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('admin.legalizations.modelo9.save-and-generate', $legalization) }}"
+                  method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">
+                        Confirma os dados do veículo antes de gerar o PDF. Marca, modelo, combustível, matrícula e
+                        homologação já vêm dos dados da legalização. Podes editar qualquer campo abaixo — fica
+                        guardado na legalização ao gerar.
+                    </p>
+                    @include('admin.v2.legalizations.partials.modelo9-fields', ['m9' => $legalization->modelo9_dados ?? [], 'idPrefix' => 'modal'])
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Gerar agora
                     </button>
                 </div>
             </form>

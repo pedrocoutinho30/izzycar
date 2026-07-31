@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Legalization;
 use App\Models\LegalizationDocument;
 use App\Models\V3Vehicle;
+use App\Services\Modelo9PdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -287,6 +288,7 @@ class LegalizationController extends Controller
             'num_processo_imt'   => 'nullable|string|max:100',
             'notas'              => 'nullable|string',
             'regime_especial_isv' => 'nullable|boolean',
+            'modelo9'            => 'nullable|array',
         ]);
 
         $validated['regime_especial_isv'] = $validated['regime_especial_isv'] ?? false;
@@ -300,10 +302,60 @@ class LegalizationController extends Controller
             $validated['vehicle_id']  = null;
         }
 
+        $validated['modelo9_dados'] = $this->buildModelo9Dados($request);
+        unset($validated['modelo9']);
+
         $legalization->update($validated);
 
         return redirect()->route('admin.legalizations.show', $legalization)
             ->with('success', 'Legalização actualizada.');
+    }
+
+    // ---------------------------------------------------------------
+    // Gerar Modelo 9 IMT pré-preenchido (sem alterar dados guardados)
+    // ---------------------------------------------------------------
+    public function generateModelo9(Legalization $legalization)
+    {
+        return $this->respondWithModelo9Pdf($legalization);
+    }
+
+    // ---------------------------------------------------------------
+    // Guardar os dados extra do Modelo 9 (a partir da modal) e gerar o PDF
+    // ---------------------------------------------------------------
+    public function saveAndGenerateModelo9(Request $request, Legalization $legalization)
+    {
+        $request->validate(['modelo9' => 'nullable|array']);
+
+        $legalization->update(['modelo9_dados' => $this->buildModelo9Dados($request)]);
+
+        return $this->respondWithModelo9Pdf($legalization);
+    }
+
+    private function respondWithModelo9Pdf(Legalization $legalization)
+    {
+        $pdfContent = (new Modelo9PdfService())->generate($legalization);
+        $filename   = 'modelo9_imt_' . $legalization->id . '.pdf';
+
+        return response($pdfContent, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    // ---------------------------------------------------------------
+    // Constrói o array modelo9_dados a partir do input 'modelo9[...]' do request
+    // ---------------------------------------------------------------
+    private function buildModelo9Dados(Request $request): array
+    {
+        $modelo9Input = $request->input('modelo9', []);
+        $dados = [];
+        foreach (Modelo9PdfService::CAMPOS_EXTRA_TEXTO as $key) {
+            $dados[$key] = $modelo9Input[$key] ?? null;
+        }
+        foreach (Modelo9PdfService::CAMPOS_EXTRA_BOOLEAN as $key) {
+            $dados[$key] = !empty($modelo9Input[$key]);
+        }
+        return $dados;
     }
 
     // ---------------------------------------------------------------
