@@ -29,6 +29,9 @@ class Kernel extends ConsoleKernel
         // Enviar lembretes de tarefas todos os dias às 00:00
         $schedule->command('tasks:send-reminders')->dailyAt('00:00');
 
+        // Enviar email de acompanhamento para legalizações novas — todos os dias às 15:00
+        $schedule->command('legalizations:send-tracking-emails')->dailyAt('15:00');
+
         // Sincronizar reviews do Google Business Profile — de hora a hora
         // $schedule->command('google:sync-reviews')->hourly();
 

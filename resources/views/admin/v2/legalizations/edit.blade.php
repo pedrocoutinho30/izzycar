@@ -20,6 +20,13 @@
     </div>
     <div class="modern-card-body">
 
+        @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-1"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
         @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             @foreach($errors->all() as $err)
@@ -135,6 +142,21 @@
                     <textarea name="notas" class="form-control" rows="3">{{ old('notas', $legalization->notas) }}</textarea>
                 </div>
 
+                {{-- ── Regime Especial ISV ─────────────────────────────── --}}
+                <div class="col-12">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="regime_especial_isv" name="regime_especial_isv" value="1"
+                               {{ old('regime_especial_isv', $legalization->regime_especial_isv) ? 'checked' : '' }}>
+                        <label class="form-check-label fw-semibold" for="regime_especial_isv">
+                            Regime especial ISV
+                        </label>
+                    </div>
+                    <div class="form-text">
+                        Ativar para imigrantes que regressam ou se mudam para Portugal — adiciona documentos obrigatórios adicionais ao processo.
+                    </div>
+                </div>
+
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-lg me-1"></i> Guardar alterações
@@ -144,6 +166,50 @@
 
             </div>
         </form>
+
+        {{-- ── Fatura de Serviço ────────────────────────────────────── --}}
+        <hr class="my-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-receipt me-1"></i> Fatura de Serviço</h6>
+
+        @if($legalization->invoice_path)
+        <div class="d-flex align-items-center gap-3 mb-3 p-3 border rounded bg-light">
+            <i class="bi bi-file-earmark-pdf text-danger fs-4"></i>
+            <div class="flex-grow-1 small">
+                <div class="fw-semibold">Fatura carregada</div>
+                <div class="text-muted">{{ basename($legalization->invoice_path) }}</div>
+            </div>
+            <a href="{{ route('admin.legalizations.download-invoice', $legalization) }}"
+               class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-download me-1"></i>Download
+            </a>
+            <form action="{{ route('admin.legalizations.delete-invoice', $legalization) }}" method="POST"
+                  onsubmit="return confirm('Remover a fatura?')">
+                @csrf @method('DELETE')
+                <button class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </form>
+        </div>
+        @endif
+
+        <form action="{{ route('admin.legalizations.upload-invoice', $legalization) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="d-flex gap-2 align-items-end">
+                <div class="flex-grow-1">
+                    <label class="form-label fw-semibold small">{{ $legalization->invoice_path ? 'Substituir fatura' : 'Carregar fatura' }}</label>
+                    <input type="file" name="invoice" class="form-control form-control-sm {{ $errors->has('invoice') ? 'is-invalid' : '' }}"
+                           accept=".pdf,.jpg,.jpeg,.png,.webp">
+                    @error('invoice')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <div class="form-text">PDF, JPG, PNG, WebP · Máx. 10 MB</div>
+                </div>
+                <button type="submit" class="btn btn-sm btn-primary mb-3">
+                    <i class="bi bi-cloud-upload me-1"></i>Carregar
+                </button>
+            </div>
+        </form>
+
     </div>
 </div>
 
@@ -164,4 +230,5 @@ function fillFromVehicle(select) {
     }
 }
 </script>
+
 @endsection

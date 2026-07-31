@@ -9,7 +9,7 @@
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; }
         .wrapper { max-width: 600px; margin: 30px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         .header { background: linear-gradient(135deg, #111111 0%, #2a0000 100%); padding: 40px 30px; text-align: center; }
-        .header img { max-height: 70px; margin-bottom: 16px; }
+        .header img { width: 150px; max-width: 150px; height: auto; margin-bottom: 16px; }
         .header h1 { color: #ffffff; font-size: 22px; font-weight: bold; }
         .header p { color: rgba(255,255,255,0.75); font-size: 14px; margin-top: 6px; }
         .body { padding: 36px 30px; }
@@ -33,7 +33,7 @@
         .contact-block { text-align: center; font-size: 14px; color: #555; margin-bottom: 8px; }
         .contact-block a { color: #990000; font-weight: bold; text-decoration: none; }
         .footer { background: #111111; padding: 28px 30px; text-align: center; }
-        .footer img { max-height: 50px; margin-bottom: 12px; }
+        .footer img { width: 90px; max-width: 90px; height: auto; margin-bottom: 12px; }
         .footer p { color: rgba(255,255,255,0.5); font-size: 12px; line-height: 1.8; }
         @media only screen and (max-width: 600px) {
             .wrapper { margin: 0; border-radius: 0; }
@@ -46,7 +46,7 @@
 <div class="wrapper">
 
     <div class="header">
-        <img src="https://izzycar.pt/storage/settings/logo.png" alt="Izzycar">
+        <img src="https://izzycar.pt/storage/settings/logo.png" alt="Izzycar" width="150" style="width:150px;max-width:150px;height:auto;">
         <h1>Recebemos o seu pedido!</h1>
         <p>A nossa equipa vai entrar em contacto brevemente</p>
     </div>
@@ -153,7 +153,7 @@
     </div>
 
     <div class="footer">
-        <img src="https://izzycar.pt/storage/settings/logo_redondo.png" alt="Izzycar">
+        <img src="https://izzycar.pt/storage/settings/logo_redondo.png" alt="Izzycar" width="90" style="width:90px;max-width:90px;height:auto;">
         <p>
             Izzycar — Importação de Automóveis<br>
             <a href="https://izzycar.pt" style="color: rgba(255,255,255,0.5);">izzycar.pt</a><br><br>

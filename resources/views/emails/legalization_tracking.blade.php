@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulação de Custos de Importação</title>
+    <title>Acompanhamento da Legalização</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; }
@@ -15,17 +15,11 @@
         .body { padding: 36px 30px; }
         .greeting { font-size: 18px; font-weight: bold; color: #111; margin-bottom: 10px; }
         .intro { font-size: 15px; color: #555; line-height: 1.7; margin-bottom: 28px; }
-        .cost-table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
-        .cost-table tr td { padding: 12px 16px; font-size: 15px; border-bottom: 1px solid #f0f0f0; }
-        .cost-table tr td:first-child { color: #555; }
-        .cost-table tr td:last-child { text-align: right; font-weight: 600; color: #111; }
-        .cost-table tr.total td { background: #111; color: #fff !important; font-size: 17px; font-weight: bold; border-radius: 0; }
-        .cost-table tr.total td:last-child { color: #fff !important; }
         .cta-block { text-align: center; margin: 32px 0; }
         .cta-btn { display: inline-block; background: linear-gradient(135deg, #990000, #6e0707); color: #ffffff !important; text-decoration: none; padding: 16px 36px; border-radius: 8px; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; }
         .note { font-size: 13px; color: #888; text-align: center; margin-top: 8px; }
         .divider { border: none; border-top: 1px solid #eee; margin: 28px 0; }
-        .secondary-cta { text-align: center; font-size: 14px; color: #555; margin-bottom: 28px; }
+        .secondary-cta { text-align: center; font-size: 14px; color: #555; margin-bottom: 8px; }
         .secondary-cta a { color: #990000; font-weight: bold; text-decoration: none; }
         .footer { background: #111111; padding: 28px 30px; text-align: center; }
         .footer img { width: 90px; max-width: 90px; height: auto; margin-bottom: 12px; }
@@ -42,45 +36,26 @@
 
     <div class="header">
         <img src="https://izzycar.pt/storage/settings/logo.png" alt="Izzycar" width="150" style="width:150px;max-width:150px;height:auto;">
-        <h1>Simulação de Custos de Importação</h1>
-        <p>{{ $simulation->brand ?? '' }} {{ $simulation->model ?? '' }}</p>
+        <h1>Acompanhamento da Legalização</h1>
+        <p>{{ $legalization->marca }} {{ $legalization->modelo }}</p>
     </div>
 
     <div class="body">
         <p class="greeting">Olá, {{ $clientName }}!</p>
         <p class="intro">
-            A sua simulação de custos de importação está pronta. Clique no botão abaixo para ver o resultado completo, incluindo a tabela detalhada de cálculo do ISV.
+            Já iniciámos o processo de legalização da sua viatura. Pode acompanhar o estado de cada etapa e dos
+            documentos necessários em tempo real, através do link abaixo — sem necessidade de login.
         </p>
 
-        <table class="cost-table">
-            <tr>
-                <td>🚗 Valor do carro</td>
-                <td>{{ number_format($simulation->car_value, 2, ',', '.') }} €</td>
-            </tr>
-            <tr>
-                <td>📋 ISV (Imposto)</td>
-                <td>{{ number_format($simulation->isv_cost, 2, ',', '.') }} €</td>
-            </tr>
-            <tr>
-                <td>⚙️ Custos de serviço</td>
-                <td>{{ number_format($simulation->commission_cost + $simulation->inspection_commission_cost + $simulation->transport + $simulation->ipo_cost + $simulation->imt_cost + $simulation->registration_cost + $simulation->plates_cost + 300, 2, ',', '.') }} €</td>
-            </tr>
-            <tr class="total">
-                <td>💰 Preço Chave na Mão</td>
-                <td>{{ number_format($simulation->total_cost, 2, ',', '.') }} €</td>
-            </tr>
-        </table>
-
         <div class="cta-block">
-            <a href="{{ $resultUrl }}" class="cta-btn">Ver Resultado Completo</a>
+            <a href="{{ $trackingUrl }}" class="cta-btn">Acompanhar Estado da Legalização</a>
             <p class="note">Este link é pessoal e pode ser acedido a qualquer momento.</p>
         </div>
 
         <hr class="divider">
 
         <div class="secondary-cta">
-            Quer avançar com a importação?<br>
-            <a href="https://izzycar.pt/formulario-importacao">Preencha o formulário de importação</a>
+            Tem dúvidas? <a href="https://izzycar.pt/contactos">Contacte-nos</a>
         </div>
     </div>
 

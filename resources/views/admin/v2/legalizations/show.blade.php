@@ -90,6 +90,12 @@
                 <a href="{{ route('admin.legalizations.edit', $legalization) }}" class="btn btn-outline-primary btn-sm">
                     <i class="bi bi-pencil me-1"></i> Editar dados
                 </a>
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control font-monospace" id="trackingLinkInput" value="{{ $legalization->trackingUrl() }}" readonly>
+                    <button class="btn btn-outline-secondary" type="button" onclick="copyTrackingLink()" title="Copiar link de acompanhamento">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
                 <form action="{{ route('admin.legalizations.destroy', $legalization) }}" method="POST"
                       onsubmit="return confirm('Eliminar esta legalização e todos os documentos?')">
                     @csrf @method('DELETE')
@@ -190,13 +196,6 @@
                             </a>
                             @endif
                         </div>
-
-                        {{-- Info extra --}}
-                        @if($passo['info'])
-                        <div class="mt-1 small text-muted">
-                            <i class="bi bi-info-circle me-1"></i>{{ $passo['info'] }}
-                        </div>
-                        @endif
 
                         {{-- Nº de homologação (passo 1) --}}
                         @if($num === 1)
@@ -468,6 +467,16 @@ function updateCheckboxLocks(completed) {
         cb.disabled = !prevDone && !completed.includes(s);
         cb.style.opacity  = cb.disabled ? '.35' : '1';
         cb.style.cursor   = cb.disabled ? 'not-allowed' : 'pointer';
+    });
+}
+
+// ---------------------------------------------------------------
+// Copiar link público de acompanhamento
+// ---------------------------------------------------------------
+function copyTrackingLink() {
+    const input = document.getElementById('trackingLinkInput');
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('Link copiado', 'O link de acompanhamento foi copiado para a área de transferência.', 'success');
     });
 }
 

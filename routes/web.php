@@ -100,6 +100,9 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::post('/{legalization}/documentos', [App\Http\Controllers\Admin\LegalizationController::class, 'uploadDocument'])->name('upload-document');
         Route::get('/{legalization}/documentos/{document}/download', [App\Http\Controllers\Admin\LegalizationController::class, 'downloadDocument'])->name('download-document');
         Route::delete('/{legalization}/documentos/{document}', [App\Http\Controllers\Admin\LegalizationController::class, 'deleteDocument'])->name('delete-document');
+        Route::post('/{legalization}/fatura', [App\Http\Controllers\Admin\LegalizationController::class, 'uploadInvoice'])->name('upload-invoice');
+        Route::get('/{legalization}/fatura/download', [App\Http\Controllers\Admin\LegalizationController::class, 'downloadInvoice'])->name('download-invoice');
+        Route::delete('/{legalization}/fatura', [App\Http\Controllers\Admin\LegalizationController::class, 'deleteInvoice'])->name('delete-invoice');
     });
 
     // ============================================================

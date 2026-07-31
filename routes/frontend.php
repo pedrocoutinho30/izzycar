@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\PageController;
 use App\Http\Controllers\Frontend\LegalizationController;
+use App\Http\Controllers\Frontend\LegalizationStatusController;
 use App\Http\Controllers\Frontend\ImportController;
 use App\Http\Controllers\Frontend\SellingController;
 use App\Http\Controllers\Frontend\VehiclesController;
@@ -33,6 +34,9 @@ Route::get('/formulario-importacao', [ContactController::class, 'importForm'])->
 Route::get('/simulador-custos', [CostSimulatorController::class, 'index'])->name('frontend.cost-simulator');
 Route::post('/simulador-custos', [CostSimulatorController::class, 'calculate'])->name('frontend.cost-simulator.calculate');
 Route::get('/simulador-custos/resultado/{token}', [CostSimulatorController::class, 'result'])->name('frontend.cost-simulator.result');
+
+Route::get('/legalizacao/estado/{token}', [LegalizationStatusController::class, 'show'])->name('frontend.legalization.status');
+Route::get('/legalizacao/estado/{token}/fatura', [LegalizationStatusController::class, 'downloadInvoice'])->name('frontend.legalization.status.invoice');
 
 // API pública
 Route::get('/extras', [ExtrasController::class, 'index'])->name('api.extras');

@@ -52,16 +52,19 @@ class LegalizationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'v3_vehicle_id'   => 'nullable|exists:v3_vehicles,id',
-            'client_id'       => 'nullable|exists:clients,id',
-            'marca'           => 'required_without:v3_vehicle_id|nullable|string|max:100',
-            'modelo'          => 'required_without:v3_vehicle_id|nullable|string|max:100',
-            'combustivel'     => 'required_without:v3_vehicle_id|nullable|string|max:50',
-            'matricula'       => 'nullable|string|max:20',
-            'num_homologacao'  => 'nullable|string|max:100',
-            'num_processo_imt' => 'nullable|string|max:100',
-            'notas'            => 'nullable|string',
+            'v3_vehicle_id'      => 'nullable|exists:v3_vehicles,id',
+            'client_id'          => 'nullable|exists:clients,id',
+            'marca'              => 'required_without:v3_vehicle_id|nullable|string|max:100',
+            'modelo'             => 'required_without:v3_vehicle_id|nullable|string|max:100',
+            'combustivel'        => 'required_without:v3_vehicle_id|nullable|string|max:50',
+            'matricula'          => 'nullable|string|max:20',
+            'num_homologacao'    => 'nullable|string|max:100',
+            'num_processo_imt'   => 'nullable|string|max:100',
+            'notas'              => 'nullable|string',
+            'regime_especial_isv' => 'nullable|boolean',
         ]);
+
+        $validated['regime_especial_isv'] = $validated['regime_especial_isv'] ?? false;
 
         // If a V3 vehicle is selected, fill fields from it
         if (!empty($validated['v3_vehicle_id'])) {
@@ -93,7 +96,7 @@ class LegalizationController extends Controller
         $legalization->load('client', 'documents');
 
         $passos    = Legalization::PASSOS;
-        $documentos = Legalization::DOCUMENTOS;
+        $documentos = $legalization->allDocumentos();
 
         return view('admin.v2.legalizations.show', compact('legalization', 'passos', 'documentos'));
     }
@@ -103,7 +106,7 @@ class LegalizationController extends Controller
     // ---------------------------------------------------------------
     public function toggleStep(Request $request, Legalization $legalization)
     {
-        $request->validate(['step' => 'required|integer|min:1|max:8']);
+        $request->validate(['step' => 'required|integer|min:1|max:7']);
 
         $step      = (int) $request->step;
         $completed = $legalization->steps_completed ?? [];
@@ -159,7 +162,7 @@ class LegalizationController extends Controller
     public function uploadDocument(Request $request, Legalization $legalization)
     {
         $validated = $request->validate([
-            'tipo'     => 'required|string|in:' . implode(',', array_keys(Legalization::DOCUMENTOS)),
+            'tipo'     => 'required|string|in:' . implode(',', array_keys(array_merge(Legalization::DOCUMENTOS, Legalization::DOCUMENTOS_REGIME_ESPECIAL))),
             'ficheiro' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:10240',
         ]);
 
@@ -210,6 +213,52 @@ class LegalizationController extends Controller
     }
 
     // ---------------------------------------------------------------
+    // Upload de fatura de serviço
+    // ---------------------------------------------------------------
+    public function uploadInvoice(Request $request, Legalization $legalization)
+    {
+        $request->validate([
+            'invoice' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:10240',
+        ]);
+
+        // Apaga o anterior se existir
+        if ($legalization->invoice_path) {
+            Storage::disk('local')->delete($legalization->invoice_path);
+        }
+
+        $path = $request->file('invoice')->store("legalizations/{$legalization->id}", 'local');
+        $legalization->update(['invoice_path' => $path]);
+
+        return back()->with('success', 'Fatura carregada com sucesso.');
+    }
+
+    // ---------------------------------------------------------------
+    // Download de fatura de serviço
+    // ---------------------------------------------------------------
+    public function downloadInvoice(Legalization $legalization)
+    {
+        abort_unless($legalization->invoice_path && Storage::disk('local')->exists($legalization->invoice_path), 404);
+
+        return Storage::disk('local')->download(
+            $legalization->invoice_path,
+            'fatura_' . $legalization->id . '.' . pathinfo($legalization->invoice_path, PATHINFO_EXTENSION)
+        );
+    }
+
+    // ---------------------------------------------------------------
+    // Apagar fatura de serviço
+    // ---------------------------------------------------------------
+    public function deleteInvoice(Legalization $legalization)
+    {
+        if ($legalization->invoice_path) {
+            Storage::disk('local')->delete($legalization->invoice_path);
+            $legalization->update(['invoice_path' => null]);
+        }
+
+        return back()->with('success', 'Fatura removida.');
+    }
+
+    // ---------------------------------------------------------------
     // Edit
     // ---------------------------------------------------------------
     public function edit(Legalization $legalization)
@@ -228,16 +277,19 @@ class LegalizationController extends Controller
     public function update(Request $request, Legalization $legalization)
     {
         $validated = $request->validate([
-            'v3_vehicle_id'   => 'nullable|exists:v3_vehicles,id',
-            'client_id'       => 'nullable|exists:clients,id',
-            'marca'           => 'nullable|string|max:100',
-            'modelo'          => 'nullable|string|max:100',
-            'combustivel'     => 'nullable|string|max:50',
-            'matricula'       => 'nullable|string|max:20',
-            'num_homologacao'  => 'nullable|string|max:100',
-            'num_processo_imt' => 'nullable|string|max:100',
-            'notas'            => 'nullable|string',
+            'v3_vehicle_id'      => 'nullable|exists:v3_vehicles,id',
+            'client_id'          => 'nullable|exists:clients,id',
+            'marca'              => 'nullable|string|max:100',
+            'modelo'             => 'nullable|string|max:100',
+            'combustivel'        => 'nullable|string|max:50',
+            'matricula'          => 'nullable|string|max:20',
+            'num_homologacao'    => 'nullable|string|max:100',
+            'num_processo_imt'   => 'nullable|string|max:100',
+            'notas'              => 'nullable|string',
+            'regime_especial_isv' => 'nullable|boolean',
         ]);
+
+        $validated['regime_especial_isv'] = $validated['regime_especial_isv'] ?? false;
 
         if (!empty($validated['v3_vehicle_id'])) {
             $vehicle = V3Vehicle::findOrFail($validated['v3_vehicle_id']);

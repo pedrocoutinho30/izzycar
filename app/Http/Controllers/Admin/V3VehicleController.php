@@ -811,7 +811,7 @@ class V3VehicleController extends Controller
         $vehicle      = V3Vehicle::findOrFail($id);
         $legalization = Legalization::where('v3_vehicle_id', $vehicle->id)->firstOrFail();
 
-        $request->validate(['step' => 'required|integer|min:1|max:8']);
+        $request->validate(['step' => 'required|integer|min:1|max:7']);
 
         $step      = (int) $request->step;
         $completed = $legalization->steps_completed ?? [];

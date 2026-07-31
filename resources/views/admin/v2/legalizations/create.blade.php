@@ -130,6 +130,21 @@
                               placeholder="Informações adicionais sobre este processo…">{{ old('notas') }}</textarea>
                 </div>
 
+                {{-- ── Regime Especial ISV ─────────────────────────────── --}}
+                <div class="col-12">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="regime_especial_isv" name="regime_especial_isv" value="1"
+                               {{ old('regime_especial_isv') ? 'checked' : '' }}>
+                        <label class="form-check-label fw-semibold" for="regime_especial_isv">
+                            Regime especial ISV
+                        </label>
+                    </div>
+                    <div class="form-text">
+                        Ativar para imigrantes que regressam ou se mudam para Portugal — adiciona documentos obrigatórios adicionais ao processo.
+                    </div>
+                </div>
+
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-lg me-1"></i> Criar legalização

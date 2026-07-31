@@ -156,10 +156,6 @@
                         @endif
                     </div>
 
-                    @if($passo['info'])
-                    <div class="mt-1 small text-muted"><i class="bi bi-info-circle me-1"></i>{{ $passo['info'] }}</div>
-                    @endif
-
                     @if($num === 1)
                     <div class="mt-2">
                         @if($legalization->num_homologacao)
