@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Legalization;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 
 class LegalizationStatusController extends Controller
@@ -14,11 +15,13 @@ class LegalizationStatusController extends Controller
     public function show(string $token)
     {
         $legalization = Legalization::where('token', $token)
-            ->with('documents')
+            ->with(['documents', 'client'])
             ->firstOrFail();
 
-        $passos     = Legalization::PASSOS;
-        $documentos = $legalization->allDocumentos();
+        App::setLocale($legalization->client?->language ?: 'pt');
+
+        $passos     = $legalization->passosTranslated();
+        $documentos = $legalization->allDocumentosTranslated();
 
         return view('frontend.legalizations.status', compact('legalization', 'passos', 'documentos'));
     }

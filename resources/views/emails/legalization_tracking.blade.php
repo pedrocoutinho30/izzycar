@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acompanhamento da Legalização</title>
+    <title>{{ __('legalization.email_heading') }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; }
@@ -36,35 +36,34 @@
 
     <div class="header">
         <img src="https://izzycar.pt/storage/settings/logo.png" alt="Izzycar" width="150" style="width:150px;max-width:150px;height:auto;">
-        <h1>Acompanhamento da Legalização</h1>
+        <h1>{{ __('legalization.email_heading') }}</h1>
         <p>{{ $legalization->marca }} {{ $legalization->modelo }}</p>
     </div>
 
     <div class="body">
-        <p class="greeting">Olá, {{ $clientName }}!</p>
+        <p class="greeting">{{ __('legalization.email_greeting', ['name' => $clientName]) }}</p>
         <p class="intro">
-            Já iniciámos o processo de legalização da sua viatura. Pode acompanhar o estado de cada etapa e dos
-            documentos necessários em tempo real, através do link abaixo — sem necessidade de login.
+            {{ __('legalization.email_intro') }}
         </p>
 
         <div class="cta-block">
-            <a href="{{ $trackingUrl }}" class="cta-btn">Acompanhar Estado da Legalização</a>
-            <p class="note">Este link é pessoal e pode ser acedido a qualquer momento.</p>
+            <a href="{{ $trackingUrl }}" class="cta-btn">{{ __('legalization.email_cta') }}</a>
+            <p class="note">{{ __('legalization.email_note') }}</p>
         </div>
 
         <hr class="divider">
 
         <div class="secondary-cta">
-            Tem dúvidas? <a href="https://izzycar.pt/contactos">Contacte-nos</a>
+            {{ __('legalization.email_question') }} <a href="https://izzycar.pt/contactos">{{ __('legalization.email_contact') }}</a>
         </div>
     </div>
 
     <div class="footer">
         <img src="https://izzycar.pt/storage/settings/logo_redondo.png" alt="Izzycar" width="90" style="width:90px;max-width:90px;height:auto;">
         <p>
-            Izzycar — Importação de Automóveis<br>
+            {{ __('legalization.email_tagline') }}<br>
             <a href="https://izzycar.pt" style="color: rgba(255,255,255,0.5);">izzycar.pt</a><br><br>
-            Este é um email automático, por favor não responda diretamente a esta mensagem.
+            {{ __('legalization.email_disclaimer') }}
         </p>
     </div>
 

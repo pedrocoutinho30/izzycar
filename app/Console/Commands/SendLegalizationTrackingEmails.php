@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\LegalizationTrackingMail;
 use App\Models\Legalization;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -49,6 +50,8 @@ class SendLegalizationTrackingEmails extends Command
             }
 
             try {
+                App::setLocale($client->language ?: 'pt');
+
                 Mail::to($client->email)->send(new LegalizationTrackingMail(
                     $legalization,
                     $client->name,

@@ -116,7 +116,7 @@
                     </h3>
 
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Email</label>
                             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                                 value="{{ old('email', $client->email ?? '') }}">
@@ -125,11 +125,23 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Telefone</label>
                             <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
                                 value="{{ old('phone', $client->phone ?? '') }}">
                             @error('phone')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Idioma</label>
+                            <select name="language" class="form-select @error('language') is-invalid @enderror">
+                                <option value="pt" {{ old('language', $client->language ?? 'pt') === 'pt' ? 'selected' : '' }}>Português</option>
+                                <option value="en" {{ old('language', $client->language ?? 'pt') === 'en' ? 'selected' : '' }}>English</option>
+                            </select>
+                            <div class="form-text">Idioma usado nas comunicações enviadas a este cliente (ex. email de acompanhamento de legalização).</div>
+                            @error('language')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

@@ -29,7 +29,7 @@ class LegalizationTrackingMail extends Mailable
     {
         return new Envelope(
             from: new Address('geral@izzycar.pt', 'Izzycar - Importação Automóvel'),
-            subject: 'Acompanhe o Estado da Legalização da sua Viatura',
+            subject: __('legalization.email_subject'),
         );
     }
 

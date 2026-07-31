@@ -17,6 +17,7 @@ class Client extends Model
         'gender',
         'phone',
         'email',
+        'language',
         'identification_number',
         'validate_identification_number',
         'address',

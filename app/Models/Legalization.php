@@ -22,6 +22,7 @@ class Legalization extends Model
         'notas',
         'regime_especial_isv',
         'invoice_path',
+        'modelo9_dados',
         'steps_completed',
     ];
 
@@ -29,6 +30,7 @@ class Legalization extends Model
         'steps_completed'    => 'array',
         'regime_especial_isv' => 'boolean',
         'email_enviado'       => 'boolean',
+        'modelo9_dados'       => 'array',
     ];
 
     // ---------------------------------------------------------------
@@ -39,11 +41,11 @@ class Legalization extends Model
         'DHTEC'                   => 'DHTEC — Formulário Modelo 9 IMT',
         'FATDV'                   => 'FATDV — Fatura de compra ou declaração de venda',
         'CCEUR'                   => 'CCEUR — Certificado de conformidade (COC)',
-        'guia_transporte'         => 'Guia de transporte',
+        'guia_transporte'         => 'Guia de transporte (opcional, dependendo do tipo de transporte)',
         'CCIDA'                   => 'CCIDA — Cartão de cidadão do proprietário',
         'CINSP'                   => 'CINSP — Certificado de inspeção (Modelo 112)',
-        'MD1460'                  => 'MD1460 — DAV (Declaração Aduaneira de Veículo)',
-        'autorizacao'             => 'Documento de autorização de utilização de dados',
+        // DAV é um documento diferente do MD1460 (pedido de isenção de ISV, ver DOCUMENTOS_REGIME_ESPECIAL)
+        'dav'                     => 'DAV (Declaração Aduaneira de Veículo)',
         'declaracao_homologacao'  => 'Declaração de Homologação',
         // PRODH aplica-se sempre (regime normal ou especial) — caso a DAV não seja submetida pelo próprio proprietário
         'PRODH'                   => 'PRODH — Procuração ou documento de habilitação',
@@ -53,9 +55,10 @@ class Legalization extends Model
     // Documentos adicionais — apenas quando regime especial ISV ativo
     // ---------------------------------------------------------------
     const DOCUMENTOS_REGIME_ESPECIAL = [
-        'CRESI' => 'CRESI — Certificado de residência oficial',
-        'DVIDQ' => 'DVIDQ — Documentos de vida quotidiana',
-        'CSTRI' => 'CSTRI — Certidão de situação tributária',
+        'CRESI'  => 'CRESI — Certificado de residência oficial',
+        'DVIDQ'  => 'DVIDQ — Documentos de vida quotidiana',
+        'CSTRI'  => 'CSTRI — Certidão de situação tributária',
+        'MD1460' => 'MD1460 — Pedido de isenção de ISV',
     ];
 
     // ---------------------------------------------------------------
@@ -80,7 +83,7 @@ class Legalization extends Model
             'titulo'     => 'Preenchimento da DAV no portal das Finanças',
             'link'       => null,
             'link_label' => null,
-            'docs'       => ['CCEUR', 'CMATR', 'DHTEC', 'FATDV', 'guia_transporte', 'CCIDA', 'autorizacao'],
+            'docs'       => ['CCEUR', 'CMATR', 'DHTEC', 'FATDV', 'guia_transporte', 'CCIDA', 'PRODH'],
             'info'       => null,
         ],
         4 => [
@@ -101,7 +104,7 @@ class Legalization extends Model
             'titulo'     => 'Entregar Modelo 9 no IMT',
             'link'       => null,
             'link_label' => null,
-            'docs'       => ['CCEUR', 'DHTEC', 'CMATR', 'MD1460', 'CINSP', 'CCIDA', 'declaracao_homologacao'],
+            'docs'       => ['CCEUR', 'DHTEC', 'CMATR', 'dav', 'CINSP', 'CCIDA', 'declaracao_homologacao'],
             'info'       => null,
         ],
         7 => [
@@ -177,5 +180,32 @@ class Legalization extends Model
     public function trackingUrl(): string
     {
         return route('frontend.legalization.status', $this->token);
+    }
+
+    // ---------------------------------------------------------------
+    // Versões traduzidas (para a página pública e o email de acompanhamento)
+    // Usam o idioma atual da app (App::setLocale) — o BO continua a usar
+    // PASSOS/DOCUMENTOS diretamente, sem tradução.
+    // ---------------------------------------------------------------
+
+    public function passosTranslated(): array
+    {
+        $passos = self::PASSOS;
+        foreach ($passos as $num => &$passo) {
+            $passo['titulo'] = __('legalization.passos.' . $num);
+        }
+        return $passos;
+    }
+
+    public function allDocumentosTranslated(): array
+    {
+        $translated = [];
+        foreach ($this->allDocumentos() as $slug => $ptLabel) {
+            $description = __('legalization.documentos.' . $slug);
+            $translated[$slug] = preg_match('/^[A-Z0-9]+$/', $slug)
+                ? "{$slug} — {$description}"
+                : $description;
+        }
+        return $translated;
     }
 }
