@@ -377,6 +377,148 @@ $detailRows = [
 </tr>
 </table>
 
+{{-- ── MOVIMENTOS FINANCEIROS ── --}}
+<div class="section-title">Movimentos Financeiros</div>
+
+{{-- KPIs: Receitas / Despesas / Resultado do mês --}}
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
+<tr>
+    <td width="33%" style="padding-right:8px;vertical-align:top;">
+        <div class="kpi-card">
+            <div class="kpi-label">Receitas do mês</div>
+            <div class="kpi-value-sm" style="color:#198754;">{{ fe_pdf($c['mov_income']) }}</div>
+            <table class="cmp-tbl">
+                <tr><td class="cmp-lbl">Mês anterior</td><td class="cmp-val">{!! delta_badge_pdf($c['mov_income'], $pm['mov_income']) !!}</td></tr>
+                <tr><td class="cmp-lbl">Ano anterior</td><td class="cmp-val">{!! delta_badge_pdf($c['mov_income'], $sly['mov_income']) !!}</td></tr>
+                <tr><td class="cmp-lbl">Média YTD</td><td class="cmp-val">{!! delta_badge_pdf($c['mov_income'], $avg['mov_income']) !!}</td></tr>
+            </table>
+        </div>
+    </td>
+    <td width="33%" style="padding-right:8px;vertical-align:top;">
+        <div class="kpi-card">
+            <div class="kpi-label">Despesas do mês</div>
+            <div class="kpi-value-sm" style="color:#dc3545;">{{ fe_pdf($c['mov_expenses']) }}</div>
+            <table class="cmp-tbl">
+                <tr><td class="cmp-lbl">Mês anterior</td><td class="cmp-val">{!! delta_badge_pdf($c['mov_expenses'], $pm['mov_expenses']) !!}</td></tr>
+                <tr><td class="cmp-lbl">Ano anterior</td><td class="cmp-val">{!! delta_badge_pdf($c['mov_expenses'], $sly['mov_expenses']) !!}</td></tr>
+                <tr><td class="cmp-lbl">Média YTD</td><td class="cmp-val">{!! delta_badge_pdf($c['mov_expenses'], $avg['mov_expenses']) !!}</td></tr>
+            </table>
+        </div>
+    </td>
+    <td width="34%" style="vertical-align:top;">
+        <div class="kpi-card">
+            <div class="kpi-label">Resultado do mês</div>
+            @php $netColor = $c['mov_net'] >= 0 ? '#198754' : '#dc3545'; @endphp
+            <div class="kpi-value-sm" style="color:{{ $netColor }};">{{ ($c['mov_net'] >= 0 ? '+' : '') . fe_pdf($c['mov_net']) }}</div>
+            <table class="cmp-tbl">
+                <tr><td class="cmp-lbl">Mês anterior</td><td class="cmp-val">{!! delta_badge_pdf($c['mov_net'], $pm['mov_net']) !!}</td></tr>
+                <tr><td class="cmp-lbl">Ano anterior</td><td class="cmp-val">{!! delta_badge_pdf($c['mov_net'], $sly['mov_net']) !!}</td></tr>
+            </table>
+        </div>
+    </td>
+</tr>
+</table>
+
+{{-- Breakdown por categoria --}}
+@if(!empty($movement_categories))
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-top:2px;">
+<tr>
+    <th style="font-size:7px;text-transform:uppercase;letter-spacing:.05em;color:#555;background:#f3f3f3;padding:5px 6px;text-align:left;border-bottom:1px solid #e0e0e0;">Categoria</th>
+    <th style="font-size:7px;text-transform:uppercase;letter-spacing:.05em;color:#555;background:#f3f3f3;padding:5px 6px;text-align:center;border-bottom:1px solid #e0e0e0;">Mov.</th>
+    <th style="font-size:7px;text-transform:uppercase;letter-spacing:.05em;color:#555;background:#f3f3f3;padding:5px 6px;text-align:right;border-bottom:1px solid #e0e0e0;">Total (€)</th>
+</tr>
+@foreach(['income' => ['label' => 'Receitas', 'color' => '#198754'], 'expense' => ['label' => 'Despesas', 'color' => '#dc3545']] as $type => $meta)
+    @if(!empty($movement_categories[$type]))
+    <tr>
+        <td colspan="3" style="font-size:7px;font-weight:bold;color:{{ $meta['color'] }};padding:5px 6px 3px;background:#fafafa;letter-spacing:.04em;text-transform:uppercase;">{{ $meta['label'] }}</td>
+    </tr>
+    @foreach($movement_categories[$type] as $cat)
+    <tr>
+        <td style="font-size:8px;color:#333;padding:4px 6px;border-bottom:1px solid #f5f5f5;">{{ $cat['category'] }}</td>
+        <td style="font-size:8px;color:#888;padding:4px 6px;text-align:center;border-bottom:1px solid #f5f5f5;">{{ $cat['count'] }}</td>
+        <td style="font-size:8px;font-weight:bold;color:{{ $meta['color'] }};padding:4px 6px;text-align:right;border-bottom:1px solid #f5f5f5;">{{ fe_pdf($cat['total']) }}</td>
+    </tr>
+    @endforeach
+    @endif
+@endforeach
+</table>
+@else
+    <div style="font-size:8px;color:#aaa;padding:8px 0;">Sem movimentos registados neste mês.</div>
+@endif
+
+{{-- ── LEGALIZAÇÕES ── --}}
+<div class="section-title">Legalizações</div>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:6px;">
+<tr>
+    {{-- KPI: Novas este mês --}}
+    <td width="25%" style="vertical-align:top;padding-right:8px;">
+        <div class="kpi-card">
+            <div class="kpi-label">Novas este mês</div>
+            <div class="kpi-value">{{ fn_pdf($legalizations['month_new']) }}</div>
+            <table class="cmp-tbl">
+                <tr><td class="cmp-lbl">Mês anterior</td><td class="cmp-val">{!! delta_badge_pdf($c['legalizations_new'], $pm['legalizations_new']) !!}</td></tr>
+                <tr><td class="cmp-lbl">Ano anterior</td><td class="cmp-val">{!! delta_badge_pdf($c['legalizations_new'], $sly['legalizations_new']) !!}</td></tr>
+            </table>
+        </div>
+    </td>
+    {{-- KPI: Total histórico --}}
+    <td width="25%" style="vertical-align:top;padding-right:8px;">
+        <div class="kpi-card">
+            <div class="kpi-label">Total realizadas</div>
+            <div class="kpi-value">{{ fn_pdf($legalizations['total']) }}</div>
+            <div style="font-size:7.5px;color:#aaa;margin-top:4px;">desde o início</div>
+        </div>
+    </td>
+    {{-- KPI: Concluídas --}}
+    <td width="25%" style="vertical-align:top;padding-right:8px;">
+        <div class="kpi-card">
+            <div class="kpi-label">Concluídas</div>
+            <div class="kpi-value" style="color:#198754;">{{ fn_pdf($legalizations['completed']) }}</div>
+            @if($legalizations['total'] > 0)
+            @php $pctComp = round($legalizations['completed'] / $legalizations['total'] * 100); @endphp
+            <div style="font-size:7.5px;color:#aaa;margin-top:4px;">{{ $pctComp }}% do total</div>
+            @endif
+        </div>
+    </td>
+    {{-- KPI: Em progresso --}}
+    <td width="25%" style="vertical-align:top;">
+        <div class="kpi-card">
+            <div class="kpi-label">Em progresso</div>
+            <div class="kpi-value" style="color:#fd7e14;">{{ fn_pdf($legalizations['in_progress']) }}</div>
+            @if($legalizations['total'] > 0)
+            @php $pctProg = round($legalizations['in_progress'] / $legalizations['total'] * 100); @endphp
+            <div style="font-size:7.5px;color:#aaa;margin-top:4px;">{{ $pctProg }}% do total</div>
+            @endif
+        </div>
+    </td>
+</tr>
+</table>
+
+@if($legalizations['total'] > 0)
+@php
+    $pctCompleted  = round($legalizations['completed'] / $legalizations['total'] * 100);
+    $pctInProgress = 100 - $pctCompleted;
+    $barCompleted  = max(0, $pctCompleted);
+    $barProgress   = max(0, $pctInProgress);
+@endphp
+<table width="100%" cellpadding="0" cellspacing="0" style="height:10px;border-radius:4px;overflow:hidden;margin-top:4px;">
+<tr>
+    @if($barCompleted > 0)
+    <td width="{{ $barCompleted }}%" style="background:#198754;height:10px;"></td>
+    @endif
+    @if($barProgress > 0)
+    <td width="{{ $barProgress }}%" style="background:#fd7e14;height:10px;"></td>
+    @endif
+</tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:4px;">
+<tr>
+    <td style="font-size:7px;color:#198754;">&#9632; Concluídas ({{ $pctCompleted }}%)</td>
+    <td style="font-size:7px;color:#fd7e14;text-align:right;">&#9632; Em Progresso ({{ $pctInProgress }}%)</td>
+</tr>
+</table>
+@endif
+
 {{-- ── FOOTER ── --}}
 <table class="footer-tbl">
 <tr>

@@ -1,6 +1,6 @@
 @extends('layouts.admin-v2')
 
-@section('title', 'Relatórios Mensais')
+@section('title', 'Relatórios')
 
 @section('content')
 
@@ -9,8 +9,8 @@
         ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
         ['icon' => '', 'label' => 'Relatórios'],
     ],
-    'title'    => 'Relatórios Mensais',
-    'subtitle' => 'Arquivo de relatórios PDF e geração manual',
+    'title'    => 'Relatórios',
+    'subtitle' => 'Mensal · Trimestral · Anual',
 ])
 
 @if(session('success'))
@@ -22,17 +22,17 @@
 
 <div class="row g-4">
 
-    {{-- ─── Gerar Relatório ─── --}}
+    {{-- ─── Gerar Relatório Mensal ─── --}}
     <div class="col-lg-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white border-bottom py-3">
                 <h6 class="mb-0 fw-bold">
-                    <i class="bi bi-plus-circle text-danger me-2"></i>Gerar Relatório
+                    <i class="bi bi-plus-circle text-danger me-2"></i>Gerar Relatório Mensal
                 </h6>
             </div>
             <div class="card-body">
                 <p class="text-muted small mb-3">
-                    Gera o relatório para um mês específico, guarda-o em arquivo e envia por email.
+                    Gera o relatório para um mês específico, guarda em arquivo e envia por email.
                 </p>
                 <form action="{{ route('admin.v2.reports.generate') }}" method="POST">
                     @csrf
@@ -52,11 +52,19 @@
                         <i class="bi bi-file-earmark-pdf me-2"></i>Gerar e Enviar
                     </button>
                 </form>
-
-                <hr class="my-3">
+            </div>
+            <div class="card-footer bg-white border-top py-3">
                 <div class="text-muted small">
-                    <i class="bi bi-info-circle me-1"></i>
-                    O relatório automático é gerado no último dia de cada mês às 23:30.
+                    <i class="bi bi-clock me-1"></i>
+                    Automático: último dia de cada mês às 23:30
+                </div>
+                <div class="text-muted small mt-1">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    Trimestral: automático a 31 Mar, 30 Jun, 30 Set às 23:40
+                </div>
+                <div class="text-muted small mt-1">
+                    <i class="bi bi-calendar-check me-1"></i>
+                    Anual: automático a 31 Dez às 23:50
                 </div>
             </div>
         </div>
@@ -78,7 +86,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-4">Período</th>
-                                <th>Ficheiro</th>
+                                <th>Tipo</th>
                                 <th>Tamanho</th>
                                 <th>Gerado em</th>
                                 <th class="pe-4 text-end">Ações</th>
@@ -92,25 +100,22 @@
                                         <div class="bg-danger bg-opacity-10 text-danger rounded p-2 lh-1">
                                             <i class="bi bi-file-earmark-pdf fs-5"></i>
                                         </div>
-                                        <div>
-                                            <div class="fw-semibold text-capitalize">{{ $report['label'] }}</div>
-                                            <div class="text-muted small">{{ $report['year'] }}</div>
-                                        </div>
+                                        <div class="fw-semibold">{{ $report['label'] }}</div>
                                     </div>
                                 </td>
                                 <td>
-                                    <code class="text-muted small">{{ $report['name'] }}</code>
+                                    <span class="badge bg-{{ $report['type_color'] }} bg-opacity-10 text-{{ $report['type_color'] }} fw-semibold">
+                                        {{ $report['type_label'] }}
+                                    </span>
                                 </td>
                                 <td>
                                     <span class="text-muted small">{{ $report['size'] }}</span>
                                 </td>
                                 <td>
-                                    <span class="text-muted small">
-                                        {{ $report['mtime']->format('d/m/Y H:i') }}
-                                    </span>
+                                    <span class="text-muted small">{{ $report['mtime']->format('d/m/Y H:i') }}</span>
                                 </td>
                                 <td class="pe-4 text-end">
-                                    <a href="{{ route('admin.v2.reports.download', ['year' => $report['year'], 'month' => str_pad($report['month'], 2, '0', STR_PAD_LEFT)]) }}"
+                                    <a href="{{ route('admin.v2.reports.download', ['filename' => $report['name']]) }}"
                                        class="btn btn-sm btn-outline-danger">
                                         <i class="bi bi-download me-1"></i>Download
                                     </a>
@@ -124,7 +129,7 @@
                 <div class="text-center py-5 text-muted">
                     <i class="bi bi-file-earmark-pdf fs-1 d-block mb-2 opacity-25"></i>
                     <div class="fw-semibold">Ainda não existem relatórios</div>
-                    <div class="small mt-1">Gera o primeiro relatório usando o formulário ao lado.</div>
+                    <div class="small mt-1">Gera o primeiro relatório mensal usando o formulário ao lado.</div>
                 </div>
                 @endif
             </div>

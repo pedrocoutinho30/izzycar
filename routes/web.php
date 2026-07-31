@@ -534,9 +534,9 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     // RELATÓRIOS V2
     // ============================================================
     Route::prefix('v2/reports')->name('admin.v2.reports.')->group(function () {
-        Route::get('/',                          [App\Http\Controllers\Admin\ReportsController::class, 'index'])->name('index');
-        Route::get('/{year}/{month}/download',   [App\Http\Controllers\Admin\ReportsController::class, 'download'])->name('download');
-        Route::post('/gerar',                    [App\Http\Controllers\Admin\ReportsController::class, 'generate'])->name('generate');
+        Route::get('/',                  [App\Http\Controllers\Admin\ReportsController::class, 'index'])->name('index');
+        Route::get('/{filename}/download', [App\Http\Controllers\Admin\ReportsController::class, 'download'])->name('download')->where('filename', '[^/]+\.pdf');
+        Route::post('/gerar',            [App\Http\Controllers\Admin\ReportsController::class, 'generate'])->name('generate');
     });
 
     // ============================================================

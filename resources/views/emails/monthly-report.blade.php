@@ -92,6 +92,47 @@
                 </div>
             </div>
 
+            <div class="section-label">Financeiro</div>
+            <div class="kpi-row">
+                <div class="kpi">
+                    <div class="kpi-label">Receitas</div>
+                    <div class="kpi-value" style="color:#198754;font-size:1.1rem">{{ fe($c['mov_income']) }}</div>
+                    <div class="kpi-sub">vs mês ant.{!! delta_html($c['mov_income'], $pm['mov_income']) !!}</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Despesas</div>
+                    <div class="kpi-value" style="color:#dc3545;font-size:1.1rem">{{ fe($c['mov_expenses']) }}</div>
+                    <div class="kpi-sub">vs mês ant.{!! delta_html($c['mov_expenses'], $pm['mov_expenses']) !!}</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Resultado do mês</div>
+                    @php $netColor = $c['mov_net'] >= 0 ? '#198754' : '#dc3545'; @endphp
+                    <div class="kpi-value" style="color:{{ $netColor }};font-size:1.05rem">
+                        {{ ($c['mov_net'] >= 0 ? '+' : '') . fe($c['mov_net']) }}
+                    </div>
+                    <div class="kpi-sub">receitas − despesas</div>
+                </div>
+            </div>
+
+            <div class="section-label">Legalizações</div>
+            <div class="kpi-row">
+                <div class="kpi">
+                    <div class="kpi-label">Novas este mês</div>
+                    <div class="kpi-value">{{ $data['legalizations']['month_new'] }}</div>
+                    <div class="kpi-sub">vs mês ant.{!! delta_html($c['legalizations_new'], $pm['legalizations_new']) !!}</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Total realizadas</div>
+                    <div class="kpi-value">{{ $data['legalizations']['total'] }}</div>
+                    <div class="kpi-sub">desde o início</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Concluídas</div>
+                    <div class="kpi-value" style="color:#198754">{{ $data['legalizations']['completed'] }}</div>
+                    <div class="kpi-sub">{{ $data['legalizations']['in_progress'] }} em progresso</div>
+                </div>
+            </div>
+
             <hr>
             <div class="attachment-note">
                 📎 O relatório completo com todas as comparações (mês anterior, mesmo mês do ano anterior e média anual) está em anexo em PDF.
