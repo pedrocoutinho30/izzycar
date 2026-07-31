@@ -88,6 +88,9 @@ class ClientV2Controller extends Controller
             'newsletter_consent' => 'nullable|boolean',
         ]);
 
+        $validated['data_processing_consent'] = $validated['data_processing_consent'] ?? true;
+        $validated['newsletter_consent']       = $validated['newsletter_consent'] ?? false;
+
         Client::create($validated);
 
         return redirect()->route('admin.v2.clients.index')
