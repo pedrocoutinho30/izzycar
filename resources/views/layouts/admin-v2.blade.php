@@ -33,6 +33,7 @@
             --admin-hover: #f1f3f5;
             --sidebar-width: 280px;
             --topbar-height: 70px;
+            --banner-height: 0px;
             --border-radius: 12px;
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
             --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -57,13 +58,30 @@
             overflow-x: hidden;
         }
 
+        .impersonation-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--banner-height);
+            z-index: 1040;
+            background: #6e0707;
+            color: #fff;
+            text-align: center;
+            padding: .5rem 1rem;
+            font-size: .88rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /**
          * TOPBAR (Barra Superior)
          * Barra fixa no topo com logo, search e user menu
          */
         .admin-topbar {
             position: fixed;
-            top: 0;
+            top: var(--banner-height);
             left: 0;
             right: 0;
             height: var(--topbar-height);
@@ -115,9 +133,11 @@
 
         /* Search bar na topbar */
         .topbar-search {
-            flex: 1;
-            max-width: 500px;
-            margin: 0 2rem;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: min(500px, 40vw);
         }
 
         .topbar-search input {
@@ -142,6 +162,61 @@
             left: 1rem;
             top: 50%;
             transform: translateY(-50%);
+            color: #999;
+        }
+
+        /* Painel de resultados da pesquisa global */
+        .global-search-results {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            max-height: 70vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--admin-border);
+            z-index: 1050;
+        }
+        .global-search-results.show { display: block; }
+
+        .gsr-group-title {
+            padding: .6rem 1rem .3rem;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .gsr-group-title .badge { font-size: .7rem; letter-spacing: .02em; }
+        .gsr-item {
+            display: flex;
+            flex-direction: column;
+            gap: .1rem;
+            padding: .55rem 1rem;
+            text-decoration: none;
+            color: inherit;
+            transition: background .1s;
+        }
+        .gsr-item:hover { background: var(--admin-hover); }
+        .gsr-item__title { font-size: .87rem; font-weight: 600; color: #111; }
+        .gsr-item__subtitle { font-size: .76rem; color: #888; }
+        .gsr-see-all {
+            display: block;
+            text-align: center;
+            padding: .65rem 1rem;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--admin-primary);
+            text-decoration: none;
+            border-top: 1px solid var(--admin-border);
+            background: var(--admin-light);
+        }
+        .gsr-see-all:hover { background: var(--admin-hover); }
+        .gsr-empty, .gsr-loading {
+            padding: 1rem;
+            text-align: center;
+            font-size: .82rem;
             color: #999;
         }
 
@@ -174,7 +249,7 @@
          */
         .admin-sidebar {
             position: fixed;
-            top: var(--topbar-height);
+            top: calc(var(--topbar-height) + var(--banner-height));
             left: 0;
             bottom: 0;
             width: var(--sidebar-width);
@@ -278,9 +353,9 @@
          */
         .admin-main {
             margin-left: var(--sidebar-width);
-            margin-top: var(--topbar-height);
+            margin-top: calc(var(--topbar-height) + var(--banner-height));
             padding: 2rem;
-            min-height: calc(100vh - var(--topbar-height));
+            min-height: calc(100vh - var(--topbar-height) - var(--banner-height));
             transition: var(--transition);
         }
 
@@ -515,7 +590,7 @@
         .sidebar-overlay {
             display: none;
             position: fixed;
-            top: var(--topbar-height);
+            top: calc(var(--topbar-height) + var(--banner-height));
             left: 0;
             right: 0;
             bottom: 0;
@@ -581,7 +656,18 @@
     @stack('styles')
 </head>
 
-<body>
+<body @if(session('impersonator_id')) style="--banner-height: 42px;" @endif>
+
+    @if(session('impersonator_id'))
+    <div class="impersonation-banner">
+        <i class="bi bi-eye-fill me-2"></i>
+        A visualizar como <strong>{{ auth()->user()->name }} {{ auth()->user()->last_name }}</strong> (angariador)
+        <form action="{{ route('admin.angariador.stop-impersonating') }}" method="POST" class="d-inline ms-3">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-light">Voltar a Admin</button>
+        </form>
+    </div>
+    @endif
 
     <!-- TOPBAR -->
     <div class="admin-topbar">
@@ -596,20 +682,23 @@
         </a>
 
         <!-- Search bar -->
-        <!-- <div class="topbar-search position-relative d-none d-lg-block">
+        @hasanyrole('admin|gestor|cms')
+        <div class="topbar-search position-relative d-none d-lg-block">
             <i class="bi bi-search search-icon"></i>
-            <input type="text" placeholder="Pesquisar..." id="globalSearch">
-        </div> -->
+            <input type="text" placeholder="Pesquisar clientes, leads, cotações, viaturas..." id="globalSearch" autocomplete="off">
+            <div class="global-search-results" id="globalSearchResults"></div>
+        </div>
+        @endhasanyrole
 
         <!-- Spacer -->
-        
+
 
         <!-- Notifications -->
         <div class="dropdown me-3 ms-auto">
-            <button class="btn-icon btn-secondary-modern" type="button" data-bs-toggle="dropdown">
+            <!-- <button class="btn-icon btn-secondary-modern" type="button" data-bs-toggle="dropdown">
                 <i class="bi bi-bell"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
+            </button> -->
+            <!-- <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                     <h6 class="dropdown-header">Notificações</h6>
                 </li>
@@ -618,14 +707,14 @@
                     <hr class="dropdown-divider">
                 </li>
                 <li><a class="dropdown-item text-center" href="#">Ver todas</a></li>
-            </ul>
+            </ul> -->
         </div>
 
         <!-- User menu -->
         <div class="dropdown">
             <div class="topbar-user" data-bs-toggle="dropdown">
-                <img src="https://ui-avatars.com/api/?name=Admin&background=6e0707&color=fff" alt="User">
-                <span class="d-none d-md-block">Admin</span>
+                <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=6e0707&color=fff" alt="User">
+                <span class="d-none d-md-block">{{ Auth::user()->name }}</span>
                 <i class="bi bi-chevron-down"></i>
             </div>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -649,6 +738,7 @@
     <!-- SIDEBAR -->
     <aside class="admin-sidebar" id="adminSidebar">
         <nav class="sidebar-nav">
+        @hasanyrole('admin|gestor|cms')
             <!-- Dashboard -->
             <div class="nav-item">
                 <a href="{{ route('admin.v2.dashboard') }}" class="nav-link {{ request()->routeIs('admin.v2.dashboard') ? 'active' : '' }}">
@@ -727,6 +817,20 @@
                     <span>Leads</span>
                     @php $leadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
                     <span class="nav-badge" id="leads-nav-badge" {{ $leadsCount === 0 ? 'style=display:none' : '' }}>{{ $leadsCount }}</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.angariadores.index') }}" class="nav-link {{ request()->routeIs('admin.v2.angariadores.index') || request()->routeIs('admin.v2.angariadores.show') ? 'active' : '' }}">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Angariadores</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('admin.v2.angariadores.comissoes') }}" class="nav-link {{ request()->routeIs('admin.v2.angariadores.comissoes') ? 'active' : '' }}">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Comissões</span>
                 </a>
             </div>
 
@@ -925,6 +1029,45 @@
                     <span>Manual de Utilizador</span>
                 </a>
             </div>
+        @else
+            {{-- Angariador puro: apenas a sua própria área --}}
+            <div class="nav-item">
+                <a href="{{ route('admin.angariador.dashboard') }}" class="nav-link {{ request()->routeIs('admin.angariador.dashboard') ? 'active' : '' }}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>O Meu Painel</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.angariador.leads') }}" class="nav-link {{ request()->routeIs('admin.angariador.leads') || request()->routeIs('admin.angariador.leads.show') ? 'active' : '' }}">
+                    <i class="bi bi-funnel"></i>
+                    <span>As Minhas Leads</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.angariador.propostas') }}" class="nav-link {{ request()->routeIs('admin.angariador.propostas') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Propostas</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.angariador.comissoes') }}" class="nav-link {{ request()->routeIs('admin.angariador.comissoes') ? 'active' : '' }}">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Comissões</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.angariador.formularios') }}" class="nav-link {{ request()->routeIs('admin.angariador.formularios') ? 'active' : '' }}">
+                    <i class="bi bi-envelope-open"></i>
+                    <span>Formulários</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.angariador.manual') }}" class="nav-link {{ request()->routeIs('admin.angariador.manual') ? 'active' : '' }}">
+                    <i class="bi bi-book"></i>
+                    <span>Manual do Angariador</span>
+                </a>
+            </div>
+        @endhasanyrole
         </nav>
     </aside>
 
@@ -982,13 +1125,114 @@
             }
 
             /**
-             * GLOBAL SEARCH (placeholder para funcionalidade futura)
+             * GLOBAL SEARCH
+             * Pesquisa por aproximação em Leads, Clientes, Cotações,
+             * Formulários, Legalizações, Viaturas e Vendas.
              */
             const globalSearch = document.getElementById('globalSearch');
-            if (globalSearch) {
-                globalSearch.addEventListener('input', function(e) {
-                    // TODO: Implementar pesquisa global
-                    console.log('Search:', e.target.value);
+            const globalSearchResults = document.getElementById('globalSearchResults');
+
+            if (globalSearch && globalSearchResults) {
+                const searchUrl = '{{ route('admin.v2.search') }}';
+                const resultsUrl = '{{ route('admin.v2.search.results') }}';
+                let debounceTimer = null;
+                let currentController = null;
+
+                function goToFullResults(term) {
+                    window.location.href = resultsUrl + '?q=' + encodeURIComponent(term);
+                }
+
+                function renderResults(groups, term) {
+                    if (!groups.length) {
+                        globalSearchResults.innerHTML = '<div class="gsr-empty">Sem resultados.</div>';
+                        return;
+                    }
+
+                    globalSearchResults.innerHTML = groups.map(group => `
+                        <div class="gsr-group-title"><span class="badge bg-${group.color}"><i class="bi ${group.icon} me-1"></i>${group.label}</span></div>
+                        ${group.items.map(item => `
+                            <a href="${item.url}" class="gsr-item">
+                                <span class="gsr-item__title">${escapeHtml(item.title)}</span>
+                                ${item.subtitle ? `<span class="gsr-item__subtitle">${escapeHtml(item.subtitle)}</span>` : ''}
+                            </a>
+                        `).join('')}
+                    `).join('') + `
+                        <a href="#" class="gsr-see-all" data-term="${escapeHtml(term)}">Ver todas os resultados para "${escapeHtml(term)}" →</a>
+                    `;
+                }
+
+                function escapeHtml(text) {
+                    const div = document.createElement('div');
+                    div.textContent = text ?? '';
+                    return div.innerHTML;
+                }
+
+                globalSearch.addEventListener('input', function (e) {
+                    const term = e.target.value.trim();
+
+                    clearTimeout(debounceTimer);
+
+                    if (term.length < 2) {
+                        globalSearchResults.classList.remove('show');
+                        return;
+                    }
+
+                    debounceTimer = setTimeout(() => {
+                        if (currentController) currentController.abort();
+                        currentController = new AbortController();
+
+                        globalSearchResults.innerHTML = '<div class="gsr-loading">A pesquisar...</div>';
+                        globalSearchResults.classList.add('show');
+
+                        fetch(searchUrl + '?q=' + encodeURIComponent(term), {
+                            signal: currentController.signal,
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        })
+                            .then(res => res.json())
+                            .then(data => renderResults(data.groups || [], term))
+                            .catch(err => {
+                                if (err.name !== 'AbortError') {
+                                    globalSearchResults.innerHTML = '<div class="gsr-empty">Erro ao pesquisar.</div>';
+                                }
+                            });
+                    }, 300);
+                });
+
+                globalSearch.addEventListener('focus', function () {
+                    if (globalSearchResults.innerHTML.trim() && globalSearch.value.trim().length >= 2) {
+                        globalSearchResults.classList.add('show');
+                    }
+                });
+
+                globalSearchResults.addEventListener('click', function (e) {
+                    const seeAll = e.target.closest('.gsr-see-all');
+                    if (seeAll) {
+                        e.preventDefault();
+                        goToFullResults(seeAll.dataset.term);
+                    }
+                });
+
+                globalSearch.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        const term = globalSearch.value.trim();
+                        if (term.length >= 2) {
+                            e.preventDefault();
+                            goToFullResults(term);
+                        }
+                    }
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!e.target.closest('.topbar-search')) {
+                        globalSearchResults.classList.remove('show');
+                    }
+                });
+
+                globalSearch.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        globalSearchResults.classList.remove('show');
+                        globalSearch.blur();
+                    }
                 });
             }
         });
