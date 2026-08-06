@@ -11,6 +11,9 @@
     ],
     'title'       => 'Manual do Angariador',
     'subtitle'    => 'Guia completo para trabalhar como angariador Izzycar — consulte sempre que tiver dúvidas',
+    'extraActions' => [
+        ['href' => route('admin.angariador.faq'), 'label' => 'Perguntas Frequentes', 'icon' => 'bi-question-circle'],
+    ],
 ])
 
 @include('admin.v2.manual._angariador-content', ['publicView' => false])

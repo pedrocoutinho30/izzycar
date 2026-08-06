@@ -599,6 +599,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::get('/comissoes', [App\Http\Controllers\Admin\AngariadorController::class, 'comissoes'])->name('comissoes');
         Route::get('/formularios', [App\Http\Controllers\Admin\AngariadorController::class, 'formularios'])->name('formularios');
         Route::get('/manual', [App\Http\Controllers\Admin\ManualController::class, 'angariador'])->name('manual');
+        Route::get('/faq', [App\Http\Controllers\Admin\ManualController::class, 'angariadorFaq'])->name('faq');
         Route::post('/stop-impersonating', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'stopImpersonating'])->name('stop-impersonating');
     });
 

@@ -15,4 +15,9 @@ class ManualController extends Controller
     {
         return view('admin.v2.manual.angariador');
     }
+
+    public function angariadorFaq()
+    {
+        return view('admin.v2.manual.faq');
+    }
 }

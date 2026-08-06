@@ -1067,6 +1067,12 @@
                     <span>Manual do Angariador</span>
                 </a>
             </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.angariador.faq') }}" class="nav-link {{ request()->routeIs('admin.angariador.faq') ? 'active' : '' }}">
+                    <i class="bi bi-question-circle"></i>
+                    <span>Perguntas Frequentes</span>
+                </a>
+            </div>
         @endhasanyrole
         </nav>
     </aside>
