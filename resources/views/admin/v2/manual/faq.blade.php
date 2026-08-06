@@ -34,7 +34,7 @@ $faqGroups = [
         ['q' => 'Como é feita a entrega final?', 'a' => 'Após a emissão da matrícula, são feitas as chapas, o cliente contrata o seguro automóvel e pode levantar o carro.'],
     ],
     'Pagamentos e Custos' => [
-        ['q' => 'Como funciona o pagamento?', 'a' => 'A compra requer pagamento integral, sem possibilidade de financiamento ou retomas.'],
+        ['q' => 'Como funciona o pagamento?', 'a' => 'A compra do carro é feita a pronto pagamento diretamente ao stand vendedor (não são aceites retomas). Se o cliente preferir financiamento, a Izzycar tem um parceiro de financiamento e pode fornecer-lhe o contacto.'],
         ['q' => 'Como são feitos os pagamentos?', 'a' => 'O carro deve ser pago na totalidade por transferência interbancária diretamente para o stand vendedor.<br>O serviço é pago em duas fases: 60% no início e 40% na entrega do veículo.'],
         ['q' => 'Existem custos adicionais?', 'a' => 'Não. O valor apresentado na proposta já inclui todos os custos de transporte, legalização e impostos.'],
         ['q' => 'O que está incluído no valor da proposta?', 'a' => '<ul class="mb-0"><li><b>Preço da Viatura</b> — valor do carro adquirido fora de Portugal.</li><li><b>Transporte</b> — transporte seguro até Portugal.</li><li><b>ISV</b> — Imposto Sobre Veículos, pago ao Estado na legalização.</li><li><b>IUC</b> — Imposto Único de Circulação, anual, tal como em qualquer viatura nacional.</li><li><b>Inspeção, Matrícula e Legalização</b> — inspeção obrigatória, emissão da matrícula e processo administrativo.</li><li><b>Honorários do Serviço</b> — valor fixo pelo serviço completo de importação e legalização.</li></ul>'],
@@ -50,7 +50,7 @@ $faqGroups = [
         ['q' => 'Posso negociar ou alterar o preço da proposta?', 'a' => 'Não. Toda a pesquisa, negociação e valor final da proposta é sempre definido pela equipa Izzycar. O teu papel é angariar e acompanhar o contacto, nunca negociar preços.'],
         ['q' => 'E se o cliente já for cliente Izzycar, através de outra via?', 'a' => 'Se o email/telefone já corresponderem a um registo existente, a administração é notificada para analisar o caso manualmente — a atribuição desse caso específico pode não ficar automaticamente associada a ti. Confirma sempre com a administração se isso acontecer.'],
         ['q' => 'O que faço se o cliente disser que não recebeu o email da proposta?', 'a' => 'Confirma a caixa de spam e, se necessário, reforça o mesmo link da proposta por WhatsApp/SMS — encontras o link na página da lead, em "Propostas".'],
-        ['q' => 'Quanto tempo depois da entrega recebo a minha comissão?', 'a' => 'A administração tem até 24 horas após a entrega do veículo para marcar a comissão como paga. Podes acompanhar o estado (pendente/paga) na área de Comissões do teu painel.'],
+        ['q' => 'Quanto tempo depois da entrega recebo a minha comissão?', 'a' => 'A administração compromete-se a fazer o pagamento até 48 horas após a entrega do veículo. Podes acompanhar o estado (pendente/paga) na área de Comissões do teu painel.'],
     ],
 ];
 @endphp

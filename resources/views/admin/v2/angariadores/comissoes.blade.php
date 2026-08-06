@@ -11,7 +11,7 @@
         ['icon' => '', 'label' => 'Comissões'],
     ],
     'title' => 'Comissões de Angariadores',
-    'subtitle' => 'Comissões devidas e pagas por cotação convertida — pagamento devido até 24h após o estado avançar para "Entrega"',
+    'subtitle' => 'Comissões devidas e pagas por cotação convertida — pagamento devido até 48h após o estado avançar para "Entrega"',
 ])
 
 @include('components.admin.stats-cards', [
@@ -74,7 +74,7 @@
                         @if($proposal->comissao_paga)
                             <span class="badge bg-success">Pago em {{ optional($proposal->comissao_paga_em)->format('d/m/Y') }}</span>
                         @elseif($overdue)
-                            <span class="badge bg-danger"><i class="bi bi-exclamation-triangle me-1"></i>Em atraso (&gt;24h)</span>
+                            <span class="badge bg-danger"><i class="bi bi-exclamation-triangle me-1"></i>Em atraso (&gt;48h)</span>
                         @elseif($proposal->status === 'Entrega')
                             <span class="badge bg-warning">Pendente</span>
                         @else

@@ -266,7 +266,7 @@
                 <ul>
                     <li>A comissão fica <strong>pendente</strong> desde a aceitação da proposta.</li>
                     <li>É paga quando o processo chega ao estado <strong>"Entrega"</strong> (o carro é entregue ao cliente).</li>
-                    <li>A administração tem até <strong>24 horas</strong> após esse momento para efetuar o pagamento — se ultrapassar esse prazo sem ser marcada como paga, o registo é assinalado como "em atraso" para a administração.</li>
+                    <li>A administração compromete-se a efetuar o pagamento até <strong>48 horas</strong> após esse momento — se ultrapassar esse prazo sem ser marcada como paga, o registo é assinalado como "em atraso" para a administração.</li>
                 </ul>
 
                 <h6 class="manual-topic">Comprovativo</h6>

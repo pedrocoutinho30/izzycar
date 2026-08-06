@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Administração de angariadores: listagem+métricas, detalhe (sem
  * impersonation), impersonation reversível e ledger de comissões
- * cross-angariador com alerta de atraso (>24h após entrega sem pagamento).
+ * cross-angariador com alerta de atraso (>48h após entrega sem pagamento).
  */
 class AngariadorAdminController extends Controller
 {

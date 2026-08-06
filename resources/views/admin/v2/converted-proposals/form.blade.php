@@ -822,7 +822,7 @@ $pendingValue = $totalValue - $paidValue;
                     @elseif($convertedProposal->isCommissionOverdue())
                         <div class="alert alert-danger py-2 mb-3">
                             <i class="bi bi-exclamation-triangle me-1"></i>
-                            Pendente — em atraso (mais de 24h desde a entrega).
+                            Pendente — em atraso (mais de 48h desde a entrega).
                         </div>
                     @else
                         <div class="alert alert-warning py-2 mb-3">

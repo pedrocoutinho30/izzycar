@@ -121,7 +121,7 @@ class ConvertedProposal extends Model
 
     /**
      * A comissão está em atraso quando a cotação já está (ou já esteve) no
-     * estado "Entrega" há mais de 24h e a comissão ainda não foi paga.
+     * estado "Entrega" há mais de 48h e a comissão ainda não foi paga.
      */
     public function isCommissionOverdue(): bool
     {
@@ -135,7 +135,7 @@ class ConvertedProposal extends Model
             return false;
         }
 
-        return $deliveredAt->copy()->addHours(24)->isPast();
+        return $deliveredAt->copy()->addHours(48)->isPast();
     }
 
     /**
