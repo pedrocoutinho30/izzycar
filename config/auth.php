@@ -99,6 +99,16 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+
+        // Usado no email de "definir password" enviado a utilizadores recém-criados.
+        // Expira mais tarde que o "esqueci-me da password" normal, para dar tempo
+        // ao utilizador de ver o email sem pressa.
+        'setup' => [
+            'provider' => 'users',
+            'table' => 'password_reset_tokens',
+            'expire' => 4320,
+            'throttle' => 60,
+        ],
     ],
 
     /*
