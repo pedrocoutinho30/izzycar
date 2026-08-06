@@ -11,6 +11,8 @@ class Client extends Model
 
     // Definindo os campos que podem ser preenchidos (Mass Assignment)
     protected $fillable = [
+        'owner_id',
+        'angariador_code',
         'name',
         'vat_number',
         'birth_date',
@@ -79,5 +81,23 @@ class Client extends Model
     public function proposals()
     {
         return $this->hasMany(Proposal::class, 'client_id');
+    }
+
+    public function convertedProposals()
+    {
+        return $this->hasMany(ConvertedProposal::class, 'client_id');
+    }
+
+    public function formProposals()
+    {
+        return $this->hasMany(FormProposal::class, 'client_id');
+    }
+
+    /**
+     * Proprietário da lead (angariador responsável).
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }

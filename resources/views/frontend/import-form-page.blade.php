@@ -69,6 +69,7 @@
 
     <form id="importForm">
       @csrf
+      <input type="hidden" name="angariador" id="angariadorInput" value="">
 
       {{-- ── STEP 1: Dados pessoais ── --}}
       <div class="if-card if-reveal">
@@ -316,6 +317,13 @@
 window.brands = @json($brands);
 
 document.addEventListener('DOMContentLoaded', function () {
+
+  /* ── Angariador (captado via cookie ?angariador=) ── */
+  (function () {
+    const match = document.cookie.match('(^|;)\\s*angariador_ref\\s*=\\s*([^;]+)');
+    const input = document.getElementById('angariadorInput');
+    if (input && match) input.value = decodeURIComponent(match[2]);
+  })();
 
   /* ── Brand/Model cascade ── */
   const brandSel = document.getElementById('brand');

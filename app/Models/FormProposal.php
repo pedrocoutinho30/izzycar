@@ -28,8 +28,14 @@ class FormProposal extends Model
         'gearbox',
         'extras',
         'client_id',
+        'angariador_code',
         'status',
         'version',
         'proposal_id'
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 }

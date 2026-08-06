@@ -266,6 +266,27 @@
     })();
     </script>
 
+    {{-- Captura do parâmetro ?angariador=CODIGO — guarda em cookie 30 dias,
+         o primeiro valor capturado tem sempre prioridade (não é substituído). --}}
+    <script>
+    (function() {
+        const REF_COOKIE = 'angariador_ref';
+
+        function getCookie(name) {
+            const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return match ? decodeURIComponent(match[2]) : null;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('angariador');
+        if (!code || getCookie(REF_COOKIE)) return;
+
+        const days = 30;
+        const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+        document.cookie = REF_COOKIE + '=' + encodeURIComponent(code) + '; expires=' + expires + '; path=/; SameSite=Lax';
+    })();
+    </script>
+
     <!-- JAVASCRIPT FILES -->
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ImportFormConfirmationMail;
 use App\Models\LeadActivity;
+use App\Models\User;
 use App\Http\Controllers\Frontend\PageController;
 
 class ImportController extends Controller
@@ -29,6 +30,7 @@ class ImportController extends Controller
             'estimated_purchase_date' => 'required|in:imediato,1_3_meses,3_6_meses,pesquisar',
             'data_processing_consent' => 'accepted',
             'newsletter_consent'      => 'nullable|boolean',
+            'angariador'              => 'nullable|string|max:100',
         ]);
 
         // Aqui podes gravar na BD
@@ -36,7 +38,11 @@ class ImportController extends Controller
         $formPropposalData = $request->all();
         $dataProcessingConsent = $request->boolean('data_processing_consent');
         $newsletterConsent = $request->boolean('newsletter_consent');
+        $angariadorCode = $request->filled('angariador') ? $request->input('angariador') : null;
+        $angariadorOwner = $angariadorCode ? User::where('referral_code', $angariadorCode)->first() : null;
+
         $clientExist = Client::where('email', $formPropposalData['email'])->where('phone', $formPropposalData['phone'])->first();
+        $isDuplicateClient = (bool) $clientExist;
 
         if (!$clientExist) {
 
@@ -49,17 +55,31 @@ class ImportController extends Controller
                 'newsletter_consent' => $newsletterConsent,
                 'is_lead' => true,
                 'lead_source' => 'importacao',
+                'angariador_code' => $angariadorCode,
+                'owner_id' => $angariadorOwner?->id,
             ]);
         } else {
-            $clientExist->update([
+            $updateData = [
                 'data_processing_consent' => $dataProcessingConsent,
                 'newsletter_consent' => $newsletterConsent,
-            ]);
+            ];
+
+            // O primeiro angariador atribuído a esta lead tem sempre prioridade — só
+            // gravamos se ainda não houver nenhum código/proprietário associado.
+            if ($angariadorCode && !$clientExist->angariador_code) {
+                $updateData['angariador_code'] = $angariadorCode;
+            }
+            if ($angariadorOwner && !$clientExist->owner_id) {
+                $updateData['owner_id'] = $angariadorOwner->id;
+            }
+
+            $clientExist->update($updateData);
         }
         $formPropposalData['client_id'] = $clientExist->id;
+        $formPropposalData['angariador_code'] = $angariadorCode;
         $formPropposalData['status'] = 'novo';
         $formPropposalData['version'] = $formPropposalData['submodel'];
-        unset($formPropposalData['data_processing_consent'], $formPropposalData['newsletter_consent']);
+        unset($formPropposalData['data_processing_consent'], $formPropposalData['newsletter_consent'], $formPropposalData['angariador']);
         //Guardar o formulário de proposta
         $proposal = FormProposal::create($formPropposalData);
 
@@ -76,6 +96,31 @@ class ImportController extends Controller
             'bi-envelope-fill',
             'primary'
         );
+
+        // Se o email+telefone já correspondiam a um cliente existente, avisar a
+        // administração para gerir manualmente este caso (pode já ter uma lead/
+        // processo em curso, um angariador diferente, etc.).
+        if ($isDuplicateClient) {
+            LeadActivity::log(
+                $clientExist->id,
+                'Pedido de importação duplicado — cliente já existente',
+                'Este formulário foi submetido com um email e telefone que já correspondiam a um registo existente. Reveja manualmente para decidir como associar este novo pedido.',
+                'bi-exclamation-triangle-fill',
+                'warning'
+            );
+
+            Mail::raw(
+                "Foi submetido um novo pedido de importação através do formulário, mas o email e telefone já correspondem a um cliente existente.\n\n"
+                    . "Cliente: {$clientExist->name} (#{$clientExist->id})\n"
+                    . "Email: {$clientExist->email}\n"
+                    . "Telefone: {$clientExist->phone}\n\n"
+                    . "Reveja manualmente para decidir como associar este novo pedido: " . route('admin.v2.leads.show', $clientExist->id),
+                function ($message) {
+                    $message->to('geral@izzycar.pt')
+                        ->subject('Pedido de Importação Duplicado — Cliente Já Existente');
+                }
+            );
+        }
 
         // Montar corpo do email em texto
         $body = "
