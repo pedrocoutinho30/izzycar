@@ -751,6 +751,24 @@ $pendingValue = $totalValue - $paidValue;
                         @error('client_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-12">
+                        <label class="form-label">Angariador</label>
+                        <select name="owner_id" class="form-select @error('owner_id') is-invalid @enderror">
+                            <option value="">— Sem angariador —</option>
+                            @foreach($angariadores as $angariador)
+                            <option value="{{ $angariador->id }}"
+                                {{ old('owner_id', $convertedProposal->owner_id ?? '') == $angariador->id ? 'selected' : '' }}>
+                                {{ $angariador->name }} {{ $angariador->last_name }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('owner_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        @if($isEdit && $convertedProposal->comissao_paga)
+                        <div class="form-text text-success"><i class="bi bi-check-circle me-1"></i>Comissão já paga a este angariador.</div>
+                        @elseif($isEdit && $convertedProposal->owner_id)
+                        <div class="form-text text-warning"><i class="bi bi-hourglass-split me-1"></i>Comissão pendente. É paga quando o estado avança para "Entrega" (gerida na área de Angariadores).</div>
+                        @endif
+                    </div>
+                    <div class="col-12">
                         <label class="form-label">Cotação Original</label>
                         <select name="proposal_id" class="form-select @error('proposal_id') is-invalid @enderror">
                             <option value="">Sem cotação associada...</option>
@@ -782,6 +800,62 @@ $pendingValue = $totalValue - $paidValue;
                     @endif
                 </div>
             </div>
+
+            <!-- COMISSÃO DO ANGARIADOR -->
+            @if($isEdit && $convertedProposal->owner_id)
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5 class="modern-card-title"><i class="bi bi-cash-coin"></i> Comissão do Angariador</h5>
+                </div>
+                <div class="p-3">
+                    @php $amount = $convertedProposal->angariadorCommissionAmount(); @endphp
+                    <p class="mb-3">
+                        Valor: <strong>{{ $amount !== null ? number_format($amount, 2, ',', '.') . ' €' : '—' }}</strong>
+                        para <strong>{{ $convertedProposal->owner->name ?? '—' }}</strong>
+                    </p>
+
+                    @if($convertedProposal->comissao_paga)
+                        <div class="alert alert-success py-2 mb-3">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Paga em {{ optional($convertedProposal->comissao_paga_em)->format('d/m/Y') }}
+                        </div>
+                    @elseif($convertedProposal->isCommissionOverdue())
+                        <div class="alert alert-danger py-2 mb-3">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Pendente — em atraso (mais de 24h desde a entrega).
+                        </div>
+                    @else
+                        <div class="alert alert-warning py-2 mb-3">
+                            <i class="bi bi-hourglass-split me-1"></i>
+                            Pendente — paga quando o estado avança para "Entrega".
+                        </div>
+                    @endif
+
+                    <div class="d-flex gap-2 mb-2">
+                        <form action="{{ route('admin.v2.angariadores.toggle-paid', $convertedProposal->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-sm {{ $convertedProposal->comissao_paga ? 'btn-outline-secondary' : 'btn-success' }}">
+                                {{ $convertedProposal->comissao_paga ? 'Marcar pendente' : 'Marcar pago' }}
+                            </button>
+                        </form>
+
+                        <form action="{{ route('admin.v2.angariadores.upload-receipt', $convertedProposal->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
+                            @csrf
+                            <label class="btn btn-sm btn-outline-secondary mb-0">
+                                <i class="bi bi-upload me-1"></i>{{ $convertedProposal->comprovativo_pagamento ? 'Substituir comprovativo' : 'Anexar comprovativo' }}
+                                <input type="file" name="comprovativo" accept=".jpg,.jpeg,.png,.pdf" class="d-none" onchange="this.form.submit()">
+                            </label>
+                        </form>
+                    </div>
+
+                    @if($convertedProposal->comprovativo_pagamento)
+                    <a href="{{ asset('storage/' . $convertedProposal->comprovativo_pagamento) }}" target="_blank" class="small">
+                        <i class="bi bi-paperclip me-1"></i>Ver comprovativo anexado
+                    </a>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             <!-- COMISSÕES -->
             <div class="modern-card">

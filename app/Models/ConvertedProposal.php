@@ -13,6 +13,7 @@ class ConvertedProposal extends Model
         'status',
         'url',
         'client_id',
+        'owner_id',
         'proposal_id',
         'brand',
         'modelCar',
@@ -43,8 +44,16 @@ class ConvertedProposal extends Model
         'carro_pago',
         'valor_comissao',
         'valor_comissao_final',
+        'comissao_paga',
+        'comissao_paga_em',
+        'comprovativo_pagamento',
         'contactos_stand',
         'observacoes',
+    ];
+
+    protected $casts = [
+        'comissao_paga' => 'boolean',
+        'comissao_paga_em' => 'date',
     ];
 
     // Relacionamentos
@@ -57,9 +66,19 @@ class ConvertedProposal extends Model
     }
 
     public function statusHistories()
-{
-    return $this->hasMany(StatusProposalHistory::class, 'converted_proposal_id');
-}
+    {
+        return $this->hasMany(StatusProposalHistory::class, 'converted_proposal_id');
+    }
+
+    /**
+     * Angariador desta cotação convertida — independente do owner_id do
+     * Client, para que uma segunda cotação/venda ao mesmo cliente possa não
+     * estar associada a nenhum angariador (ou a um diferente).
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 
     protected static function booted()
     {
@@ -72,5 +91,73 @@ class ConvertedProposal extends Model
                 ]);
             }
         });
+    }
+
+    /**
+     * Momento em que esta cotação convertida entrou no estado "Entrega",
+     * lido do histórico de estados (não há campo manual separado para isto).
+     */
+    public function deliveredAt(): ?\Illuminate\Support\Carbon
+    {
+        return $this->statusHistories()
+            ->where('new_status', 'Entrega')
+            ->latest('created_at')
+            ->first()?->created_at;
+    }
+
+    /**
+     * Comissão do angariador desta cotação convertida — valor fixo definido
+     * no perfil do angariador (users.commission_fixed_value). Null se não
+     * tiver angariador associado ou se este não tiver comissão definida.
+     */
+    public function angariadorCommissionAmount(): ?float
+    {
+        if (!$this->owner_id || $this->owner?->commission_fixed_value === null) {
+            return null;
+        }
+
+        return round((float) $this->owner->commission_fixed_value, 2);
+    }
+
+    /**
+     * A comissão está em atraso quando a cotação já está (ou já esteve) no
+     * estado "Entrega" há mais de 24h e a comissão ainda não foi paga.
+     */
+    public function isCommissionOverdue(): bool
+    {
+        if ($this->comissao_paga) {
+            return false;
+        }
+
+        $deliveredAt = $this->deliveredAt();
+
+        if (!$deliveredAt) {
+            return false;
+        }
+
+        return $deliveredAt->copy()->addHours(24)->isPast();
+    }
+
+    /**
+     * Soma os totais [recebido, pendente] de uma coleção de cotações convertidas.
+     */
+    public static function commissionTotals($convertedProposals): array
+    {
+        $recebido = 0.0;
+        $pendente = 0.0;
+
+        foreach ($convertedProposals as $convertedProposal) {
+            $amount = $convertedProposal->angariadorCommissionAmount();
+            if ($amount === null) {
+                continue;
+            }
+            if ($convertedProposal->comissao_paga) {
+                $recebido += $amount;
+            } else {
+                $pendente += $amount;
+            }
+        }
+
+        return [round($recebido, 2), round($pendente, 2)];
     }
 }

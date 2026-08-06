@@ -7,6 +7,7 @@ use App\Mail\ProposalStatusUpdatedMail;
 use App\Models\ConvertedProposal;
 use App\Models\Client;
 use App\Models\Proposal;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -33,7 +34,7 @@ class ConvertedProposalV2Controller extends Controller
     public function index(Request $request)
     {
         // Query base com relacionamentos
-        $query = ConvertedProposal::with(['client', 'proposal']);
+        $query = ConvertedProposal::with(['client', 'proposal', 'owner']);
 
         // Filtro de pesquisa (cliente ou matrícula)
         if ($request->filled('search')) {
@@ -96,8 +97,9 @@ class ConvertedProposalV2Controller extends Controller
     {
         $clients = Client::orderBy('name')->get();
         $proposals = Proposal::orderBy('created_at', 'desc')->get();
-        
-        return view('admin.v2.converted-proposals.form', compact('clients', 'proposals'));
+        $angariadores = User::role('angariador')->orderBy('name')->get();
+
+        return view('admin.v2.converted-proposals.form', compact('clients', 'proposals', 'angariadores'));
     }
 
     /**
@@ -109,6 +111,7 @@ class ConvertedProposalV2Controller extends Controller
             'status' => 'nullable|string|max:255',
             'url' => 'nullable|url|max:500',
             'client_id' => 'required|exists:clients,id',
+            'owner_id' => 'nullable|exists:users,id',
             'proposal_id' => 'nullable|exists:proposals,id',
             'brand' => 'nullable|string|max:255',
             'modelCar' => 'nullable|string|max:255',
@@ -160,9 +163,10 @@ class ConvertedProposalV2Controller extends Controller
         $convertedProposal = ConvertedProposal::with(['client', 'proposal'])->findOrFail($id);
         $clients = Client::orderBy('name')->get();
         $proposals = Proposal::orderBy('created_at', 'desc')->get();
+        $angariadores = User::role('angariador')->orderBy('name')->get();
         $statusHistory = $convertedProposal->statusHistories()->orderBy('created_at', 'desc')->get();
 
-        return view('admin.v2.converted-proposals.form', compact('convertedProposal', 'clients', 'proposals', 'statusHistory'));
+        return view('admin.v2.converted-proposals.form', compact('convertedProposal', 'clients', 'proposals', 'angariadores', 'statusHistory'));
     }
 
     /**
@@ -176,6 +180,7 @@ class ConvertedProposalV2Controller extends Controller
             'status' => 'nullable|string|max:255',
             'url' => 'nullable|url|max:500',
             'client_id' => 'required|exists:clients,id',
+            'owner_id' => 'nullable|exists:users,id',
             'proposal_id' => 'nullable|exists:proposals,id',
             'brand' => 'nullable|string|max:255',
             'modelCar' => 'nullable|string|max:255',
