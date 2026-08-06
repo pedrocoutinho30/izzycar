@@ -182,6 +182,11 @@
                     <li><strong>Leads Convertidas</strong> e <strong>Taxa de Conversão</strong>.</li>
                     <li><strong>Comissão Pendente</strong> e <strong>Comissão Recebida</strong>, com acesso rápido ao detalhe.</li>
                 </ul>
+
+                <figure class="manual-screenshot">
+                    <img src="{{ asset('img/manual/painel.png') }}" alt="O Meu Painel — resumo de leads geradas, convertidas, taxa de conversão e comissão pendente">
+                    <figcaption>O painel inicial, com o resumo das tuas leads e comissões, e o teu link de angariador.</figcaption>
+                </figure>
             </div>
         </div>
 
@@ -202,6 +207,11 @@
                     <i class="bi bi-info-circle me-1"></i>
                     <strong>Importante:</strong> o tratamento comercial da lead (pesquisa, negociação, proposta) é sempre feito pela equipa Izzycar — não pelo angariador. Enquanto não houver proposta enviada, verás apenas que a lead está a ser tratada, sem detalhes do processo interno.
                 </div>
+
+                <figure class="manual-screenshot">
+                    <img src="{{ asset('img/manual/leads.png') }}" alt="Lista de leads no painel do angariador">
+                    <figcaption>A lista de leads, com o estado de cada uma (em tratamento, proposta enviada, etc.)</figcaption>
+                </figure>
             </div>
         </div>
 
@@ -230,6 +240,11 @@
                     <li>Nunca deixes uma lead sem um follow-up agendado enquanto o assunto não estiver fechado.</li>
                     <li>Usa notas curtas e objetivas — a equipa Izzycar também pode consultar este histórico.</li>
                 </ul>
+
+                <figure class="manual-screenshot">
+                    <img src="{{ asset('img/manual/contactos.png') }}" alt="Timeline de contactos e agendamento de follow-up na página da lead">
+                    <figcaption>Dentro de cada lead: a Timeline &amp; Notas para registar contactos e o painel de agendamento de Follow-up.</figcaption>
+                </figure>
             </div>
         </div>
 
@@ -246,6 +261,8 @@
             <div class="manual-section__body">
                 <p>Quando a equipa Izzycar envia uma proposta a uma das tuas leads, ela aparece aqui — com o mesmo documento/link que o cliente recebeu, e o estado (enviada, aceite, etc.).</p>
                 <p>Podes abrir a proposta para ver exatamente o que o cliente está a ver, mas <strong>não vês valores internos</strong> como margens ou custos de compra — apenas o que já está no documento entregue ao cliente.</p>
+
+                
             </div>
         </div>
 
@@ -260,7 +277,7 @@
                 @endif
             </div>
             <div class="manual-section__body">
-                <p>A tua comissão tem um <strong>valor fixo</strong>, definido pela administração no teu perfil (não depende do preço do carro). É gerada automaticamente quando uma das tuas leads aceita uma proposta.</p>
+                <p>A tua comissão tem um <strong>valor fixo</strong>, definido individualmente pela administração no teu perfil — não depende do preço do carro. O valor de referência é <strong>100 €</strong> por cada proposta convertida, mas pode ser ajustado caso a caso. É gerada automaticamente quando uma das tuas leads aceita uma proposta.</p>
 
                 <h6 class="manual-topic">Quando é paga</h6>
                 <ul>
@@ -271,6 +288,11 @@
 
                 <h6 class="manual-topic">Comprovativo</h6>
                 <p>Quando a comissão é marcada como paga, a administração pode anexar um comprovativo de transferência. Se existir, verás um pequeno ícone de clip junto à data de pagamento — podes clicar para consultar.</p>
+
+                <figure class="manual-screenshot">
+                    <img src="{{ asset('img/manual/comissoes.png') }}" alt="Página de comissões do angariador, com totais recebido/pendente e lista de comissões">
+                    <figcaption>Totais de comissão recebida e pendente, e a lista com o estado de cada uma.</figcaption>
+                </figure>
             </div>
         </div>
 
@@ -286,6 +308,11 @@
             </div>
             <div class="manual-section__body">
                 <p>Lista todos os pedidos de importação submetidos através do teu link — o registo em bruto de cada formulário preenchido, incluindo os detalhes do veículo pretendido.</p>
+
+                <figure class="manual-screenshot">
+                    <img src="{{ asset('img/manual/formularios.png') }}" alt="Lista de formulários recebidos através do link de angariador">
+                    <figcaption>Cada formulário submetido através do teu link fica registado aqui.</figcaption>
+                </figure>
             </div>
         </div>
 
@@ -400,6 +427,17 @@
     background: #fafafa; border-left: 3px solid var(--admin-primary, #c00);
     padding: 1rem 1.25rem; margin: .5rem 0 1rem; font-size: .85rem;
     color: #333; border-radius: 0 8px 8px 0;
+}
+
+.manual-screenshot {
+    margin: 1rem 0 1.25rem;
+}
+.manual-screenshot img {
+    max-width: 100%; border: 1px solid #e5e5e5; border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06); display: block;
+}
+.manual-screenshot figcaption {
+    font-size: .78rem; color: #999; margin-top: .4rem; text-align: center;
 }
 
 .manual-nav__item.is-active {
