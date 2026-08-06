@@ -829,6 +829,11 @@ class ProposalController extends Controller
         $convertedProposal = ConvertedProposal::create([
             'proposal_id' => $proposal->id,
             'client_id' => $proposal->client_id,
+            // Angariador desta cotação convertida — copiado do cliente no momento
+            // da aceitação, mas gravado aqui de forma independente: uma eventual
+            // segunda cotação/venda ao mesmo cliente pode ficar sem angariador
+            // (ou com um diferente) sem afetar esta.
+            'owner_id' => $client->owner_id,
             'status' => 'Iniciada',
             'brand' => $proposal->brand,
             'modelCar' => $proposal->model,
@@ -855,6 +860,7 @@ class ProposalController extends Controller
             'old_status' => null,
             'converted_proposal_id' => $convertedProposal->id,
         ]);
+
         // 3. Enviar notificação para o cliente
         $this->sendAcceptanceEmail($proposal, $convertedProposal);
 
@@ -874,6 +880,16 @@ class ProposalController extends Controller
     {
         $client = Client::find($proposal->client_id);
 
+        // Liga de acompanhamento do processo — marca/modelo/versão são apenas
+        // segmentos decorativos do URL (a página só usa o id), por isso são
+        // convertidos em slug para nunca partirem a rota (ex: acentos, barras).
+        $trackingUrl = route('converted-proposals.timeline', [
+            'brand' => Str::slug((string) $convertedProposal->brand) ?: 'carro',
+            'model' => Str::slug((string) $convertedProposal->modelCar) ?: 'importado',
+            'version' => Str::slug((string) $convertedProposal->version) ?: 'na',
+            'id' => $convertedProposal->id,
+        ]);
+
         $data = [
             'client_name' => $client->name,
             'brand' => $convertedProposal->brand,
@@ -882,6 +898,7 @@ class ProposalController extends Controller
             'car_image' => is_array(json_decode($proposal->images, true))
                 ? json_decode($proposal->images, true)[0] ?? null
                 : null,
+            'tracking_url' => $trackingUrl,
         ];
 
         // Gerar PDF em memória
@@ -891,6 +908,15 @@ class ProposalController extends Controller
         Mail::to($client->email)
             ->cc('geral@izzycar.pt')
             ->send(new ProposalAcceptedMail($convertedProposal, $pdfContent, $data));
+
+        // Enviar também ao angariador da lead (se existir), para que possa
+        // acompanhar o processo — sem o contrato/PDF, que é só entre a
+        // Izzycar e o cliente.
+        $owner = $convertedProposal->owner;
+        if ($owner && $owner->email) {
+            Mail::to($owner->email)
+                ->send(new ProposalAcceptedMail($convertedProposal, $pdfContent, $data, forAngariador: true));
+        }
     }
     public function sentWhatsapp($id)
     {
