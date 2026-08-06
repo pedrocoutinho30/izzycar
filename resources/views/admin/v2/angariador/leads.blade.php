@@ -73,5 +73,10 @@
 .lead-card__meta { display: flex; flex-wrap: wrap; gap: .75rem; font-size: .78rem; color: #6c757d; margin-top: .2rem; }
 .lead-card__meta span { display: flex; align-items: center; gap: .3rem; }
 .lead-card__badges { flex-shrink: 0; }
+
+@media (max-width: 768px) {
+    .lead-card { flex-wrap: wrap; }
+    .item-actions { width: 100%; justify-content: flex-end; }
+}
 </style>
 @endpush
