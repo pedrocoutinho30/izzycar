@@ -65,5 +65,8 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'blockInProd' => \App\Http\Middleware\BlockInProduction::class,
-    ]; 
+        'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'restrictAngariador' => \App\Http\Middleware\RestrictAngariadorArea::class,
+    ];
 }

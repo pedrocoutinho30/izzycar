@@ -59,6 +59,19 @@ Route::get('/proposta/{brand}/{model}/{version}/{id}/timeline', [ConvertedPropos
 
 Auth::routes();
 
+Route::get('/definir-password/{token}', [App\Http\Controllers\Auth\SetPasswordController::class, 'show'])
+    ->name('password.setup');
+Route::post('/definir-password', [App\Http\Controllers\Auth\SetPasswordController::class, 'store'])
+    ->name('password.setup.store');
+
+Route::get('/manual-angariador', [App\Http\Controllers\Frontend\AngariadorManualController::class, 'index'])
+    ->name('public.manual.angariador');
+
+Route::get('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'create'])
+    ->name('public.angariador.register');
+Route::post('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'store'])
+    ->name('public.angariador.register.store');
+
 Route::get('/newsletter/unsubscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'unsubscribe'])
     ->name('newsletter.unsubscribe');
 
@@ -69,7 +82,7 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
     Lfm::routes();
 });
 
-Route::prefix('gestao')->middleware(['auth'])->group(function () {
+Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(function () {
 
 
     Route::get('/simulador-isv', [ImportSimulatorController::class, 'index'])->name('isv.simulator');
@@ -179,6 +192,8 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
     Route::get('v2/dashboard', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'index'])->name('admin.v2.dashboard');
     Route::get('v2/dashboard/chart-data', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'getChartData'])->name('admin.v2.dashboard.chart-data');
     Route::get('v2/api/new-leads', [App\Http\Controllers\Admin\DashboardV2Controller::class, 'newLeadsApi'])->name('admin.v2.api.new-leads');
+    Route::get('v2/search', [App\Http\Controllers\Admin\GlobalSearchController::class, 'index'])->name('admin.v2.search');
+    Route::get('v2/search/resultados', [App\Http\Controllers\Admin\GlobalSearchController::class, 'results'])->name('admin.v2.search.results');
 
     // ============================================================
     // DASHBOARD FINANCEIRO
@@ -225,6 +240,7 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::post('/{id}/status', [App\Http\Controllers\Admin\LeadV2Controller::class, 'updateStatus'])->name('status');
         Route::post('/{id}/activity', [App\Http\Controllers\Admin\LeadV2Controller::class, 'storeActivity'])->name('activity');
         Route::post('/{id}/followup', [App\Http\Controllers\Admin\LeadV2Controller::class, 'saveFollowup'])->name('followup');
+        Route::post('/{id}/owner', [App\Http\Controllers\Admin\LeadV2Controller::class, 'assignOwner'])->name('assign-owner');
         Route::delete('/{id}', [App\Http\Controllers\Admin\LeadV2Controller::class, 'destroy'])->name('destroy');
     });
 
@@ -566,6 +582,39 @@ Route::prefix('gestao')->middleware(['auth'])->group(function () {
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\UserV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\UserV2Controller::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\UserV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // PORTAL DO ANGARIADOR
+    // ============================================================
+    Route::prefix('angariador')->name('admin.angariador.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AngariadorController::class, 'dashboard'])->name('dashboard');
+        Route::get('/leads', [App\Http\Controllers\Admin\AngariadorController::class, 'leads'])->name('leads');
+        Route::get('/leads/kanban', [App\Http\Controllers\Admin\AngariadorController::class, 'kanban'])->name('leads.kanban');
+        Route::get('/leads/{client}', [App\Http\Controllers\Admin\AngariadorController::class, 'leadShow'])->name('leads.show');
+        Route::post('/leads/{client}/activity', [App\Http\Controllers\Admin\AngariadorController::class, 'storeActivity'])->name('leads.activity');
+        Route::post('/leads/{client}/followup', [App\Http\Controllers\Admin\AngariadorController::class, 'saveFollowup'])->name('leads.followup');
+        Route::post('/leads/{client}/status', [App\Http\Controllers\Admin\AngariadorController::class, 'updateStatus'])->name('leads.status');
+        Route::get('/propostas', [App\Http\Controllers\Admin\AngariadorController::class, 'propostas'])->name('propostas');
+        Route::get('/comissoes', [App\Http\Controllers\Admin\AngariadorController::class, 'comissoes'])->name('comissoes');
+        Route::get('/formularios', [App\Http\Controllers\Admin\AngariadorController::class, 'formularios'])->name('formularios');
+        Route::get('/manual', [App\Http\Controllers\Admin\ManualController::class, 'angariador'])->name('manual');
+        Route::post('/stop-impersonating', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'stopImpersonating'])->name('stop-impersonating');
+    });
+
+    // ============================================================
+    // ADMINISTRAÇÃO DE ANGARIADORES (visível apenas para admin/gestor,
+    // já bloqueada para angariadores puros pelo middleware restrictAngariador)
+    // ============================================================
+    Route::prefix('v2/angariadores')->name('admin.v2.angariadores.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'index'])->name('index');
+        Route::get('/comissoes', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'comissoes'])->name('comissoes');
+        Route::post('/comissoes/{proposal}/pagar', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'togglePaid'])->name('toggle-paid');
+        Route::post('/comissoes/{proposal}/comprovativo', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'uploadReceipt'])->name('upload-receipt');
+        Route::post('/{user}/aprovar', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'approve'])->name('approve');
+        Route::post('/{user}/rejeitar', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'reject'])->name('reject');
+        Route::get('/{user}', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'show'])->name('show');
+        Route::post('/{user}/impersonate', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'impersonate'])->name('impersonate');
     });
 
     // ============================================================
