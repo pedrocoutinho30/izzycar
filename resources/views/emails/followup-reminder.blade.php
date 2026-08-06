@@ -50,7 +50,7 @@
                     @if($lead->email)
                         <div class="lead-phone">✉️ {{ $lead->email }}</div>
                     @endif
-                    <a href="{{ route('admin.v2.leads.show', $lead->id) }}" class="lead-link">Ver no BO →</a>
+                    <a href="{{ ($forAngariador ?? false) ? route('admin.angariador.leads.show', $lead->id) : route('admin.v2.leads.show', $lead->id) }}" class="lead-link">Ver no BO →</a>
                 </div>
             </div>
             @empty

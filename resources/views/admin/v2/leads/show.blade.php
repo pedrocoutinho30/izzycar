@@ -378,6 +378,33 @@
             $followupColors = ['atraso' => 'danger', 'hoje' => 'warning', 'agendado' => 'info'];
             $followupIcons  = ['atraso' => 'bi-exclamation-circle-fill', 'hoje' => 'bi-alarm-fill', 'agendado' => 'bi-calendar-check'];
         @endphp
+
+        {{-- Proprietário (Angariador) --}}
+        <div class="modern-card mb-4">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title"><i class="bi bi-person-badge"></i> Proprietário da Lead</h5>
+            </div>
+            <div class="modern-card-body">
+                <form action="{{ route('admin.v2.leads.assign-owner', $lead->id) }}" method="POST" class="d-flex gap-2">
+                    @csrf
+                    <select name="owner_id" class="form-select form-select-sm">
+                        <option value="">— Sem proprietário —</option>
+                        @foreach($angariadores as $angariador)
+                            <option value="{{ $angariador->id }}" {{ $lead->owner_id == $angariador->id ? 'selected' : '' }}>
+                                {{ $angariador->name }} {{ $angariador->last_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Guardar</button>
+                </form>
+                @if($lead->angariador_code && !$lead->owner_id)
+                <div class="form-text text-warning mt-2">
+                    <i class="bi bi-exclamation-triangle me-1"></i>Foi capturado o código "{{ $lead->angariador_code }}" mas não corresponde a nenhum angariador registado.
+                </div>
+                @endif
+            </div>
+        </div>
+
         <div class="modern-card mb-4">
             <div class="modern-card-header">
                 <h5 class="modern-card-title"><i class="bi bi-alarm"></i> Próximo Follow-up</h5>

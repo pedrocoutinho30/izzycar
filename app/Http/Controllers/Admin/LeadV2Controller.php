@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\FormProposal;
 use App\Models\CostSimulator;
 use App\Models\LeadActivity;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class LeadV2Controller extends Controller
@@ -20,7 +21,9 @@ class LeadV2Controller extends Controller
 
     public function create()
     {
-        return view('admin.v2.leads.create');
+        $angariadores = User::role('angariador')->orderBy('name')->get();
+
+        return view('admin.v2.leads.create', compact('angariadores'));
     }
 
     public function store(Request $request)
@@ -33,6 +36,7 @@ class LeadV2Controller extends Controller
             'lead_source' => 'nullable|string|max:255',
             'lead_status' => 'nullable|in:nova,em_contacto,fria,perdida',
             'observation' => 'nullable|string|max:2000',
+            'owner_id'    => 'nullable|exists:users,id',
         ]);
 
         $lead = Client::create([
@@ -57,7 +61,10 @@ class LeadV2Controller extends Controller
 
     public function index(Request $request)
     {
-        $query = Client::where('is_lead', true)->orderBy('created_at', 'desc');
+        // Leads perdidas ficam sempre no fim da listagem, independentemente da ordenação por data.
+        $query = Client::where('is_lead', true)
+            ->orderByRaw("lead_status = 'perdida' ASC")
+            ->orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -76,7 +83,14 @@ class LeadV2Controller extends Controller
             $query->where('lead_status', $request->lead_status);
         }
 
+        if ($request->filled('owner_id')) {
+            $query->where('owner_id', $request->owner_id);
+        }
+
+        $query->with('owner');
+
         $leads = $query->paginate(15)->withQueryString();
+        $angariadores = User::role('angariador')->orderBy('name')->get();
 
         $activeBase   = Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida']);
         $followupsHoje = Client::where('is_lead', true)
@@ -95,7 +109,25 @@ class LeadV2Controller extends Controller
             ['title' => 'Frias / Perdidas', 'value' => Client::where('is_lead', true)->whereIn('lead_status', ['fria', 'perdida'])->count(), 'icon' => 'bi-snow', 'color' => 'secondary'],
         ];
 
-        return view('admin.v2.leads.index', compact('leads', 'stats'));
+        return view('admin.v2.leads.index', compact('leads', 'stats', 'angariadores'));
+    }
+
+    public function assignOwner(Request $request, $id)
+    {
+        $lead = Client::findOrFail($id);
+        $request->validate(['owner_id' => 'nullable|exists:users,id']);
+
+        $lead->update(['owner_id' => $request->owner_id ?: null]);
+
+        LeadActivity::log(
+            $lead->id,
+            'Proprietário da lead alterado para: ' . ($lead->owner?->name ?? 'sem proprietário'),
+            '',
+            'bi-person-badge',
+            'info'
+        );
+
+        return back()->with('success', 'Proprietário da lead actualizado.');
     }
 
     public function kanban()
@@ -122,13 +154,16 @@ class LeadV2Controller extends Controller
         $lead = Client::where('is_lead', true)->with([
             'costSimulators',
             'proposals',
+            'convertedProposals',
+            'owner',
         ])->findOrFail($id);
 
         $formProposals = FormProposal::where('client_id', $id)->orderBy('created_at', 'desc')->get();
         $simulators    = CostSimulator::where('client_id', $id)->orderBy('created_at', 'desc')->get();
         $activities    = \App\Models\LeadActivity::where('client_id', $id)->with('user')->orderBy('created_at', 'desc')->get();
+        $angariadores  = User::role('angariador')->orderBy('name')->get();
 
-        return view('admin.v2.leads.show', compact('lead', 'formProposals', 'simulators', 'activities'));
+        return view('admin.v2.leads.show', compact('lead', 'formProposals', 'simulators', 'activities', 'angariadores'));
     }
 
     public function updateStatus(Request $request, $id)

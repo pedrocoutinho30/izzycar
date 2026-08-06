@@ -65,6 +65,13 @@
                 'fria' => 'Fria',
                 'perdida' => 'Perdida',
             ]
+        ],
+        [
+            'type' => 'select',
+            'name' => 'owner_id',
+            'label' => 'Angariador',
+            'value' => request('owner_id'),
+            'options' => ['' => 'Todos'] + $angariadores->pluck('name', 'id')->toArray(),
         ]
     ]
 ])
@@ -93,6 +100,9 @@
                 <span><i class="bi bi-telephone"></i> {{ $lead->phone }}</span>
                 @endif
                 <span><i class="bi bi-clock"></i> {{ $lead->created_at->diffForHumans() }}</span>
+                @if($lead->owner)
+                <span><i class="bi bi-person-badge"></i> {{ $lead->owner->name }}</span>
+                @endif
             </div>
         </div>
         <div class="lead-card__badges">

@@ -20,20 +20,37 @@ class SendFollowupReminder extends Command
         $followups = Client::whereNotNull('next_followup_at')
             ->whereBetween('next_followup_at', [$agora, $limite])
             ->orderBy('next_followup_at')
+            ->with('owner')
             ->get();
 
         if ($followups->isEmpty()) {
             return Command::SUCCESS;
         }
 
+        $dataFormatada = $agora->format('d/m/Y H:i');
         $adminEmail = config('mail.admin_address', env('MAIL_FROM_ADDRESS', 'geral@izzycar.com'));
 
-        Mail::to($adminEmail)->send(new FollowupReminderMail(
-            $followups,
-            $agora->format('d/m/Y H:i')
-        ));
+        Mail::to($adminEmail)->send(new FollowupReminderMail($followups, $dataFormatada));
 
         $this->info("Email enviado para {$adminEmail} com {$followups->count()} follow-up(s) para as {$agora->format('H:i')}.");
+
+        // Notificar também o angariador responsável por cada lead, com apenas
+        // os follow-ups que lhe pertencem (uma lead sem angariador não gera
+        // este segundo email).
+        $followups
+            ->filter(fn (Client $lead) => $lead->owner && $lead->owner->email)
+            ->groupBy('owner_id')
+            ->each(function ($ownerFollowups, $ownerId) use ($dataFormatada) {
+                $owner = $ownerFollowups->first()->owner;
+
+                Mail::to($owner->email)->send(new FollowupReminderMail(
+                    $ownerFollowups,
+                    $dataFormatada,
+                    forAngariador: true
+                ));
+
+                $this->info("Email enviado para o angariador {$owner->email} com {$ownerFollowups->count()} follow-up(s).");
+            });
 
         return Command::SUCCESS;
     }

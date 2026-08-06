@@ -90,6 +90,20 @@
                         </div>
                     </div>
 
+                    {{-- Proprietário (Angariador) --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Angariador</label>
+                        <select name="owner_id" class="form-select @error('owner_id') is-invalid @enderror">
+                            <option value="">— Sem angariador —</option>
+                            @foreach($angariadores as $angariador)
+                                <option value="{{ $angariador->id }}" {{ old('owner_id') == $angariador->id ? 'selected' : '' }}>
+                                    {{ $angariador->name }} {{ $angariador->last_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('owner_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
                     {{-- Notas --}}
                     <div class="mb-4">
                         <label class="form-label fw-semibold">Notas / Contexto</label>

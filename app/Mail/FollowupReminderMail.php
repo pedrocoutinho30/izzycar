@@ -15,11 +15,13 @@ class FollowupReminderMail extends Mailable
 
     public Collection $followups;
     public string $data;
+    public bool $forAngariador;
 
-    public function __construct(Collection $followups, string $data)
+    public function __construct(Collection $followups, string $data, bool $forAngariador = false)
     {
         $this->followups = $followups;
         $this->data = $data;
+        $this->forAngariador = $forAngariador;
     }
 
     public function envelope(): Envelope
@@ -33,6 +35,7 @@ class FollowupReminderMail extends Mailable
     {
         return new Content(
             view: 'emails.followup-reminder',
+            with: ['forAngariador' => $this->forAngariador],
         );
     }
 }
