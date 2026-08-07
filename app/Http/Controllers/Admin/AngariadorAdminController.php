@@ -37,7 +37,10 @@ class AngariadorAdminController extends Controller
      * agora é enviado o email de "definir password" (o registo público nunca
      * o envia, para não dar acesso antes de a administração validar o caso).
      * Se ainda não tiver um código de angariador, é gerado automaticamente
-     * a partir do nome.
+     * a partir do nome. Se ainda não tiver comissão definida, assume-se o
+     * valor de referência de 100€ — evita comissões silenciosamente a
+     * zero para quem entra pela candidatura pública (que não pede este
+     * valor) e ninguém reparar que falta configurá-lo.
      */
     public function approve(User $user)
     {
@@ -47,6 +50,7 @@ class AngariadorAdminController extends Controller
             'status' => 'aprovado',
             'referral_code' => $user->referral_code
                 ?? User::generateUniqueReferralCode($user->name, $user->last_name),
+            'commission_fixed_value' => $user->commission_fixed_value ?? 100,
         ]);
 
         $token = Password::broker('setup')->createToken($user);
@@ -82,24 +86,27 @@ class AngariadorAdminController extends Controller
         ]));
     }
 
-    public function impersonate(User $user)
+    public function impersonate(User $user, Request $request)
     {
         abort_unless($user->hasRole('angariador'), 404);
 
-        session()->put('impersonator_id', Auth::id());
+        $impersonatorId = Auth::id();
         Auth::login($user);
+        $request->session()->regenerate();
+        $request->session()->put('impersonator_id', $impersonatorId);
 
         return redirect()->route('admin.angariador.dashboard')
             ->with('success', 'Está agora a visualizar a aplicação como ' . $user->name . '.');
     }
 
-    public function stopImpersonating()
+    public function stopImpersonating(Request $request)
     {
-        $originalId = session()->pull('impersonator_id');
+        $originalId = $request->session()->pull('impersonator_id');
 
         abort_unless($originalId, 403);
 
         Auth::loginUsingId($originalId);
+        $request->session()->regenerate();
 
         return redirect()->route('admin.v2.angariadores.index')
             ->with('success', 'Deixou de visualizar como angariador.');
