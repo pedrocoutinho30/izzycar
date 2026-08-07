@@ -109,14 +109,16 @@ class ImportController extends Controller
                 'warning'
             );
 
+            $adminEmail = config('mail.admin_address', env('MAIL_FROM_ADDRESS', 'geral@izzycar.pt'));
+
             Mail::raw(
                 "Foi submetido um novo pedido de importação através do formulário, mas o email e telefone já correspondem a um cliente existente.\n\n"
                     . "Cliente: {$clientExist->name} (#{$clientExist->id})\n"
                     . "Email: {$clientExist->email}\n"
                     . "Telefone: {$clientExist->phone}\n\n"
                     . "Reveja manualmente para decidir como associar este novo pedido: " . route('admin.v2.leads.show', $clientExist->id),
-                function ($message) {
-                    $message->to('geral@izzycar.pt')
+                function ($message) use ($adminEmail) {
+                    $message->to($adminEmail)
                         ->subject('Pedido de Importação Duplicado — Cliente Já Existente');
                 }
             );
