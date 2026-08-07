@@ -280,6 +280,24 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
     Route::get('/v2/email-preview/newsletter-custos-importacao', fn() => view('emails.newsletter-custos-importacao'))
         ->name('admin.v2.email-preview.newsletter-custos-importacao');
 
+    // Pré-visualização do email de aceitação de proposta — ?angariador=1 mostra a versão enviada ao angariador
+    Route::get('/v2/email-preview/proposal-accepted', function (\Illuminate\Http\Request $request) {
+        $data = [
+            'client_name' => 'Beatriz Ferreira',
+            'brand' => 'BMW',
+            'model' => 'Série 3',
+            'version' => '320d',
+            'car_image' => null,
+            'tracking_url' => url('/acompanhamento/bmw/serie-3/320d/1'),
+        ];
+
+        return view('emails.proposal_accepted', [
+            'data' => $data,
+            'tracking_url' => $data['tracking_url'],
+            'forAngariador' => $request->boolean('angariador'),
+        ]);
+    })->name('admin.v2.email-preview.proposal-accepted');
+
     // Route::post('v2/newsletter/send', [App\Http\Controllers\Admin\NewsletterController::class, 'send'])->name('admin.v2.newsletter.send');
     
     // Newsletter Management (Unified)
