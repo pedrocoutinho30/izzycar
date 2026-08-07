@@ -38,6 +38,9 @@ class Kernel extends ConsoleKernel
         // Enviar lembrete de follow-up no minuto exato em que foi agendado
         $schedule->command('leads:followup-reminder')->everyMinute();
 
+        // Avisar a administração de comissões de angariadores em atraso — todos os dias às 09:00
+        $schedule->command('commissions:overdue-alert')->dailyAt('09:00');
+
         // Relatório mensal — último dia de cada mês às 23:30
         $schedule->command('reports:monthly')
             ->dailyAt('23:30')
