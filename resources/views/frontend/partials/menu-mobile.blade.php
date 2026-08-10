@@ -23,6 +23,7 @@
         <div class="mobile-menu-content">
             <ul class="mobile-nav-list">
                 @foreach($menus->where('parent_id', null) as $menu)
+                @continue($menu->title === 'Notícias')
                 @php
                 $hasChildren = $menu->children_active->count() > 0;
                 @endphp

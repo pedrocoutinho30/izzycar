@@ -17,10 +17,11 @@
         .intro { font-size: 15px; color: #555; line-height: 1.7; margin-bottom: 28px; }
         .vehicle-box { background: #f8f8f8; border-left: 4px solid #990000; border-radius: 0 8px 8px 0; padding: 20px 24px; margin-bottom: 28px; }
         .vehicle-box h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #aaa; margin-bottom: 14px; }
-        .vehicle-row { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; border-bottom: 1px solid #eee; }
-        .vehicle-row:last-child { border-bottom: none; }
-        .vehicle-row span:first-child { color: #777; }
-        .vehicle-row span:last-child { font-weight: 600; color: #111; text-align: right; }
+        .vehicle-table { width: 100%; border-collapse: collapse; }
+        .vehicle-table td { font-size: 14px; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .vehicle-table tr.last td { border-bottom: none; }
+        .vehicle-table td.label { color: #777; }
+        .vehicle-table td.value { font-weight: 600; color: #111; text-align: right; }
         .vehicle-image { display: block; width: 100%; max-width: 100%; height: auto; border-radius: 8px; margin-top: 16px; }
         .steps { margin-bottom: 28px; }
         .step { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
@@ -79,18 +80,20 @@
 
         <div class="vehicle-box">
             <h3>O Seu Carro</h3>
-            <div class="vehicle-row">
-                <span>Marca</span>
-                <span>{{ $data['brand'] }}</span>
-            </div>
-            <div class="vehicle-row">
-                <span>Modelo</span>
-                <span>{{ $data['model'] }}</span>
-            </div>
-            <div class="vehicle-row">
-                <span>Versão</span>
-                <span>{{ $data['version'] }}</span>
-            </div>
+            <table class="vehicle-table" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                    <td class="label">Marca</td>
+                    <td class="value">{{ $data['brand'] }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Modelo</td>
+                    <td class="value">{{ $data['model'] }}</td>
+                </tr>
+                <tr class="last">
+                    <td class="label">Versão</td>
+                    <td class="value">{{ $data['version'] }}</td>
+                </tr>
+            </table>
             @if(!empty($data['car_image']))
                 <img src="{{ url($data['car_image']) }}" alt="{{ $data['brand'] }} {{ $data['model'] }}" class="vehicle-image">
             @endif
