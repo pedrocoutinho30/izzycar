@@ -2940,3 +2940,14 @@ blockquote {
             border-radius: 12px;
         }
     }
+
+/* ==========================================================================
+   Botões quadrados — força cantos retos em todos os botões do frontend,
+   independentemente da classe/estilo local de cada página.
+   ========================================================================== */
+button,
+input[type="submit"],
+input[type="button"],
+[class*="btn"] {
+    border-radius: 0 !important;
+}
