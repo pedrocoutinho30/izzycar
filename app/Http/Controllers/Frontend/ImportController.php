@@ -31,8 +31,6 @@ class ImportController extends Controller
             'data_processing_consent' => 'accepted',
             'newsletter_consent'      => 'nullable|boolean',
             'angariador'              => 'nullable|string|max:100',
-            'ad_option'               => 'nullable|in:sim,nao_sei,nao_nao',
-            'ad_links'                => 'nullable|required_if:ad_option,sim|string|max:5000',
         ]);
 
         // Aqui podes gravar na BD

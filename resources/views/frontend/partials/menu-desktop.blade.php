@@ -11,11 +11,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav-modern ms-auto">
                 @foreach($menus->where('parent_id', null) as $menu)
-                @continue($menu->title === 'Notícias')
                 @php
                 $hasChildren = $menu->children_active->count() > 0;
                 @endphp
-
+                
                 @if(!$hasChildren)
                 <li class="nav-item-modern">
                     <a class="nav-link-modern {{ request()->is(trim($menu->url, '/')) || request()->is(trim($menu->url, '/').'/*') ? 'active' : '' }}" href="{{ $menu->url }}">
@@ -38,27 +37,20 @@
             </ul>
             <a href="{{ route('frontend.form-import') }}" class="nav-cta-btn">Pedir Cotação</a>
         </div>
-
-        <button class="navbar-toggler-modern d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Menu">
-            <span class="material-symbols-outlined">menu</span>
-        </button>
     </div>
 </nav>
 
 <style>
 /* Navbar Moderno */
 .navbar-modern {
-    background: rgba(17, 17, 17, 0.75);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
     padding: 1rem 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     z-index: 1030;
 }
 
 .navbar-modern.scrolled {
-    background: rgba(17, 17, 17, 0.92);
     padding: 0.5rem 0;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
 }
@@ -74,7 +66,7 @@
 }
 
 .navbar-logo-modern {
-    height: 64px;
+    height: 100px;
     width: auto;
     transition: all 0.3s ease;
 }
@@ -141,13 +133,14 @@
 }
 
 .dropdown-menu-modern {
-    background: #161616;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #111111 100%);
+    border: 1px solid rgba(110, 7, 7, 0.3);
+    border-radius: 12px;
     padding: 0.5rem 0;
     margin-top: 0.5rem;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
     min-width: 220px;
+    backdrop-filter: blur(10px);
 }
 
 .dropdown-item-modern {
@@ -174,7 +167,7 @@
 }
 
 .dropdown-item-modern:hover {
-    background: rgba(110, 7, 7, 0.15);
+    background: rgba(110, 7, 7, 0.2);
     color: #fff;
     padding-left: 2rem;
 }
@@ -188,30 +181,24 @@
     display: inline-flex;
     align-items: center;
     margin-left: 1.25rem;
-    padding: 0.65rem 1.5rem;
+    padding: 0.55rem 1.5rem;
     background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
     color: #fff !important;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     text-decoration: none;
-    border-radius: 4px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    border-radius: 50px;
+    letter-spacing: 0.02em;
     white-space: nowrap;
-    transition: opacity 0.2s ease;
+    box-shadow: 0 4px 18px rgba(110,7,7,0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     flex-shrink: 0;
 }
 .nav-cta-btn:hover {
-    opacity: 0.85;
+    background: linear-gradient(135deg, #b30000 0%, #990000 100%);
+    box-shadow: 0 6px 26px rgba(110,7,7,0.65);
+    transform: translateY(-1px);
     color: #fff !important;
-}
-
-.navbar-toggler-modern {
-    background: none;
-    border: none;
-    color: #990000;
-    padding: 0;
-    line-height: 1;
 }
 
 @media (max-width: 992px) {
@@ -225,7 +212,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const navbar = document.querySelector('.navbar-modern');
-
+    
     window.addEventListener('scroll', function() {
         if (window.scrollY > 50) {
             navbar.classList.add('scrolled');

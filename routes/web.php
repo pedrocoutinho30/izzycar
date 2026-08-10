@@ -280,22 +280,6 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
     Route::get('/v2/email-preview/newsletter-custos-importacao', fn() => view('emails.newsletter-custos-importacao'))
         ->name('admin.v2.email-preview.newsletter-custos-importacao');
 
-    // Pré-visualização do email de confirmação de pedido de importação
-    Route::get('/v2/email-preview/import-form-confirmation', function () {
-        $client = new \App\Models\Client(['name' => 'Sofia Almeida']);
-        $proposal = new \App\Models\FormProposal([
-            'brand' => 'Mercedes-Benz',
-            'model' => 'Classe A',
-            'version' => '200d',
-            'fuel' => 'Gasolina',
-            'budget' => 28000,
-            'estimated_purchase_date' => '1_3_meses',
-            'payment_type' => 'pronto_pagamento',
-        ]);
-
-        return view('emails.import_form_confirmation', compact('client', 'proposal'));
-    })->name('admin.v2.email-preview.import-form-confirmation');
-
     // Pré-visualização do email de aceitação de proposta — ?angariador=1 mostra a versão enviada ao angariador
     Route::get('/v2/email-preview/proposal-accepted', function (\Illuminate\Http\Request $request) {
         $data = [
