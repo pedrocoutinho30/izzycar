@@ -387,18 +387,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     fetch('{{ route('frontend.import-submit') }}', {
       method: 'POST',
-      headers: { 'X-CSRF-TOKEN': document.querySelector('[name="_token"]').value },
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('[name="_token"]').value,
+        'Accept': 'application/json'
+      },
       body: new FormData(form)
     })
-    .then(r => r.json())
-    .then(data => {
-      if (data.status === 'success') {
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+      if (ok && data.status === 'success') {
         form.reset();
         adLinksBox.style.display = 'none';
         prefBox.style.display = 'none';
         success.style.display = 'flex';
         success.scrollIntoView({ behavior:'smooth', block:'center' });
       } else {
+        console.error('Falha ao submeter o formulário de importação:', data);
         throw new Error();
       }
     })

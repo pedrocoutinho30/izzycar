@@ -8,15 +8,17 @@
 
 <!-- Hero Section -->
 <section class="hero-homepage">
-    <div class="hero-overlay"></div>
+    <picture class="hero-bg">
+        <source srcset="{{ asset('img/hero.webp') }}" type="image/webp">
+        <img src="{{ asset('img/2.jpg') }}" alt="Importação automóvel Izzycar" loading="eager" fetchpriority="high">
+    </picture>
+    <div class="hero-bg-gradient"></div>
     <div class="container">
-        <div class="row align-items-center min-vh-95 py-5">
-            <div class="col-lg-7">
+        <div class="row min-vh-95 py-5 align-items-center">
+            <div class="col-lg-8">
                 <div class="hero-content">
                     <span class="hero-badge fade-in-up">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                        </svg>
+                        <span class="material-symbols-outlined">workspace_premium</span>
                         Importação Automóvel Chave na Mão
                     </span>
                     <h1 class="hero-title fade-in-up" data-delay="100">
@@ -29,51 +31,18 @@
                     <div class="hero-actions fade-in-up" data-delay="300">
                         <a href="{{ route('frontend.form-import') }}" class="btn-hero-primary">
                             <span>Quero Importar</span>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
                         </a>
                         <a href="{{ route('frontend.cost-simulator') }}" class="btn-hero-secondary">
-                            <span>€</span>
+                            <span class="material-symbols-outlined">calculate</span>
                             <span>Simular Custos</span>
                         </a>
                     </div>
-                    <div class="hero-stats fade-in-up" data-delay="400">
-                        <!-- <div class="hero-stat">
-                            <div class="hero-stat-number">500+</div>
-                            <div class="hero-stat-label">Carros Importados</div>
-                        </div>
-                        <div class="hero-stat">
-                            <div class="hero-stat-number">98%</div>
-                            <div class="hero-stat-label">Clientes Satisfeitos</div>
-                        </div>
-                        <div class="hero-stat">
-                            <div class="hero-stat-number">15+</div>
-                            <div class="hero-stat-label">Anos de Experiência</div>
-                        </div> -->
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-5 d-none d-lg-flex align-items-center justify-content-center">
-                <div class="hero-image-wrapper fade-in-up" data-delay="300">
-                    <div class="hero-glow"></div>
-                    <picture>
-                        <source srcset="{{ asset('img/hero.webp') }}" type="image/webp">
-                        <img src="{{ asset('img/2.jpg') }}"
-                             alt="Importação automóvel Izzycar"
-                             class="hero-image"
-                             width="500" height="600"
-                             loading="eager">
-                    </picture>
                 </div>
             </div>
         </div>
     </div>
     <div class="scroll-indicator">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
+        <span class="material-symbols-outlined">expand_more</span>
     </div>
 </section>
 
@@ -84,41 +53,28 @@
             <div class="row align-items-center">
                 <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                     <div class="trust-item fade-in-up">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                            <polyline points="9 12 11 14 15 10"></polyline>
-                        </svg>
+                        <span class="material-symbols-outlined">verified_user</span>
                         <h4>100% Seguro</h4>
                         <p>Processo transparente e garantido</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                     <div class="trust-item fade-in-up" data-delay="100">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
+                        <span class="material-symbols-outlined">local_shipping</span>
                         <h4>Entrega Rápida</h4>
                         <p>3-6 semanas em média</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                     <div class="trust-item fade-in-up" data-delay="200">
-
-                        <span style="font-size:48px; color:var(--accent-color); font-weight:700;">€</span>
-
-
+                        <span class="material-symbols-outlined">euro</span>
                         <h4>Melhor Preço</h4>
                         <p>Economize até 30%</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="trust-item fade-in-up" data-delay="300">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="8.5" cy="7" r="4"></circle>
-                            <polyline points="17 11 19 13 23 9"></polyline>
-                        </svg>
+                        <span class="material-symbols-outlined">support_agent</span>
                         <h4>Suporte Total</h4>
                         <p>Do início ao fim</p>
                     </div>
@@ -139,66 +95,40 @@
 
         <div class="row g-4">
             <div class="col-lg-6 col-md-6">
-                <div class="service-card fade-in-up">
-                    <div class="service-icon-wrapper">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                        </svg>
+                <a href="{{ route('frontend.import') }}" class="service-bento fade-in-up">
+                    <picture>
+                        <source srcset="{{ asset('img/2.webp') }}" type="image/webp">
+                        <img src="{{ asset('img/2.jpg') }}" alt="Importação Chave na Mão" loading="lazy">
+                    </picture>
+                    <div class="service-bento-overlay"></div>
+                    <div class="service-bento-content">
+                        <h3 class="service-bento-title">Importação Chave na Mão</h3>
+                        <p class="service-bento-description">Tratamos de todo o processo: procura, compra, transporte, legalização e entrega. Recebe o seu carro pronto a conduzir.</p>
+                        <span class="service-bento-link">
+                            Saber mais
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </span>
                     </div>
-                    <h3 class="service-title">Importação Chave na Mão</h3>
-                    <p class="service-description">Tratamos de todo o processo: procura, compra, transporte, legalização e entrega. Recebe o seu carro pronto a conduzir.</p>
-                    <a href="{{ route('frontend.import') }}" class="service-link">
-                        Saber mais
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </a>
-                </div>
+                </a>
             </div>
 
             <div class="col-lg-6 col-md-6">
-                <div class="service-card fade-in-up" data-delay="100">
-                    <div class="service-icon-wrapper">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
+                <a href="{{ route('frontend.legalization') }}" class="service-bento fade-in-up" data-delay="100">
+                    <picture>
+                        <source srcset="{{ asset('img/1.webp') }}" type="image/webp">
+                        <img src="{{ asset('img/1.jpg') }}" alt="Legalização de Veículos" loading="lazy">
+                    </picture>
+                    <div class="service-bento-overlay"></div>
+                    <div class="service-bento-content">
+                        <h3 class="service-bento-title">Legalização de Veículos</h3>
+                        <p class="service-bento-description">Já tem o carro? Tratamos da inspeção, matrícula e toda a documentação necessária para legalizar o seu veículo em Portugal.</p>
+                        <span class="service-bento-link">
+                            Saber mais
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </span>
                     </div>
-                    <h3 class="service-title">Legalização de Veículos</h3>
-                    <p class="service-description">Já tem o carro? Tratamos da inspeção, matrícula e toda a documentação necessária para legalizar o seu veículo em Portugal.</p>
-                    <a href="{{ route('frontend.legalization') }}" class="service-link">
-                        Saber mais
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </a>
-                </div>
+                </a>
             </div>
-
-            <!-- <div class="col-lg-4 col-md-6">
-                <div class="service-card fade-in-up" data-delay="200">
-                    <div class="service-icon-wrapper">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                    </div>
-                    <h3 class="service-title">Venda de Carros</h3>
-                    <p class="service-description">Carros nacionais e importados prontos para entrega imediata. Veículos inspecionados e com garantia.</p>
-                    <a href="" class="service-link">
-                        Ver stock
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </a>
-                </div>
-            </div> -->
         </div>
     </div>
 </section>
@@ -570,18 +500,29 @@
     /* Hero Section */
     .hero-homepage {
         position: relative;
-        background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #111111 100%);
         overflow: hidden;
+        background: #111111;
     }
 
-    .hero-overlay {
+    .hero-bg {
         position: absolute;
-        top: 10px;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236e0707' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        opacity: 0.3;
+        inset: 0;
+        z-index: 0;
+    }
+
+    .hero-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.45;
+    }
+
+    .hero-bg-gradient {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(180deg, rgba(17,17,17,0.55) 0%, rgba(17,17,17,0.75) 50%, #111111 100%),
+                    linear-gradient(90deg, #111111 0%, rgba(17,17,17,0.4) 55%, transparent 100%);
     }
 
     .hero-content {
@@ -594,13 +535,20 @@
         align-items: center;
         gap: 8px;
         padding: 10px 20px;
-        background: rgba(110, 7, 7, 0.2);
-        border: 1px solid rgba(110, 7, 7, 0.3);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 50px;
         color: #fff;
         font-size: 0.9rem;
         font-weight: 600;
         margin-bottom: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .hero-badge .material-symbols-outlined {
+        font-size: 18px;
+        color: #cf1c1c;
     }
 
     .hero-title {
@@ -637,20 +585,20 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        padding: 18px 40px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        padding: 16px 36px;
+        background: #990000;
         color: white;
-        border-radius: 50px;
-        font-size: 1.1rem;
+        border-radius: 4px;
+        font-size: 0.95rem;
         font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
         text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(153, 0, 0, 0.4);
+        transition: opacity 0.2s ease;
     }
 
     .btn-hero-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(153, 0, 0, 0.5);
+        opacity: 0.85;
         color: white;
     }
 
@@ -658,15 +606,21 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        padding: 18px 40px;
+        padding: 16px 36px;
         background: transparent;
         color: white;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50px;
-        font-size: 1.1rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        font-size: 0.95rem;
         font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
+    }
+
+    .btn-hero-secondary .material-symbols-outlined {
+        font-size: 20px;
     }
 
     .btn-hero-secondary:hover {
@@ -675,76 +629,17 @@
         color: white;
     }
 
-    .hero-stats {
-        display: flex;
-        gap: 3rem;
-        flex-wrap: wrap;
-    }
-
-    .hero-stat {
-        text-align: center;
-    }
-
-    .hero-stat-number {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #990000;
-        line-height: 1;
-        margin-bottom: 0.5rem;
-    }
-
-    .hero-stat-label {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.7);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .hero-image-wrapper {
-        position: relative;
-        text-align: center;
-    }
-
-    .hero-glow {
-        position: absolute;
-        inset: -20%;
-        background: radial-gradient(ellipse at 50% 60%, rgba(153,0,0,0.28) 0%, rgba(200,60,0,0.1) 40%, transparent 70%);
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 0;
-        filter: blur(20px);
-        animation: glowPulse 4s ease-in-out infinite;
-    }
-
-    @keyframes glowPulse {
-        0%, 100% { opacity: 0.7; transform: scale(1); }
-        50%       { opacity: 1;   transform: scale(1.06); }
-    }
-
-    .hero-image-wrapper picture,
-    .hero-image-wrapper img {
-        position: relative;
-        z-index: 1;
-    }
-
-    .hero-image {
-        max-width: 100%;
-        height: 580px;
-        width: 100%;
-        object-fit: cover;
-        object-position: center top;
-        border-radius: 24px;
-        box-shadow: 0 30px 80px rgba(0,0,0,0.4);
-        border: 2px solid rgba(110,7,7,0.3);
-    }
-
     .scroll-indicator {
         position: absolute;
         bottom: 2rem;
         left: 50%;
         transform: translateX(-50%);
         animation: bounce 2s infinite;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .scroll-indicator .material-symbols-outlined {
+        font-size: 28px;
     }
 
     @keyframes bounce {
@@ -790,7 +685,8 @@
         transform: translateY(-3px);
     }
 
-    .trust-item svg {
+    .trust-item .material-symbols-outlined {
+        font-size: 40px;
         color: var(--accent-color);
         margin-bottom: 1rem;
     }
@@ -857,72 +753,87 @@
         margin: 0 auto;
     }
 
-    .service-card {
-        background: rgba(255,255,255,0.04);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        padding: 2.5rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255,255,255,0.08);
-        transition: all 0.35s ease;
+    .service-bento {
+        position: relative;
+        display: block;
+        min-height: 400px;
+        height: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        text-decoration: none;
+        background: #1a1a1a;
+    }
+
+    .service-bento picture,
+    .service-bento img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.55;
+        transition: opacity 0.4s ease, transform 0.5s ease;
+    }
+
+    .service-bento:hover img {
+        opacity: 0.7;
+        transform: scale(1.05);
+    }
+
+    .service-bento-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(17,17,17,0.1) 0%, rgba(17,17,17,0.55) 55%, rgba(17,17,17,0.92) 100%);
+        transition: background 0.4s ease;
+    }
+
+    .service-bento:hover .service-bento-overlay {
+        background: linear-gradient(180deg, rgba(17,17,17,0.15) 0%, rgba(17,17,17,0.6) 55%, rgba(17,17,17,0.95) 100%);
+    }
+
+    .service-bento-content {
+        position: relative;
+        z-index: 1;
         height: 100%;
         display: flex;
         flex-direction: column;
+        justify-content: flex-end;
+        padding: 2.5rem;
     }
 
-    .service-card:hover {
-        background: rgba(255,255,255,0.07);
-        border-color: rgba(153,0,0,0.45);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(153,0,0,0.25);
-        transform: translateY(-6px);
-    }
-
-    .service-icon-wrapper {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-        transition: transform 0.3s ease;
-    }
-
-    .service-card:hover .service-icon-wrapper {
-        transform: scale(1.1) rotate(5deg);
-    }
-
-    .service-icon-wrapper svg {
-        color: white;
-    }
-
-    .service-title {
+    .service-bento-title {
         font-size: 1.5rem;
         font-weight: 700;
         color: #fff;
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
     }
 
-    .service-description {
+    .service-bento-description {
         font-size: 1rem;
-        color: rgba(255,255,255,0.65);
+        color: rgba(255,255,255,0.8);
         line-height: 1.7;
-        margin-bottom: 1.5rem;
-        flex: 1;
+        margin-bottom: 1.25rem;
+        max-width: 420px;
     }
 
-    .service-link {
+    .service-bento-link {
         display: inline-flex;
         align-items: center;
         gap: 8px;
         color: #ff8080;
         font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
         text-decoration: none;
         transition: gap 0.3s ease, color 0.2s ease;
     }
 
-    .service-link:hover {
+    .service-bento-link .material-symbols-outlined {
+        font-size: 18px;
+    }
+
+    .service-bento:hover .service-bento-link {
         gap: 12px;
         color: #ff6060;
     }
@@ -1460,10 +1371,6 @@
             font-size: 2.5rem;
         }
 
-        .hero-stats {
-            gap: 2rem;
-        }
-
         .section-title {
             font-size: 2rem;
         }
@@ -1495,14 +1402,6 @@
         .btn-hero-secondary {
             width: 100%;
             justify-content: center;
-        }
-
-        .hero-stats {
-            gap: 1.5rem;
-        }
-
-        .hero-stat-number {
-            font-size: 2rem;
         }
 
         .section-padding {
@@ -1579,43 +1478,6 @@
         });
     });
 
-    // Counter animation for hero stats
-    const animateCounter = (element, target, duration = 2000) => {
-        let start = 0;
-        const increment = target / (duration / 16);
-        const timer = setInterval(() => {
-            start += increment;
-            if (start >= target) {
-                element.textContent = target + (element.textContent.includes('%') ? '%' : '+');
-                clearInterval(timer);
-            } else {
-                element.textContent = Math.floor(start) + (element.textContent.includes('%') ? '%' : '+');
-            }
-        }, 16);
-    };
-
-    // Trigger counter animation when hero stats are visible
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
-                entry.target.classList.add('animated');
-                const statNumbers = entry.target.querySelectorAll('.hero-stat-number');
-                statNumbers.forEach(stat => {
-                    const text = stat.textContent;
-                    const number = parseInt(text.replace(/\D/g, ''));
-                    stat.textContent = '0' + (text.includes('%') ? '%' : '+');
-                    setTimeout(() => animateCounter(stat, number), 300);
-                });
-            }
-        });
-    }, {
-        threshold: 0.5
-    });
-
-    const heroStats = document.querySelector('.hero-stats');
-    if (heroStats) {
-        statsObserver.observe(heroStats);
-    }
 </script>
 @endpush
 
