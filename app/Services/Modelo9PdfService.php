@@ -27,20 +27,56 @@ class Modelo9PdfService
         'poder_elevacao', 'tipo_caixa', 'comprimento_caixa', 'largura_caixa',
         'distancia_eixos', 'peso_bruto_total', 'tara', 'portas_total', 'portas_direita',
         'portas_esquerda', 'portas_retaguarda', 'lotacao', 'matricula_anterior',
-        'matricula_anterior_data', 'pais_origem', 'anotacoes_especiais',
+        'matricula_anterior_data', 'pais_origem', 'anotacoes_especiais', 'pretensao_outra_motivo',
     ];
 
-    public const CAMPOS_EXTRA_BOOLEAN = ['reboque', 'rebocavel', 'com_travao', 'sem_travao'];
-
-    // Caixas sempre marcadas com X neste tipo de pedido (atribuição de matrícula
-    // de veículo importado, com homologação e emissão de certificado de matrícula).
-    private const CHECKBOXES_FIXAS = [
-        [60.1, 158.92, 68.6, 167.43],   // ATRIBUIÇÃO DE MATRÍCULA
-        [240.07, 176.27, 248.58, 184.77], // HOMOLOGAÇÃO
-        [60.1, 194.92, 68.6, 203.43],   // EMISSÃO DE CERTIFICADO DE MATRÍCULA
+    public const CAMPOS_EXTRA_BOOLEAN = [
+        'reboque', 'rebocavel', 'com_travao', 'sem_travao',
+        'pretensao_atribuicao_matricula', 'pretensao_cancelamento_matricula',
+        'pretensao_emissao_certificado', 'pretensao_duplicado_certificado',
+        'pretensao_substituicao_certificado', 'pretensao_homologacao',
+        'pretensao_certidao', 'pretensao_apreensao', 'pretensao_levantamento_apreensao',
+        'pretensao_alteracoes_caracteristicas', 'pretensao_inspecao', 'pretensao_outra',
     ];
 
-    // Caixas condicionais, marcadas apenas se o respetivo dado em modelo9_dados for verdadeiro.
+    // Opções da secção "Pretensão Relativa a Veículos" do formulário — usadas para
+    // gerar as checkboxes no formulário de administração (chave => rótulo, por
+    // esta ordem, correspondente à disposição em 4 colunas do PDF original).
+    public const PRETENSAO_LABELS = [
+        'pretensao_atribuicao_matricula'      => 'Atribuição de Matrícula',
+        'pretensao_cancelamento_matricula'    => 'Cancelamento de Matrícula',
+        'pretensao_emissao_certificado'       => 'Emissão de Certificado de Matrícula',
+        'pretensao_duplicado_certificado'     => 'Duplicado de Certificado de Matrícula',
+        'pretensao_substituicao_certificado'  => 'Substituição de Certificado de Matrícula',
+        'pretensao_homologacao'               => 'Homologação',
+        'pretensao_certidao'                  => 'Certidão',
+        'pretensao_apreensao'                 => 'Apreensão',
+        'pretensao_levantamento_apreensao'    => 'Levantamento de Apreensão',
+        'pretensao_alteracoes_caracteristicas' => 'Alterações das Características',
+        'pretensao_inspecao'                  => 'Inspeção',
+        'pretensao_outra'                     => 'Outra / Motivo do Pedido',
+    ];
+
+    // Caixas da secção "Pretensão Relativa a Veículos" — coordenadas extraídas
+    // diretamente dos desenhos vectoriais do PDF original (8.5x8.5pt cada),
+    // marcadas apenas se o respetivo dado em modelo9_dados for verdadeiro.
+    private const CHECKBOXES_PRETENSAO = [
+        'pretensao_atribuicao_matricula'      => [60.10, 158.92, 68.60, 167.43],
+        'pretensao_cancelamento_matricula'    => [60.10, 177.92, 68.60, 186.43],
+        'pretensao_emissao_certificado'       => [60.10, 194.92, 68.60, 203.43],
+        'pretensao_duplicado_certificado'     => [60.07, 212.66, 68.58, 221.16],
+        'pretensao_substituicao_certificado'  => [240.07, 157.92, 248.58, 166.43],
+        'pretensao_homologacao'               => [240.07, 176.27, 248.58, 184.77],
+        'pretensao_certidao'                  => [240.07, 194.08, 248.58, 202.59],
+        'pretensao_apreensao'                 => [240.07, 210.78, 248.58, 219.28],
+        'pretensao_levantamento_apreensao'    => [425.50, 146.26, 434.00, 154.77],
+        'pretensao_alteracoes_caracteristicas' => [425.38, 166.86, 433.88, 175.36],
+        'pretensao_inspecao'                  => [425.40, 184.57, 433.91, 193.08],
+        'pretensao_outra'                     => [322.91, 200.41, 331.42, 208.91],
+    ];
+
+    // Caixas condicionais (secção do reboque), marcadas apenas se o respetivo dado
+    // em modelo9_dados for verdadeiro.
     private const CHECKBOXES_CONDICIONAIS = [
         'reboque'    => [186.76, 490.88, 195.26, 499.38],
         'rebocavel'  => [61.91, 597.63, 70.42, 606.13],
@@ -71,6 +107,7 @@ class Modelo9PdfService
 
     // Campos de linha simples (Características do Veículo) — [x_inicio, y_baseline, x_max].
     private const LINE_FIELDS = [
+        'pretensao_outra_motivo' => [333.0, 219.47, 448.0],
         'matricula_1'         => [90.9, 496.7, 103.9],
         'matricula_2'         => [110.9, 496.7, 123.9],
         'matricula_3'         => [130.9, 496.7, 143.9],
@@ -123,8 +160,10 @@ class Modelo9PdfService
         $tplIdx = $mpdf->importPage(1);
         $mpdf->useTemplate($tplIdx);
 
-        foreach (self::CHECKBOXES_FIXAS as $box) {
-            $this->markCheckbox($mpdf, $box);
+        foreach (self::CHECKBOXES_PRETENSAO as $key => $box) {
+            if (!empty($dados[$key])) {
+                $this->markCheckbox($mpdf, $box);
+            }
         }
 
         foreach (self::CHECKBOXES_CONDICIONAIS as $key => $box) {
