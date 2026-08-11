@@ -157,7 +157,7 @@
 
     {{-- Bootstrap (crítico — bloqueia render, necessário para layout base) --}}
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/layout.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/layout.css') }}?v={{ filemtime(public_path('css/layout.css')) }}" rel="stylesheet">
 
     {{-- Ícones e Swiper: não-críticos, carregam após render inicial --}}
     <link href="{{ asset('css/bootstrap-icons.css') }}" rel="stylesheet" media="print" onload="this.media='all'">
@@ -184,7 +184,7 @@
     @stack('styles')
 </head>
 
-<body id="top">
+<body id="top" class="@yield('body-class')">
 
     @include('frontend.partials.header')
     @include('frontend.partials.cookies')
