@@ -12,7 +12,7 @@
         'tara' => 'Tara', 'portas_total' => 'Portas — Nº total', 'portas_direita' => 'Portas — Direita',
         'portas_esquerda' => 'Portas — Esquerda', 'portas_retaguarda' => 'Portas — Retaguarda',
         'lotacao' => 'Lotação', 'matricula_anterior' => 'Matrícula anterior',
-        'matricula_anterior_data' => 'Data da matrícula anterior', 'pais_origem' => 'País de origem',
+        'pais_origem' => 'País de origem',
     ];
 @endphp
 
@@ -24,6 +24,12 @@
                value="{{ old('modelo9.' . $key, $m9[$key] ?? '') }}">
     </div>
     @endforeach
+
+    <div class="col-md-3">
+        <label class="form-label small mb-1">Data da matrícula anterior</label>
+        <input type="date" name="modelo9[matricula_anterior_data]" class="form-control form-control-sm"
+               value="{{ old('modelo9.matricula_anterior_data', $m9['matricula_anterior_data'] ?? '') }}">
+    </div>
 
     <div class="col-12">
         <label class="form-label small mb-1">Anotações especiais</label>

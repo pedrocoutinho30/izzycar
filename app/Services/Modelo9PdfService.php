@@ -139,7 +139,13 @@ class Modelo9PdfService
         'portas_retaguarda'   => [400.0, 648.8, 420.5],
         'lotacao'             => [467.0, 648.8, 539.2],
         'matricula_anterior'      => [117.0, 663.8, 205.6],
-        'matricula_anterior_data' => [241.3, 663.8, 313.0],
+        // Campo "Data" da matrícula anterior — 3 blocos separados por traços já
+        // impressos no template (ANO-MÊS-DIA, a mesma convenção usada nos outros
+        // campos de data deste formulário). Coordenadas dos traços/sublinhados
+        // extraídas dos desenhos do PDF original.
+        'matricula_anterior_data_ano' => [241.27, 664.75, 270.69],
+        'matricula_anterior_data_mes' => [280.04, 664.75, 293.04],
+        'matricula_anterior_data_dia' => [300.04, 664.75, 313.04],
         'pais_origem'         => [374.0, 664.8, 539.2],
         'anotacoes_especiais' => [124.0, 680.8, 539.2],
     ];
@@ -213,9 +219,27 @@ class Modelo9PdfService
         $this->writeLine($mpdf, 'homologacao', $legalization->num_homologacao);
         $this->writeLine($mpdf, 'combustivel', $legalization->combustivel);
 
+        // Data da matrícula anterior — guardada como data ISO (input type="date")
+        // em modelo9_dados['matricula_anterior_data'], escrita em 3 campos
+        // separados (ano/mês/dia) para respeitar os traços já impressos no PDF.
+        if (!empty($dados['matricula_anterior_data'])) {
+            try {
+                $dataAnterior = \Carbon\Carbon::parse($dados['matricula_anterior_data']);
+                $this->writeLine($mpdf, 'matricula_anterior_data_ano', $dataAnterior->format('Y'));
+                $this->writeLine($mpdf, 'matricula_anterior_data_mes', $dataAnterior->format('m'));
+                $this->writeLine($mpdf, 'matricula_anterior_data_dia', $dataAnterior->format('d'));
+            } catch (\Throwable $e) {
+                // valor não reconhecido como data — deixa os 3 campos em branco
+            }
+        }
+
         foreach (self::LINE_FIELDS as $key => $coords) {
-            if (in_array($key, ['matricula_1', 'matricula_2', 'matricula_3', 'marca', 'modelo', 'homologacao', 'combustivel'])) {
-                continue; // já tratados acima (vêm da legalização, não de modelo9_dados)
+            $ignorados = [
+                'matricula_1', 'matricula_2', 'matricula_3', 'marca', 'modelo', 'homologacao', 'combustivel',
+                'matricula_anterior_data_ano', 'matricula_anterior_data_mes', 'matricula_anterior_data_dia',
+            ];
+            if (in_array($key, $ignorados)) {
+                continue; // já tratados acima (vêm da legalização ou precisam de parsing especial)
             }
             if (!empty($dados[$key])) {
                 $this->writeLine($mpdf, $key, (string) $dados[$key]);
