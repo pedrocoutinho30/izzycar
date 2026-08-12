@@ -246,6 +246,15 @@ class Modelo9PdfService
             }
         }
 
+        // Páginas 2 (Informação Técnica — desenho da viatura) e 3 (instruções
+        // de preenchimento consoante o pedido) do template original — sem
+        // campos preenchidos automaticamente, apenas como imagem de fundo.
+        foreach ([2, 3] as $pageNum) {
+            $mpdf->AddPage();
+            $tplIdx = $mpdf->importPage($pageNum);
+            $mpdf->useTemplate($tplIdx);
+        }
+
         return $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
     }
 
