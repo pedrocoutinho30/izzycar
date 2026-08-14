@@ -585,20 +585,20 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        padding: 16px 36px;
-        background: #990000;
+        padding: 18px 40px;
+        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
         color: white;
-        border-radius: 4px;
-        font-size: 0.95rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
         text-decoration: none;
-        transition: opacity 0.2s ease;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(153, 0, 0, 0.4);
     }
 
     .btn-hero-primary:hover {
-        opacity: 0.85;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(153, 0, 0, 0.5);
         color: white;
     }
 
@@ -606,17 +606,15 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        padding: 16px 36px;
+        padding: 18px 40px;
         background: transparent;
         color: white;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 4px;
-        font-size: 0.95rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        font-size: 1.1rem;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
         text-decoration: none;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
     }
 
     .btn-hero-secondary .material-symbols-outlined {

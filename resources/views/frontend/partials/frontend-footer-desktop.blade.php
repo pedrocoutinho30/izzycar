@@ -371,7 +371,7 @@
         color: #111;
         font-weight: 700;
         font-size: 1.05rem;
-        border-radius: 6px;
+        border-radius: 50px;
         text-decoration: none;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);

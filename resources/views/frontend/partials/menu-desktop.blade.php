@@ -188,21 +188,23 @@
     display: inline-flex;
     align-items: center;
     margin-left: 1.25rem;
-    padding: 0.65rem 1.5rem;
+    padding: 0.55rem 1.5rem;
     background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
     color: #fff !important;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     text-decoration: none;
-    border-radius: 4px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    border-radius: 50px;
+    letter-spacing: 0.02em;
     white-space: nowrap;
-    transition: opacity 0.2s ease;
+    box-shadow: 0 4px 18px rgba(110,7,7,0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     flex-shrink: 0;
 }
 .nav-cta-btn:hover {
-    opacity: 0.85;
+    background: linear-gradient(135deg, #b30000 0%, #990000 100%);
+    box-shadow: 0 6px 26px rgba(110,7,7,0.65);
+    transform: translateY(-1px);
     color: #fff !important;
 }
 

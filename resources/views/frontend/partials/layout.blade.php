@@ -184,7 +184,7 @@
     @stack('styles')
 </head>
 
-<body id="top" class="@yield('body-class')">
+<body id="top">
 
     @include('frontend.partials.header')
     @include('frontend.partials.cookies')

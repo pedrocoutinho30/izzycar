@@ -2940,15 +2940,3 @@ blockquote {
             border-radius: 12px;
         }
     }
-
-/* ==========================================================================
-   Botões quadrados — força cantos retos em todos os botões do frontend,
-   independentemente da classe/estilo local de cada página. Exclui as
-   páginas de viaturas (body.vehicles-page), que mantêm o estilo próprio.
-   ========================================================================== */
-body:not(.vehicles-page) button,
-body:not(.vehicles-page) input[type="submit"],
-body:not(.vehicles-page) input[type="button"],
-body:not(.vehicles-page) [class*="btn"] {
-    border-radius: 0 !important;
-}

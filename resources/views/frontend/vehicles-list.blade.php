@@ -1,7 +1,5 @@
 @extends('frontend.partials.layout')
 
-@section('body-class', 'vehicles-page')
-
 @section('title', 'Carros Usados em Portugal | Compra e Venda | Izzycar')
 @section('meta_description', 'Encontre carros usados de qualidade em Portugal. A Izzycar oferece opções confiáveis para compra e venda de veículos, com garantia e transparência.')
 

@@ -1,7 +1,5 @@
 @extends('frontend.partials.layout')
 
-@section('body-class', 'vehicles-page')
-
 @php
     /* ── Cover photo ─────────────────────────────────────────────────────── */
     $coverPhoto     = $vehicle->photos->where('is_cover', true)->first()
