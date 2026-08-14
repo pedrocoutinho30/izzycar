@@ -23,6 +23,7 @@ class Legalization extends Model
         'regime_especial_isv',
         'invoice_path',
         'modelo9_dados',
+        'modelo1460_dados',
         'steps_completed',
     ];
 
@@ -31,6 +32,7 @@ class Legalization extends Model
         'regime_especial_isv' => 'boolean',
         'email_enviado'       => 'boolean',
         'modelo9_dados'       => 'array',
+        'modelo1460_dados'    => 'array',
     ];
 
     // ---------------------------------------------------------------

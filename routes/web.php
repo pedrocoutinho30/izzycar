@@ -118,6 +118,8 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::delete('/{legalization}/fatura', [App\Http\Controllers\Admin\LegalizationController::class, 'deleteInvoice'])->name('delete-invoice');
         Route::get('/{legalization}/modelo9', [App\Http\Controllers\Admin\LegalizationController::class, 'generateModelo9'])->name('modelo9');
         Route::post('/{legalization}/modelo9', [App\Http\Controllers\Admin\LegalizationController::class, 'saveAndGenerateModelo9'])->name('modelo9.save-and-generate');
+        Route::get('/{legalization}/modelo1460', [App\Http\Controllers\Admin\LegalizationController::class, 'generateModelo1460'])->name('modelo1460');
+        Route::post('/{legalization}/modelo1460', [App\Http\Controllers\Admin\LegalizationController::class, 'saveAndGenerateModelo1460'])->name('modelo1460.save-and-generate');
     });
 
     // ============================================================

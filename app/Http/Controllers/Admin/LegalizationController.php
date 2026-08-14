@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Legalization;
 use App\Models\LegalizationDocument;
 use App\Models\V3Vehicle;
+use App\Services\Modelo1460PdfService;
 use App\Services\Modelo9PdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -354,6 +355,53 @@ class LegalizationController extends Controller
         }
         foreach (Modelo9PdfService::CAMPOS_EXTRA_BOOLEAN as $key) {
             $dados[$key] = !empty($modelo9Input[$key]);
+        }
+        return $dados;
+    }
+
+    // ---------------------------------------------------------------
+    // Gerar Mod. 1460/1 da AT (Pedidos ISV) pré-preenchido (sem alterar dados guardados)
+    // ---------------------------------------------------------------
+    public function generateModelo1460(Legalization $legalization)
+    {
+        return $this->respondWithModelo1460Pdf($legalization);
+    }
+
+    // ---------------------------------------------------------------
+    // Guardar os dados extra do Mod. 1460/1 (a partir da modal) e gerar o PDF
+    // ---------------------------------------------------------------
+    public function saveAndGenerateModelo1460(Request $request, Legalization $legalization)
+    {
+        $request->validate(['modelo1460' => 'nullable|array']);
+
+        $legalization->update(['modelo1460_dados' => $this->buildModelo1460Dados($request)]);
+
+        return $this->respondWithModelo1460Pdf($legalization);
+    }
+
+    private function respondWithModelo1460Pdf(Legalization $legalization)
+    {
+        $pdfContent = (new Modelo1460PdfService())->generate($legalization);
+        $filename   = 'mod1460_isv_' . $legalization->id . '.pdf';
+
+        return response($pdfContent, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    // ---------------------------------------------------------------
+    // Constrói o array modelo1460_dados a partir do input 'modelo1460[...]' do request
+    // ---------------------------------------------------------------
+    private function buildModelo1460Dados(Request $request): array
+    {
+        $modelo1460Input = $request->input('modelo1460', []);
+        $dados = [];
+        foreach (Modelo1460PdfService::CAMPOS_EXTRA_TEXTO as $key) {
+            $dados[$key] = $modelo1460Input[$key] ?? null;
+        }
+        foreach (Modelo1460PdfService::CAMPOS_EXTRA_BOOLEAN as $key) {
+            $dados[$key] = !empty($modelo1460Input[$key]);
         }
         return $dados;
     }
