@@ -122,6 +122,14 @@
                                     <i class="bi bi-person-badge"></i>
                                 </button>
                             </form>
+                            <form action="{{ route('admin.v2.angariadores.destroy', $row['angariador']->id) }}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('Este angariador tem {{ $row['leadsCount'] }} lead(s), {{ $row['convertedCount'] }} venda(s) convertida(s), {{ number_format($row['comissaoPendente'], 2, ',', '.') }} € de comissão pendente e {{ number_format($row['comissaoRecebida'], 2, ',', '.') }} € já paga. Ao apagar a conta de {{ addslashes($row['angariador']->name) }}, essas leads e comissões não são apagadas, mas deixam de estar associadas a um angariador. Tem a certeza que quer continuar?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-icon btn-danger-modern" title="Apagar angariador">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>

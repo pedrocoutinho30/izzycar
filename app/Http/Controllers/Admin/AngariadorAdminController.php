@@ -69,6 +69,26 @@ class AngariadorAdminController extends Controller
         return back()->with('success', 'Candidatura rejeitada.');
     }
 
+    /**
+     * Apaga a conta do angariador. Leads e comissões associadas não são
+     * apagadas — ficam apenas sem "dono" (owner_id a NULL), pois é esse o
+     * comportamento das foreign keys na base de dados. O aviso com as
+     * contagens reais é mostrado no ecrã de listagem antes de confirmar.
+     */
+    public function destroy(User $user)
+    {
+        abort_unless($user->hasRole('angariador'), 404);
+
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Não pode apagar a sua própria conta.');
+        }
+
+        $user->delete();
+
+        return redirect()->route('admin.v2.angariadores.index')
+            ->with('success', 'Angariador apagado com sucesso.');
+    }
+
     public function show(User $user, Request $request)
     {
         abort_unless($user->hasRole('angariador'), 404);

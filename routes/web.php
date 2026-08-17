@@ -654,6 +654,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::post('/comissoes/{proposal}/comprovativo', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'uploadReceipt'])->name('upload-receipt');
         Route::post('/{user}/aprovar', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'approve'])->name('approve');
         Route::post('/{user}/rejeitar', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'reject'])->name('reject');
+        Route::delete('/{user}', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'destroy'])->name('destroy');
         Route::get('/{user}', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'show'])->name('show');
         Route::post('/{user}/impersonate', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'impersonate'])->name('impersonate');
     });
