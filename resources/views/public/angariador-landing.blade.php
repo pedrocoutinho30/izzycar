@@ -144,6 +144,7 @@
                 <a href="{{ route('public.angariador.register') }}" class="al-btn al-btn--light">Candidatar-me a Angariador</a>
                 <a href="{{ route('public.manual.angariador') }}" class="al-btn al-btn--outline">Já Sou Angariador — Ver Manual</a>
             </div>
+            <p class="al-cta-login">Já tens conta? <a href="{{ route('login') }}">Iniciar Sessão</a></p>
         </div>
     </div>
 </section>
@@ -243,6 +244,9 @@
     padding: 3.5rem 2.5rem; text-align: center; color: #fff;
 }
 .al-cta-band p { color: rgba(255,255,255,.75); max-width: 520px; margin: 0 auto 2rem; }
+.al-cta-login { font-size: .88rem; color: rgba(255,255,255,.6); margin: 1.5rem 0 0; }
+.al-cta-login a { color: #fff; font-weight: 700; text-decoration: underline; }
+.al-cta-login a:hover { color: rgba(255,255,255,.85); }
 
 @media (max-width: 768px) {
     .al-hero { padding: 4.5rem 0 3.5rem; }

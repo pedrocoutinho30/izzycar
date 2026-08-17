@@ -38,6 +38,39 @@ class AngariadorController extends Controller
         return view('admin.v2.angariador.leads', compact('leads'));
     }
 
+    public function storeLead(Request $request)
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'nullable|email|max:255',
+            'phone'       => 'nullable|string|max:50',
+            'origin'      => 'nullable|string|max:255',
+            'lead_status' => 'nullable|in:nova,em_contacto,fria',
+            'observation' => 'nullable|string|max:2000',
+        ]);
+
+        $lead = Client::create([
+            ...$data,
+            'is_lead'         => true,
+            'lead_source'     => 'manual',
+            'lead_status'     => $data['lead_status'] ?? 'nova',
+            'origin'          => $data['origin'] ?? 'Manual Angariador',
+            'owner_id'        => Auth::id(),
+            'angariador_code' => Auth::user()->referral_code,
+        ]);
+
+        LeadActivity::log(
+            $lead->id,
+            'Lead criada manualmente',
+            'Criada pelo angariador ' . (Auth::user()->name ?? '—') . '.',
+            'bi-plus-circle-fill',
+            'success'
+        );
+
+        return redirect()->route('admin.angariador.leads.show', $lead->id)
+            ->with('success', 'Lead criada com sucesso.');
+    }
+
     public function leadShow(Client $client)
     {
         abort_if($client->owner_id !== Auth::id(), 403);

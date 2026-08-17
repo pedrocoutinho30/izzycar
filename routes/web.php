@@ -629,6 +629,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
     Route::prefix('angariador')->name('admin.angariador.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\AngariadorController::class, 'dashboard'])->name('dashboard');
         Route::get('/leads', [App\Http\Controllers\Admin\AngariadorController::class, 'leads'])->name('leads');
+        Route::post('/leads', [App\Http\Controllers\Admin\AngariadorController::class, 'storeLead'])->name('leads.store');
         Route::get('/leads/kanban', [App\Http\Controllers\Admin\AngariadorController::class, 'kanban'])->name('leads.kanban');
         Route::get('/leads/{client}', [App\Http\Controllers\Admin\AngariadorController::class, 'leadShow'])->name('leads.show');
         Route::post('/leads/{client}/activity', [App\Http\Controllers\Admin\AngariadorController::class, 'storeActivity'])->name('leads.activity');
