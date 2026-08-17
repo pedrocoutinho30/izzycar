@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SetPasswordMail;
+use App\Models\AuditLog;
 use App\Models\Client;
 use App\Models\ConvertedProposal;
+use App\Models\LeadActivity;
 use App\Models\User;
 use App\Services\AngariadorMetricsService;
 use Illuminate\Http\Request;
@@ -103,7 +105,58 @@ class AngariadorAdminController extends Controller
         return view('admin.v2.angariadores.show', array_merge($metrics, [
             'angariador' => $user,
             'leads' => $leads,
+            'activity' => $this->buildActivityTimeline($user),
         ]));
+    }
+
+    /**
+     * Junta num único histórico cronológico tudo o que este angariador fez
+     * na plataforma com a própria conta: sessões (audit_logs, via os
+     * eventos globais de Login/Logout) e apontamentos manuais que registou
+     * em leads (lead_activities). Serve só para o admin perceber se o
+     * angariador está a usar a plataforma — não é um mecanismo de controlo.
+     */
+    private function buildActivityTimeline(User $user, int $limit = 40)
+    {
+        $sessions = AuditLog::where('user_id', $user->id)
+            ->latest('created_at')
+            ->limit($limit)
+            ->get()
+            ->map(function ($log) {
+                [$icon, $color, $title] = match ($log->action) {
+                    'login'   => ['bi-box-arrow-in-right', 'success', 'Iniciou sessão'],
+                    'logout'  => ['bi-box-arrow-left', 'secondary', 'Terminou sessão'],
+                    'created' => ['bi-plus-circle-fill', 'primary', 'Criou registo'],
+                    'updated' => ['bi-pencil-fill', 'info', 'Atualizou registo'],
+                    'deleted' => ['bi-trash-fill', 'danger', 'Apagou registo'],
+                    default   => ['bi-circle-fill', 'secondary', ucfirst($log->action)],
+                };
+
+                return (object) [
+                    'icon' => $icon,
+                    'color' => $color,
+                    'title' => $title,
+                    'body' => $log->description,
+                    'created_at' => $log->created_at,
+                ];
+            });
+
+        $notes = LeadActivity::where('user_id', $user->id)
+            ->with('client')
+            ->latest('created_at')
+            ->limit($limit)
+            ->get()
+            ->map(function ($activity) {
+                return (object) [
+                    'icon' => $activity->icon,
+                    'color' => $activity->color,
+                    'title' => $activity->title . ($activity->client ? ' — ' . $activity->client->name : ''),
+                    'body' => $activity->body,
+                    'created_at' => $activity->created_at,
+                ];
+            });
+
+        return $sessions->merge($notes)->sortByDesc('created_at')->take($limit)->values();
     }
 
     public function impersonate(User $user, Request $request)

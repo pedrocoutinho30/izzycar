@@ -65,4 +65,56 @@
     </div>
 </div>
 
+<div class="modern-card">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title"><i class="bi bi-clock-history"></i> Atividade Recente</h5>
+        <span class="badge bg-secondary rounded-pill">{{ $activity->count() }}</span>
+    </div>
+    @if($activity->isNotEmpty())
+    <div class="timeline-list">
+        @foreach($activity as $act)
+        <div class="timeline-item">
+            <div class="timeline-icon bg-{{ $act->color }}">
+                <i class="{{ $act->icon }}"></i>
+            </div>
+            <div class="timeline-body">
+                <div class="timeline-title">{{ $act->title }}</div>
+                @if($act->body)
+                <div class="timeline-text">{{ $act->body }}</div>
+                @endif
+                <div class="timeline-meta">
+                    {{ $act->created_at->format('d/m/Y H:i') }}
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+    @else
+    <div class="p-4 text-center text-muted small">
+        <i class="bi bi-clock-history d-block fs-4 mb-1"></i>
+        Ainda não há atividade registada por este angariador (login ou apontamentos em leads).
+    </div>
+    @endif
+</div>
+
 @endsection
+
+@push('styles')
+<style>
+    .timeline-list { padding: .5rem 0; }
+    .timeline-item { display: flex; gap: 1rem; padding: .85rem 1.25rem; position: relative; }
+    .timeline-item + .timeline-item::before {
+        content: ''; position: absolute; top: 0; left: 2.35rem;
+        width: 1px; height: 100%; background: #f0f0f0;
+    }
+    .timeline-icon {
+        width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .8rem; color: #fff; opacity: .9;
+    }
+    .timeline-body { flex: 1; min-width: 0; }
+    .timeline-title { font-size: .88rem; font-weight: 600; color: #111; }
+    .timeline-text { font-size: .83rem; color: #555; margin-top: .2rem; white-space: pre-line; }
+    .timeline-meta { font-size: .72rem; color: #aaa; margin-top: .3rem; }
+</style>
+@endpush
