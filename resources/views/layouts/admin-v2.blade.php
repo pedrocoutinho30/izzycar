@@ -296,6 +296,40 @@
             margin-top: 1rem;
         }
 
+        /* Cabeçalho de grupo colapsável */
+        .nav-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: calc(100% - 2rem);
+            margin: 1rem 1rem 0.25rem;
+            padding: 0.6rem 0.75rem;
+            background: none;
+            border: none;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .nav-group:hover {
+            background: var(--admin-hover);
+            color: var(--admin-primary);
+        }
+
+        .nav-group__chevron {
+            font-size: 0.85rem;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-group[aria-expanded="true"] .nav-group__chevron {
+            transform: rotate(180deg);
+        }
+
         /* Item de menu individual */
         .nav-item {
             margin: 0.25rem 1rem;
@@ -739,6 +773,22 @@
     <aside class="admin-sidebar" id="adminSidebar">
         <nav class="sidebar-nav">
         @hasanyrole('admin|gestor|cms')
+            @php
+                $navGroups = [
+                    'funil' => ['admin.v2.leads.*', 'admin.v2.form-proposals.*', 'admin.v2.proposals.*', 'admin.v2.converted-proposals.*', 'admin.v2.clients.*', 'admin.v2.cost-simulators.*'],
+                    'operacoes' => ['admin.v3.vehicles.*', 'admin.v3.inspections.*', 'admin.legalizations.*', 'admin.transport-quotes.*', 'admin.v2.sales.*', 'admin.v2.movements.*', 'admin.v2.expenses.*', 'admin.tasks.*'],
+                    'rede' => ['admin.v2.angariadores.*', 'admin.v2.suppliers.*', 'admin.v2.partners.*'],
+                    'analise' => ['admin.v2.reports.*', 'calculator.profit', 'admin.v2.comparator.*', 'car-analysis.*'],
+                    'conteudo' => ['admin.news.*', 'admin.testimonials.*', 'admin.v2.newsletter-management.*', 'admin.v2.menus.*'],
+                    'config' => ['admin.v2.attribute-groups.*', 'admin.v2.vehicle-attributes.*', 'admin.v2.settings.*'],
+                    'sistema' => ['admin.v2.users.*', 'admin.v2.audit-log', 'admin.v2.roles.*', 'admin.v2.permissions.*', 'admin.v2.manual'],
+                ];
+                $activeGroup = null;
+                foreach ($navGroups as $key => $patterns) {
+                    if (request()->routeIs($patterns)) { $activeGroup = $key; break; }
+                }
+            @endphp
+
             <!-- Dashboard -->
             <div class="nav-item">
                 <a href="{{ route('admin.v2.dashboard') }}" class="nav-link {{ request()->routeIs('admin.v2.dashboard') ? 'active' : '' }}">
@@ -747,287 +797,273 @@
                 </a>
             </div>
 
-            <!-- Gestão -->
-            <div class="nav-group-title">Importação</div>
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.form-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
-                    <i class="bi bi-envelope"></i>
-                    <span>Formulários</span>
-                    @php
-                    $newFormsCount = \App\Models\FormProposal::whereIn('status', ['novo', null])->count();
-                    @endphp
-                    @if($newFormsCount > 0)
-                    <span class="nav-badge">{{ $newFormsCount }}</span>
-                    @endif
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i>
-                    <span>Cotações</span>
-                    @php
-                    $pendingCount = \App\Models\Proposal::where('status', 'Pendente')->count();
-                    @endphp
-                    @if($pendingCount > 0)
-                    <span class="nav-badge">{{ $pendingCount }}</span>
-                    @endif
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.converted-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.converted-proposals.*') ? 'active' : '' }}">
-                    <i class="bi bi-check2-circle"></i>
-                    <span>Cotações Convertidas</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.cost-simulators.index') }}" class="nav-link {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
-                    <i class="bi bi-dollar"></i>
-                    <span>Simulador Custos</span>
-                     @php
-                    $newSimulationsCount = \App\Models\CostSimulator::where('read', 0)->count();
-                    @endphp
-                    @if($newSimulationsCount > 0)
-                    <span class="nav-badge">{{ $newSimulationsCount }}</span>
-                    @endif
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="{{ route('admin.transport-quotes.index') }}" class="nav-link {{ request()->routeIs('admin.transport-quotes.*') ? 'active' : '' }}">
-                    <i class="bi bi-truck"></i>
-                    <span>Transportes</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.legalizations.index') }}" class="nav-link {{ request()->routeIs('admin.legalizations.*') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-check"></i>
-                    <span>Legalizações</span>
-                </a>
-            </div>
-
-            
-
-            <div class="nav-group-title">Gestão</div>
-
-            {{-- Consignações: oculto temporariamente --}}
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.leads.index') }}" class="nav-link {{ request()->routeIs('admin.v2.leads.*') ? 'active' : '' }}">
-                    <i class="bi bi-funnel"></i>
-                    <span>Leads</span>
-                    @php $leadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
-                    <span class="nav-badge" id="leads-nav-badge" {{ $leadsCount === 0 ? 'style=display:none' : '' }}>{{ $leadsCount }}</span>
-                </a>
+            {{-- ═══════ FUNIL DE VENDAS ═══════ --}}
+            <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupFunil" aria-expanded="{{ $activeGroup === 'funil' ? 'true' : 'false' }}">
+                <span>Funil de Vendas</span>
+                <i class="bi bi-chevron-down nav-group__chevron"></i>
+            </button>
+            <div class="collapse {{ $activeGroup === 'funil' ? 'show' : '' }}" id="navGroupFunil">
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.leads.index') }}" class="nav-link {{ request()->routeIs('admin.v2.leads.*') ? 'active' : '' }}">
+                        <i class="bi bi-funnel"></i>
+                        <span>Leads</span>
+                        @php $leadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
+                        <span class="nav-badge" id="leads-nav-badge" {{ $leadsCount === 0 ? 'style=display:none' : '' }}>{{ $leadsCount }}</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.form-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
+                        <i class="bi bi-envelope"></i>
+                        <span>Formulários</span>
+                        @php $newFormsCount = \App\Models\FormProposal::whereIn('status', ['novo', null])->count(); @endphp
+                        @if($newFormsCount > 0)
+                        <span class="nav-badge">{{ $newFormsCount }}</span>
+                        @endif
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>Cotações</span>
+                        @php $pendingCount = \App\Models\Proposal::where('status', 'Pendente')->count(); @endphp
+                        @if($pendingCount > 0)
+                        <span class="nav-badge">{{ $pendingCount }}</span>
+                        @endif
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.converted-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.converted-proposals.*') ? 'active' : '' }}">
+                        <i class="bi bi-check2-circle"></i>
+                        <span>Cotações Convertidas</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.clients.index') }}" class="nav-link {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i>
+                        <span>Clientes</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.cost-simulators.index') }}" class="nav-link {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
+                        <i class="bi bi-dollar"></i>
+                        <span>Simulador Custos</span>
+                        @php $newSimulationsCount = \App\Models\CostSimulator::where('read', 0)->count(); @endphp
+                        @if($newSimulationsCount > 0)
+                        <span class="nav-badge">{{ $newSimulationsCount }}</span>
+                        @endif
+                    </a>
+                </div>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.angariadores.index') }}" class="nav-link {{ request()->routeIs('admin.v2.angariadores.index') || request()->routeIs('admin.v2.angariadores.show') ? 'active' : '' }}">
-                    <i class="bi bi-person-badge"></i>
-                    <span>Angariadores</span>
-                </a>
+            {{-- ═══════ OPERAÇÕES ═══════ --}}
+            <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupOperacoes" aria-expanded="{{ $activeGroup === 'operacoes' ? 'true' : 'false' }}">
+                <span>Operações</span>
+                <i class="bi bi-chevron-down nav-group__chevron"></i>
+            </button>
+            <div class="collapse {{ $activeGroup === 'operacoes' ? 'show' : '' }}" id="navGroupOperacoes">
+                {{-- Consignações: oculto temporariamente --}}
+                <div class="nav-item">
+                    <a href="{{ route('admin.v3.vehicles.index') }}" class="nav-link {{ request()->routeIs('admin.v3.vehicles.*') ? 'active' : '' }}">
+                        <i class="bi bi-car-front-fill"></i>
+                        <span>Viaturas</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v3.inspections.index') }}" class="nav-link {{ request()->routeIs('admin.v3.inspections.*') ? 'active' : '' }}">
+                        <i class="bi bi-clipboard-check"></i>
+                        <span>Inspeções</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.legalizations.index') }}" class="nav-link {{ request()->routeIs('admin.legalizations.*') ? 'active' : '' }}">
+                        <i class="bi bi-file-earmark-check"></i>
+                        <span>Legalizações</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.transport-quotes.index') }}" class="nav-link {{ request()->routeIs('admin.transport-quotes.*') ? 'active' : '' }}">
+                        <i class="bi bi-truck"></i>
+                        <span>Transportes</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.sales.index') }}" class="nav-link {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>Vendas</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.movements.index') }}" class="nav-link {{ request()->routeIs('admin.v2.movements.*') || request()->routeIs('admin.v2.expenses.*') ? 'active' : '' }}">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Movimentos</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.tasks.index') }}" class="nav-link {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
+                        <i class="bi bi-check2-square"></i>
+                        <span>Tarefas</span>
+                    </a>
+                </div>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.angariadores.comissoes') }}" class="nav-link {{ request()->routeIs('admin.v2.angariadores.comissoes') ? 'active' : '' }}">
-                    <i class="bi bi-cash-coin"></i>
-                    <span>Comissões</span>
-                </a>
+            {{-- ═══════ ANGARIADORES & PARCEIROS ═══════ --}}
+            <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupRede" aria-expanded="{{ $activeGroup === 'rede' ? 'true' : 'false' }}">
+                <span>Angariadores &amp; Parceiros</span>
+                <i class="bi bi-chevron-down nav-group__chevron"></i>
+            </button>
+            <div class="collapse {{ $activeGroup === 'rede' ? 'show' : '' }}" id="navGroupRede">
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.angariadores.index') }}" class="nav-link {{ request()->routeIs('admin.v2.angariadores.index') || request()->routeIs('admin.v2.angariadores.show') ? 'active' : '' }}">
+                        <i class="bi bi-person-badge"></i>
+                        <span>Angariadores</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.angariadores.comissoes') }}" class="nav-link {{ request()->routeIs('admin.v2.angariadores.comissoes') ? 'active' : '' }}">
+                        <i class="bi bi-cash-coin"></i>
+                        <span>Comissões</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.suppliers.index') }}" class="nav-link {{ request()->routeIs('admin.v2.suppliers.*') ? 'active' : '' }}">
+                        <i class="bi bi-building"></i>
+                        <span>Fornecedores</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.partners.index') }}" class="nav-link {{ request()->routeIs('admin.v2.partners.*') ? 'active' : '' }}">
+                        <i class="bi bi-phone-vibrate"></i>
+                        <span>Parceiros</span>
+                    </a>
+                </div>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.clients.index') }}" class="nav-link {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
-                    <i class="bi bi-people"></i>
-                    <span>Clientes</span>
-                </a>
+            {{-- ═══════ ANÁLISE & FERRAMENTAS ═══════ --}}
+            <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupAnalise" aria-expanded="{{ $activeGroup === 'analise' ? 'true' : 'false' }}">
+                <span>Análise &amp; Ferramentas</span>
+                <i class="bi bi-chevron-down nav-group__chevron"></i>
+            </button>
+            <div class="collapse {{ $activeGroup === 'analise' ? 'show' : '' }}" id="navGroupAnalise">
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.reports.index') }}" class="nav-link {{ request()->routeIs('admin.v2.reports.*') ? 'active' : '' }}">
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('calculator.profit') }}" class="nav-link {{ request()->routeIs('calculator.profit') ? 'active' : '' }}">
+                        <i class="bi bi-calculator"></i>
+                        <span>Calculadora de Lucro</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.comparator.index') }}" class="nav-link {{ request()->routeIs('admin.v2.comparator.*') ? 'active' : '' }}">
+                        <i class="bi bi-columns-gap"></i>
+                        <span>Comparador de Veículos</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('car-analysis.index') }}" class="nav-link {{ request()->routeIs('car-analysis.*') ? 'active' : '' }}">
+                        <i class="bi bi-bar-chart-line"></i>
+                        <span>Análise de Carros</span>
+                    </a>
+                </div>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.v3.vehicles.index') }}" class="nav-link {{ request()->routeIs('admin.v3.vehicles.*') ? 'active' : '' }}">
-                    <i class="bi bi-car-front-fill"></i>
-                    <span>Viaturas</span>
-                </a>
+            {{-- ═══════ CONTEÚDO DO SITE ═══════ --}}
+            <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupConteudo" aria-expanded="{{ $activeGroup === 'conteudo' ? 'true' : 'false' }}">
+                <span>Conteúdo do Site</span>
+                <i class="bi bi-chevron-down nav-group__chevron"></i>
+            </button>
+            <div class="collapse {{ $activeGroup === 'conteudo' ? 'show' : '' }}" id="navGroupConteudo">
+                <div class="nav-item">
+                    <a href="{{ route('admin.news.index') }}" class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
+                        <i class="bi bi-file-richtext"></i>
+                        <span>Notícias</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.testimonials.index') }}" class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
+                        <i class="bi bi-chat-quote"></i>
+                        <span>Testemunhos</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.newsletter-management.index') }}" class="nav-link {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
+                        <i class="bi bi-newspaper"></i>
+                        <span>Newsletter</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.menus.index') }}" class="nav-link {{ request()->routeIs('admin.v2.menus.*') ? 'active' : '' }}">
+                        <i class="bi bi-list-nested"></i>
+                        <span>Menus</span>
+                    </a>
+                </div>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.v3.inspections.index') }}" class="nav-link {{ request()->routeIs('admin.v3.inspections.*') ? 'active' : '' }}">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span>Inspeções</span>
-                </a>
+            {{-- ═══════ CONFIGURAÇÕES ═══════ --}}
+            <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupConfig" aria-expanded="{{ $activeGroup === 'config' ? 'true' : 'false' }}">
+                <span>Configurações</span>
+                <i class="bi bi-chevron-down nav-group__chevron"></i>
+            </button>
+            <div class="collapse {{ $activeGroup === 'config' ? 'show' : '' }}" id="navGroupConfig">
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.attribute-groups.index') }}" class="nav-link {{ request()->routeIs('admin.v2.attribute-groups.*') ? 'active' : '' }}">
+                        <i class="bi bi-folder"></i>
+                        <span>Grupos de Atributos</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.vehicle-attributes.index') }}" class="nav-link {{ request()->routeIs('admin.v2.vehicle-attributes.*') ? 'active' : '' }}">
+                        <i class="bi bi-tags"></i>
+                        <span>Atributos de Veículos</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.settings.index') }}" class="nav-link {{ request()->routeIs('admin.v2.settings.*') ? 'active' : '' }}">
+                        <i class="bi bi-gear"></i>
+                        <span>Configurações</span>
+                    </a>
+                </div>
             </div>
 
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.sales.index') }}" class="nav-link {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
-                    <i class="bi bi-cash-coin"></i>
-                    <span>Vendas</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.movements.index') }}" class="nav-link {{ request()->routeIs('admin.v2.movements.*') || request()->routeIs('admin.v2.expenses.*') ? 'active' : '' }}">
-                    <i class="bi bi-journal-text"></i>
-                    <span>Movimentos</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.tasks.index') }}" class="nav-link {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
-                    <i class="bi bi-check2-square"></i>
-                    <span>Tarefas</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.reports.index') }}" class="nav-link {{ request()->routeIs('admin.v2.reports.*') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-bar-graph"></i>
-                    <span>Relatórios</span>
-                </a>
-            </div>
-
-            <!-- Ferramentas -->
-            <div class="nav-group-title">Ferramentas</div>
-
-            <div class="nav-item">
-                <a href="{{ route('calculator.profit') }}" class="nav-link {{ request()->routeIs('calculator.profit') ? 'active' : '' }}">
-                    <i class="bi bi-calculator"></i>
-                    <span>Calculadora de Lucro</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.comparator.index') }}" class="nav-link {{ request()->routeIs('admin.v2.comparator.*') ? 'active' : '' }}">
-                    <i class="bi bi-columns-gap"></i>
-                    <span>Comparador de Veículos</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('car-analysis.index') }}" class="nav-link {{ request()->routeIs('car-analysis.*') ? 'active' : '' }}">
-                    <i class="bi bi-bar-chart-line"></i>
-                    <span>Análise de Carros</span>
-                </a>
-            </div>
-
-            <!-- CMS -->
-            <div class="nav-group-title">CMS</div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.news.index') }}" class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
-                    <i class="bi bi-file-richtext"></i>
-                    <span>Notícias</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.testimonials.index') }}" class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
-                    <i class="bi bi-chat-quote"></i>
-                    <span>Testemunhos</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.newsletter-management.index') }}" class="nav-link {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
-                    <i class="bi bi-newspaper"></i>
-                    <span>Newsletter</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.menus.index') }}" class="nav-link {{ request()->routeIs('admin.v2.menus.*') ? 'active' : '' }}">
-                    <i class="bi bi-list-nested"></i>
-                    <span>Menus</span>
-                </a>
-            </div>
-            <!-- Parceiros -->
-            <div class="nav-group-title">Rede</div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.suppliers.index') }}" class="nav-link {{ request()->routeIs('admin.v2.suppliers.*') ? 'active' : '' }}">
-                    <i class="bi bi-truck"></i>
-                    <span>Fornecedores</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.partners.index') }}" class="nav-link {{ request()->routeIs('admin.v2.partners.*') ? 'active' : '' }}">
-                    <i class="bi bi-phone-vibrate"></i>
-                    <span>Parceiros</span>
-                </a>
-            </div>
-
-
-
-            <!-- Sistema Antigo -->
-            <div class="nav-group-title">Sistema V1 (Antigo)</div>
-
-            <div class="nav-item">
-                <a href="{{ route('pages.index') }}" class="nav-link">
-                    <i class="bi bi-box-arrow-up-right"></i>
-                    <span>CMS</span>
-                </a>
-            </div>
-
-
-
-            <!-- Configurações -->
-            <div class="nav-group-title">Configurações</div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.attribute-groups.index') }}" class="nav-link {{ request()->routeIs('admin.v2.attribute-groups.*') ? 'active' : '' }}">
-                    <i class="bi bi-folder"></i>
-                    <span>Grupos de Atributos</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.vehicle-attributes.index') }}" class="nav-link {{ request()->routeIs('admin.v2.vehicle-attributes.*') ? 'active' : '' }}">
-                    <i class="bi bi-tags"></i>
-                    <span>Atributos de Veículos</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.settings.index') }}" class="nav-link {{ request()->routeIs('admin.v2.settings.*') ? 'active' : '' }}">
-                    <i class="bi bi-gear"></i>
-                    <span>Configurações</span>
-                </a>
-            </div>
-
-            <!-- Sistema -->
-            <div class="nav-group-title">Sistema</div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.users.index') }}" class="nav-link {{ request()->routeIs('admin.v2.users.*') ? 'active' : '' }}">
-                    <i class="bi bi-people"></i>
-                    <span>Utilizadores</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.audit-log') }}" class="nav-link {{ request()->routeIs('admin.v2.audit-log') ? 'active' : '' }}">
-                    <i class="bi bi-shield-check"></i>
-                    <span>Log de Auditoria</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.roles.index') }}" class="nav-link {{ request()->routeIs('admin.v2.roles.*') ? 'active' : '' }}">
-                    <i class="bi bi-person-badge"></i>
-                    <span>Perfis</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.permissions.index') }}" class="nav-link {{ request()->routeIs('admin.v2.permissions.*') ? 'active' : '' }}">
-                    <i class="bi bi-key"></i>
-                    <span>Permissões</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="{{ route('admin.v2.manual') }}" class="nav-link {{ request()->routeIs('admin.v2.manual') ? 'active' : '' }}">
-                    <i class="bi bi-book"></i>
-                    <span>Manual de Utilizador</span>
-                </a>
+            {{-- ═══════ SISTEMA ═══════ --}}
+            <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupSistema" aria-expanded="{{ $activeGroup === 'sistema' ? 'true' : 'false' }}">
+                <span>Sistema</span>
+                <i class="bi bi-chevron-down nav-group__chevron"></i>
+            </button>
+            <div class="collapse {{ $activeGroup === 'sistema' ? 'show' : '' }}" id="navGroupSistema">
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.users.index') }}" class="nav-link {{ request()->routeIs('admin.v2.users.*') ? 'active' : '' }}">
+                        <i class="bi bi-person-gear"></i>
+                        <span>Utilizadores</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.roles.index') }}" class="nav-link {{ request()->routeIs('admin.v2.roles.*') ? 'active' : '' }}">
+                        <i class="bi bi-shield-lock"></i>
+                        <span>Perfis</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.permissions.index') }}" class="nav-link {{ request()->routeIs('admin.v2.permissions.*') ? 'active' : '' }}">
+                        <i class="bi bi-key"></i>
+                        <span>Permissões</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.audit-log') }}" class="nav-link {{ request()->routeIs('admin.v2.audit-log') ? 'active' : '' }}">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Log de Auditoria</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.manual') }}" class="nav-link {{ request()->routeIs('admin.v2.manual') ? 'active' : '' }}">
+                        <i class="bi bi-book"></i>
+                        <span>Manual de Utilizador</span>
+                    </a>
+                </div>
             </div>
         @else
             {{-- Angariador puro: apenas a sua própria área --}}
