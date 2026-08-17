@@ -14,4 +14,13 @@ class AngariadorManualController extends Controller
     {
         return view('public.manual-angariador');
     }
+
+    /**
+     * Página de apresentação do programa a potenciais angariadores —
+     * distinta do manual (que é o guia operacional para quem já foi aprovado).
+     */
+    public function landing()
+    {
+        return view('public.angariador-landing');
+    }
 }

@@ -67,6 +67,9 @@ Route::post('/definir-password', [App\Http\Controllers\Auth\SetPasswordControlle
 Route::get('/manual-angariador', [App\Http\Controllers\Frontend\AngariadorManualController::class, 'index'])
     ->name('public.manual.angariador');
 
+Route::get('/seja-angariador', [App\Http\Controllers\Frontend\AngariadorManualController::class, 'landing'])
+    ->name('public.angariador.landing');
+
 Route::get('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'create'])
     ->name('public.angariador.register');
 Route::post('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'store'])

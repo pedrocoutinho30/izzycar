@@ -85,7 +85,7 @@
 
                 <h6 class="manual-topic">Texto de apresentação (usa como modelo)</h6>
                 <blockquote class="manual-quote">
-                    Trabalho com um serviço completo de importação automóvel, acompanhado por mim do início ao fim, para que todo o processo seja simples e transparente.<br><br>
+                    Trabalhamos com um serviço completo de importação automóvel, acompanhado por nós do início ao fim, para que todo o processo seja simples e transparente.<br><br>
                     O custo da importação varia consoante o veículo e a localização, mas o serviço inclui sempre:<br>
                     ✔️ Verificação do histórico e estado do veículo<br>
                     ✔️ Transporte para Portugal<br>

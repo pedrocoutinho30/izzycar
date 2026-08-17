@@ -42,7 +42,7 @@
 
                         <div class="manual-quote-box">
                             <span class="manual-quote-box__label">Texto de Apresentação</span>
-                            <p>"Trabalho com um serviço completo de importação automóvel, acompanhado por mim do início ao fim, para que todo o processo seja simples e transparente.</p>
+                            <p>"Trabalhamos com um serviço completo de importação automóvel, acompanhado por nós do início ao fim, para que todo o processo seja simples e transparente.</p>
                             <p>O custo da importação varia consoante o veículo e a localização, mas o serviço inclui sempre: verificação do histórico, transporte, IPO, legalização completa e entrega. O valor ronda, em média, os <strong>2.500 €</strong>, acrescendo ISV e IUC apenas quando aplicável.</p>
                             <p>Se fizer sentido, posso enviar-lhe uma proposta sem compromisso. Basta preencher este formulário: [O TEU LINK]"</p>
                         </div>
