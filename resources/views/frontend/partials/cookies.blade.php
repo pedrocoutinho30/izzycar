@@ -1,71 +1,83 @@
-<!-- Modal Cookies -->
-<div id="cookieModal" class="cookie-modal">
-    <div class="cookie-content card news-listing shadow-lg">
-        <h3>Este site usa cookies</h3>
+<!-- Aviso de Cookies (discreto — barra fina no rodapé, não bloqueia a navegação) -->
+<div id="cookieModal" class="cookie-banner">
+    <div class="cookie-content shadow-lg">
         <p class="text-dark">
-            Utilizamos cookies para melhorar a sua experiência de navegação, apresentar anúncios ou conteúdos personalizados e analisar o nosso tráfego.
-            Ao clicar em "Aceitar Todos", concorda com a utilização de cookies.
+            Este site usa cookies para melhorar a sua experiência e analisar o tráfego.
+            Ao continuar a navegar, ou ao clicar em "Aceitar", concorda com a sua utilização.
         </p>
 
         <div class="cookie-buttons">
-            <button id="acceptAll">Aceitar Todos</button>
             <button id="rejectAll">Rejeitar</button>
+            <button id="acceptAll">Aceitar</button>
         </div>
     </div>
 </div>
 
 <style>
-    /* Modal principal */
-    .cookie-modal {
+    /* Barra fina, fixa no rodapé — não cobre a página nem impede o scroll/cliques no resto do site */
+    .cookie-banner {
         position: fixed;
-        top: 0;
+        bottom: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(5px);
-        /* Aplica blur no resto da página */
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        right: 0;
         z-index: 9999;
+        pointer-events: none;
     }
 
-    /* Conteúdo da modal */
     .cookie-content {
+        pointer-events: auto;
         background: #fff;
-        padding: 25px;
-        max-width: 400px;
-        width: 90%;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        padding: 12px 24px;
+        box-shadow: 0 -2px 14px rgba(0, 0, 0, 0.15);
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .cookie-content p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+        flex: 1 1 420px;
     }
 
     .cookie-buttons {
         display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 15px;
+        gap: 8px;
+        flex-shrink: 0;
     }
 
     .cookie-buttons button {
-        padding: 8px 16px;
+        padding: 6px 16px;
         border: none;
         border-radius: 6px;
         cursor: pointer;
-        font-weight: bold;
-        font-size: 14px;
+        font-weight: 600;
+        font-size: 13px;
+        white-space: nowrap;
     }
 
     #acceptAll {
-        background: #28a745;
+        background: #6e0707;
         color: white;
     }
 
     #rejectAll {
-        background: #dc3545;
-        color: white;
+        background: transparent;
+        color: #555;
+        border: 1px solid #ccc !important;
+    }
+
+    @media (max-width: 576px) {
+        .cookie-content {
+            justify-content: flex-start;
+            padding: 12px 16px;
+        }
     }
 </style>
 
