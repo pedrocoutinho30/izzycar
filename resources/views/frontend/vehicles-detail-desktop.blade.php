@@ -151,6 +151,18 @@
                     </div>
                 </div>
 
+                {{-- Selos de confiança --}}
+                <div class="vd-trust-row">
+                    <div class="vd-trust-item">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Compra Segura</span>
+                    </div>
+                    <div class="vd-trust-item">
+                        <i class="bi bi-file-earmark-check"></i>
+                        <span>Processo Transparente</span>
+                    </div>
+                </div>
+
                 {{-- Cards de equipamento/atributos (scrolláveis) --}}
                 <div class="vd-sidebar-scroll">
                     @foreach($attributes as $group => $attrs)
@@ -267,22 +279,22 @@
     .vd-header-right { text-align: right; flex-shrink: 0; }
     .vd-price-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #9ca3af; margin-bottom: .1rem; }
     .vd-price { font-size: 2rem; font-weight: 800; color: var(--accent-color); line-height: 1; }
-    .vd-status-badge { display: inline-block; color: #fff; font-size: .9rem; font-weight: 700; padding: .45rem 1.1rem; border-radius: 20px; }
-    .vd-iva-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .7rem; font-weight: 700; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: .28rem .55rem; margin-top: .4rem; white-space: nowrap; }
+    .vd-status-badge { display: inline-block; color: #fff; font-size: .9rem; font-weight: 700; padding: .45rem 1.1rem; border-radius: var(--radius-sharp-sm); }
+    .vd-iva-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .7rem; font-weight: 700; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sharp-sm); padding: .28rem .55rem; margin-top: .4rem; white-space: nowrap; }
 
     /* ── 3-col layout ───────────────────────────────────────────────────── */
     .vd-layout { display: grid; grid-template-columns: 88px 1fr 290px; gap: 1rem; align-items: start; }
 
     /* ── Thumbnail strip ────────────────────────────────────────────────── */
     .vd-thumbs { display: flex; flex-direction: column; gap: .4rem; max-height: 520px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(110,7,7,.25) transparent; padding-right: 2px; }
-    .vd-thumb { width: 80px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: border-color .2s, box-shadow .2s; flex-shrink: 0; }
+    .vd-thumb { width: 80px; height: 60px; border-radius: var(--radius-sharp-sm); overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: border-color .2s, box-shadow .2s; flex-shrink: 0; }
     .vd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .vd-thumb.active { border-color: var(--accent-color); box-shadow: 0 0 0 1px var(--accent-color); }
     .vd-thumb:hover:not(.active) { border-color: rgba(110,7,7,.35); }
 
     /* ── Main swiper ────────────────────────────────────────────────────── */
     .vd-main { min-width: 0; }
-    .mySwiperMain { border-radius: 14px; overflow: hidden; background: #e9e9e9; }
+    .mySwiperMain { border-radius: var(--radius-sharp-md); overflow: hidden; background: #e9e9e9; }
     .vd-main-img { width: 100%; height: 460px; object-fit: cover; display: block; }
 
     /* Swiper nav buttons */
@@ -301,7 +313,7 @@
     /* ── Specs bar (single card, all items in one row) ───────────────────── */
     .vd-specs-bar {
         display: flex; align-items: stretch;
-        background: #fff; border: 1.5px solid #e9ecef; border-radius: 12px;
+        background: #fff; border: 1.5px solid #e9ecef; border-radius: var(--radius-sharp-md);
         margin-top: .75rem; overflow: hidden;
         animation: vdSpecUp .4s ease both;
     }
@@ -325,15 +337,21 @@
 
     /* ── Action buttons ─────────────────────────────────────────────────── */
     .vd-actions { flex-shrink: 0; padding-bottom: .85rem; margin-bottom: .75rem; border-bottom: 1.5px solid #e9ecef; }
-    .vd-btn-primary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: var(--accent-color); color: #fff; border: none; border-radius: 10px; padding: .7rem 1rem; font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .2s, transform .2s; text-decoration: none; }
+    .vd-btn-primary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: var(--accent-color); color: #fff; border: none; border-radius: var(--radius-sharp-sm); padding: .7rem 1rem; font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .2s, transform .2s; text-decoration: none; }
     .vd-btn-primary:hover { background: #8b0000; transform: translateY(-1px); color: #fff; }
-    .vd-btn-secondary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: #25d366; color: #fff; border: none; border-radius: 10px; padding: .6rem .9rem; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; }
+    .vd-btn-secondary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: #25d366; color: #fff; border: none; border-radius: var(--radius-sharp-sm); padding: .6rem .9rem; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; }
     .vd-btn-secondary:hover { background: #1da951; color: #fff; }
-    .vd-btn-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border: 1.5px solid #e5e7eb; border-radius: 10px; color: #374151; font-size: .9rem; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+    .vd-btn-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border: 1.5px solid #e5e7eb; border-radius: var(--radius-sharp-sm); color: #374151; font-size: .9rem; cursor: pointer; transition: background .2s; flex-shrink: 0; }
     .vd-btn-icon:hover { background: #e9ecef; }
 
+    /* ── Trust indicators ──────────────────────────────────────────────── */
+    .vd-trust-row { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; flex-shrink: 0; margin-bottom: .75rem; }
+    .vd-trust-item { display: flex; flex-direction: column; align-items: center; gap: .3rem; text-align: center; background: #fff; border: 1px solid #e9ecef; border-radius: var(--radius-sharp-sm); padding: .6rem .5rem; }
+    .vd-trust-item i { color: var(--accent-color); font-size: 1.1rem; }
+    .vd-trust-item span { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #555; }
+
     /* ── Attribute cards ────────────────────────────────────────────────── */
-    .vd-attr-card { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: .85rem 1rem; }
+    .vd-attr-card { background: #fff; border: 1px solid #e9ecef; border-radius: var(--radius-sharp-md); padding: .85rem 1rem; }
     .vd-attr-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-color); margin-bottom: .55rem; padding-bottom: .35rem; border-bottom: 1.5px solid rgba(110,7,7,.1); }
     .vd-attr-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .28rem; }
     .vd-attr-item { display: flex; align-items: flex-start; gap: .4rem; font-size: .82rem; color: #374151; line-height: 1.4; }
@@ -350,7 +368,7 @@
     #vl-lightbox { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.92); align-items: center; justify-content: center; }
     #vl-lightbox.active { display: flex; }
     #vl-lb-img-wrap { max-width: 90vw; max-height: 88vh; display: flex; align-items: center; justify-content: center; }
-    #vl-lb-img { max-width: 90vw; max-height: 88vh; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.6); transition: opacity .2s; user-select: none; -webkit-user-drag: none; }
+    #vl-lb-img { max-width: 90vw; max-height: 88vh; object-fit: contain; border-radius: var(--radius-sharp-sm); box-shadow: 0 8px 40px rgba(0,0,0,.6); transition: opacity .2s; user-select: none; -webkit-user-drag: none; }
     #vl-lb-close { position: fixed; top: 18px; right: 22px; background: rgba(255,255,255,.12); border: none; color: #fff; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 10001; }
     #vl-lb-close:hover { background: rgba(255,255,255,.25); }
     #vl-lb-prev, #vl-lb-next { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.1); border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 10001; }
@@ -370,13 +388,13 @@
     .mySwiperRelated { overflow: hidden; }
     .mySwiperRelated .swiper-slide { height: auto; display: flex; }
     .related-card-link { display: flex; flex: 1; }
-    .related-card { display: flex; flex-direction: column; width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,.06); box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: transform .3s, box-shadow .3s; }
+    .related-card { display: flex; flex-direction: column; width: 100%; background: #fff; border-radius: var(--radius-sharp-md); overflow: hidden; border: 1px solid rgba(0,0,0,.06); box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: transform .3s, box-shadow .3s; }
     .related-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(110,7,7,.14); }
     .related-card-img { position: relative; height: 195px; overflow: hidden; background: #e9e9e9; flex-shrink: 0; }
     .related-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
     .related-card:hover .related-card-img img { transform: scale(1.06); }
     .related-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.35) 0%, transparent 50%); pointer-events: none; }
-    .related-badge { position: absolute; top: 12px; left: 12px; color: #fff; font-size: .72rem; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; }
+    .related-badge { position: absolute; top: 12px; left: 12px; color: #fff; font-size: .72rem; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; padding: 4px 12px; border-radius: var(--radius-sharp-sm); }
     .related-card-body { display: flex; flex-direction: column; flex: 1; padding: 1.1rem 1.2rem 1rem; }
     .related-card-top { flex: 1; }
     .related-brand { font-size: .78rem; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--accent-color); margin-bottom: .15rem; }

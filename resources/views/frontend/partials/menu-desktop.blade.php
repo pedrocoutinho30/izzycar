@@ -11,7 +11,6 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav-modern ms-auto">
                 @foreach($menus->where('parent_id', null) as $menu)
-                @continue($menu->title === 'Notícias')
                 @php
                 $hasChildren = $menu->children_active->count() > 0;
                 @endphp
@@ -194,7 +193,7 @@
     font-weight: 700;
     font-size: 0.9rem;
     text-decoration: none;
-    border-radius: 50px;
+    border-radius: var(--radius-sharp-sm);
     letter-spacing: 0.02em;
     white-space: nowrap;
     box-shadow: 0 4px 18px rgba(110,7,7,0.45);

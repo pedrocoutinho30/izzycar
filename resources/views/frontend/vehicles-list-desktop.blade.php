@@ -163,7 +163,7 @@
 /* ── Filter Sidebar ───────────────────────────────────── */
 .vl-filter-sidebar {
     background: #fff;
-    border-radius: 14px;
+    border-radius: var(--radius-sharp-md);
     border: 1px solid rgba(110,7,7,.1);
     overflow: hidden;
     box-shadow: 0 2px 16px rgba(0,0,0,.06);
@@ -183,7 +183,7 @@
     background: none;
     border: 1px solid var(--accent-color);
     color: var(--accent-color);
-    border-radius: 20px;
+    border-radius: var(--radius-sharp-sm);
     font-size: .78rem;
     padding: 3px 10px;
     cursor: pointer;
@@ -203,7 +203,7 @@
 }
 .vl-select {
     border: 1px solid #e5e5e5;
-    border-radius: 8px;
+    border-radius: var(--radius-sharp-sm);
     font-size: .9rem;
     transition: border-color .2s;
 }
@@ -213,7 +213,7 @@
     margin: 0 20px 18px;
     background: rgba(110,7,7,.06);
     color: var(--accent-color);
-    border-radius: 8px;
+    border-radius: var(--radius-sharp-sm);
     padding: 8px 14px;
     font-size: .83rem;
     font-weight: 600;
@@ -224,7 +224,7 @@
 .vl-card-link { text-decoration: none; display: block; margin-bottom: 18px; }
 .vl-card {
     display: flex;
-    border-radius: 14px;
+    border-radius: var(--radius-sharp-md);
     overflow: hidden;
     background: #fff;
     border: 1px solid rgba(110,7,7,.1);
@@ -238,7 +238,7 @@
     min-width: 300px;
     height: 210px;
     overflow: hidden;
-    border-radius: 14px 0 0 14px;
+    border-radius: var(--radius-sharp-md) 0 0 var(--radius-sharp-md);
 }
 .vl-card-img-wrap img {
     width: 100%; height: 100%;
@@ -251,14 +251,14 @@
     position: absolute; top: 10px; left: 10px;
     background: #f59e0b; color: #fff;
     font-size: .72rem; font-weight: 700;
-    border-radius: 20px; padding: 3px 10px;
+    border-radius: var(--radius-sharp-sm); padding: 3px 10px;
     text-transform: uppercase; letter-spacing: .05em;
 }
 .vl-badge-vendido {
     position: absolute; top: 10px; left: 10px;
     background: #dc2626; color: #fff;
     font-size: .72rem; font-weight: 700;
-    border-radius: 20px; padding: 3px 10px;
+    border-radius: var(--radius-sharp-sm); padding: 3px 10px;
     text-transform: uppercase; letter-spacing: .05em;
 }
 .vl-card-body {
@@ -287,7 +287,7 @@
 .vl-specs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .vl-spec {
     background: rgba(110,7,7,.06);
-    border-radius: 20px;
+    border-radius: var(--radius-sharp-sm);
     padding: 4px 12px;
     font-size: .83rem;
     color: var(--primary-color);
@@ -297,7 +297,7 @@
 .vl-footer-badge {
     font-size: .8rem;
     font-weight: 700;
-    border-radius: 20px;
+    border-radius: var(--radius-sharp-sm);
     padding: 5px 14px;
     text-transform: uppercase;
     letter-spacing: .05em;
@@ -336,7 +336,7 @@
 .vl-cta {
     background: var(--accent-color);
     color: #fff;
-    border-radius: 22px;
+    border-radius: var(--radius-sharp-sm);
     padding: 8px 18px;
     font-size: .83rem;
     font-weight: 600;
@@ -363,7 +363,7 @@
 .vl-toast {
     position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
     background: #222; color: #fff;
-    padding: 10px 24px; border-radius: 24px;
+    padding: 10px 24px; border-radius: var(--radius-sharp-sm);
     font-size: .88rem; font-weight: 600;
     z-index: 9999; pointer-events: none;
     animation: vlToastIn .2s ease;
@@ -378,13 +378,13 @@
 
 /* ── Loading skeleton ─────────────────────────────────── */
 .vl-skeleton {
-    border-radius: 14px; overflow: hidden;
+    border-radius: var(--radius-sharp-md); overflow: hidden;
     background: #fff; border: 1px solid #eee;
     display: flex; margin-bottom: 18px; height: 210px;
 }
 .vl-skeleton-img { width: 300px; min-width: 300px; background: #f0f0f0; animation: vl-pulse 1.4s ease-in-out infinite; }
 .vl-skeleton-body { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-.vl-skeleton-line { height: 14px; border-radius: 6px; background: #f0f0f0; animation: vl-pulse 1.4s ease-in-out infinite; }
+.vl-skeleton-line { height: 14px; border-radius: var(--radius-sharp-sm); background: #f0f0f0; animation: vl-pulse 1.4s ease-in-out infinite; }
 .vl-skeleton-line.wide { width: 60%; }
 .vl-skeleton-line.narrow { width: 35%; }
 @keyframes vl-pulse { 0%,100%{ opacity:1 } 50%{ opacity:.5 } }

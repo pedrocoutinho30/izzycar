@@ -455,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function () {
   display:inline-flex; align-items:center; gap:.45rem;
   background:rgba(110,7,7,.2); border:1px solid rgba(110,7,7,.35);
   color:rgba(255,255,255,.9); font-size:.78rem; font-weight:600;
-  padding:.4rem 1rem; border-radius:100px; margin-bottom:1.5rem;
+  padding:.4rem 1rem; border-radius:var(--radius-sharp-sm); margin-bottom:1.5rem;
 }
 .if-hero__title {
   font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight:900;
@@ -470,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function () {
   display:inline-flex; align-items:center; gap:.4rem;
   background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
   color:rgba(255,255,255,.7); font-size:.75rem; font-weight:500;
-  padding:.35rem .8rem; border-radius:100px;
+  padding:.35rem .8rem; border-radius:var(--radius-sharp-sm);
 }
 
 /* ── Page ── */
@@ -481,10 +481,10 @@ document.addEventListener('DOMContentLoaded', function () {
 .if-success {
   display:flex; align-items:flex-start; gap:1rem;
   background:#f0fdf4; border:1px solid #86efac;
-  border-radius:14px; padding:1.5rem; margin-bottom:2rem;
+  border-radius:var(--radius-sharp-md); padding:1.5rem; margin-bottom:2rem;
 }
 .if-success__icon {
-  width:52px; height:52px; border-radius:12px; flex-shrink:0;
+  width:52px; height:52px; border-radius:var(--radius-sharp-sm); flex-shrink:0;
   background:#dcfce7; color:#16a34a;
   display:flex; align-items:center; justify-content:center;
 }
@@ -493,14 +493,14 @@ document.addEventListener('DOMContentLoaded', function () {
 .if-error-box {
   display:flex; align-items:center; gap:.65rem;
   background:#fee2e2; border:1px solid #fecaca;
-  border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.5rem;
+  border-radius:var(--radius-sharp-sm); padding:1rem 1.25rem; margin-bottom:1.5rem;
   font-size:.85rem; color:#991b1b;
 }
 
 /* ── Card ── */
 .if-card {
   background:#fff; border:1px solid var(--if-border);
-  border-radius:20px; padding:2.5rem;
+  border-radius:var(--radius-sharp-md); padding:2.5rem;
   box-shadow: var(--if-shadow); margin-bottom:1.5rem;
 }
 .if-card__head {
@@ -508,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function () {
   padding-bottom:1.25rem; border-bottom:1px solid var(--if-border);
 }
 .if-card__step {
-  width:40px; height:40px; border-radius:12px; flex-shrink:0;
+  width:40px; height:40px; border-radius:var(--radius-sharp-sm); flex-shrink:0;
   background: linear-gradient(135deg, var(--if-brand), #9b1111);
   color:#fff; font-weight:800; font-size:.9rem;
   display:flex; align-items:center; justify-content:center;
@@ -534,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .if-hint { display:block; font-size:.72rem; color: var(--if-gray); font-weight:400; text-transform:none; letter-spacing:0; margin-top:.2rem; }
 .if-req  { color: var(--if-brand); }
 .if-input, .if-select, .if-textarea {
-  padding:.75rem 1rem; border-radius:10px;
+  padding:.75rem 1rem; border-radius:var(--radius-sharp-sm);
   border:1.5px solid var(--if-border); background:#fff;
   font-size:.9rem; color:#111; outline:none;
   transition:border-color .2s, box-shadow .2s;
@@ -544,15 +544,15 @@ document.addEventListener('DOMContentLoaded', function () {
   border-color: var(--if-brand);
   box-shadow:0 0 0 3px rgba(110,7,7,.1);
 }
-.input-group .if-input { border-radius:10px 0 0 10px; border-right:0; flex:1 1 auto; width:1%; min-width:0; }
-.input-group .input-group-text { border-radius:0 10px 10px 0; border:1.5px solid var(--if-border); border-left:0; background:#f8f8f8; font-weight:600; }
+.input-group .if-input { border-radius:var(--radius-sharp-sm) 0 0 var(--radius-sharp-sm); border-right:0; flex:1 1 auto; width:1%; min-width:0; }
+.input-group .input-group-text { border-radius:0 var(--radius-sharp-sm) var(--radius-sharp-sm) 0; border:1.5px solid var(--if-border); border-left:0; background:#f8f8f8; font-weight:600; }
 .if-textarea { resize:vertical; min-height:90px; }
 
 /* ── Conditional boxes ── */
 .if-conditional { margin-top:.25rem; }
 .if-conditional__inner {
   background: var(--if-light); border:1.5px dashed var(--if-border);
-  border-radius:14px; padding:1.5rem;
+  border-radius:var(--radius-sharp-md); padding:1.5rem;
 }
 
 
@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .if-check input { display:none; }
 .if-check__box {
-  width:18px; height:18px; border-radius:5px; flex-shrink:0; margin-top:.1rem;
+  width:18px; height:18px; border-radius:var(--radius-sharp-sm); flex-shrink:0; margin-top:.1rem;
   border:2px solid var(--if-border); background:#fff;
   transition:border-color .2s, background .2s;
   display:flex; align-items:center; justify-content:center;
@@ -607,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .if-privacy svg { flex-shrink:0; color:#9ca3af; }
 .if-submit {
   display:inline-flex; align-items:center; gap:.65rem;
-  padding:1rem 2.5rem; border-radius:12px;
+  padding:1rem 2.5rem; border-radius:var(--radius-sharp-sm);
   background: linear-gradient(135deg, var(--if-brand), #9b1111);
   color:#fff; font-size:1rem; font-weight:700;
   border:none; cursor:pointer;

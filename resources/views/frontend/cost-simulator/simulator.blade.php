@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function () {
   display:inline-flex; align-items:center; gap:.45rem;
   background:rgba(110,7,7,.2); border:1px solid rgba(110,7,7,.35);
   color:rgba(255,255,255,.9); font-size:.78rem; font-weight:600;
-  padding:.4rem 1rem; border-radius:100px; margin-bottom:1.5rem;
+  padding:.4rem 1rem; border-radius:var(--radius-sharp-sm); margin-bottom:1.5rem;
 }
 .sc-hero__title {
   font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight:900;
@@ -513,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function () {
   display:inline-flex; align-items:center; gap:.4rem;
   background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
   color:rgba(255,255,255,.7); font-size:.75rem; font-weight:500;
-  padding:.35rem .8rem; border-radius:100px;
+  padding:.35rem .8rem; border-radius:var(--radius-sharp-sm);
 }
 
 /* ── Page ── */
@@ -524,10 +524,10 @@ document.addEventListener('DOMContentLoaded', function () {
 .sc-email-sent {
   display:flex; align-items:flex-start; gap:1rem;
   background:#f0fdf4; border:1px solid #86efac;
-  border-radius:14px; padding:1.25rem 1.5rem; margin-bottom:2rem;
+  border-radius:var(--radius-sharp-md); padding:1.25rem 1.5rem; margin-bottom:2rem;
 }
 .sc-email-sent__icon {
-  width:48px; height:48px; border-radius:12px; flex-shrink:0;
+  width:48px; height:48px; border-radius:var(--radius-sharp-sm); flex-shrink:0;
   background:#dcfce7; color:#16a34a;
   display:flex; align-items:center; justify-content:center;
 }
@@ -537,7 +537,7 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ── Card ── */
 .sc-card {
   background:#fff; border:1px solid var(--sc-border);
-  border-radius:20px; padding:2.5rem;
+  border-radius:var(--radius-sharp-md); padding:2.5rem;
   box-shadow: var(--sc-shadow); margin-bottom:1.5rem;
 }
 .sc-card__head {
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', function () {
   padding-bottom:1.25rem; border-bottom:1px solid var(--sc-border);
 }
 .sc-card__step {
-  width:40px; height:40px; border-radius:12px; flex-shrink:0;
+  width:40px; height:40px; border-radius:var(--radius-sharp-sm); flex-shrink:0;
   background: linear-gradient(135deg, var(--sc-brand), #9b1111);
   color:#fff; font-weight:800; font-size:.9rem;
   display:flex; align-items:center; justify-content:center;
@@ -570,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .sc-req { color: var(--sc-brand); }
 .sc-input, .sc-select {
-  padding:.75rem 1rem; border-radius:10px;
+  padding:.75rem 1rem; border-radius:var(--radius-sharp-sm);
   border:1.5px solid var(--sc-border); background:#fff;
   font-size:.9rem; color:#111; outline:none;
   transition:border-color .2s, box-shadow .2s;
@@ -605,7 +605,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .sc-submit-wrap { text-align:center; }
 .sc-submit {
   display:inline-flex; align-items:center; gap:.7rem;
-  padding:1rem 2.5rem; border-radius:12px;
+  padding:1rem 2.5rem; border-radius:var(--radius-sharp-sm);
   background: linear-gradient(135deg, var(--sc-brand), #9b1111);
   color:#fff; font-size:1rem; font-weight:700;
   border:none; cursor:pointer;

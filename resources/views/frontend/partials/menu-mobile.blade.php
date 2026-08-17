@@ -23,7 +23,6 @@
         <div class="mobile-menu-content">
             <ul class="mobile-nav-list">
                 @foreach($menus->where('parent_id', null) as $menu)
-                @continue($menu->title === 'Notícias')
                 @php
                 $hasChildren = $menu->children_active->count() > 0;
                 @endphp
@@ -157,7 +156,7 @@
     justify-content: space-between;
     padding: 1rem 1.5rem;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
+    border-radius: var(--radius-sharp-md);
     color: rgba(255, 255, 255, 0.9);
     font-weight: 600;
     font-size: 1.05rem;
@@ -186,7 +185,7 @@
 .mobile-nav-link-parent {
     padding: 1rem 1.5rem;
     background: linear-gradient(135deg, rgba(110, 7, 7, 0.2) 0%, rgba(110, 7, 7, 0.1) 100%);
-    border-radius: 12px;
+    border-radius: var(--radius-sharp-md);
     color: #fff;
     font-weight: 700;
     font-size: 1.1rem;
@@ -206,7 +205,7 @@
     align-items: center;
     padding: 0.875rem 1.25rem;
     background: rgba(255, 255, 255, 0.03);
-    border-radius: 10px;
+    border-radius: var(--radius-sharp-sm);
     color: rgba(255, 255, 255, 0.8);
     font-weight: 500;
     font-size: 0.95rem;
@@ -278,7 +277,7 @@
     font-weight: 700;
     font-size: 1.05rem;
     text-decoration: none;
-    border-radius: 50px;
+    border-radius: var(--radius-sharp-sm);
     box-shadow: 0 4px 20px rgba(110,7,7,0.5);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     letter-spacing: 0.03em;

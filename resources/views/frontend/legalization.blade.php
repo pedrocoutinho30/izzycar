@@ -273,7 +273,7 @@
         padding: 10px 20px;
         background: rgba(110, 7, 7, 0.2);
         border: 1px solid rgba(110, 7, 7, 0.3);
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         color: #fff;
         font-size: 0.9rem;
         font-weight: 600;
@@ -302,7 +302,7 @@
         padding: 8px 20px;
         background: rgba(110, 7, 7, 0.1);
         color: #990000;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 0.9rem;
         font-weight: 700;
         text-transform: uppercase;
@@ -339,7 +339,7 @@
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         padding: 2.25rem;
         width: 100%;
         max-width: 380px;
@@ -375,7 +375,7 @@
         flex-shrink: 0;
         width: 44px; height: 44px;
         background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-sm);
         display: flex; align-items: center; justify-content: center;
         color: #fff;
         box-shadow: 0 4px 14px rgba(153,0,0,0.45);
@@ -401,7 +401,7 @@
         padding: 0.875rem 1rem;
         background: rgba(255,255,255,0.05);
         border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-md);
         transition: all 0.25s ease;
     }
 
@@ -414,7 +414,7 @@
         flex-shrink: 0;
         width: 34px; height: 34px;
         background: rgba(153,0,0,0.2);
-        border-radius: 9px;
+        border-radius: var(--radius-sharp-sm);
         display: flex; align-items: center; justify-content: center;
         color: #ff8080;
     }
@@ -448,7 +448,7 @@
         color: #fff;
         font-weight: 700;
         font-size: 0.9rem;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         text-decoration: none;
         box-shadow: 0 4px 16px rgba(153,0,0,0.45);
         transition: all 0.25s ease;
@@ -468,7 +468,7 @@
 
     .legalization-intro-card {
         background: #ffffff;
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         padding: 3rem;
         box-shadow: 0 6px 28px rgba(0,0,0,0.07);
         border: 1px solid rgba(0,0,0,0.05);
@@ -493,7 +493,7 @@
         flex-shrink: 0;
         width: 72px; height: 72px;
         background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        border-radius: 18px;
+        border-radius: var(--radius-sharp-sm);
         display: flex; align-items: center; justify-content: center;
         color: white;
         box-shadow: 0 6px 18px rgba(110,7,7,0.35);
@@ -517,7 +517,7 @@
 
     .legalization-step-card {
         background: #ffffff;
-        border-radius: 18px;
+        border-radius: var(--radius-sharp-md);
         padding: 2rem;
         height: 100%;
         box-shadow: 0 4px 20px rgba(0,0,0,0.07);
@@ -542,7 +542,7 @@
         color: #fff;
         font-size: 0.95rem;
         font-weight: 800;
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-sm);
         box-shadow: 0 4px 12px rgba(153,0,0,0.35);
         margin-bottom: 1.25rem;
         position: static;
@@ -612,7 +612,7 @@
 
     .legalization-cta-card {
         background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         padding: 3.5rem;
         display: flex;
         align-items: center;
@@ -649,7 +649,7 @@
         color: #6e0707;
         font-weight: 700;
         font-size: 1rem;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         text-decoration: none;
         transition: all 0.3s ease;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -671,7 +671,7 @@
         color: white;
         font-weight: 700;
         font-size: 1rem;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         border: 2px solid rgba(255, 255, 255, 0.5);
         text-decoration: none;
         transition: all 0.3s ease;

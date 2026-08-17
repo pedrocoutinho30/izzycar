@@ -116,7 +116,7 @@
 
 <style>
 /* ── Mobile Filter Bar ────────────────────────────── */
-.vl-mobile-filters { background: #fff; border-radius: 14px; border: 1px solid rgba(110,7,7,.1); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.05); }
+.vl-mobile-filters { background: #fff; border-radius: var(--radius-sharp-md); border: 1px solid rgba(110,7,7,.1); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.05); }
 .vl-mobile-filter-toggle {
     width: 100%; background: #fdf7f7; border: none; padding: 14px 18px;
     display: flex; align-items: center; font-weight: 700; color: var(--accent-color);
@@ -130,35 +130,35 @@
 }
 .vl-mobile-filter-body { padding: 14px 16px 16px; border-top: 1px solid rgba(110,7,7,.08); }
 .vl-filter-label-m { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: #888; font-weight: 600; display: block; margin-bottom: 4px; }
-.vl-select-m { border-radius: 8px; font-size: .85rem; border-color: #e0e0e0; }
+.vl-select-m { border-radius: var(--radius-sharp-sm); font-size: .85rem; border-color: #e0e0e0; }
 .vl-select-m:focus { border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(110,7,7,.1); }
 .vl-mobile-count { padding: 8px 18px; font-size: .8rem; color: #888; font-weight: 600; border-top: 1px solid #f0f0f0; text-align: right; }
 .vl-mobile-count span { color: var(--accent-color); }
 
 /* ── Vehicle Card Grid ────────────────────────────── */
 .vlm-card-link { text-decoration: none; display: block; }
-.vlm-card { border-radius: 12px; overflow: hidden; background: #fff; border: 1px solid rgba(110,7,7,.1); box-shadow: 0 2px 10px rgba(0,0,0,.06); transition: transform .2s, box-shadow .2s; }
+.vlm-card { border-radius: var(--radius-sharp-md); overflow: hidden; background: #fff; border: 1px solid rgba(110,7,7,.1); box-shadow: 0 2px 10px rgba(0,0,0,.06); transition: transform .2s, box-shadow .2s; }
 .vlm-card:active { transform: scale(.98); }
 .vlm-img-wrap { position: relative; width: 100%; padding-top: 70%; overflow: hidden; }
 .vlm-img-wrap img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
-.vlm-badge-reservado { position: absolute; top: 7px; left: 7px; background: #f59e0b; color: #fff; font-size: .65rem; font-weight: 700; border-radius: 14px; padding: 2px 8px; text-transform: uppercase; }
-.vlm-badge-vendido { position: absolute; top: 7px; left: 7px; background: #dc2626; color: #fff; font-size: .65rem; font-weight: 700; border-radius: 14px; padding: 2px 8px; text-transform: uppercase; }
+.vlm-badge-reservado { position: absolute; top: 7px; left: 7px; background: #f59e0b; color: #fff; font-size: .65rem; font-weight: 700; border-radius: var(--radius-sharp-sm); padding: 2px 8px; text-transform: uppercase; }
+.vlm-badge-vendido { position: absolute; top: 7px; left: 7px; background: #dc2626; color: #fff; font-size: .65rem; font-weight: 700; border-radius: var(--radius-sharp-sm); padding: 2px 8px; text-transform: uppercase; }
 .vlm-body { padding: 10px 12px 12px; }
 .vlm-brand { font-size: .95rem; font-weight: 800; color: var(--accent-color); line-height: 1.2; }
 .vlm-model { font-size: .85rem; font-weight: 600; color: #333; margin-bottom: 6px; }
 .vlm-sub { font-weight: 400; color: #666; font-size: .8rem; }
 .vlm-specs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
-.vlm-specs span { background: #f5f5f5; border-radius: 10px; font-size: .7rem; color: #555; padding: 2px 8px; }
+.vlm-specs span { background: #f5f5f5; border-radius: var(--radius-sharp-sm); font-size: .7rem; color: #555; padding: 2px 8px; }
 .vlm-price-row { display: flex; align-items: baseline; gap: .4rem; margin-top: .5rem; padding-top: .5rem; border-top: 1px solid #f0f0f0; }
 .vlm-price-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #aaa; }
 .vlm-price { font-size: 1.25rem; font-weight: 900; color: var(--accent-color); line-height: 1; letter-spacing: -.02em; }
 .vlm-price-contact { font-size: .82rem; color: #888; font-style: italic; }
 
 /* ── Loading skeleton ──────────────────────────────── */
-.vlm-skeleton { border-radius: 12px; overflow: hidden; background: #fff; border: 1px solid #eee; }
+.vlm-skeleton { border-radius: var(--radius-sharp-md); overflow: hidden; background: #fff; border: 1px solid #eee; }
 .vlm-sk-img { width: 100%; padding-top: 70%; background: #f0f0f0; animation: vl-pulse 1.4s ease-in-out infinite; }
 .vlm-sk-body { padding: 10px 12px 14px; display: flex; flex-direction: column; gap: 8px; }
-.vlm-sk-line { height: 12px; border-radius: 6px; background: #f0f0f0; animation: vl-pulse 1.4s ease-in-out infinite; }
+.vlm-sk-line { height: 12px; border-radius: var(--radius-sharp-sm); background: #f0f0f0; animation: vl-pulse 1.4s ease-in-out infinite; }
 .vlm-sk-line.wide { width: 65%; }
 .vlm-sk-line.narrow { width: 40%; }
 </style>

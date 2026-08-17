@@ -39,7 +39,6 @@
                         </h4>
                         <ul class="footer-links">
                             @foreach($menus->where('parent_id', null) as $menu)
-                            @if($menu->title !== 'Notícias')
                             <li>
                                 <a href="{{ $menu->url }}" class="footer-link">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -48,7 +47,6 @@
                                     {{ $menu->title }}
                                 </a>
                             </li>
-                            @endif
                             @endforeach
                         </ul>
                     </div>
@@ -70,7 +68,7 @@
                                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                                 </svg>
                                 <a href="tel:{{$settings->where('label', 'phone')->first()->value}}" class="contact-link">
-                                    {{$settings->where('label', 'phone')->first()->value}}
+                                    +351 928 459 346
                                 </a>
                             </li>
                             <li class="contact-item">
@@ -264,7 +262,7 @@
         margin-bottom: 1rem;
         padding: 0.75rem;
         background: rgba(255,255,255,0.03);
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-md);
         transition: all 0.3s ease;
     }
 
@@ -297,7 +295,7 @@
     .newsletter-inner {
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
+        border-radius: var(--radius-sharp-md);
         padding: 2rem 2.5rem;
         display: flex;
         align-items: center;
@@ -310,7 +308,7 @@
     .newsletter-form  { display: flex; gap: .6rem; flex: 1.5; min-width: 300px; flex-wrap: wrap; }
     .nl-input {
         flex: 1; min-width: 150px;
-        padding: .6rem 1rem; border-radius: 8px;
+        padding: .6rem 1rem; border-radius: var(--radius-sharp-sm);
         background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
         color: white; font-size: .9rem;
     }
@@ -319,7 +317,7 @@
     .nl-input--name { max-width: 160px; }
     .nl-btn {
         display: inline-flex; align-items: center; gap: .45rem;
-        padding: .6rem 1.4rem; border-radius: 8px; border: none; cursor: pointer;
+        padding: .6rem 1.4rem; border-radius: var(--radius-sharp-sm); border: none; cursor: pointer;
         background: #990000; color: white; font-weight: 700; font-size: .9rem;
         transition: background .2s, transform .2s;
         white-space: nowrap;
@@ -337,7 +335,7 @@
 
     .cta-card {
         background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        border-radius: 20px;
+        border-radius: var(--radius-sharp-md);
         padding: 2.5rem;
         display: flex;
         align-items: center;
@@ -371,7 +369,7 @@
         color: #111;
         font-weight: 700;
         font-size: 1.05rem;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         text-decoration: none;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);

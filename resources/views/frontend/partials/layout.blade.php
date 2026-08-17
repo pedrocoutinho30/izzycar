@@ -178,6 +178,12 @@
         html, body { height: 100%; margin: 0; }
         body { display: flex; flex-direction: column; min-height: 100vh; }
         main { flex: 1; }
+
+        /* Espaço para a barra de navegação fixa no fundo (mobile/tablet) —
+           evita que o rodapé/CTAs finais fiquem escondidos por trás dela. */
+        @media (max-width: 991.98px) {
+            body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+        }
     </style>
 
     @stack('head')
@@ -272,12 +278,18 @@
     }
     .fab--wa:hover { box-shadow: 0 6px 24px rgba(37,211,102,.55); color: #fff; }
 
-    @media (max-width: 768px) {
-        .fab-stack { bottom: 1.25rem; right: 1.25rem; gap: 0.6rem; }
+    @media (max-width: 991.98px) {
+        .fab-stack {
+            bottom: calc(64px + env(safe-area-inset-bottom) + 1rem);
+            right: 1.25rem;
+            gap: 0.6rem;
+        }
         .fab { width: 46px; height: 46px; }
         .fab svg { width: 20px; height: 20px; }
     }
     </style>
+
+    @include('frontend.partials.mobile-bottom-nav')
     <script>
     (function() {
         const topBtn = document.getElementById('fabTop');

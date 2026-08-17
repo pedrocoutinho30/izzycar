@@ -13,14 +13,12 @@
         <!-- Navigation -->
         <div class="footer-mobile-nav">
             @foreach($menus->where('parent_id', null) as $menu)
-            @if($menu->title !== 'Notícias')
             <a href="{{ $menu->url }}" class="footer-mobile-link">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
                 {{ $menu->title }}
             </a>
-            @endif
             @endforeach
         </div>
 
@@ -31,7 +29,7 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                 </svg>
-                {{$settings->where('label', 'phone')->first()->value}}
+                +351 928 459 346
             </a>
             <a href="mailto:{{$settings->where('label', 'email')->first()->value}}" class="contact-mobile-item">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -139,7 +137,7 @@
         gap: 10px;
         padding: 0.875rem 1rem;
         background: rgba(255,255,255,0.03);
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-md);
         color: #b8b8b8;
         text-decoration: none;
         font-size: 0.95rem;
@@ -174,7 +172,7 @@
         gap: 12px;
         padding: 0.875rem 1rem;
         background: rgba(255,255,255,0.03);
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-md);
         color: #b8b8b8;
         text-decoration: none;
         font-size: 0.9rem;
@@ -235,7 +233,7 @@
         color: white;
         font-weight: 700;
         font-size: 1rem;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         text-decoration: none;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(110, 7, 7, 0.3);
@@ -286,7 +284,7 @@
     .footer-mobile-nl-sub { font-size: .82rem; color: #b8b8b8; margin: .25rem 0 .85rem; }
     .nl-mobile-input {
         display: block; width: 100%; margin-bottom: .5rem;
-        padding: .6rem .9rem; border-radius: 8px;
+        padding: .6rem .9rem; border-radius: var(--radius-sharp-sm);
         background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
         color: white; font-size: .9rem;
     }
@@ -294,7 +292,7 @@
     .nl-mobile-input:focus { outline: none; border-color: rgba(255,255,255,0.35); }
     .nl-mobile-btn {
         display: inline-flex; align-items: center; gap: .4rem;
-        padding: .6rem 1.2rem; border-radius: 8px; border: none; cursor: pointer;
+        padding: .6rem 1.2rem; border-radius: var(--radius-sharp-sm); border: none; cursor: pointer;
         background: #990000; color: white; font-weight: 700; font-size: .88rem;
     }
     .nl-mobile-feedback { font-size: .8rem; margin-top: .5rem; }

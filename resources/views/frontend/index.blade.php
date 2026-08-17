@@ -537,7 +537,7 @@
         padding: 10px 20px;
         background: rgba(255, 255, 255, 0.06);
         border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         color: #fff;
         font-size: 0.9rem;
         font-weight: 600;
@@ -588,7 +588,7 @@
         padding: 18px 40px;
         background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
         color: white;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 1.1rem;
         font-weight: 700;
         text-decoration: none;
@@ -610,7 +610,7 @@
         background: transparent;
         color: white;
         border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 1.1rem;
         font-weight: 700;
         text-decoration: none;
@@ -660,7 +660,7 @@
 
     .trust-content {
         padding: 2rem;
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         background: transparent;
     }
 
@@ -671,7 +671,7 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
+        border-radius: var(--radius-sharp-md);
         transition: all 0.3s ease;
         height: 100%;
     }
@@ -729,7 +729,7 @@
         padding: 8px 20px;
         background: rgba(110, 7, 7, 0.1);
         color: #990000;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 0.9rem;
         font-weight: 700;
         text-transform: uppercase;
@@ -885,7 +885,7 @@
         margin-bottom: 1rem;
         padding: 1.25rem 1.5rem;
         background: #ffffff;
-        border-radius: 14px;
+        border-radius: var(--radius-sharp-md);
         border: 1px solid rgba(0,0,0,0.06);
         border-left: 3px solid transparent;
         box-shadow: 0 2px 12px rgba(0,0,0,0.05);
@@ -903,7 +903,7 @@
         width: 48px;
         height: 48px;
         background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -943,7 +943,7 @@
     }
 
     .why-image-item {
-        border-radius: 18px;
+        border-radius: var(--radius-sharp-md);
         overflow: hidden;
         box-shadow: 0 8px 30px rgba(0,0,0,0.13);
         border: 2px solid rgba(255,255,255,0.9);
@@ -1007,7 +1007,7 @@
 
     .process-step-card {
         background: #ffffff;
-        border-radius: 20px;
+        border-radius: var(--radius-sharp-md);
         padding: 2rem 1.5rem 1.75rem;
         box-shadow: 0 4px 20px rgba(0,0,0,0.07);
         border: 1px solid rgba(0,0,0,0.06);
@@ -1060,7 +1060,7 @@
         padding: 16px 35px;
         background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
         color: white;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-weight: 700;
         text-decoration: none;
         transition: all 0.3s ease;
@@ -1084,7 +1084,7 @@
         gap: 10px;
         background: white;
         border: 1px solid #e0e0e0;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         padding: 10px 24px;
         margin-top: 1.25rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -1108,7 +1108,7 @@
 
     .review-card {
         background: white;
-        border-radius: 16px;
+        border-radius: var(--radius-sharp-md);
         padding: 1.75rem;
         border: 1px solid #e8e8e8;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
@@ -1130,7 +1130,7 @@
         align-items: center;
         gap: .5rem;
         padding: .65rem 1.75rem;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         border: 2px solid var(--accent-color);
         background: transparent;
         color: var(--accent-color);
@@ -1208,7 +1208,7 @@
         background: white;
         color: #444;
         border: 1.5px solid #dadada;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 0.9rem;
         font-weight: 600;
         text-decoration: none;
@@ -1271,7 +1271,7 @@
         padding: 18px 40px;
         background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
         color: white;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-weight: 700;
         text-decoration: none;
         transition: all 0.3s ease;
@@ -1292,7 +1292,7 @@
         background: transparent;
         color: white;
         border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-weight: 700;
         text-decoration: none;
         transition: all 0.3s ease;

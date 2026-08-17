@@ -24,6 +24,13 @@
         pointer-events: none;
     }
 
+    /* Sobe acima da barra de navegação fixa do mobile/tablet — e de qualquer
+       CTA fixo extra que a própria página declare via --page-bottom-extra
+       (ex.: o CTA fixo da página de detalhe da viatura). */
+    @media (max-width: 991.98px) {
+        .cookie-banner { bottom: calc(64px + env(safe-area-inset-bottom) + var(--page-bottom-extra, 0px)); }
+    }
+
     .cookie-content {
         pointer-events: auto;
         background: #fff;

@@ -533,7 +533,7 @@
         padding: 10px 20px;
         background: rgba(110, 7, 7, 0.2);
         border: 1px solid rgba(110, 7, 7, 0.3);
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         color: #fff;
         font-size: 0.9rem;
         font-weight: 600;
@@ -569,7 +569,7 @@
         padding: 18px 40px;
         background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
         color: white;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 1.1rem;
         font-weight: 700;
         text-decoration: none;
@@ -591,7 +591,7 @@
         background: transparent;
         color: white;
         border: 2px solid rgba(255,255,255,0.3);
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 1.1rem;
         font-weight: 700;
         text-decoration: none;
@@ -610,7 +610,7 @@
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 28px;
+        border-radius: var(--radius-sharp-md);
         padding: 2.5rem;
         width: 100%;
         max-width: 380px;
@@ -649,7 +649,7 @@
         width: 46px;
         height: 46px;
         background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
-        border-radius: 13px;
+        border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -673,7 +673,7 @@
     .hero-stat-item {
         background: rgba(255,255,255,0.05);
         border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 14px;
+        border-radius: var(--radius-sharp-md);
         padding: 1.25rem 1rem;
         text-align: center;
         transition: all 0.3s ease;
@@ -737,7 +737,7 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
+        border-radius: var(--radius-sharp-md);
         height: 100%;
         transition: all 0.3s ease;
     }
@@ -773,7 +773,7 @@
         padding: 8px 20px;
         background: rgba(110, 7, 7, 0.1);
         color: #990000;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 0.9rem;
         font-weight: 700;
         text-transform: uppercase;
@@ -821,7 +821,7 @@
 
     .cta-card-import {
         background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         padding: 2.5rem;
         display: flex;
         align-items: center;
@@ -834,7 +834,7 @@
         width: 80px;
         height: 80px;
         background: rgba(255, 255, 255, 0.15);
-        border-radius: 20px;
+        border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -867,7 +867,7 @@
         color: #111;
         font-weight: 700;
         font-size: 1.05rem;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         text-decoration: none;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -897,7 +897,7 @@
 
     .import-description-card {
         background: #ffffff;
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         padding: 3rem;
         box-shadow: 0 6px 30px rgba(0,0,0,0.07);
         border: 1px solid rgba(0,0,0,0.05);
@@ -975,6 +975,7 @@
     #section_why_import {
         background: linear-gradient(160deg, #f7f7f7 0%, #fafafa 50%, #fff7f7 100%);
         position: relative;
+        overflow: hidden;
     }
 
     #section_why_import::before {
@@ -991,7 +992,7 @@
     /* Why Import Cards */
     .why-import-card {
         background: #ffffff;
-        border-radius: 20px;
+        border-radius: var(--radius-sharp-md);
         padding: 2rem;
         height: 100%;
         box-shadow: 0 4px 20px rgba(0,0,0,0.07);
@@ -1013,7 +1014,7 @@
         width: 64px;
         height: 64px;
         background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
-        border-radius: 16px;
+        border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1055,7 +1056,7 @@
 
     .cta-inline-card {
         background: linear-gradient(135deg, #111111 0%, #2a2a2a 100%);
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         padding: 2.5rem;
         display: flex;
         align-items: center;
@@ -1089,7 +1090,7 @@
         color: white;
         font-weight: 700;
         font-size: 1rem;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         text-decoration: none;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(110, 7, 7, 0.3);
@@ -1118,7 +1119,7 @@
     /* INNOVATIVE COST CARDS */
     .cost-card-innovative {
         background: white;
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         padding: 2rem;
         height: 100%;
         /* box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); */
@@ -1162,7 +1163,7 @@
     .cost-icon-wrapper {
         width: 70px;
         height: 70px;
-        border-radius: 18px;
+        border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1178,7 +1179,7 @@
     .cost-badge {
         width: 45px;
         height: 45px;
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1242,7 +1243,7 @@
 
     .faq-item-modern {
         background: white;
-        border-radius: 16px;
+        border-radius: var(--radius-sharp-md);
         margin-bottom: 1rem;
         overflow: hidden;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
@@ -1276,7 +1277,7 @@
         height: 40px;
         background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
         color: white;
-        border-radius: 10px;
+        border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1472,7 +1473,7 @@
         font-size: 0.9rem;
         font-weight: 600;
         border: 1px solid #ddd;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         cursor: pointer;
         transition: all 0.3s ease;
     }

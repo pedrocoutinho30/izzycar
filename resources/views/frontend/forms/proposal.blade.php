@@ -285,7 +285,7 @@
         margin-top: 2rem;
         margin-bottom: 2rem;
         background: white;
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         padding: 3rem;
         border: 2px solid var(--accent-color);
     }
@@ -333,7 +333,7 @@
     #importForm .form-control,
     #importForm .form-select {
         border: 2px solid #e9ecef;
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-sm);
         padding: 0.75rem 1rem;
         font-size: 0.95rem;
         transition: all 0.3s ease;
@@ -401,7 +401,7 @@
     #ad_links_box,
     #preferences_box {
         background: #f8f9fa;
-        border-radius: 16px;
+        border-radius: var(--radius-sharp-md);
         padding: 1.5rem;
         border: 2px dashed #dee2e6;
     }
@@ -411,7 +411,7 @@
         background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
         color: white;
         border: none;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         padding: 1rem 3rem;
         font-size: 1.1rem;
         font-weight: 700;
@@ -433,13 +433,13 @@
 
     /* Form Response */
     #formResponse {
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-sm);
         padding: 1rem;
         margin-top: 1rem;
     }
 
     #formResponse .alert {
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-sm);
         border: none;
         font-weight: 600;
     }

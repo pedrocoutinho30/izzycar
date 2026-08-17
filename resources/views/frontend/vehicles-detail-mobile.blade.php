@@ -143,6 +143,18 @@
                         </button>
                     </div>
                 </div>
+
+                {{-- Selos de confiança --}}
+                <div class="vd-trust-row mt-3">
+                    <div class="vd-trust-item">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Compra Segura</span>
+                    </div>
+                    <div class="vd-trust-item">
+                        <i class="bi bi-file-earmark-check"></i>
+                        <span>Processo Transparente</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -173,12 +185,60 @@
             @include('frontend.partials.vehicles-home', ['vehicles' => $last_vehicles])
         </div> --}}
     </div>
+
+    {{-- CTA fixo no fundo (acima da barra de navegação) --}}
+    <div class="vd-sticky-cta">
+        <div class="vd-sticky-cta__info">
+            @if($vehicle->status === 'reservado')
+                <span class="vd-status-badge" style="background:#f59e0b;">Reservado</span>
+            @elseif($vehicle->status === 'vendido')
+                <span class="vd-status-badge" style="background:#dc2626;">Vendido</span>
+            @elseif($vehicle->asking_price)
+                <span class="vd-sticky-cta__label">Preço</span>
+                <span class="vd-sticky-cta__value">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }} €</span>
+            @endif
+        </div>
+        <button class="vd-sticky-cta__btn" data-bs-toggle="modal" data-bs-target="#contactModal">
+            <i class="bi bi-envelope-fill"></i> Pedir Informações
+        </button>
+    </div>
 </section>
 
 
 <style>
+    /* ── Página: folga extra no fundo para o CTA fixo + barra de navegação ── */
+    section[itemtype="https://schema.org/Product"] { padding-bottom: 86px; }
+
+    /* Avisa o banner de cookies de que esta página tem um CTA fixo extra
+       no fundo, para ele subir e não sobrepor o botão "Pedir Informações". */
+    @media (max-width: 991.98px) {
+        :root { --page-bottom-extra: 70px; }
+    }
+
     /* ── Mobile card wrapper ────────────────────────────────────────────── */
-    .vd-mobile-card { background: #fff; border-radius: 14px; border: 1px solid #e9ecef; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+    .vd-mobile-card { background: #fff; border-radius: var(--radius-sharp-md); border: 1px solid #e9ecef; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+
+    /* ── CTA fixo no fundo (acima da barra de navegação global) ──────────── */
+    .vd-sticky-cta {
+        position: fixed; left: 0; right: 0;
+        bottom: calc(64px + env(safe-area-inset-bottom));
+        z-index: 1020;
+        background: #fff; border-top: 1px solid #e9ecef;
+        box-shadow: 0 -4px 20px rgba(0,0,0,.08);
+        padding: .65rem 1rem;
+        display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+    }
+    .vd-sticky-cta__info { display: flex; flex-direction: column; min-width: 0; }
+    .vd-sticky-cta__label { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #9ca3af; }
+    .vd-sticky-cta__value { font-size: 1.1rem; font-weight: 800; color: var(--accent-color); line-height: 1.15; white-space: nowrap; }
+    .vd-sticky-cta__btn {
+        display: inline-flex; align-items: center; gap: .4rem;
+        background: var(--accent-color); color: #fff; border: none;
+        border-radius: var(--radius-sharp-sm);
+        padding: .65rem 1.1rem; font-size: .85rem; font-weight: 700;
+        white-space: nowrap; flex-shrink: 0; text-decoration: none;
+    }
+    .vd-sticky-cta__btn:hover { background: #8b0000; color: #fff; }
 
     /* ── Header ─────────────────────────────────────────────────────────── */
     .vd-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
@@ -190,20 +250,26 @@
     .vd-header-right { text-align: right; flex-shrink: 0; }
     .vd-price-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #9ca3af; margin-bottom: .05rem; }
     .vd-price { font-size: 1.5rem; font-weight: 800; color: var(--accent-color); line-height: 1; }
-    .vd-status-badge { display: inline-block; color: #fff; font-size: .82rem; font-weight: 700; padding: .35rem .9rem; border-radius: 20px; }
-    .vd-iva-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .68rem; font-weight: 700; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: .25rem .5rem; margin-top: .3rem; white-space: nowrap; }
+    .vd-status-badge { display: inline-block; color: #fff; font-size: .82rem; font-weight: 700; padding: .35rem .9rem; border-radius: var(--radius-sharp-sm); }
+    .vd-iva-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .68rem; font-weight: 700; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sharp-sm); padding: .25rem .5rem; margin-top: .3rem; white-space: nowrap; }
 
     /* ── Action buttons ─────────────────────────────────────────────────── */
     .vd-actions { flex-shrink: 0; }
-    .vd-btn-primary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: var(--accent-color); color: #fff; border: none; border-radius: 10px; padding: .7rem 1rem; font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; width: 100%; }
+    .vd-btn-primary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: var(--accent-color); color: #fff; border: none; border-radius: var(--radius-sharp-sm); padding: .7rem 1rem; font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; width: 100%; }
     .vd-btn-primary:hover { background: #8b0000; color: #fff; }
-    .vd-btn-secondary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: #25d366; color: #fff; border: none; border-radius: 10px; padding: .65rem .9rem; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; }
+    .vd-btn-secondary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: #25d366; color: #fff; border: none; border-radius: var(--radius-sharp-sm); padding: .65rem .9rem; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; }
     .vd-btn-secondary:hover { background: #1da951; color: #fff; }
-    .vd-btn-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border: 1.5px solid #e5e7eb; border-radius: 10px; color: #374151; font-size: .9rem; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+    .vd-btn-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border: 1.5px solid #e5e7eb; border-radius: var(--radius-sharp-sm); color: #374151; font-size: .9rem; cursor: pointer; transition: background .2s; flex-shrink: 0; }
     .vd-btn-icon:hover { background: #e9ecef; }
 
+    /* ── Trust indicators ──────────────────────────────────────────────── */
+    .vd-trust-row { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+    .vd-trust-item { display: flex; flex-direction: column; align-items: center; gap: .3rem; text-align: center; background: #fff; border: 1px solid #e9ecef; border-radius: var(--radius-sharp-sm); padding: .6rem .5rem; }
+    .vd-trust-item i { color: var(--accent-color); font-size: 1.1rem; }
+    .vd-trust-item span { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #555; }
+
     /* ── Attribute cards ────────────────────────────────────────────────── */
-    .vd-attr-card { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: .85rem 1rem; }
+    .vd-attr-card { background: #fff; border: 1px solid #e9ecef; border-radius: var(--radius-sharp-md); padding: .85rem 1rem; }
     .vd-attr-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-color); margin-bottom: .55rem; padding-bottom: .35rem; border-bottom: 1.5px solid rgba(110,7,7,.1); }
     .vd-attr-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .28rem; }
     .vd-attr-item { display: flex; align-items: flex-start; gap: .4rem; font-size: .83rem; color: #374151; line-height: 1.4; }
@@ -212,7 +278,7 @@
     /* ── Specs bar ──────────────────────────────────────────────────────── */
     .vd-specs-bar {
         display: flex; flex-wrap: wrap; align-items: stretch;
-        background: #fff; border: 1.5px solid #e9ecef; border-radius: 12px;
+        background: #fff; border: 1.5px solid #e9ecef; border-radius: var(--radius-sharp-md);
         overflow: hidden; animation: vdSpecUp .4s ease both;
     }
     .vd-sbi {
@@ -235,7 +301,7 @@
     /* Modern Mobile Gallery */
     .border-gallery {
         background: var(--white-color);
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-md);
         padding: 12px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         border: none;
@@ -246,12 +312,12 @@
     }
 
     .swiper-slide img {
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-sm);
     }
 
     .mySwiperThumbsMobile .swiper-slide img {
         border: 2px solid transparent;
-        border-radius: 8px;
+        border-radius: var(--radius-sharp-sm);
         transition: all 0.3s ease;
     }
 
@@ -263,7 +329,7 @@
     /* Modern Card */
     .news-listing {
         background: var(--white-color) !important;
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-md);
         border: 1px solid rgba(110, 7, 7, 0.1);
     }
 
@@ -310,7 +376,7 @@
         background: var(--white-color);
         border: 2px solid var(--accent-color);
         color: var(--accent-color);
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         padding: 10px 16px;
         transition: all 0.3s ease;
         font-weight: 500;
@@ -348,7 +414,7 @@
     #contactModalMobile .modal-content {
         background-color: var(--primary-color);
         color: white;
-        border-radius: 12px;
+        border-radius: var(--radius-sharp-md);
     }
 
     #contactModalMobile .form-label {
@@ -364,7 +430,7 @@
         background-color: var(--secondary-color);
         border: 1px solid var(--accent-color);
         color: white;
-        border-radius: 8px;
+        border-radius: var(--radius-sharp-sm);
     }
 
     #contactModalMobile .form-control:focus {
@@ -377,7 +443,7 @@
     #contactModalMobile .btn-primary {
         background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
         border: none;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         padding: 12px 24px;
         font-weight: 500;
     }

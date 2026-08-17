@@ -35,7 +35,7 @@
 <style>
     .modal-modern {
         background: white;
-        border-radius: 24px;
+        border-radius: var(--radius-sharp-md);
         border: none;
         overflow: hidden;
         overflow: clip; /* modern browsers: clips visually without creating a scroll container, fixes iOS focus bug */
@@ -63,7 +63,7 @@
         width: 64px;
         height: 64px;
         background: rgba(255,255,255,0.15);
-        border-radius: 16px;
+        border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -90,7 +90,7 @@
         height: 40px;
         background: rgba(255,255,255,0.15);
         border: none;
-        border-radius: 10px;
+        border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
         justify-content: center;

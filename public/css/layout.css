@@ -61,6 +61,11 @@ https://templatemo.com/tm-590-topic-listing
   --border-radius-medium: 20px;
   --border-radius-small: 10px;
 
+  /* Cantos retos/quase-retos (redesign inspirado nos mockups) — usar em
+     botões, cartões e badges no lugar dos --border-radius-* acima. */
+  --radius-sharp-sm: 6px;
+  --radius-sharp-md: 10px;
+
   --font-weight-small: 200;
   --font-weight-normal: 400;
   --font-weight-medium: 500;

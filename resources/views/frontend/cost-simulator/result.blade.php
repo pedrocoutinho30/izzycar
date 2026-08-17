@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
   display:inline-flex; align-items:center; gap:.45rem;
   background:rgba(74,222,128,.12); border:1px solid rgba(74,222,128,.25);
   color:#4ade80; font-size:.78rem; font-weight:600;
-  padding:.4rem 1rem; border-radius:100px; margin-bottom:1.5rem;
+  padding:.4rem 1rem; border-radius:var(--radius-sharp-sm); margin-bottom:1.5rem;
 }
 .sr-hero__title {
   font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight:900;
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ── Card ── */
 .sr-card {
   background:#fff; border:1px solid var(--sr-border);
-  border-radius:20px; padding:2.5rem;
+  border-radius:var(--radius-sharp-md); padding:2.5rem;
   box-shadow: var(--sr-shadow); margin-bottom:1.5rem;
 }
 .sr-card__head {
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
   padding-bottom:1.25rem; border-bottom:1px solid var(--sr-border);
 }
 .sr-card__icon {
-  width:46px; height:46px; border-radius:12px; flex-shrink:0;
+  width:46px; height:46px; border-radius:var(--radius-sharp-sm); flex-shrink:0;
   background:#fdf2f8; border:1px solid #fecdd3;
   color: var(--sr-brand);
   display:flex; align-items:center; justify-content:center;
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .sr-costs { display:flex; flex-direction:column; gap:.9rem; }
 .sr-cost-row {
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
-  padding:.85rem 1rem; border-radius:12px;
+  padding:.85rem 1rem; border-radius:var(--radius-sharp-md);
   background: var(--sr-light); border:1px solid transparent;
   transition:border-color .2s, box-shadow .2s;
 }
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .sr-cost-row--service { background:#fdf2f8; }
 .sr-cost-row__left { display:flex; align-items:center; gap:.75rem; min-width:0; }
 .sr-cost-row__icon {
-  width:36px; height:36px; border-radius:10px; flex-shrink:0;
+  width:36px; height:36px; border-radius:var(--radius-sharp-sm); flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
 }
 .sr-cost-row__name  { font-size:.88rem; font-weight:600; color:#111; }
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 .sr-total {
   display:flex; align-items:center; justify-content:space-between;
-  padding:1.25rem 1.5rem; border-radius:12px; margin-top:.25rem;
+  padding:1.25rem 1.5rem; border-radius:var(--radius-sharp-md); margin-top:.25rem;
   background: linear-gradient(135deg, var(--sr-brand) 0%, #9b1111 100%);
   box-shadow:0 4px 16px rgba(110,7,7,.3);
 }
@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .sr-btn {
   display:inline-flex; align-items:center; gap:.55rem;
-  padding:.85rem 1.75rem; border-radius:12px;
+  padding:.85rem 1.75rem; border-radius:var(--radius-sharp-sm);
   font-size:.95rem; font-weight:700; text-decoration:none;
   transition:transform .15s, box-shadow .2s, background .2s;
 }
@@ -302,8 +302,8 @@ document.addEventListener('DOMContentLoaded', function () {
   background: linear-gradient(135deg, var(--sr-brand), #9b1111);
   color:#fff; padding:.85rem 1rem; font-weight:700; text-align:left;
 }
-.sr-isv-table table th:first-child { border-radius:10px 0 0 0; }
-.sr-isv-table table th:last-child  { border-radius:0 10px 0 0; }
+.sr-isv-table table th:first-child { border-radius:var(--radius-sharp-sm) 0 0 0; }
+.sr-isv-table table th:last-child  { border-radius:0 var(--radius-sharp-sm) 0 0; }
 .sr-isv-table table td {
   padding:.8rem 1rem; border-bottom:1px solid var(--sr-border); color:#374151;
 }
