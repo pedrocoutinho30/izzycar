@@ -104,4 +104,15 @@
             <span class="small text-muted">do CISV</span>
         </div>
     </div>
+
+    <div class="col-12">
+        <hr class="my-2">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="m1460_preencher_representante_{{ $idPrefix ?? '' }}"
+                   name="modelo1460[preencher_representante]" value="1"
+                   {{ old('modelo1460.preencher_representante', $m1460['preencher_representante'] ?? true) ? 'checked' : '' }}>
+            <label class="form-check-label small fw-semibold" for="m1460_preencher_representante_{{ $idPrefix ?? '' }}">Preencher dados do representante</label>
+        </div>
+        <p class="text-muted small mb-0 ms-4">Se desmarcado, a secção "Representante Legal" (página 3) fica em branco.</p>
+    </div>
 </div>

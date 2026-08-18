@@ -29,4 +29,13 @@ Route::get('/years/{model}', function ($modelId) {
     return ModelCar::findOrFail($modelId)->modelYears()->pluck('year')->unique()->sort()->values();
 });
 
+use App\Http\Controllers\Api\WhatsAppWebhookController;
+
+Route::prefix('whatsapp')->middleware('throttle:whatsapp-webhook')->group(function () {
+    Route::get('/webhook', [WhatsAppWebhookController::class, 'verify'])->name('api.whatsapp.verify');
+    Route::post('/webhook', [WhatsAppWebhookController::class, 'handle'])
+        ->middleware('verifyWhatsAppSignature')
+        ->name('api.whatsapp.handle');
+});
+
 

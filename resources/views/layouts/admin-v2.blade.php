@@ -775,7 +775,7 @@
         @hasanyrole('admin|gestor|cms')
             @php
                 $navGroups = [
-                    'funil' => ['admin.v2.leads.*', 'admin.v2.form-proposals.*', 'admin.v2.proposals.*', 'admin.v2.converted-proposals.*', 'admin.v2.clients.*', 'admin.v2.cost-simulators.*'],
+                    'funil' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.form-proposals.*', 'admin.v2.proposals.*', 'admin.v2.converted-proposals.*', 'admin.v2.clients.*', 'admin.v2.cost-simulators.*'],
                     'operacoes' => ['admin.v3.vehicles.*', 'admin.v3.inspections.*', 'admin.legalizations.*', 'admin.transport-quotes.*', 'admin.v2.sales.*', 'admin.v2.movements.*', 'admin.v2.expenses.*', 'admin.tasks.*'],
                     'rede' => ['admin.v2.angariadores.*', 'admin.v2.suppliers.*', 'admin.v2.partners.*'],
                     'analise' => ['admin.v2.reports.*', 'calculator.profit', 'admin.v2.comparator.*', 'car-analysis.*'],
@@ -809,6 +809,16 @@
                         <span>Leads</span>
                         @php $leadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
                         <span class="nav-badge" id="leads-nav-badge" {{ $leadsCount === 0 ? 'style=display:none' : '' }}>{{ $leadsCount }}</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.pre-leads.index') }}" class="nav-link {{ request()->routeIs('admin.v2.pre-leads.*') ? 'active' : '' }}">
+                        <i class="bi bi-whatsapp"></i>
+                        <span>Pré-Leads</span>
+                        @php $preLeadsCount = \App\Models\PreLead::where('status', 'pendente')->count(); @endphp
+                        @if($preLeadsCount > 0)
+                        <span class="nav-badge">{{ $preLeadsCount }}</span>
+                        @endif
                     </a>
                 </div>
                 <div class="nav-item">

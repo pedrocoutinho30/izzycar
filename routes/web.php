@@ -249,6 +249,12 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::delete('/{id}', [App\Http\Controllers\Admin\LeadV2Controller::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('v2/pre-leads')->name('admin.v2.pre-leads.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\PreLeadController::class, 'index'])->name('index');
+        Route::post('/{preLead}/approve', [App\Http\Controllers\Admin\PreLeadController::class, 'approve'])->name('approve');
+        Route::delete('/{preLead}', [App\Http\Controllers\Admin\PreLeadController::class, 'reject'])->name('reject');
+    });
+
     Route::prefix('v2/clients')->name('admin.v2.clients.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ClientV2Controller::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\ClientV2Controller::class, 'create'])->name('create');

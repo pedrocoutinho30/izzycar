@@ -32,6 +32,7 @@ class Modelo1460PdfService
     public const CAMPOS_EXTRA_BOOLEAN = [
         'novo', 'usado', 'matricula_estrangeira', 'matricula_nacional',
         'pedido_1_beneficio_fiscal', 'pedido_1_1_isencao_isv',
+        'preencher_representante',
     ];
 
     // Checkboxes "Novo/sem matrícula" e "Usado".
@@ -180,17 +181,22 @@ class Modelo1460PdfService
         $tplIdx = $mpdf->importPage(3);
         $mpdf->useTemplate($tplIdx);
 
-        $this->writeLine($mpdf, 'rl_nome', 'José Pedro Miranda Nunes Coutinho');
-        $this->writeLine($mpdf, 'rl_morada', 'Rua Bento Landureza, 245, 3720-261 Oliveira de Azeméis');
-        $this->writeLine($mpdf, 'rl_nif', '242414958');
-        $this->writeLine($mpdf, 'rl_qualidade', 'Mandatário');
+        // Por defeito preenche-se (comportamento histórico); só fica em
+        // branco se o utilizador desmarcar explicitamente "Preencher dados
+        // do representante" no modal.
+        if ($dados['preencher_representante'] ?? true) {
+            $this->writeLine($mpdf, 'rl_nome', 'José Pedro Miranda Nunes Coutinho');
+            $this->writeLine($mpdf, 'rl_morada', 'Rua Bento Landureza, 245, 3720-261 Oliveira de Azeméis');
+            $this->writeLine($mpdf, 'rl_nif', '242414958');
+            $this->writeLine($mpdf, 'rl_qualidade', 'Mandatário');
 
-        $hoje = now();
-        $this->writeLine($mpdf, 'rl_data_dia', $hoje->format('d'));
-        $this->writeLine($mpdf, 'rl_data_mes', $hoje->format('m'));
-        $this->writeLine($mpdf, 'rl_data_ano', $hoje->format('Y'));
+            $hoje = now();
+            $this->writeLine($mpdf, 'rl_data_dia', $hoje->format('d'));
+            $this->writeLine($mpdf, 'rl_data_mes', $hoje->format('m'));
+            $this->writeLine($mpdf, 'rl_data_ano', $hoje->format('Y'));
 
-        $this->drawAssinatura($mpdf);
+            $this->drawAssinatura($mpdf);
+        }
 
         return $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
     }
