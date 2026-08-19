@@ -187,7 +187,9 @@ return [$client->id => $client->name];
                 ['text' => $proposal->fuel ?? 'N/A', 'color' => 'secondary', 'icon' => 'fuel-pump']
             ],
             'meta' => [
-                ['icon' => 'person',         'text' => $proposal->client ? $proposal->client->name : 'Sem cliente'],
+                $proposal->client
+                    ? ['icon' => 'person', 'text' => $proposal->client->name, 'href' => route('admin.v2.clients.show', $proposal->client->id), 'target' => '_blank']
+                    : ['icon' => 'person', 'text' => 'Sem cliente'],
                 ['icon' => 'calendar-event', 'text' => 'Criada em ' . $proposal->created_at->format('d/m/Y')],
                 ['icon' => 'currency-euro',  'text' => number_format($proposal->proposed_car_value ?? 0, 0, ',', '.') . '€']
             ],

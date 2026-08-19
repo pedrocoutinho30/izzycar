@@ -77,7 +77,11 @@
                 @foreach($meta as $m)
                 <span class="meta-item">
                     <i class="bi {{ $m['icon'] }}"></i>
+                    @if(isset($m['href']))
+                    <a href="{{ $m['href'] }}" @if(isset($m['target'])) target="{{ $m['target'] }}" @endif>{{ $m['text'] }}</a>
+                    @else
                     {{ $m['text'] }}
+                    @endif
                 </span>
                 @endforeach
             </div>

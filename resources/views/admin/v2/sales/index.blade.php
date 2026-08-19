@@ -121,9 +121,14 @@
     'icon' => 'bi-calendar',
     'text' => \Carbon\Carbon::parse($sale->sale_date)->format('d/m/Y')
     ],
-    [
+    $client ? [
     'icon' => 'bi-person',
-    'text' => $client->name
+    'text' => $client->name,
+    'href' => route('admin.v2.clients.show', $client->id),
+    'target' => '_blank'
+    ] : [
+    'icon' => 'bi-person',
+    'text' => 'Sem cliente'
     ],
     $vehicleRef ? [
     'icon' => 'bi-tag',

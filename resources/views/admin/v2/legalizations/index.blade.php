@@ -68,7 +68,13 @@
                         <td class="fw-semibold">
                             {{ $leg->marca }} {{ $leg->modelo }}
                         </td>
-                        <td>{{ $leg->client?->name ?? '—' }}</td>
+                        <td>
+                            @if($leg->client)
+                                <a href="{{ route('admin.v2.clients.show', $leg->client->id) }}" target="_blank">{{ $leg->client->name }}</a>
+                            @else
+                                —
+                            @endif
+                        </td>
                         <td>
                             @if($leg->num_homologacao)
                                 <span class="font-monospace small">{{ $leg->num_homologacao }}</span>

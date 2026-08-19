@@ -42,6 +42,38 @@
 </div>
 @endif
 
+@if($legalization->client)
+<div class="modern-card mb-4">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title mb-0"><i class="bi bi-person me-1"></i> Cliente</h5>
+    </div>
+    <div class="modern-card-body">
+        <div class="row g-3">
+            <div class="col-md-4 col-sm-6">
+                <div class="small text-muted">Nome</div>
+                <a href="{{ route('admin.v2.clients.show', $legalization->client->id) }}" target="_blank">{{ $legalization->client->name }}</a>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="small text-muted">NIF</div>
+                <div>{{ $legalization->client->vat_number ?? '—' }}</div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="small text-muted">Telemóvel</div>
+                <div>{{ $legalization->client->phone ?? '—' }}</div>
+            </div>
+            <div class="col-md-6">
+                <div class="small text-muted">Email</div>
+                <div class="text-break">{{ $legalization->client->email ?? '—' }}</div>
+            </div>
+            <div class="col-md-6">
+                <div class="small text-muted">Morada</div>
+                <div class="text-break">{{ $legalization->client->address ?? '—' }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 {{-- ================================================================
      HEADER CARDS
      ================================================================ --}}
