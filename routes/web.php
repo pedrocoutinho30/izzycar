@@ -281,6 +281,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
 
     Route::prefix('v2/form-proposals')->name('admin.v2.form-proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'index'])->name('index');
+        Route::post('/bulk-status', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'bulkUpdateStatus'])->name('bulk-status');
         Route::get('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'show'])->name('show');
         Route::patch('/{id}/status', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'updateStatus'])->name('update-status');
         Route::delete('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'destroy'])->name('destroy');

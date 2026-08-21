@@ -80,6 +80,31 @@ class FormProposalV2Controller extends Controller
         return redirect()->back()->with('success', 'Estado atualizado!');
     }
 
+    public function bulkUpdateStatus(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|exists:form_proposals,id',
+            'status' => 'required|in:novo,em_analise,convertido,rejeitado,arquivado',
+        ]);
+
+        $formProposals = FormProposal::whereIn('id', $data['ids'])->get();
+
+        foreach ($formProposals as $formProposal) {
+            $formProposal->update(['status' => $data['status']]);
+
+            // Quando convertido, marcar o cliente como cliente real (mesma lógica do updateStatus individual)
+            if ($data['status'] === 'convertido' && $formProposal->client_id) {
+                $client = Client::find($formProposal->client_id);
+                if ($client && $client->is_lead) {
+                    $client->convertToClient();
+                }
+            }
+        }
+
+        return response()->json(['success' => true, 'count' => $formProposals->count()]);
+    }
+
     public function destroy($id)
     {
         $formProposal = FormProposal::findOrFail($id);

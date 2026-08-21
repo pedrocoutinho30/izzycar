@@ -47,14 +47,38 @@
 
     <!-- LISTA DE FORMULÁRIOS -->
 <div class="modern-card">
-    <div class="modern-card-header">
+    <div class="modern-card-header flex-wrap gap-2">
         <h5 class="modern-card-title">
             <i class="bi bi-list-ul"></i>
             Lista de Formulários de Cotação
         </h5>
-        <span class="badge bg-secondary rounded-pill">{{ $formProposals->total() }} total</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="form-check mb-0 fp-select-all-wrap" id="fpSelectAllWrap" style="display:none">
+                <input type="checkbox" class="form-check-input" id="fpSelectAll" onchange="fpToggleAll(this)">
+                <label class="form-check-label small" for="fpSelectAll">Selecionar todos</label>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="fpSelectModeBtn" onclick="fpToggleSelectionMode()">
+                <i class="bi bi-check2-square"></i> Selecionar
+            </button>
+            <span class="badge bg-secondary rounded-pill">{{ $formProposals->total() }} total</span>
+        </div>
     </div>
 
+    <div id="fpBulkBar" class="fp-bulk-bar" style="display:none">
+        <span><strong id="fpSelectedCount">0</strong> selecionado(s)</span>
+        <select id="fpBulkStatus" class="form-select form-select-sm" style="max-width:200px">
+            <option value="novo">Novo</option>
+            <option value="em_analise">Em Análise</option>
+            <option value="convertido">Convertido</option>
+            <option value="rejeitado">Rejeitado</option>
+            <option value="arquivado">Arquivado</option>
+        </select>
+        <button type="button" class="btn btn-primary btn-sm" onclick="fpApplyBulkStatus()">
+            <i class="bi bi-check2"></i> Aplicar estado
+        </button>
+    </div>
+
+    <div id="fpList">
         @forelse($formProposals as $form)
             @php
                 $statusColors = [
@@ -82,6 +106,11 @@
                 $currentStatus = $form->status ?? 'novo';
             @endphp
 
+            <div class="fp-card-wrapper" data-id="{{ $form->id }}">
+                <div class="fp-checkbox-col">
+                    <input type="checkbox" class="form-check-input fp-checkbox" value="{{ $form->id }}" onchange="fpUpdateSelectedCount()">
+                </div>
+                <div class="fp-card-content">
             @include('components.admin.item-card', [
                 'image' => 'https://ui-avatars.com/api/?name=' . urlencode($form->name) . '&background=6e0707&color=fff&bold=true',
                 'title' => $form->name,
@@ -139,6 +168,8 @@
                     ]
                 ]
             ])
+                </div>
+            </div>
         @empty
             @include('components.admin.empty-state', [
                 'icon' => 'bi-envelope',
@@ -146,6 +177,7 @@
                 'description' => 'Não existem formulários de cotação ou não há resultados para os filtros aplicados.'
             ])
         @endforelse
+    </div>
     </div>
 
     <!-- PAGINAÇÃO -->
@@ -178,5 +210,109 @@
         transform: translateY(0);
     }
 }
+
+.fp-bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 1.25rem;
+    background: #fff7ed;
+    border-bottom: 1px solid #fed7aa;
+}
+
+.fp-card-wrapper {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+.fp-checkbox-col {
+    width: 0;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.2s ease;
+}
+
+#fpList.fp-selection-mode .fp-checkbox-col {
+    width: 2.75rem;
+}
+
+.fp-checkbox-col .fp-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.fp-card-content {
+    flex: 1;
+    min-width: 0;
+}
 </style>
+
+@push('scripts')
+<script>
+const FP_CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
+
+function fpUpdateSelectedCount() {
+    const count = document.querySelectorAll('.fp-checkbox:checked').length;
+    document.getElementById('fpSelectedCount').textContent = count;
+    document.getElementById('fpBulkBar').style.display = count > 0 ? 'flex' : 'none';
+
+    const all = document.querySelectorAll('.fp-checkbox');
+    document.getElementById('fpSelectAll').checked = all.length > 0 && count === all.length;
+}
+
+function fpToggleAll(checkbox) {
+    document.querySelectorAll('.fp-checkbox').forEach(c => c.checked = checkbox.checked);
+    fpUpdateSelectedCount();
+}
+
+function fpToggleSelectionMode() {
+    const list = document.getElementById('fpList');
+    const btn = document.getElementById('fpSelectModeBtn');
+    const active = list.classList.toggle('fp-selection-mode');
+
+    document.getElementById('fpSelectAllWrap').style.display = active ? 'flex' : 'none';
+    btn.innerHTML = active
+        ? '<i class="bi bi-x-lg"></i> Cancelar seleção'
+        : '<i class="bi bi-check2-square"></i> Selecionar';
+    btn.classList.toggle('btn-outline-primary', !active);
+    btn.classList.toggle('btn-outline-secondary', active);
+
+    if (!active) {
+        document.querySelectorAll('.fp-checkbox').forEach(c => c.checked = false);
+        document.getElementById('fpSelectAll').checked = false;
+        fpUpdateSelectedCount();
+    }
+}
+
+function fpApplyBulkStatus() {
+    const checked = [...document.querySelectorAll('.fp-checkbox:checked')].map(c => c.value);
+    if (!checked.length) return;
+    const status = document.getElementById('fpBulkStatus').value;
+
+    if (!confirm(`Alterar o estado de ${checked.length} formulário(s) selecionado(s)?`)) return;
+
+    fetch('{{ route("admin.v2.form-proposals.bulk-status") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': FP_CSRF },
+        body: JSON.stringify({ ids: checked, status: status })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Erro ao atualizar o estado.');
+        }
+    })
+    .catch(() => alert('Erro ao atualizar o estado.'));
+}
+</script>
+@endpush
 @endsection
