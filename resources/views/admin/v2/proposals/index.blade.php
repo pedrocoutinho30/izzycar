@@ -66,9 +66,6 @@
 <div class="stale-filter-bar">
     <span><i class="bi bi-funnel-fill"></i> A mostrar cotações com +30 dias sem resposta (Pendente/Enviado)</span>
     <div class="stale-filter-actions">
-        <button type="button" class="stale-btn-reject-sel" id="btnRejectSelected" onclick="rejectSelected()" style="display:none">
-            <i class="bi bi-x-circle"></i> Reprovar selecionadas (<span id="selectedCount">0</span>)
-        </button>
         <button type="button" class="stale-btn-reject" onclick="bulkRejectAll()">
             <i class="bi bi-x-circle-fill"></i> Reprovar todas as {{ $proposals->total() }}
         </button>
@@ -95,7 +92,13 @@
 'name' => 'status',
 'label' => 'Estado',
 'type' => 'select',
-'options' => ['Pendente', 'Aprovada', 'Reprovada', 'Enviado', 'Sem resposta'],
+'options' => [
+    'Pendente' => 'Pendente',
+    'Aprovada' => 'Aprovada',
+    'Reprovada' => 'Reprovada',
+    'Enviado' => 'Enviado',
+    'Sem resposta' => 'Sem resposta',
+],
 'value' => request('status'),
 'col' => 4
 ],
@@ -128,16 +131,39 @@ return [$client->id => $client->name];
 
 <!-- Proposals List -->
 <div class="modern-card">
-    <div class="modern-card-header">
+    <div class="modern-card-header flex-wrap gap-2">
         <h5 class="modern-card-title">
             <i class="bi bi-list-ul"></i>
             Lista de Cotações
         </h5>
-        <span class="badge bg-secondary rounded-pill">{{ $proposals->total() }} total</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="form-check mb-0 pr-select-all-wrap" id="prSelectAllWrap" style="display:none">
+                <input type="checkbox" class="form-check-input" id="prSelectAll" onchange="prToggleAll(this)">
+                <label class="form-check-label small" for="prSelectAll">Selecionar todos</label>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="prSelectModeBtn" onclick="prToggleSelectionMode()">
+                <i class="bi bi-check2-square"></i> Selecionar
+            </button>
+            <span class="badge bg-secondary rounded-pill">{{ $proposals->total() }} total</span>
+        </div>
+    </div>
+
+    <div id="prBulkBar" class="pr-bulk-bar" style="display:none">
+        <span><strong id="prSelectedCount">0</strong> selecionada(s)</span>
+        <select id="prBulkStatus" class="form-select form-select-sm" style="max-width:200px">
+            <option value="Pendente">Pendente</option>
+            <option value="Enviado">Enviado</option>
+            <option value="Aprovada">Aprovada</option>
+            <option value="Reprovada">Reprovada</option>
+            <option value="Sem resposta">Sem resposta</option>
+        </select>
+        <button type="button" class="btn btn-primary btn-sm" onclick="prApplyBulkStatus()">
+            <i class="bi bi-check2"></i> Aplicar estado
+        </button>
     </div>
 
     @if($proposals->count() > 0)
-    <div class="proposals-list">
+    <div class="proposals-list" id="prList">
         @foreach($proposals as $proposal)
         @php
         $statusColors = [
@@ -164,13 +190,11 @@ return [$client->id => $client->name];
         @endphp
 
         <div class="proposal-card-wrapper {{ $isStale ? 'is-stale' : '' }}" data-id="{{ $proposal->id }}">
-            @if(request()->boolean('stale'))
-            <div class="stale-checkbox-wrap">
-                <input type="checkbox" class="stale-checkbox form-check-input" value="{{ $proposal->id }}"
-                       onchange="updateSelectedCount()">
+            <div class="pr-checkbox-col">
+                <input type="checkbox" class="form-check-input pr-checkbox" value="{{ $proposal->id }}"
+                       onchange="prUpdateSelectedCount()">
             </div>
-            @endif
-
+            <div class="pr-card-content">
             @if($isStale)
             <div class="stale-badge-inline"><i class="bi bi-clock-history"></i> +30 dias sem resposta</div>
             @endif
@@ -217,6 +241,7 @@ return [$client->id => $client->name];
                 ]
             ], $extraActions)
             ])
+            </div>
         </div>
         @endforeach
     </div>
@@ -361,22 +386,6 @@ return [$client->id => $client->name];
     }
     .stale-btn-reject:hover { background: #b91c1c; border-color: #b91c1c; }
 
-    .stale-btn-reject-sel {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.45rem 1rem;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        background: #fff;
-        border: 1.5px solid #dc2626;
-        color: #dc2626;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .stale-btn-reject-sel:hover { background: #fee2e2; }
-
     .stale-btn-clear {
         display: inline-flex;
         align-items: center;
@@ -420,28 +429,49 @@ return [$client->id => $client->name];
 
     /* Wrapper do card com checkbox de seleção */
     .proposal-card-wrapper {
-        position: relative;
+        display: flex;
+        align-items: stretch;
     }
 
     .proposal-card-wrapper.is-stale .item-card {
         border-left: 3px solid #f97316 !important;
     }
 
-    .stale-checkbox-wrap {
-        position: absolute;
-        top: 50%;
-        left: -30px;
-        transform: translateY(-50%);
-        z-index: 5;
+    .pr-checkbox-col {
+        width: 0;
+        flex-shrink: 0;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: width 0.2s ease;
     }
 
-    .stale-checkbox {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-        border-color: #f97316;
+    #prList.pr-selection-mode .pr-checkbox-col {
+        width: 2.75rem;
     }
-    .stale-checkbox:checked { background-color: #f97316; border-color: #f97316; }
+
+    .pr-checkbox-col .pr-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .pr-card-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .pr-bulk-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        padding: 0.75rem 1.25rem;
+        background: #fff7ed;
+        border-bottom: 1px solid #fed7aa;
+    }
 
     .stale-badge-inline {
         display: inline-flex;
@@ -460,7 +490,6 @@ return [$client->id => $client->name];
     @media (max-width: 768px) {
         .stale-alert { flex-direction: column; align-items: flex-start; }
         .stale-filter-bar { flex-direction: column; align-items: flex-start; }
-        .stale-checkbox-wrap { left: 0; top: -16px; transform: none; }
     }
 </style>
 @endpush
@@ -522,36 +551,60 @@ function bulkRejectAll() {
     .catch(() => showStaleToast('Erro ao reprovar.', 'error'));
 }
 
-function rejectSelected() {
-    const checked = [...document.querySelectorAll('.stale-checkbox:checked')].map(c => c.value);
-    if (!checked.length) return;
-    if (!confirm(`Reprovar ${checked.length} cotações selecionadas?`)) return;
+function prToggleSelectionMode() {
+    const list = document.getElementById('prList');
+    const btn = document.getElementById('prSelectModeBtn');
+    const active = list.classList.toggle('pr-selection-mode');
 
-    fetch('{{ route("admin.v2.proposals.bulkReject") }}', {
+    document.getElementById('prSelectAllWrap').style.display = active ? 'flex' : 'none';
+    btn.innerHTML = active
+        ? '<i class="bi bi-x-lg"></i> Cancelar seleção'
+        : '<i class="bi bi-check2-square"></i> Selecionar';
+    btn.classList.toggle('btn-outline-primary', !active);
+    btn.classList.toggle('btn-outline-secondary', active);
+
+    if (!active) {
+        document.querySelectorAll('.pr-checkbox').forEach(c => c.checked = false);
+        document.getElementById('prSelectAll').checked = false;
+        prUpdateSelectedCount();
+    }
+}
+
+function prToggleAll(checkbox) {
+    document.querySelectorAll('.pr-checkbox').forEach(c => c.checked = checkbox.checked);
+    prUpdateSelectedCount();
+}
+
+function prUpdateSelectedCount() {
+    const count = document.querySelectorAll('.pr-checkbox:checked').length;
+    document.getElementById('prSelectedCount').textContent = count;
+    document.getElementById('prBulkBar').style.display = count > 0 ? 'flex' : 'none';
+
+    const all = document.querySelectorAll('.pr-checkbox');
+    document.getElementById('prSelectAll').checked = all.length > 0 && count === all.length;
+}
+
+function prApplyBulkStatus() {
+    const checked = [...document.querySelectorAll('.pr-checkbox:checked')].map(c => c.value);
+    if (!checked.length) return;
+    const status = document.getElementById('prBulkStatus').value;
+
+    if (!confirm(`Alterar o estado de ${checked.length} cotação(ões) selecionada(s) para "${status}"?`)) return;
+
+    fetch('{{ route("admin.v2.proposals.bulkUpdateStatus") }}', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
-        body: JSON.stringify({ ids: checked })
+        body: JSON.stringify({ ids: checked, status: status })
     })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            checked.forEach(id => {
-                const el = document.querySelector(`.proposal-card-wrapper[data-id="${id}"]`);
-                if (el) { el.style.opacity = '0'; setTimeout(() => el.remove(), 400); }
-            });
-            updateSelectedCount();
-            showStaleToast(`${checked.length} cotações reprovadas.`, 'success');
+            window.location.reload();
+        } else {
+            showStaleToast('Erro ao atualizar o estado.', 'error');
         }
     })
-    .catch(() => showStaleToast('Erro ao reprovar.', 'error'));
-}
-
-function updateSelectedCount() {
-    const count = document.querySelectorAll('.stale-checkbox:checked').length;
-    const el = document.getElementById('selectedCount');
-    const btn = document.getElementById('btnRejectSelected');
-    if (el) el.textContent = count;
-    if (btn) btn.style.display = count > 0 ? 'inline-flex' : 'none';
+    .catch(() => showStaleToast('Erro ao atualizar o estado.', 'error'));
 }
 
 function showStaleToast(msg, type) {

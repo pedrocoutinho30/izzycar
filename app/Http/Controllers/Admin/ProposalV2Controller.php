@@ -79,9 +79,13 @@ class ProposalV2Controller extends Controller
                   ->where('created_at', '<', $staleCutoff);
         }
 
-        // FILTRO: Status
+        // FILTRO: Status — por defeito só mostra Pendente/Enviado; para ver as
+        // restantes (Aprovada, Reprovada, Sem resposta) é preciso escolher
+        // esse estado explicitamente no filtro.
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        } elseif (!$request->boolean('stale')) {
+            $query->whereIn('status', $staleStatuses);
         }
 
         // FILTRO: Cliente
@@ -600,6 +604,19 @@ class ProposalV2Controller extends Controller
         $proposal->save();
 
         return response()->json(['success' => true, 'status' => $proposal->status]);
+    }
+
+    public function bulkUpdateStatus(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|exists:proposals,id',
+            'status' => 'required|string|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta',
+        ]);
+
+        Proposal::whereIn('id', $data['ids'])->update(['status' => $data['status']]);
+
+        return response()->json(['success' => true]);
     }
 
     public function bulkReject(Request $request)

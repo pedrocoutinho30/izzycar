@@ -216,6 +216,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::delete('/{id}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'destroy'])->name('destroy');
         Route::patch('/{id}/status', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'updateStatus'])->name('updateStatus');
         Route::post('/bulk-reject', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'bulkReject'])->name('bulkReject');
+        Route::post('/bulk-status', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'bulkUpdateStatus'])->name('bulkUpdateStatus');
     });
 
     // ============================================================
