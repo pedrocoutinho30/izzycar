@@ -137,7 +137,7 @@
           </div>
           <div class="iz-spec">
             <div class="iz-spec__icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 19V9a2 2 0 012-2h5l2 3h7a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
             </div>
             <div class="iz-spec__body">
               <div class="iz-spec__label">Combustível</div>
@@ -146,7 +146,7 @@
           </div>
           <div class="iz-spec">
             <div class="iz-spec__icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15a8 8 0 1116 0"/><line x1="12" y1="15" x2="15" y2="10"/><circle cx="12" cy="15" r="1"/></svg>
             </div>
             <div class="iz-spec__body">
               <div class="iz-spec__label">Quilómetros</div>
@@ -156,7 +156,7 @@
           @if($caixa)
           <div class="iz-spec">
             <div class="iz-spec__icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><line x1="18" y1="14" x2="18" y2="22"/><line x1="22" y1="18" x2="14" y2="18"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
             </div>
             <div class="iz-spec__body">
               <div class="iz-spec__label">Transmissão</div>
@@ -178,7 +178,7 @@
           @if($proposal->fuel !== 'Elétrico' && $proposal->engine_capacity)
           <div class="iz-spec">
             <div class="iz-spec__icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3m10-10h-3M5 12H2"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="7" rx="1"/><line x1="12" y1="9" x2="12" y2="15"/><path d="M6 15h12a2 2 0 012 2v3a2 2 0 01-2 2H6a2 2 0 01-2-2v-3a2 2 0 012-2z"/></svg>
             </div>
             <div class="iz-spec__body">
               <div class="iz-spec__label">Cilindrada</div>
@@ -189,7 +189,7 @@
           @if($proposal->co2)
           <div class="iz-spec">
             <div class="iz-spec__icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 4.5C15.5 3.6 13.8 3 12 3 8 3 5 6 5 10s3 7 7 7c1.8 0 3.5-.6 5-1.5"/><line x1="3" y1="9" x2="15" y2="9"/><line x1="3" y1="11" x2="15" y2="11"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
             </div>
             <div class="iz-spec__body">
               <div class="iz-spec__label">CO₂</div>
