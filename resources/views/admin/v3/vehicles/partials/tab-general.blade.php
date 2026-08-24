@@ -210,6 +210,14 @@
     </div>
 </form>
 
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<style>
+    .ts-wrapper { width: 100%; }
+    .ts-wrapper .ts-control { border: 1px solid #dee2e6; border-radius: .375rem; min-height: 38px; }
+    .ts-wrapper.focus .ts-control { border-color: #86b7fe; box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js"></script>
+
 <script>
 // ── Brand → Model → Submodel cascade ─────────────────────────────────
 (function () {
@@ -268,8 +276,14 @@
 
     // Restore state on page load
     document.addEventListener('DOMContentLoaded', function () {
+        const brandTomSelect = new TomSelect('#v3BrandSelect', {
+            placeholder: 'Pesquisar marca...',
+            searchField: ['text'],
+            maxOptions: 200,
+        });
+
         if (savedBrand) {
-            document.getElementById('v3BrandSelect').value = savedBrand;
+            brandTomSelect.setValue(savedBrand, true);
             v3LoadModels(true);
         }
     });

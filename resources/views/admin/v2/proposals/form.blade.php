@@ -984,6 +984,12 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
                 }
             }
         });
+
+        new TomSelect('#brand', {
+            placeholder: 'Pesquisar marca...',
+            searchField: ['text'],
+            maxOptions: 200,
+        });
     });
 </script>
 <script>
