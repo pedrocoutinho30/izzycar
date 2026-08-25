@@ -189,14 +189,14 @@ class ProposalV2Controller extends Controller
 
         // Valores default dos custos (podem vir de settings)
         $defaults = [
-            'transport_cost' => 1250,
+            'transport_cost' => 1350,
             'ipo_cost' => 100,
-            'imt_cost' => 65,
-            'registration_cost' => 55,
+            'imt_cost' => 45,
+            'registration_cost' => 65,
             'isv_cost' => 0,
-            'license_plate_cost' => 40,
+            'license_plate_cost' => 20,
             'inspection_commission_cost' => 350,
-            'commission_cost' => 861,
+            'commission_cost' => 615,
             'iuc_cost' => 0,
         ];
 
@@ -217,14 +217,14 @@ class ProposalV2Controller extends Controller
             ->sortBy(fn ($group, $key) => array_search($key, $groupOrder));
 
         $defaults = [
-            'transport_cost'             => 1250,
+            'transport_cost'             => 1350,
             'ipo_cost'                   => 100,
-            'imt_cost'                   => 65,
-            'registration_cost'          => 55,
+            'imt_cost'                   => 45,
+            'registration_cost'          => 65,
             'isv_cost'                   => 0,
-            'license_plate_cost'         => 40,
+            'license_plate_cost'         => 20,
             'inspection_commission_cost' => 350,
-            'commission_cost'            => 861,
+            'commission_cost'            => 615,
             'iuc_cost'                   => 0,
         ];
 
@@ -409,14 +409,14 @@ class ProposalV2Controller extends Controller
 
         // Valores default (mesmo na edição, para fallback)
         $defaults = [
-            'transport_cost' => 1250,
+            'transport_cost' => 1350,
             'ipo_cost' => 100,
-            'imt_cost' => 65,
-            'registration_cost' => 55,
+            'imt_cost' => 45,
+            'registration_cost' => 65,
             'isv_cost' => 0,
-            'license_plate_cost' => 40,
+            'license_plate_cost' => 20,
             'inspection_commission_cost' => 350,
-            'commission_cost' => 861,
+            'commission_cost' => 615,
         ];
 
         return view('admin.v2.proposals.form', compact('proposal', 'clients', 'leads', 'brands', 'attributes', 'attributeValues', 'images', 'defaults'));
