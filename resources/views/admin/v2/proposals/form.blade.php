@@ -409,7 +409,12 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
                     </div>
 
                     <div class="col-md-4">
-                        <label for="isv_cost" class="form-label">ISV (€)</label>
+                        <label for="isv_cost" class="form-label d-flex align-items-center justify-content-between">
+                            <span>ISV (€)</span>
+                            <button type="button" class="btn btn-link btn-sm p-0" data-bs-toggle="modal" data-bs-target="#isvCalculatorModal">
+                                <i class="bi bi-calculator"></i> Calcular ISV
+                            </button>
+                        </label>
                         <input
                             type="number"
                             name="isv_cost"
@@ -476,6 +481,85 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
                             <div>
                                 <h4 class="mb-0 text-primary-admin" id="totalCost">0,00 €</h4>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Modal: Calculadora de ISV (reutiliza o cálculo do Simulador de Custos) --}}
+            <div class="modal fade" id="isvCalculatorModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-calculator"></i> Calcular ISV</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="isvCalcResult" class="d-none mb-3"></div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">País da matrícula</label>
+                                    <select id="isv_pais_matricula" class="form-select">
+                                        <option value="uniao-europeia" selected>Estado-Membro da União Europeia</option>
+                                        <option value="outro">Outro país</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Data da matrícula</label>
+                                    <input type="date" id="isv_data_matricula" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Combustível</label>
+                                    <select id="isv_combustivel" class="form-select">
+                                        <option value="gasolina" selected>Gasolina</option>
+                                        <option value="diesel">Diesel</option>
+                                        <option value="eletrico">Elétrico</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" id="isv_wrap_tipo_veiculo">
+                                    <label class="form-label">Tipo de veículo</label>
+                                    <select id="isv_tipo_veiculo" class="form-select">
+                                        <option value="passageiros" selected>Ligeiro de passageiros</option>
+                                        <option value="hibrido">Ligeiro Híbrido</option>
+                                        <option value="hibrido_plug_in">Ligeiro Híbrido Plug-in</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" id="isv_wrap_cilindrada">
+                                    <label class="form-label">Cilindrada (cc)</label>
+                                    <input type="number" id="isv_cilindrada" class="form-control" placeholder="ex: 1998">
+                                </div>
+                                <div class="col-md-6" id="isv_wrap_tipo_medicao">
+                                    <label class="form-label">Método de homolog. CO₂</label>
+                                    <select id="isv_tipo_medicao" class="form-select">
+                                        <option value="WLTP" selected>WLTP (após 2018)</option>
+                                        <option value="NEDC">NEDC (antes de 2018)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" id="isv_wrap_co2">
+                                    <label class="form-label">CO₂ (g/km)</label>
+                                    <input type="number" id="isv_co2" class="form-control" placeholder="ex: 120">
+                                </div>
+                                <div class="col-md-6" id="isv_wrap_particulas" style="display:none">
+                                    <label class="form-label">Emissão de partículas (g/km)</label>
+                                    <select id="isv_emissao_particulas" class="form-select">
+                                        <option value="+0.0001" selected>Alto — &gt; 0.0001 g/km (Euro 5 ou anterior)</option>
+                                        <option value="-0.0001">Baixo — &le; 0.0001 g/km (Euro 6)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" id="isv_wrap_autonomia" style="display:none">
+                                    <label class="form-label">Autonomia da bateria</label>
+                                    <select id="isv_autonomia" class="form-select">
+                                        <option value="igual_superior" selected>&ge; 50 km</option>
+                                        <option value="inferior">&lt; 50 km</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-secondary-modern" id="isvCalcBtn">Calcular</button>
+                            <button type="button" class="btn btn-primary d-none" id="isvConcluirBtn">Concluir</button>
                         </div>
                     </div>
                 </div>
@@ -1094,6 +1178,113 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
         if (carValueInput) {
             carValueInput.addEventListener('input', calculateTotal);
         }
+
+        /**
+         * CALCULADORA DE ISV (reutiliza o cálculo do Simulador de Custos)
+         */
+        (function () {
+            const combustivelSel = document.getElementById('isv_combustivel');
+            const tipoVeiculoSel = document.getElementById('isv_tipo_veiculo');
+            const calcBtn = document.getElementById('isvCalcBtn');
+            const concluirBtn = document.getElementById('isvConcluirBtn');
+            const resultBox = document.getElementById('isvCalcResult');
+
+            const isvFields = {
+                cilindrada: 'isv_wrap_cilindrada',
+                tipo_medicao: 'isv_wrap_tipo_medicao',
+                co2: 'isv_wrap_co2',
+                particulas: 'isv_wrap_particulas',
+                tipo_veiculo: 'isv_wrap_tipo_veiculo',
+                autonomia: 'isv_wrap_autonomia',
+            };
+
+            function showIsvField(key) {
+                document.getElementById(isvFields[key]).style.display = '';
+            }
+            function hideIsvField(key) {
+                document.getElementById(isvFields[key]).style.display = 'none';
+            }
+
+            function updateIsvFieldsVisibility() {
+                const c = combustivelSel.value;
+                const t = tipoVeiculoSel.value;
+                Object.keys(isvFields).forEach(hideIsvField);
+
+                if (c === 'eletrico') {
+                    // nada mais é necessário
+                } else if (c === 'diesel') {
+                    showIsvField('cilindrada'); showIsvField('tipo_medicao'); showIsvField('co2');
+                    showIsvField('particulas'); showIsvField('tipo_veiculo');
+                } else {
+                    showIsvField('cilindrada'); showIsvField('tipo_medicao'); showIsvField('co2');
+                    showIsvField('tipo_veiculo');
+                }
+                if (t === 'hibrido_plug_in') showIsvField('autonomia');
+            }
+
+            combustivelSel.addEventListener('change', updateIsvFieldsVisibility);
+            tipoVeiculoSel.addEventListener('change', updateIsvFieldsVisibility);
+            updateIsvFieldsVisibility();
+
+            let calculatedIsv = null;
+
+            calcBtn.addEventListener('click', function () {
+                const payload = {
+                    pais_matricula: document.getElementById('isv_pais_matricula').value,
+                    data_matricula: document.getElementById('isv_data_matricula').value,
+                    combustivel: combustivelSel.value,
+                    cilindrada: document.getElementById('isv_cilindrada').value,
+                    tipo_medicao: document.getElementById('isv_tipo_medicao').value,
+                    co2: document.getElementById('isv_co2').value,
+                    emissao_particulas: document.getElementById('isv_emissao_particulas').value,
+                    tipo_veiculo: tipoVeiculoSel.value,
+                    autonomia: document.getElementById('isv_autonomia').value,
+                };
+
+                if (!payload.data_matricula) {
+                    alert('Indique a data da matrícula.');
+                    return;
+                }
+
+                calcBtn.disabled = true;
+                calcBtn.textContent = 'A calcular...';
+
+                fetch('{{ route('isv.calcular') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify(payload),
+                })
+                .then(r => r.json())
+                .then(data => {
+                    calcBtn.disabled = false;
+                    calcBtn.textContent = 'Calcular';
+                    calculatedIsv = data.isv;
+
+                    resultBox.classList.remove('d-none');
+                    resultBox.innerHTML = (data.html || '') +
+                        `<div class="alert alert-success mt-2 mb-0"><strong>Total ISV: ${Number(data.isv).toLocaleString('pt-PT', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €</strong></div>`;
+                    concluirBtn.classList.remove('d-none');
+                })
+                .catch(() => {
+                    calcBtn.disabled = false;
+                    calcBtn.textContent = 'Calcular';
+                    resultBox.classList.remove('d-none');
+                    resultBox.innerHTML = '<div class="alert alert-danger mb-0">Erro ao calcular o ISV. Tente novamente.</div>';
+                });
+            });
+
+            concluirBtn.addEventListener('click', function () {
+                if (calculatedIsv === null) return;
+                const isvInput = document.getElementById('isv_cost');
+                isvInput.value = Number(calculatedIsv).toFixed(2);
+                isvInput.dispatchEvent(new Event('input', { bubbles: true }));
+                bootstrap.Modal.getInstance(document.getElementById('isvCalculatorModal'))?.hide();
+            });
+        })();
 
         /**
          * MATCH AUTOMATICO DE ATRIBUTOS (PT/EN/DE - exato)
