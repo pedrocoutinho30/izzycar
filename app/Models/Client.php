@@ -83,6 +83,11 @@ class Client extends Model
         return $this->hasMany(Proposal::class, 'client_id');
     }
 
+    public function carCandidates()
+    {
+        return $this->hasMany(CarCandidate::class, 'client_id')->orderBy('order_position');
+    }
+
     public function convertedProposals()
     {
         return $this->hasMany(ConvertedProposal::class, 'client_id');

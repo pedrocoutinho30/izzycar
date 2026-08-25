@@ -362,6 +362,8 @@
     @endif
 </div>
 
+@include('admin.v2.clients.partials.car-candidates', ['client' => $client])
+
 {{-- ─── Timeline & Notas ─── --}}
 <div class="modern-card mt-4 mb-4">
     <div class="modern-card-header">

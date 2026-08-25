@@ -269,6 +269,17 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
     });
 
     // ============================================================
+    // CARROS EM ANÁLISE (usado nas páginas de Cliente e de Lead — o
+    // mesmo modelo Client, só páginas de detalhe diferentes)
+    // ============================================================
+    Route::prefix('v2/clients/{client}/car-candidates')->name('admin.v2.car-candidates.')->group(function () {
+        Route::post('/', [App\Http\Controllers\Admin\CarCandidateController::class, 'store'])->name('store');
+        Route::put('/{carCandidate}', [App\Http\Controllers\Admin\CarCandidateController::class, 'update'])->name('update');
+        Route::delete('/{carCandidate}', [App\Http\Controllers\Admin\CarCandidateController::class, 'destroy'])->name('destroy');
+        Route::post('/reorder', [App\Http\Controllers\Admin\CarCandidateController::class, 'reorder'])->name('reorder');
+    });
+
+    // ============================================================
     // FORMULÁRIOS DE PROPOSTA V2
     // ============================================================
     Route::prefix('v2/consignment-evaluations')->name('admin.v2.consignment-evaluations.')->group(function () {
