@@ -22,5 +22,6 @@ class Supplier extends Model
         'vat',
         'identification_number',
         'identification_number_validity',
+        'notes',
     ];
 }

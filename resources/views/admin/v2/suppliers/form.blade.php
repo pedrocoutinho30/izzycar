@@ -190,6 +190,26 @@ $existAction = isset($supplier) ? 'Editar' : 'Criar';
                     </div>
                 </div>
             </div>
+
+            <!-- Notas -->
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5 class="modern-card-title">
+                        <i class="bi bi-gear"></i>
+                        Notas
+                    </h5>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <textarea name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror"
+                            placeholder="Observações sobre este fornecedor...">{{ old('notes', $supplier->notes ?? '') }}</textarea>
+                        @error('notes')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- BOTÕES DE AÇÃO -->
         <div class="col-lg-4">

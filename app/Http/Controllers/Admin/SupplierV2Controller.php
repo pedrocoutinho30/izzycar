@@ -110,6 +110,7 @@ class SupplierV2Controller extends Controller
             'vat' => 'nullable|string|max:50',
             'identification_number' => 'nullable|string|max:50',
             'identification_number_validity' => 'nullable|date',
+            'notes' => 'nullable|string',
         ]);
 
         // Criar fornecedor
@@ -156,6 +157,7 @@ class SupplierV2Controller extends Controller
             'vat' => 'nullable|string|max:50',
             'identification_number' => 'nullable|string|max:50',
             'identification_number_validity' => 'nullable|date',
+            'notes' => 'nullable|string',
         ]);
 
         // Atualizar
