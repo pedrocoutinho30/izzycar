@@ -9,9 +9,8 @@ class TransportQuote extends Model
     protected $fillable = [
         'brand',
         'model',
-        'origin_city',
-        'origin_country',
-        'origin_postal_code',
+        'car_type',
+        'origin_location',
         'origin_latitude',
         'origin_longitude',
         'destination_city',
@@ -32,6 +31,10 @@ class TransportQuote extends Model
         'origin_longitude' => 'decimal:7',
         'destination_latitude' => 'decimal:7',
         'destination_longitude' => 'decimal:7',
+    ];
+
+    public const CAR_TYPES = [
+        'Sedan', 'Carrinha', 'SUV', 'Citadino', 'Coupé', 'Cabrio', 'Monovolume', 'Pick-up', 'Comercial Ligeiro',
     ];
 
     public function supplier()

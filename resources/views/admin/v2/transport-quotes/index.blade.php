@@ -13,7 +13,7 @@
 'title' => 'Orçamentos de Transporte',
 'subtitle' => 'Gestão de orçamentos de transporte de veículos',
 'actionHref' => route('admin.transport-quotes.create'),
-'actionLabel' => 'Novo Orçamento'
+'actionLabel' => 'Novo Transporte'
 ])
 
 <!-- FILTROS -->
@@ -28,7 +28,7 @@
                 <label class="form-label">Data Fim</label>
                 <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label">Transportadora</label>
                 <select name="supplier_id" class="form-select">
                     <option value="">Todas</option>
@@ -39,10 +39,27 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2 d-flex align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Tipo de Carro</label>
+                <select name="car_type" class="form-select">
+                    <option value="">Todos</option>
+                    @foreach($carTypes as $type)
+                    <option value="{{ $type }}" {{ request('car_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Localização (cidade, código postal, país)</label>
+                <input type="text" name="origin_location" class="form-control"
+                       placeholder="Pesquisar por localização..." value="{{ request('origin_location') }}">
+            </div>
+            <div class="col-md-3 d-flex align-items-end gap-2">
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="bi bi-funnel"></i> Filtrar
                 </button>
+                <a href="{{ route('admin.transport-quotes.index') }}" class="btn btn-outline-secondary" title="Limpar filtros">
+                    <i class="bi bi-x-lg"></i>
+                </a>
             </div>
         </form>
     </div>
@@ -77,11 +94,16 @@
                         {{ $quote->supplier->company_name }}
                     </p>
                     <div class="modern-item-badges mb-2">
+                        @if($quote->car_type)
+                        <span class="badge bg-primary">
+                            <i class="bi bi-car-front"></i> {{ $quote->car_type }}
+                        </span>
+                        @endif
                         <span class="badge bg-success">
                             <i class="bi bi-currency-euro"></i> {{ number_format($quote->price, 2) }} €
                         </span>
                         <span class="badge bg-info">
-                            <i class="bi bi-geo-alt"></i> {{ $quote->origin_city }}, {{ $quote->origin_country }}
+                            <i class="bi bi-geo-alt"></i> {{ $quote->origin_location }}
                         </span>
                         <span class="badge bg-secondary">
                             <i class="bi bi-calendar"></i> {{ $quote->quote_date->format('d/m/Y') }}

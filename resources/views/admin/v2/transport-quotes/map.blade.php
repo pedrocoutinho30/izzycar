@@ -27,7 +27,7 @@
     </div>
     <div class="modern-card-body">
         <div class="row g-3">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label">Marca</label>
                 <select id="filter-brand" class="form-select">
                     <option value="">Todas as marcas</option>
@@ -36,12 +36,21 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label">Modelo</label>
                 <select id="filter-model" class="form-select">
                     <option value="">Todos os modelos</option>
                     @foreach($models as $model)
                         <option value="{{ $model }}">{{ $model }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Tipo de Carro</label>
+                <select id="filter-car-type" class="form-select">
+                    <option value="">Todos os tipos</option>
+                    @foreach($carTypes as $type)
+                        <option value="{{ $type }}">{{ $type }}</option>
                     @endforeach
                 </select>
             </div>
@@ -64,17 +73,13 @@
             <div class="col-md-12">
                 <label class="form-label fw-bold">Origem Customizada (Opcional)</label>
             </div>
-            <div class="col-md-3">
-                <label class="form-label">Latitude</label>
-                <input type="number" step="0.0000001" id="filter-dest-lat" class="form-control" placeholder="Ex: 40.8397">
+            <div class="col-md-6">
+                <label class="form-label">Localização (cidade, código postal, país)</label>
+                <input type="text" id="filter-dest-location" class="form-control" placeholder="Ex: Munique, 80331, Alemanha">
+                <div id="filter-dest-result" class="small mt-1"></div>
             </div>
-            <div class="col-md-3">
-                <label class="form-label">Longitude</label>
-                <input type="number" step="0.0000001" id="filter-dest-lng" class="form-control" placeholder="Ex: -8.4775">
-            </div>
-            <div class="col-md-4">
-                <label class="form-label d-block">&nbsp;</label>
-                <button type="button" class="btn btn-success" onclick="addCustomDestination()">
+            <div class="col-md-6 d-flex align-items-start gap-2" style="padding-top: 2rem;">
+                <button type="button" class="btn btn-success" id="showCustomDestinationBtn" onclick="addCustomDestination()">
                     <i class="bi bi-geo-alt"></i> Mostrar Destino
                 </button>
                 <button type="button" class="btn btn-outline-secondary" onclick="removeCustomDestination()">
@@ -89,6 +94,13 @@
         </div>
     </div>
 </div>
+
+@if(empty(config('services.google.maps_key')))
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    A chave da API do Google Maps não está configurada (<code>GOOGLE_MAPS_API_KEY</code> no <code>.env</code>). O mapa não pode ser mostrado.
+</div>
+@endif
 
 <!-- MAPA -->
 <div class="modern-card">
@@ -113,7 +125,7 @@
             </div>
             <div class="col-md-6">
                 <p><i class="bi bi-geo-alt-fill text-primary"></i> Marcadores Azuis: Origens dos Transportes</p>
-                <p><i class="bi bi-geo-alt-fill text-danger"></i> Marcador Vermelho: Origem Customizad (quando definido)</p>
+                <p><i class="bi bi-geo-alt-fill text-danger"></i> Marcador Vermelho: Origem Customizada (quando definido)</p>
                 <p class="text-muted"><small>Clique nos marcadores para ver detalhes do orçamento</small></p>
             </div>
         </div>
@@ -153,8 +165,9 @@
         const params = new URLSearchParams();
         if (filters.brand) params.append('brand', filters.brand);
         if (filters.model) params.append('model', filters.model);
+        if (filters.car_type) params.append('car_type', filters.car_type);
         if (filters.supplier_id) params.append('supplier_id', filters.supplier_id);
-        
+
         const url = '{{ route('admin.transport-quotes.map-data') }}' + (params.toString() ? '?' + params.toString() : '');
         
         fetch(url)
@@ -173,16 +186,14 @@
 
                 console.log('Total de marcadores criados:', markers.length);
 
-                // Inicializar clustering
-                if (typeof MarkerClusterer !== 'undefined' && markers.length > 0) {
+                // Inicializar clustering (API do pacote @googlemaps/markerclusterer;
+                // o clusterer já foi esvaziado acima em clearMarkers())
+                if (typeof markerClusterer !== 'undefined' && markers.length > 0) {
                     if (markerCluster) {
-                        markerCluster.clearMarkers();
+                        markerCluster.addMarkers(markers);
+                    } else {
+                        markerCluster = new markerClusterer.MarkerClusterer({ map, markers });
                     }
-                    markerCluster = new MarkerClusterer(map, markers, {
-                        maxZoom: 12,
-                        gridSize: 50,
-                        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
-                    });
                 }
             })
             .catch(error => {
@@ -205,43 +216,74 @@
         const filters = {
             brand: document.getElementById('filter-brand').value,
             model: document.getElementById('filter-model').value,
+            car_type: document.getElementById('filter-car-type').value,
             supplier_id: document.getElementById('filter-supplier').value
         };
-        
+
         loadQuotes(filters);
     }
 
     function clearFilters() {
         document.getElementById('filter-brand').value = '';
         document.getElementById('filter-model').value = '';
+        document.getElementById('filter-car-type').value = '';
         document.getElementById('filter-supplier').value = '';
         loadQuotes();
     }
 
     function addCustomDestination() {
-        const lat = parseFloat(document.getElementById('filter-dest-lat').value);
-        const lng = parseFloat(document.getElementById('filter-dest-lng').value);
-        
-        if (isNaN(lat) || isNaN(lng)) {
-            alert('Por favor, insira valores válidos para latitude e longitude.');
+        const location = document.getElementById('filter-dest-location').value.trim();
+        const resultBox = document.getElementById('filter-dest-result');
+        const btn = document.getElementById('showCustomDestinationBtn');
+
+        if (!location) {
+            resultBox.innerHTML = '<span class="text-danger">Escreva primeiro a localização.</span>';
             return;
         }
-        
-        if (lat < -90 || lat > 90) {
-            alert('Latitude deve estar entre -90 e 90.');
-            return;
-        }
-        
-        if (lng < -180 || lng > 180) {
-            alert('Longitude deve estar entre -180 e 180.');
-            return;
-        }
-        
+
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> A procurar...';
+        resultBox.innerHTML = '';
+
+        fetch('{{ route('admin.transport-quotes.geocode') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            },
+            body: JSON.stringify({ location: location }),
+        })
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+
+            if (!ok || data.error) {
+                resultBox.innerHTML = '<span class="text-danger">' + (data.error || 'Erro ao obter coordenadas.') + '</span>';
+                return;
+            }
+
+            placeCustomDestinationMarker(data.lat, data.lng, data.display_name);
+            resultBox.innerHTML = '<span class="text-success"><i class="bi bi-check-circle"></i> Encontrado: ' + data.display_name + '</span>';
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+            resultBox.innerHTML = '<span class="text-danger">Erro de rede ao obter coordenadas.</span>';
+        });
+    }
+
+    function placeCustomDestinationMarker(lat, lng, label) {
         // Remover marcador anterior se existir
-        removeCustomDestination();
-        
+        if (customDestinationMarker) {
+            customDestinationMarker.setMap(null);
+            customDestinationMarker = null;
+        }
+
         const position = { lat, lng };
-        
+
         // Criar marcador vermelho
         customDestinationMarker = new google.maps.Marker({
             position: position,
@@ -252,36 +294,35 @@
             },
             zIndex: 1000 // Garantir que fica por cima de outros marcadores
         });
-        
+
         // Info window do destino customizado
         const infoWindow = new google.maps.InfoWindow({
             content: `
-                <div style="padding: 10px;">
+                <div style="padding: 10px; max-width: 250px;">
                     <h6 style="margin: 0 0 10px 0; font-weight: bold; color: #dc3545;">Origem Customizada</h6>
-                    <p style="margin: 5px 0;"><strong>Latitude:</strong> ${lat}</p>
-                    <p style="margin: 5px 0;"><strong>Longitude:</strong> ${lng}</p>
+                    <p style="margin: 5px 0;">${label}</p>
                 </div>
             `
         });
-        
+
         customDestinationMarker.addListener('click', function() {
             infoWindow.open(map, customDestinationMarker);
         });
-        
+
         // Centrar mapa no novo destino
         map.setCenter(position);
         map.setZoom(8);
     }
-    
+
     function removeCustomDestination() {
         if (customDestinationMarker) {
             customDestinationMarker.setMap(null);
             customDestinationMarker = null;
         }
-        
-        document.getElementById('filter-dest-lat').value = '';
-        document.getElementById('filter-dest-lng').value = '';
-        
+
+        document.getElementById('filter-dest-location').value = '';
+        document.getElementById('filter-dest-result').innerHTML = '';
+
         // Re-centrar no destino padrão
         map.setCenter(destination);
         map.setZoom(5);
@@ -311,7 +352,8 @@
                 <h6 style="margin: 0 0 10px 0; font-weight: bold; color: var(--admin-primary);">
                     ${quote.brand} ${quote.model}
                 </h6>
-                <p style="margin: 5px 0;"><strong>Origem:</strong> ${quote.origin_city}, ${quote.origin_country}</p>
+                <p style="margin: 5px 0;"><strong>Origem:</strong> ${quote.origin_location}</p>
+                ${quote.car_type ? `<p style="margin: 5px 0;"><strong>Tipo:</strong> ${quote.car_type}</p>` : ''}
                 <p style="margin: 5px 0;"><strong>Transportadora:</strong> ${quote.supplier}</p>
                 <p style="margin: 5px 0;"><strong>Preço:</strong> ${quote.price.toFixed(2)} €</p>
                 <p style="margin: 5px 0;"><strong>Data:</strong> ${quote.quote_date}</p>
@@ -351,11 +393,13 @@
     window.initMap = initMap;
 </script>
 
-<!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdSTNcEDxm8lSIygiU6n4VOGkQXz8RK-o=initMap" async defer></script>
-
-<!-- Marker Clusterer -->
+@if(!empty(config('services.google.maps_key')))
+<!-- Marker Clusterer (tem de carregar antes da API do Maps, para o callback initMap já a encontrar) -->
 <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+
+<!-- Google Maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}&callback=initMap" async defer></script>
+@endif
 
 <style>
     .modern-card {

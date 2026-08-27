@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\TransportQuote;
 use App\Models\Supplier;
+use App\Models\Brand;
+use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 
 class TransportQuoteController extends Controller
@@ -29,10 +31,24 @@ class TransportQuoteController extends Controller
             $query->where('supplier_id', $request->supplier_id);
         }
 
-        $quotes = $query->orderBy('quote_date', 'desc')->paginate(20);
+        // Filtro por tipo de carro
+        if ($request->filled('car_type')) {
+            $query->where('car_type', $request->car_type);
+        }
+
+        // Filtro por localização de origem (texto livre, já que cidade/país/código
+        // postal agora são um único campo)
+        if ($request->filled('origin_location')) {
+            $query->where('origin_location', 'like', '%' . $request->origin_location . '%');
+        }
+
+        $quotes = $query->orderBy('quote_date', 'desc')->paginate(20)->withQueryString();
         $suppliers = Supplier::orderBy('company_name')->get();
 
-        return view('admin.v2.transport-quotes.index', compact('quotes', 'suppliers'));
+        // Opções de filtro construídas a partir dos dados que já existem
+        $carTypes = TransportQuote::whereNotNull('car_type')->distinct()->orderBy('car_type')->pluck('car_type');
+
+        return view('admin.v2.transport-quotes.index', compact('quotes', 'suppliers', 'carTypes'));
     }
 
     /**
@@ -41,7 +57,11 @@ class TransportQuoteController extends Controller
     public function create()
     {
         $suppliers = Supplier::orderBy('company_name')->get();
-        return view('admin.v2.transport-quotes.create', compact('suppliers'));
+        $brands = Brand::with(['models' => function ($query) {
+            $query->orderBy('name');
+        }])->orderBy('name')->get();
+
+        return view('admin.v2.transport-quotes.create', compact('suppliers', 'brands'));
     }
 
     /**
@@ -52,9 +72,8 @@ class TransportQuoteController extends Controller
         $validated = $request->validate([
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
-            'origin_city' => 'required|string|max:255',
-            'origin_country' => 'required|string|max:255',
-            'origin_postal_code' => 'nullable|string|max:20',
+            'car_type' => 'nullable|string|max:100',
+            'origin_location' => 'required|string|max:500',
             'origin_latitude' => 'nullable|numeric|between:-90,90',
             'origin_longitude' => 'nullable|numeric|between:-180,180',
             'supplier_id' => 'required|exists:suppliers,id',
@@ -73,7 +92,7 @@ class TransportQuoteController extends Controller
         TransportQuote::create($validated);
 
         return redirect()->route('admin.transport-quotes.index')
-            ->with('success', 'Orçamento de transporte criado com sucesso!');
+            ->with('success', 'Transporte criado com sucesso!');
     }
 
     /**
@@ -92,7 +111,11 @@ class TransportQuoteController extends Controller
     {
         $quote = TransportQuote::findOrFail($id);
         $suppliers = Supplier::orderBy('company_name')->get();
-        return view('admin.v2.transport-quotes.edit', compact('quote', 'suppliers'));
+        $brands = Brand::with(['models' => function ($query) {
+            $query->orderBy('name');
+        }])->orderBy('name')->get();
+
+        return view('admin.v2.transport-quotes.edit', compact('quote', 'suppliers', 'brands'));
     }
 
     /**
@@ -105,9 +128,8 @@ class TransportQuoteController extends Controller
         $validated = $request->validate([
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
-            'origin_city' => 'required|string|max:255',
-            'origin_country' => 'required|string|max:255',
-            'origin_postal_code' => 'nullable|string|max:20',
+            'car_type' => 'nullable|string|max:100',
+            'origin_location' => 'required|string|max:500',
             'origin_latitude' => 'nullable|numeric|between:-90,90',
             'origin_longitude' => 'nullable|numeric|between:-180,180',
             'supplier_id' => 'required|exists:suppliers,id',
@@ -120,7 +142,7 @@ class TransportQuoteController extends Controller
         $quote->update($validated);
 
         return redirect()->route('admin.transport-quotes.index')
-            ->with('success', 'Orçamento de transporte atualizado com sucesso!');
+            ->with('success', 'Transporte atualizado com sucesso!');
     }
 
     /**
@@ -132,7 +154,7 @@ class TransportQuoteController extends Controller
         $quote->delete();
 
         return redirect()->route('admin.transport-quotes.index')
-            ->with('success', 'Orçamento de transporte removido com sucesso!');
+            ->with('success', 'Transporte removido com sucesso!');
     }
 
     /**
@@ -159,6 +181,11 @@ class TransportQuoteController extends Controller
             $query->where('supplier_id', $request->supplier_id);
         }
 
+        // Filtro por tipo de carro
+        if ($request->filled('car_type')) {
+            $query->where('car_type', $request->car_type);
+        }
+
         $quotes = $query->get();
 
         $data = $quotes->map(function ($quote) {
@@ -166,8 +193,8 @@ class TransportQuoteController extends Controller
                 'id' => $quote->id,
                 'brand' => $quote->brand,
                 'model' => $quote->model,
-                'origin_city' => $quote->origin_city,
-                'origin_country' => $quote->origin_country,
+                'car_type' => $quote->car_type,
+                'origin_location' => $quote->origin_location,
                 'lat' => (float) $quote->origin_latitude,
                 'lng' => (float) $quote->origin_longitude,
                 'price' => (float) $quote->price,
@@ -188,7 +215,28 @@ class TransportQuoteController extends Controller
         $suppliers = Supplier::orderBy('company_name')->get();
         $brands = TransportQuote::select('brand')->distinct()->orderBy('brand')->pluck('brand');
         $models = TransportQuote::select('model')->distinct()->orderBy('model')->pluck('model');
-        
-        return view('admin.v2.transport-quotes.map', compact('suppliers', 'brands', 'models'));
+        $carTypes = TransportQuote::whereNotNull('car_type')->distinct()->orderBy('car_type')->pluck('car_type');
+
+        return view('admin.v2.transport-quotes.map', compact('suppliers', 'brands', 'models', 'carTypes'));
+    }
+
+    /**
+     * Obtém latitude/longitude a partir de um texto de localização
+     * (cidade, código postal, país), para preencher automaticamente o
+     * formulário sem o utilizador ter de procurar as coordenadas à mão.
+     */
+    public function geocode(Request $request)
+    {
+        $request->validate([
+            'location' => 'required|string|max:500',
+        ]);
+
+        $result = (new GeocodingService())->geocode($request->input('location'));
+
+        if (!$result) {
+            return response()->json(['error' => 'Não foi possível encontrar coordenadas para esta localização.'], 404);
+        }
+
+        return response()->json($result);
     }
 }

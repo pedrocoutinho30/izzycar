@@ -40,6 +40,7 @@ return [
         'client_id'     => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'refresh_token' => env('GOOGLE_REFRESH_TOKEN'),
+        'maps_key'      => env('GOOGLE_MAPS_API_KEY'),
     ],
 
     'whatsapp' => [
