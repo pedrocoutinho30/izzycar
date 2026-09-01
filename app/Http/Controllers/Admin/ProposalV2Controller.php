@@ -41,6 +41,7 @@ use App\Models\VehicleAttribute;
 use App\Models\ProposalAttributeValue;
 use App\Models\AttributeGroup;
 use App\Services\ImageOptimizerService;
+use App\Services\VehicleListingImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -255,6 +256,27 @@ class ProposalV2Controller extends Controller
         return view('admin.v2.proposals.form', compact(
             'clients', 'leads', 'brands', 'attributes', 'defaults', 'proposal', 'formProposal'
         ));
+    }
+
+    /**
+     * Lê um anúncio (por agora, apenas AutoScout24) a partir do seu URL e
+     * devolve os dados do veículo para pré-preencher o formulário de
+     * cotação. Sites não suportados (ex.: mobile.de) devolvem um aviso,
+     * sem dados.
+     */
+    public function importFromListing(Request $request)
+    {
+        $request->validate([
+            'url' => 'required|url|max:1000',
+        ]);
+
+        $result = (new VehicleListingImportService())->import($request->input('url'));
+
+        if (!$result['success']) {
+            return response()->json(['message' => $result['message'], 'supported' => $result['supported']], 422);
+        }
+
+        return response()->json(['values' => $result['values']]);
     }
 
     /**

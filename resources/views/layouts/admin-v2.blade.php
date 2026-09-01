@@ -779,7 +779,7 @@
                     'operacoes' => ['admin.v3.vehicles.*', 'admin.v3.inspections.*', 'admin.legalizations.*', 'admin.transport-quotes.*', 'admin.v2.sales.*', 'admin.v2.movements.*', 'admin.v2.expenses.*', 'admin.tasks.*'],
                     'rede' => ['admin.v2.angariadores.*', 'admin.v2.suppliers.*', 'admin.v2.partners.*'],
                     'analise' => ['admin.v2.reports.*', 'calculator.profit', 'admin.v2.comparator.*', 'car-analysis.*'],
-                    'conteudo' => ['admin.news.*', 'admin.testimonials.*', 'admin.v2.newsletter-management.*', 'admin.v2.menus.*'],
+                    'conteudo' => ['admin.news.*', 'admin.testimonials.*', 'admin.v2.newsletter-management.*', 'admin.v2.menus.*', 'admin.v2.social-posts.*'],
                     'config' => ['admin.v2.attribute-groups.*', 'admin.v2.vehicle-attributes.*', 'admin.v2.settings.*'],
                     'sistema' => ['admin.v2.users.*', 'admin.v2.audit-log', 'admin.v2.roles.*', 'admin.v2.permissions.*', 'admin.v2.manual'],
                 ];
@@ -1008,6 +1008,12 @@
                     <a href="{{ route('admin.v2.menus.index') }}" class="nav-link {{ request()->routeIs('admin.v2.menus.*') ? 'active' : '' }}">
                         <i class="bi bi-list-nested"></i>
                         <span>Menus</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.social-posts.index') }}" class="nav-link {{ request()->routeIs('admin.v2.social-posts.*') ? 'active' : '' }}">
+                        <i class="bi bi-magic"></i>
+                        <span>Criador de Posts</span>
                     </a>
                 </div>
             </div>

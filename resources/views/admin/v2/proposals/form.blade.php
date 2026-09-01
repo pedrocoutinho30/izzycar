@@ -143,16 +143,22 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
                             <i class="bi bi-link-45deg"></i>
                             URL do Anúncio
                         </label>
-                        <input
-                            type="url"
-                            name="url"
-                            id="url"
-                            class="form-control @error('url') is-invalid @enderror"
-                            placeholder="https://exemplo.com/anuncio"
-                            value="{{ old('url', $proposal->url ?? '') }}">
+                        <div class="input-group">
+                            <input
+                                type="url"
+                                name="url"
+                                id="url"
+                                class="form-control @error('url') is-invalid @enderror"
+                                placeholder="https://exemplo.com/anuncio"
+                                value="{{ old('url', $proposal->url ?? '') }}">
+                            <button type="button" class="btn btn-outline-secondary" id="importListingBtn">
+                                <i class="bi bi-magic"></i> Importar dados do anúncio
+                            </button>
+                        </div>
                         @error('url')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <div id="importListingResult" class="small mt-1"></div>
                     </div>
                 </div>
             </div>
@@ -1116,6 +1122,85 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
         brandSelect.dispatchEvent(new Event('change'));
         modelSelect.value = '{{ $proposal->model }}';
         @endif
+
+        /**
+         * IMPORTAR DADOS DO ANÚNCIO (AutoScout24)
+         * Lê o URL do anúncio e pré-preenche os campos do veículo
+         */
+        const importListingBtn = document.getElementById('importListingBtn');
+        const importListingResult = document.getElementById('importListingResult');
+
+        if (importListingBtn) {
+            importListingBtn.addEventListener('click', function() {
+                const url = document.getElementById('url').value.trim();
+
+                if (!url) {
+                    importListingResult.innerHTML = '<span class="text-danger">Cola primeiro o link do anúncio.</span>';
+                    return;
+                }
+
+                const originalBtnHtml = importListingBtn.innerHTML;
+                importListingBtn.disabled = true;
+                importListingBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> A importar...';
+                importListingResult.innerHTML = '';
+
+                fetch('{{ route("admin.v2.proposals.importFromListing") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ url })
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Não foi possível importar os dados.');
+                    return data;
+                })
+                .then(data => {
+                    const v = data.values;
+
+                    if (v.brand) {
+                        const brandOption = Array.from(brandSelect.options).find(
+                            o => o.textContent.trim().toLowerCase() === v.brand.toLowerCase()
+                        );
+                        if (brandOption) {
+                            brandSelect.value = brandOption.value;
+                            brandSelect.dispatchEvent(new Event('change'));
+
+                            if (v.model) {
+                                const modelOption = Array.from(modelSelect.options).find(
+                                    o => o.textContent.trim().toLowerCase() === v.model.toLowerCase()
+                                );
+                                if (modelOption) {
+                                    modelSelect.value = modelOption.value;
+                                }
+                            }
+                        }
+                    }
+
+                    if (v.version) document.getElementById('version').value = v.version;
+                    if (v.year) document.getElementById('proposed_car_year_month').value = v.year;
+                    if (v.mileage !== null && v.mileage !== undefined) document.getElementById('proposed_car_mileage').value = v.mileage;
+                    if (v.fuel) document.getElementById('fuel').value = v.fuel;
+                    if (v.price !== null && v.price !== undefined) document.getElementById('proposed_car_value').value = v.price;
+                    if (v.engine_capacity !== null && v.engine_capacity !== undefined) document.getElementById('engine_capacity').value = v.engine_capacity;
+                    if (v.co2 !== null && v.co2 !== undefined) document.getElementById('co2').value = v.co2;
+
+                    if (typeof calculateTotal === 'function') calculateTotal();
+
+                    importListingResult.innerHTML = '<span class="text-success">Dados importados. Confirma os campos antes de guardar.</span>';
+                })
+                .catch(error => {
+                    importListingResult.innerHTML = `<span class="text-danger">${error.message}</span>`;
+                })
+                .finally(() => {
+                    importListingBtn.disabled = false;
+                    importListingBtn.innerHTML = originalBtnHtml;
+                });
+            });
+        }
 
         /**
          * CÁLCULO AUTOMÁTICO DE CUSTOS

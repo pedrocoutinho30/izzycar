@@ -206,11 +206,20 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
     Route::get('v2/financial', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'index'])->name('admin.v2.financial.dashboard');
     Route::get('v2/financial/seed', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'seedExisting'])->name('admin.v2.financial.seed');
 
+    Route::prefix('v2/social-posts')->name('admin.v2.social-posts.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\SocialPostController::class, 'index'])->name('index');
+        Route::get('/recomendacao', [App\Http\Controllers\Admin\SocialPostController::class, 'recommendation'])->name('recommendation');
+        Route::post('/recomendacao', [App\Http\Controllers\Admin\SocialPostController::class, 'store'])->name('store');
+        Route::get('/recomendacao/{post}/editar', [App\Http\Controllers\Admin\SocialPostController::class, 'edit'])->name('edit');
+        Route::delete('/{post}', [App\Http\Controllers\Admin\SocialPostController::class, 'destroy'])->name('destroy');
+    });
+
     Route::prefix('v2/proposals')->name('admin.v2.proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'create'])->name('create');
         Route::get('/create-from-form/{formProposalId}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'createFromForm'])->name('createFromForm');
         Route::post('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'store'])->name('store');
+        Route::post('/import-from-listing', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'importFromListing'])->name('importFromListing');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'destroy'])->name('destroy');
