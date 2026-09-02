@@ -419,7 +419,8 @@
             <div style="width:${size}px; height:${size}px; position:relative; font-family:'Inter',-apple-system,'Helvetica Neue',Arial,sans-serif; color:#fff; ${fullBackgroundStyleV2(data, 'left')} overflow:hidden;">
                 <div style="position:absolute; left:${px(size,48)}; top:${px(size,270)}; width:${px(size,620)};">
                     <div style="font-size:${px(size,52)}; font-weight:800; line-height:1.1; margin-bottom:${px(size,6)};">Recomendação</div>
-                    <div style="font-size:${px(size,38)}; font-weight:800; color:${GOLD}; line-height:1.15; margin-bottom:${px(size,32)};">${title}</div>
+                    <div style="font-size:${px(size,38)}; font-weight:800; color:${GOLD}; line-height:1.15; margin-bottom:${px(size,8)};">${title}</div>
+                    ${data.version ? `<div style="font-size:${px(size,18)}; color:#cfcfcf; margin-bottom:${px(size,24)};">${data.version}</div>` : `<div style="margin-bottom:${px(size,24)};"></div>`}
                     ${featureRows}
                     ${equipmentHtml}
                 </div>
