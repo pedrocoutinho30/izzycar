@@ -778,7 +778,7 @@
                     'funil' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.form-proposals.*', 'admin.v2.proposals.*', 'admin.v2.converted-proposals.*', 'admin.v2.clients.*', 'admin.v2.cost-simulators.*'],
                     'operacoes' => ['admin.v3.vehicles.*', 'admin.v3.inspections.*', 'admin.legalizations.*', 'admin.transport-quotes.*', 'admin.v2.sales.*', 'admin.v2.movements.*', 'admin.v2.expenses.*', 'admin.tasks.*'],
                     'rede' => ['admin.v2.angariadores.*', 'admin.v2.suppliers.*', 'admin.v2.partners.*'],
-                    'analise' => ['admin.v2.reports.*', 'calculator.profit', 'admin.v2.comparator.*', 'car-analysis.*'],
+                    'analise' => ['admin.v2.reports.*', 'calculator.profit', 'admin.v2.comparator.*', 'car-analysis.*', 'admin.v2.radar.*'],
                     'conteudo' => ['admin.news.*', 'admin.testimonials.*', 'admin.v2.newsletter-management.*', 'admin.v2.menus.*', 'admin.v2.social-posts.*'],
                     'config' => ['admin.v2.attribute-groups.*', 'admin.v2.vehicle-attributes.*', 'admin.v2.settings.*'],
                     'sistema' => ['admin.v2.users.*', 'admin.v2.audit-log', 'admin.v2.roles.*', 'admin.v2.permissions.*', 'admin.v2.manual'],
@@ -811,7 +811,7 @@
                         <span class="nav-badge" id="leads-nav-badge" {{ $leadsCount === 0 ? 'style=display:none' : '' }}>{{ $leadsCount }}</span>
                     </a>
                 </div>
-                <div class="nav-item">
+                <!-- <div class="nav-item">
                     <a href="{{ route('admin.v2.pre-leads.index') }}" class="nav-link {{ request()->routeIs('admin.v2.pre-leads.*') ? 'active' : '' }}">
                         <i class="bi bi-whatsapp"></i>
                         <span>Pré-Leads</span>
@@ -820,7 +820,7 @@
                         <span class="nav-badge">{{ $preLeadsCount }}</span>
                         @endif
                     </a>
-                </div>
+                </div> -->
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.form-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
                         <i class="bi bi-envelope"></i>
@@ -966,16 +966,22 @@
                         <span>Calculadora de Lucro</span>
                     </a>
                 </div>
-                <div class="nav-item">
+                <!-- <div class="nav-item">
                     <a href="{{ route('admin.v2.comparator.index') }}" class="nav-link {{ request()->routeIs('admin.v2.comparator.*') ? 'active' : '' }}">
                         <i class="bi bi-columns-gap"></i>
                         <span>Comparador de Veículos</span>
                     </a>
-                </div>
-                <div class="nav-item">
+                </div> -->
+                <!-- <div class="nav-item">
                     <a href="{{ route('car-analysis.index') }}" class="nav-link {{ request()->routeIs('car-analysis.*') ? 'active' : '' }}">
                         <i class="bi bi-bar-chart-line"></i>
                         <span>Análise de Carros</span>
+                    </a>
+                </div> -->
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.radar.index') }}" class="nav-link {{ request()->routeIs('admin.v2.radar.*') ? 'active' : '' }}">
+                        <i class="bi bi-broadcast"></i>
+                        <span>Scarper AutoScout24</span>
                     </a>
                 </div>
             </div>
