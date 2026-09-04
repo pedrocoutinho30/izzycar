@@ -14,7 +14,10 @@ class SendFollowupReminder extends Command
 
     public function handle(): int
     {
-       
+        Mail::raw('SendFollowupReminder executado às '.now()->format('d/m/Y H:i:s').'.', function ($message) {
+            $message->to('geral@izzycar.pt')->subject('SendFollowupReminder executado');
+        });
+
         $agora = now();
         $agora->addMinutes(60); // Ignorar segundos para não perder follow-ups agendados para o minuto exato
         $limite = $agora->copy()->addMinute();
