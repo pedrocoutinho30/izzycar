@@ -25,7 +25,7 @@ def sync_all(db=None):
     try:
         for spec in load_search_files():
             base_url = build_base_url(
-                spec["make"],
+                spec.get("make"),
                 spec.get("model"),
                 spec.get("filters"),
                 motor_type=spec.get("motor_type"),
@@ -53,7 +53,7 @@ def sync_all(db=None):
 
             search_id = db.upsert_search(
                 name=spec["name"],
-                make=spec["make"],
+                make=spec.get("make"),
                 model=spec.get("model"),
                 filters=spec.get("filters"),
                 base_url=base_url,

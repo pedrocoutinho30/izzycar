@@ -2,7 +2,8 @@
 Espera: $listings (paginator), $sort, $dir, $radarSearch
 Opcionais: $averageToggle (bool), $ranks (array id=>posição), $stars (array id=>true, só para AutoScout24),
            $cheapestId, $mostExpensiveId, $showSource (bool, mostra de que site (Standvirtual/Carmine) veio cada anúncio),
-           $importCost (float, custo de importação somado ao preço mostrado - só para a tabela AutoScout24)
+           $importCost (float, custo de importação somado ao preço mostrado - só para a tabela AutoScout24),
+           $newSince (Carbon|null, anúncios com first_seen_at posterior a isto levam badge "novo")
 --}}
 @php
     $averageToggle = $averageToggle ?? false;
@@ -12,6 +13,7 @@ Opcionais: $averageToggle (bool), $ranks (array id=>posição), $stars (array id
     $mostExpensiveId = $mostExpensiveId ?? null;
     $showSource = $showSource ?? false;
     $importCost = $importCost ?? 0;
+    $newSince = $newSince ?? null;
     $sourceLabels = ['standvirtual' => 'Standvirtual', 'carmine' => 'Carmine.pt', 'autoscout24' => 'AutoScout24'];
 @endphp
 <div class="table-responsive">
@@ -31,8 +33,6 @@ Opcionais: $averageToggle (bool), $ranks (array id=>posição), $stars (array id
                 <th class="text-end">@include('admin.v2.radar._sort-link', ['field' => 'mileage_km', 'label' => 'Kms'])</th>
                 <th class="text-end">@include('admin.v2.radar._sort-link', ['field' => 'price_eur', 'label' => 'Preço'])</th>
                 <th class="text-end">Potência</th>
-                <th>Combustível</th>
-                <th>Caixa</th>
                 <th></th>
             </tr>
         </thead>
@@ -75,7 +75,12 @@ Opcionais: $averageToggle (bool), $ranks (array id=>posição), $stars (array id
                     <span class="badge bg-light text-dark border">{{ $sourceLabels[$listing->source] ?? $listing->source }}</span>
                 </td>
                 @endif
-                <td class="fw-semibold">{{ $listing->make }} {{ $listing->model }}</td>
+                <td class="fw-semibold">
+                    @if($newSince && $listing->first_seen_at && $listing->first_seen_at->gt($newSince))
+                        <span class="badge bg-danger me-1">novo</span>
+                    @endif
+                    {{ $listing->make }} {{ $listing->model }}
+                </td>
                 <td class="text-muted small">{{ $listing->version ?? '—' }}</td>
                 <td class="text-center">{{ $listing->first_registration_year ?? '—' }}</td>
                 <td class="text-end text-nowrap">{{ $listing->mileage_km ? number_format($listing->mileage_km, 0, ',', ' ') . ' km' : '—' }}</td>
@@ -88,8 +93,6 @@ Opcionais: $averageToggle (bool), $ranks (array id=>posição), $stars (array id
                     @endif
                 </td>
                 <td class="text-end text-nowrap">{{ $listing->power_hp ? $listing->power_hp . ' cv' : '—' }}</td>
-                <td>{{ $listing->fuel ?? '—' }}</td>
-                <td>{{ $listing->gearbox ?? '—' }}</td>
                 <td class="text-nowrap">
                     @if($listing->url)
                     <a href="{{ $listing->url }}" target="_blank" rel="noopener" title="Ver anúncio original">
@@ -105,7 +108,7 @@ Opcionais: $averageToggle (bool), $ranks (array id=>posição), $stars (array id
             </tr>
             @empty
             <tr>
-                <td colspan="{{ 10 + ($averageToggle ? 1 : 0) + ($showSource ? 1 : 0) }}" class="text-center text-muted py-5">
+                <td colspan="{{ 8 + ($averageToggle ? 1 : 0) + ($showSource ? 1 : 0) }}" class="text-center text-muted py-5">
                     <i class="bi bi-inbox display-6"></i>
                     <p class="mt-2 mb-0">Ainda não há anúncios recolhidos.</p>
                 </td>

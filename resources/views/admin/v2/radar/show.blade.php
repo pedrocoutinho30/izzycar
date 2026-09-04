@@ -14,7 +14,7 @@
                 <i class="bi bi-broadcast"></i> {{ $radarSearch->name }}
             </h1>
             <p class="text-muted mb-0">
-                {{ ucfirst($radarSearch->make) }}{{ $radarSearch->model ? ' ' . ucfirst($radarSearch->model) : '' }}
+                {{ $radarSearch->make ? ucfirst($radarSearch->make) : 'Todas as marcas' }}{{ $radarSearch->model ? ' ' . ucfirst($radarSearch->model) : '' }}
                 &middot;
                 <a href="{{ $radarSearch->base_url }}" target="_blank" rel="noopener">ver pesquisa na AutoScout24 <i class="bi bi-box-arrow-up-right"></i></a>
             </p>
@@ -168,6 +168,7 @@
                 'cheapestId' => $deStats['cheapest_id'],
                 'mostExpensiveId' => $deStats['most_expensive_id'],
                 'importCost' => (float) ($radarSearch->import_cost_eur ?? 0),
+                'newSince' => $newSince,
             ])
         </div>
     </div>
@@ -198,6 +199,7 @@
                 'cheapestId' => $ptStats['cheapest_id'],
                 'mostExpensiveId' => $ptStats['most_expensive_id'],
                 'showSource' => $radarSearch->standvirtual_base_url && $radarSearch->carmine_base_url,
+                'newSince' => $newSince,
             ])
         </div>
     </div>

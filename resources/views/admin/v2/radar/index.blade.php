@@ -43,6 +43,7 @@
                         <th>Última recolha</th>
                         <th class="text-end">🇩🇪 Alemanha</th>
                         <th class="text-end">🇵🇹 Portugal</th>
+                        <th class="text-center" title="Entra na atualização automática periódica">Ativa</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -66,12 +67,19 @@
                         <tr>
                             <td>
                                 <a href="{{ route('admin.v2.radar.show', $search) }}" class="fw-semibold text-decoration-none">{{ $search->name }}</a>
-                                <div class="text-muted small">{{ ucfirst($search->make) }}{{ $search->model ? ' ' . ucfirst($search->model) : '' }}</div>
+                                @if($search->new_listings_count > 0)
+                                    <span class="badge bg-danger ms-1" title="{{ $search->new_listings_count }} anúncio(s) novo(s) desde a última vez que abriste esta pesquisa">novo</span>
+                                @endif
+                                <div class="text-muted small">{{ $search->make ? ucfirst($search->make) : 'Todas as marcas' }}{{ $search->model ? ' ' . ucfirst($search->model) : '' }}</div>
                             </td>
                             <td><span class="badge bg-{{ $badgeColor }} bg-opacity-75">{{ $badgeLabel }}</span></td>
                             <td class="text-muted small">{{ $run?->started_at->diffForHumans() ?? '—' }}</td>
                             <td class="text-end">{{ $search->listings_count }}</td>
                             <td class="text-end">{{ $search->pt_listings_count > 0 ? $search->pt_listings_count : '—' }}</td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input active-toggle" data-search-id="{{ $search->id }}" {{ $search->is_active ? 'checked' : '' }}
+                                       title="Entra na atualização automática periódica">
+                            </td>
                             <td class="text-end">
                                 <div class="item-actions d-inline-flex gap-1">
                                     <a href="{{ route('admin.v2.radar.show', $search) }}" class="btn btn-icon btn-secondary-modern" title="Ver anúncios">
@@ -99,7 +107,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted p-4">Ainda não há pesquisas. <a href="{{ route('admin.v2.radar.create') }}">Cria a primeira</a>.</td>
+                            <td colspan="7" class="text-center text-muted p-4">Ainda não há pesquisas. <a href="{{ route('admin.v2.radar.create') }}">Cria a primeira</a>.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -108,4 +116,27 @@
     </div>
 
 </div>
+
+<script>
+(function () {
+    const toggleUrlTemplate = '{{ route('admin.v2.radar.toggle-active', ['radarSearch' => '__ID__']) }}';
+
+    document.addEventListener('change', function (e) {
+        if (!e.target.classList.contains('active-toggle')) return;
+
+        const checkbox = e.target;
+        checkbox.disabled = true;
+
+        fetch(toggleUrlTemplate.replace('__ID__', checkbox.dataset.searchId), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ active: checkbox.checked }),
+        }).finally(() => { checkbox.disabled = false; });
+    });
+})();
+</script>
 @endsection

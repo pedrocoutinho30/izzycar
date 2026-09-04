@@ -221,6 +221,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::get('/{radarSearch}/editar', [App\Http\Controllers\Admin\RadarController::class, 'edit'])->name('edit');
         Route::put('/{radarSearch}', [App\Http\Controllers\Admin\RadarController::class, 'update'])->name('update');
         Route::patch('/{radarSearch}/custo-importacao', [App\Http\Controllers\Admin\RadarController::class, 'updateImportCost'])->name('update-import-cost');
+        Route::patch('/{radarSearch}/ativo', [App\Http\Controllers\Admin\RadarController::class, 'toggleActive'])->name('toggle-active');
         Route::delete('/{radarSearch}', [App\Http\Controllers\Admin\RadarController::class, 'destroy'])->name('destroy');
         Route::get('/{radarSearch}', [App\Http\Controllers\Admin\RadarController::class, 'show'])->name('show');
     });

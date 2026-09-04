@@ -52,17 +52,24 @@ DEFAULTS = {
 def build_base_url(make, model, filters, motor_type=None, model_variant=None, trim=None):
     """Build the AutoScout24 search URL (without `page`) for a make/model + raw filter dict.
 
+    `make` is optional - confirmed empirically (2026-09-05) that
+    autoscout24.de/lst?fuel=E&... (no /lst/{make} segment at all) searches across
+    every make, returning real mixed-make results. Used for searches like "todos
+    os elétricos até X km/€", where the user doesn't want to pin a single brand.
+
     `filters` keys are passed straight through as AutoScout24 query params - see the
     confirmed list above. This intentionally does not introduce our own field-name
     abstraction, since AutoScout24's real parameter names aren't fully documented and
     a wrong guess would silently produce an unfiltered search.
     """
-    path = "https://www.autoscout24.de/lst/{}".format(quote(make))
-    if model:
-        path += "/{}".format(quote(model))
-        for segment in (motor_type, model_variant, trim):
-            if segment:
-                path += "/{}".format(quote(segment))
+    path = "https://www.autoscout24.de/lst"
+    if make:
+        path += "/{}".format(quote(make))
+        if model:
+            path += "/{}".format(quote(model))
+            for segment in (motor_type, model_variant, trim):
+                if segment:
+                    path += "/{}".format(quote(segment))
 
     params = dict(DEFAULTS)
     params.update(filters or {})

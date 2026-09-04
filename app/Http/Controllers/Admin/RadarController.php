@@ -59,6 +59,11 @@ class RadarController extends Controller
                 'listings as listings_count' => fn ($q) => $q->where('source', 'autoscout24')->whereNull('removed_at'),
                 'listings as pt_listings_count' => fn ($q) => $q->whereIn('source', self::PT_SOURCES)
                     ->whereNull('removed_at')->whereNull('duplicate_of_listing_id'),
+                // Anúncios descobertos depois da última vez que esta pesquisa foi
+                // aberta (ver show()) - alimenta o badge "novas oportunidades".
+                'listings as new_listings_count' => fn ($q) => $q->whereNull('removed_at')
+                    ->whereNull('duplicate_of_listing_id')
+                    ->whereColumn('first_seen_at', '>', 'radar_searches.new_listings_seen_at'),
             ])
             ->orderBy('name')
             ->get();
@@ -105,6 +110,12 @@ class RadarController extends Controller
 
         $runs = $radarSearch->runs()->orderByDesc('started_at')->limit(10)->get();
 
+        // "Novo" = descoberto depois da última vez que esta pesquisa foi aberta.
+        // Guarda o valor ANTES de o atualizar - a resposta desta própria visita
+        // ainda deve mostrar os "new" (só desaparecem na visita seguinte).
+        $newSince = $radarSearch->new_listings_seen_at;
+        $radarSearch->update(['new_listings_seen_at' => now()]);
+
         return view('admin.v2.radar.show', [
             'radarSearch' => $radarSearch,
             'listings' => $listings,
@@ -117,6 +128,7 @@ class RadarController extends Controller
             'runs' => $runs,
             'sort' => $sort,
             'dir' => $dir,
+            'newSince' => $newSince,
         ]);
     }
 
@@ -180,6 +192,18 @@ class RadarController extends Controller
         $stats = $this->priceStats($radarListing->search, self::PT_SOURCES, onlyIncludedInAverage: true);
 
         return response()->json($stats);
+    }
+
+    /**
+     * Só pesquisas ativas entram na atualização automática periódica (ver
+     * scraper/cli.py::cmd_run_active + Console\Commands\RefreshActiveRadarSearches) -
+     * não afeta o "Correr novamente" manual, que continua a funcionar sempre.
+     */
+    public function toggleActive(RadarSearch $radarSearch, Request $request)
+    {
+        $radarSearch->update(['is_active' => $request->boolean('active')]);
+
+        return response()->json(['is_active' => $radarSearch->is_active]);
     }
 
     /**
@@ -415,7 +439,7 @@ class RadarController extends Controller
         // mesma linha (por nome), nunca cria uma duplicada.
         $radarSearch = RadarSearch::create([
             'name' => $name,
-            'make' => $spec['make'],
+            'make' => $spec['make'] ?? null,
             'model' => $spec['model'] ?? null,
             // Placeholder - só o Python (scraper/filters.py) sabe construir o URL
             // real da AutoScout24 a partir da spec; o sync-searches substitui isto
@@ -552,7 +576,7 @@ class RadarController extends Controller
             : ['motorTypes' => [], 'modelVariants' => [], 'trims' => []];
 
         $validated = $request->validate([
-            'make' => ['required', 'string', 'max:255'],
+            'make' => ['nullable', 'string', 'max:255'],
             'model' => ['nullable', 'string', 'max:255'],
             'motor_type' => ['nullable', 'in:'.implode(',', array_column($submodels['motorTypes'], 'value'))],
             'model_variant' => ['nullable', 'in:'.implode(',', array_column($submodels['modelVariants'], 'value'))],
@@ -607,10 +631,10 @@ class RadarController extends Controller
             $filters['eq'] = 49;
         }
 
-        $spec = [
-            'name' => $name,
-            'make' => $validated['make'],
-        ];
+        $spec = ['name' => $name];
+        if (!empty($validated['make'])) {
+            $spec['make'] = $validated['make'];
+        }
         if (!empty($validated['model'])) {
             $spec['model'] = $validated['model'];
         }

@@ -35,6 +35,23 @@ def cmd_run_all(args):
             print(json.dumps(result, indent=2))
 
 
+def cmd_run_active(args):
+    """Sincroniza tudo a partir do YAML e corre só as pesquisas marcadas como
+    ativas (radar_searches.is_active) - pensado para o cron periódico de
+    atualização automática, ao contrário de run-all que corre tudo sem exceção.
+    """
+    for name, search_id, base_url in sync_all():
+        print("[{}] {} -> {}".format(search_id, name, base_url))
+
+    with Database() as db:
+        active_searches = [s for s in db.list_searches() if s.get("is_active")]
+        print("A atualizar {} pesquisa(s) ativa(s)...".format(len(active_searches)))
+        for search in active_searches:
+            print("Running '{}'...".format(search["name"]))
+            result = run_search(search, db=db)
+            print(json.dumps(result, indent=2))
+
+
 def cmd_inspect_json(args):
     """Fetches a URL and pretty-prints the raw listing payload, to check real field
     names/keys before trusting autoscout_client.map_raw_listing /
@@ -85,6 +102,7 @@ def main():
     run_parser.set_defaults(func=cmd_run)
 
     sub.add_parser("run-all").set_defaults(func=cmd_run_all)
+    sub.add_parser("run-active").set_defaults(func=cmd_run_active)
 
     inspect_parser = sub.add_parser("inspect-json")
     inspect_parser.add_argument("url")

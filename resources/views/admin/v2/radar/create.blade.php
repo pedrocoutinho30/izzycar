@@ -51,12 +51,13 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Marca</label>
-                    <select name="make" id="f_make" class="form-select" required>
-                        <option value="">Selecione a marca</option>
+                    <select name="make" id="f_make" class="form-select">
+                        <option value="">— Todas as marcas —</option>
                         @foreach($makes as $make)
                         <option value="{{ $make['slug'] }}" {{ $val('make') === $make['slug'] ? 'selected' : '' }}>{{ $make['label'] }}</option>
                         @endforeach
                     </select>
+                    <div class="form-text">Deixa vazio para pesquisar todas as marcas (ex.: "todos os elétricos até X km/€").</div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Modelo</label>
