@@ -14,7 +14,9 @@ class SendFollowupReminder extends Command
 
     public function handle(): int
     {
+       
         $agora = now();
+        $agora->addMinutes(60); // Ignorar segundos para não perder follow-ups agendados para o minuto exato
         $limite = $agora->copy()->addMinute();
 
         $followups = Client::whereNotNull('next_followup_at')
@@ -22,7 +24,6 @@ class SendFollowupReminder extends Command
             ->orderBy('next_followup_at')
             ->with('owner')
             ->get();
-
         if ($followups->isEmpty()) {
             return Command::SUCCESS;
         }
