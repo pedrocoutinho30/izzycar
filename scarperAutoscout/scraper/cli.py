@@ -52,6 +52,30 @@ def cmd_run_active(args):
             print(json.dumps(result, indent=2))
 
 
+def cmd_run_requested(args):
+    """Sincroniza tudo a partir do YAML e corre só as pesquisas marcadas com um
+    pedido pendente (radar_searches.run_requested_at) - pensado para um cron
+    frequente (~1x/minuto) em alojamentos onde o PHP não consegue lançar
+    processos (exec()/proc_open() desativados, ex.: Hostinger), como forma de a
+    criação/edição de uma pesquisa no site continuar a disparar uma recolha
+    quase imediata sem o Laravel ter de invocar o Python diretamente. Ver
+    AutoscoutScraperRunner::syncAndRun() do lado Laravel (app/Services/).
+    """
+    for name, search_id, base_url in sync_all():
+        print("[{}] {} -> {}".format(search_id, name, base_url))
+
+    with Database() as db:
+        pending = db.list_run_requested_searches()
+        if not pending:
+            return
+        print("A correr {} pesquisa(s) pedida(s)...".format(len(pending)))
+        for search in pending:
+            print("Running requested '{}'...".format(search["name"]))
+            result = run_search(search, db=db)
+            db.clear_run_requested(search["id"])
+            print(json.dumps(result, indent=2))
+
+
 def cmd_inspect_json(args):
     """Fetches a URL and pretty-prints the raw listing payload, to check real field
     names/keys before trusting autoscout_client.map_raw_listing /
@@ -103,6 +127,7 @@ def main():
 
     sub.add_parser("run-all").set_defaults(func=cmd_run_all)
     sub.add_parser("run-active").set_defaults(func=cmd_run_active)
+    sub.add_parser("run-requested").set_defaults(func=cmd_run_requested)
 
     inspect_parser = sub.add_parser("inspect-json")
     inspect_parser.add_argument("url")

@@ -319,3 +319,13 @@ class Database:
                     [(listing_id, equipment_id) for equipment_id in equipment_ids],
                 )
         self.conn.commit()
+
+    def list_run_requested_searches(self):
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT * FROM radar_searches WHERE run_requested_at IS NOT NULL ORDER BY run_requested_at")
+            return cur.fetchall()
+
+    def clear_run_requested(self, search_id):
+        with self.conn.cursor() as cur:
+            cur.execute("UPDATE radar_searches SET run_requested_at = NULL WHERE id = %s", (search_id,))
+        self.conn.commit()

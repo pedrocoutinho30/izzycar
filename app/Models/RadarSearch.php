@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class RadarSearch extends Model
 {
-    protected $fillable = ['name', 'make', 'model', 'filters', 'base_url', 'standvirtual_base_url', 'carmine_base_url', 'import_cost_eur', 'is_active', 'new_listings_seen_at'];
+    protected $fillable = ['name', 'make', 'model', 'filters', 'base_url', 'standvirtual_base_url', 'carmine_base_url', 'import_cost_eur', 'is_active', 'new_listings_seen_at', 'run_requested_at'];
 
     protected $casts = [
         'filters' => 'array',
         'import_cost_eur' => 'decimal:2',
         'is_active' => 'boolean',
         'new_listings_seen_at' => 'datetime',
+        'run_requested_at' => 'datetime',
     ];
 
     public function listings()

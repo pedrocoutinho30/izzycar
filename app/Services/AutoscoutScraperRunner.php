@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\RadarSearch;
 use Symfony\Component\Process\Process;
 
 /**
@@ -24,6 +25,14 @@ use Symfony\Component\Process\Process;
  * redireccionamento, o exec() do PHP fica preso ~2s à espera (o próprio
  * ficheiro descritor herdado do pipe do PHP só fecha quando o processo
  * scraper inteiro termina, apesar de "&" o pôr em segundo plano).
+ *
+ * Alguns alojamentos partilhados (confirmado na Hostinger) desativam TODAS as
+ * funções de execução de processos (exec, proc_open, shell_exec, etc.) por
+ * segurança - nesses casos não há forma nenhuma do PHP lançar o Python
+ * diretamente. Em vez de falhar, syncAndRun() cai para marcar a pesquisa como
+ * "pedida" (radar_searches.run_requested_at) - um cron frequente e
+ * independente do PHP (scraper.cli run-requested, chamado diretamente no
+ * crontab) apanha o pedido e corre a recolha a sério, dentro de ~1 minuto.
  */
 class AutoscoutScraperRunner
 {
@@ -31,6 +40,12 @@ class AutoscoutScraperRunner
 
     public function syncAndRun(string $searchName): void
     {
+        if (!self::execAvailable()) {
+            RadarSearch::where('name', $searchName)->update(['run_requested_at' => now()]);
+
+            return;
+        }
+
         $dir = base_path(self::SCRAPER_DIR);
         $python = $dir.'/venv/bin/python';
         $logFile = storage_path('logs/radar-scraper.log');
@@ -55,6 +70,18 @@ class AutoscoutScraperRunner
         exec($command);
     }
 
+    /** @return bool Se exec() está mesmo disponível (não basta existir - pode estar em disable_functions). */
+    private static function execAvailable(): bool
+    {
+        static $available = null;
+        if ($available === null) {
+            $disabled = array_map('trim', explode(',', (string) ini_get('disable_functions')));
+            $available = function_exists('exec') && !in_array('exec', $disabled, true);
+        }
+
+        return $available;
+    }
+
     /**
      * Sincroniza tudo a partir do YAML e corre só as pesquisas ativas
      * (radar_searches.is_active), UMA a seguir à outra. Ao contrário de
@@ -62,9 +89,23 @@ class AutoscoutScraperRunner
      * um comando artisan invocado diretamente por um cron, não de um pedido HTTP,
      * por isso não há problema em esperar (pode demorar minutos com várias
      * pesquisas × 8 países da AutoScout24 cada).
+     *
+     * Precisa de proc_open() (usado pelo Process do Symfony) - em alojamentos
+     * onde isso está desativado, o cron deve chamar "scraper.cli run-active"
+     * diretamente em vez de "artisan radar:refresh-active" (ver instruções dadas
+     * ao utilizador). Aqui só se devolve false com um aviso em vez de deixar
+     * rebentar a exceção feia do Symfony, para o caso de alguém correr isto à mão.
      */
     public function runActiveSearches(?callable $onOutput = null): bool
     {
+        if (!function_exists('proc_open')) {
+            if ($onOutput) {
+                $onOutput('err', "proc_open() não está disponível neste alojamento - o cron deve chamar 'scraper.cli run-active' diretamente, sem passar pelo artisan.\n");
+            }
+
+            return false;
+        }
+
         $dir = base_path(self::SCRAPER_DIR);
         $python = $dir.'/venv/bin/python';
 

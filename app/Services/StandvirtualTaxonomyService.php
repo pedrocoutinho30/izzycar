@@ -7,15 +7,26 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * Lê a lista real de marcas/modelos do Standvirtual (Portugal), para alimentar
- * selects fechados no formulário de criação de pesquisas do radar - mesmo
- * princípio do AutoscoutTaxonomyService, mas o Standvirtual só expõe as top
- * 20 marcas/modelos por popularidade (não a lista completa como a
- * AutoScout24), via os blocos "alternativeLinks" da própria pesquisa.
+ * selects fechados no formulário de criação de pesquisas do radar.
  *
- * Fonte: cada página de listagem (`/carros` e `/carros/{make}`) embute em
- * __NEXT_DATA__ (props.pageProps.urqlState) o resultado GraphQL da pesquisa,
- * que inclui "alternativeLinks" com os links reais para outras marcas
- * ("makes", na home) ou modelos dessa marca ("models", na página da marca).
+ * Fonte: qualquer página de listagem (ex.: `/carros/bmw`) embute em
+ * __NEXT_DATA__ (props.pageProps.urqlState) o resultado de uma query GraphQL
+ * "filters" com TODOS os "states" possíveis de TODOS os filtros do site - não
+ * só da marca da página atual. Cada estado do filtro "filter_enum_model" tem
+ * uma "condition" a dizer a que marca pertence, e devolve a lista COMPLETA de
+ * modelos dessa marca (confirmado: 151 marcas, 67-86+ modelos por marca) -
+ * muito mais completo e fiável do que o antigo bloco "alternativeLinks" da
+ * pesquisa (que só listava as ~20 marcas/modelos mais populares e falhava de
+ * forma não determinística).
+ *
+ * Marcas como a BMW agrupam modelos em "séries" (ex.: "Série X" em vez de
+ * "iX1"/"X1"/"X3" diretamente) - esses nomes granulares vivem num filtro
+ * separado, "filter_enum_engine_code" ("Sub-modelo" no site), com uma
+ * condition a apontar para (marca, modelo-pai). Confirmado empiricamente que
+ * o valor granular (ex.: "ix1") funciona por si só como segmento de URL
+ * (/carros/bmw/ix1 filtra corretamente, tal como /carros/bmw/serie-x/ix1) -
+ * por isso, sempre que existir essa expansão para um modelo, usa-se o
+ * granular em vez do agrupado.
  */
 class StandvirtualTaxonomyService
 {
@@ -24,8 +35,6 @@ class StandvirtualTaxonomyService
     /**
      * Combustível e caixa confirmados empiricamente (2026-09-03) a partir de
      * anúncios reais - ver scarperAutoscout/scraper/standvirtual_filters.py.
-     * Ao contrário da AutoScout24, o Standvirtual não expõe a lista completa
-     * de opções num só sítio, por isso está fixa aqui (pequena e estável).
      */
     public const FUEL_OPTIONS = [
         'diesel' => 'Diesel',
@@ -42,53 +51,82 @@ class StandvirtualTaxonomyService
     ];
 
     /**
-     * Nº de tentativas para cada pedido - confirmado empiricamente (2026-09-04) que o
+     * Nº de tentativas para o pedido - confirmado empiricamente (2026-09-04) que o
      * Standvirtual devolve, de forma não determinística, uma página sem o bloco
-     * "alternativeLinks" esperado (ex.: 3 em 4 pedidos seguidos ao mesmo URL
-     * devolveram os dados certos, 1 veio vazio) - não é um erro do nosso lado, mas
-     * sem repetir o pedido ficava uma marca sem modelos (ex.: Mercedes-Benz) presa
-     * em cache vazia durante 30 dias.
+     * "filters" esperado (ex.: 3 em 4 pedidos seguidos ao mesmo URL devolveram os
+     * dados certos, 1 veio vazio) - não é um erro do nosso lado.
      */
     private const MAX_ATTEMPTS = 4;
 
     public function getMakes(): array
     {
-        return Cache::remember('standvirtual:taxonomy:makes', now()->addDays(self::CACHE_TTL_DAYS), function () {
-            return $this->fetchLinks('https://www.standvirtual.com/carros', 'makes', segments: 1);
-        });
+        $states = $this->filterStates();
+        $makeState = $this->findState($states, 'filter_enum_make', []);
+
+        $makes = $this->valuesFromState($makeState);
+        usort($makes, fn ($a, $b) => strcasecmp($a['label'], $b['label']));
+
+        return $makes;
     }
 
     public function getModels(string $makeSlug): array
     {
         $makeSlug = strtolower(trim($makeSlug));
+        $states = $this->filterStates();
 
-        return Cache::remember("standvirtual:taxonomy:models:{$makeSlug}", now()->addDays(self::CACHE_TTL_DAYS), function () use ($makeSlug) {
-            return $this->fetchLinks('https://www.standvirtual.com/carros/'.rawurlencode($makeSlug), 'models', segments: 2);
-        });
-    }
+        $modelState = $this->findState($states, 'filter_enum_model', ['filter_enum_make' => $makeSlug]);
+        $baseModels = $this->valuesFromState($modelState);
 
-    /**
-     * Busca + parsing com nova tentativa automática - ver MAX_ATTEMPTS. Só desiste
-     * (e devolve lista vazia) depois de todas as tentativas darem uma lista vazia.
-     */
-    private function fetchLinks(string $url, string $blockName, int $segments): array
-    {
-        for ($attempt = 1; $attempt <= self::MAX_ATTEMPTS; $attempt++) {
-            $advertSearch = $this->fetchAdvertSearch($url);
-            $links = $this->linksFromBlock($advertSearch, $blockName, $segments);
+        $models = [];
+        foreach ($baseModels as $model) {
+            // Se este modelo tiver uma expansão em "Sub-modelo" (ex.: BMW "Série X"
+            // -> iX1/iX2/X1/X3/...), usa os granulares em vez do agrupado - é o que
+            // o utilizador espera ver e selecionar diretamente.
+            $subState = $this->findState($states, 'filter_enum_engine_code', [
+                'filter_enum_make' => $makeSlug,
+                'filter_enum_model' => $model['slug'],
+            ]);
+            $subModels = $subState ? $this->valuesFromState($subState) : [];
 
-            if (!empty($links)) {
-                return $links;
+            if (!empty($subModels)) {
+                array_push($models, ...$subModels);
+            } else {
+                $models[] = $model;
             }
         }
 
-        return [];
+        // Dedup por slug (uma marca podia, em teoria, repetir o mesmo granular via
+        // dois modelos-pai diferentes) e ordena por label.
+        $models = collect($models)->unique('slug')->values()->all();
+        usort($models, fn ($a, $b) => strcasecmp($a['label'], $b['label']));
+
+        return $models;
     }
 
-    private function fetchAdvertSearch(string $url): array
+    /**
+     * Todos os "states" de todos os filtros do site, de qualquer página de
+     * listagem (não é preciso ser a marca específica - o payload inclui sempre
+     * tudo). Cache única para makes + models de todas as marcas, em vez de um
+     * pedido HTTP por marca como antes.
+     */
+    private function filterStates(): array
+    {
+        return Cache::remember('standvirtual:taxonomy:filter-states', now()->addDays(self::CACHE_TTL_DAYS), function () {
+            for ($attempt = 1; $attempt <= self::MAX_ATTEMPTS; $attempt++) {
+                $states = $this->fetchFilterStates();
+                if (!empty($states)) {
+                    return $states;
+                }
+            }
+
+            return [];
+        });
+    }
+
+    private function fetchFilterStates(): array
     {
         $client = new Client(['timeout' => 15]);
-        $response = $client->get($url, [
+        $response = $client->get('https://www.standvirtual.com/carros', [
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
                 'Accept-Language' => 'pt-PT,pt;q=0.9,en;q=0.8',
@@ -106,8 +144,8 @@ class StandvirtualTaxonomyService
 
         foreach ($urqlState as $entry) {
             $payload = json_decode($entry['data'] ?? 'null', true);
-            if (isset($payload['advertSearch'])) {
-                return $payload['advertSearch'];
+            if (isset($payload['filters']['states'])) {
+                return $payload['filters']['states'];
             }
         }
 
@@ -115,30 +153,46 @@ class StandvirtualTaxonomyService
     }
 
     /**
-     * @return array<int, array{slug: string, label: string}>
+     * Encontra o "state" de um filtro cujas "conditions" batem exatamente com
+     * $conditions (filterId => value). $conditions vazio = sem condições (ex.:
+     * filter_enum_make, que não depende de mais nada).
      */
-    private function linksFromBlock(array $advertSearch, string $blockName, int $segments): array
+    private function findState(array $states, string $filterId, array $conditions): ?array
     {
-        $links = [];
-        foreach ($advertSearch['alternativeLinks'] ?? [] as $block) {
-            if (($block['name'] ?? null) === $blockName) {
-                $links = $block['links'] ?? [];
-                break;
+        foreach ($states as $state) {
+            if (($state['filterId'] ?? null) !== $filterId) {
+                continue;
             }
+
+            $actual = [];
+            foreach ($state['conditions'] ?? [] as $condition) {
+                $actual[$condition['filterId']] = $condition['value'];
+            }
+
+            if ($actual == $conditions) {
+                return $state;
+            }
+        }
+
+        return null;
+    }
+
+    /** @return array<int, array{slug: string, label: string}> */
+    private function valuesFromState(?array $state): array
+    {
+        if (!$state) {
+            return [];
         }
 
         $options = [];
-        foreach ($links as $link) {
-            $path = trim(parse_url($link['url'] ?? '', PHP_URL_PATH) ?? '', '/');
-            $parts = explode('/', $path); // "carros/audi" ou "carros/audi/a4"
-            if (count($parts) !== $segments + 1) {
-                continue;
+        foreach ($state['values'] ?? [] as $group) {
+            foreach ($group['values'] ?? [] as $value) {
+                if (empty($value['id']) || empty($value['name'])) {
+                    continue;
+                }
+                $options[] = ['slug' => $value['id'], 'label' => $value['name']];
             }
-            $slug = $parts[count($parts) - 1];
-            $options[] = ['slug' => $slug, 'label' => $link['title'] ?? $slug];
         }
-
-        usort($options, fn ($a, $b) => strcasecmp($a['label'], $b['label']));
 
         return $options;
     }
