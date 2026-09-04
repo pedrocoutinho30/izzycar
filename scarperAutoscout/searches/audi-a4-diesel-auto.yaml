@@ -1,0 +1,12 @@
+name: audi-a4-diesel-auto
+make: audi
+model: a4
+filters:
+  fregfrom: 2018
+  fregto: 2022
+  kmto: 100000
+  powerfrom: 150
+  powertype: hp
+  fuel: D
+  gear: A
+  priceto: 30000

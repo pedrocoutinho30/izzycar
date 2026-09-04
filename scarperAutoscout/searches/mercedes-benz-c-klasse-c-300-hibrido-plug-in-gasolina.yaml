@@ -1,0 +1,10 @@
+name: mercedes-benz-c-klasse-c-300-hibrido-plug-in-gasolina
+make: mercedes-benz
+model: c-klasse
+motor_type: mt_c-300
+filters:
+  fregfrom: 2022
+  fregto: 2023
+  kmto: 100000
+  powertype: hp
+  fuel: '2'

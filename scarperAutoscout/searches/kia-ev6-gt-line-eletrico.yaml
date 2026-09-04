@@ -1,0 +1,15 @@
+name: kia-ev6-gt-line-eletrico
+make: kia
+model: ev6
+trim: tn_sonstige
+filters:
+  fregfrom: 2022
+  fregto: 2024
+  kmfrom: 6000
+  kmto: 70000
+  powerfrom: 200
+  powertype: hp
+  fuel: E
+  priceto: 35985
+  custtype: D
+  eq: 49

@@ -206,6 +206,36 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
     Route::get('v2/financial', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'index'])->name('admin.v2.financial.dashboard');
     Route::get('v2/financial/seed', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'seedExisting'])->name('admin.v2.financial.seed');
 
+    // ============================================================
+    // RADAR DE PREÇOS AUTOSCOUT24
+    // ============================================================
+    Route::prefix('v2/radar')->name('admin.v2.radar.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\RadarController::class, 'index'])->name('index');
+        Route::get('/nova', [App\Http\Controllers\Admin\RadarController::class, 'create'])->name('create');
+        Route::post('/nova', [App\Http\Controllers\Admin\RadarController::class, 'store'])->name('store');
+        Route::get('/modelos', [App\Http\Controllers\Admin\RadarController::class, 'models'])->name('models');
+        Route::get('/submodelos', [App\Http\Controllers\Admin\RadarController::class, 'submodels'])->name('submodels');
+        Route::get('/pt-modelos', [App\Http\Controllers\Admin\RadarController::class, 'ptModels'])->name('pt-models');
+        Route::get('/carmine-modelos', [App\Http\Controllers\Admin\RadarController::class, 'carmineModels'])->name('carmine-models');
+        Route::post('/{radarSearch}/correr', [App\Http\Controllers\Admin\RadarController::class, 'run'])->name('run');
+        Route::get('/{radarSearch}/editar', [App\Http\Controllers\Admin\RadarController::class, 'edit'])->name('edit');
+        Route::put('/{radarSearch}', [App\Http\Controllers\Admin\RadarController::class, 'update'])->name('update');
+        Route::patch('/{radarSearch}/custo-importacao', [App\Http\Controllers\Admin\RadarController::class, 'updateImportCost'])->name('update-import-cost');
+        Route::delete('/{radarSearch}', [App\Http\Controllers\Admin\RadarController::class, 'destroy'])->name('destroy');
+        Route::get('/{radarSearch}', [App\Http\Controllers\Admin\RadarController::class, 'show'])->name('show');
+    });
+
+    Route::patch('/v2/radar-listings/{radarListing}/media', [App\Http\Controllers\Admin\RadarController::class, 'toggleAverage'])->name('admin.v2.radar.toggle-average');
+
+    Route::prefix('v2/radar-equipamento')->name('admin.v2.radar-equipment.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\RadarEquipmentController::class, 'index'])->name('index');
+        Route::patch('/{radarEquipment}/filtro', [App\Http\Controllers\Admin\RadarEquipmentController::class, 'toggleFilter'])->name('toggle-filter');
+        Route::put('/{radarEquipment}', [App\Http\Controllers\Admin\RadarEquipmentController::class, 'update'])->name('update');
+        Route::post('/{radarEquipment}/fundir', [App\Http\Controllers\Admin\RadarEquipmentController::class, 'merge'])->name('merge');
+        Route::post('/aliases/{radarEquipmentAlias}/desacoplar', [App\Http\Controllers\Admin\RadarEquipmentController::class, 'detachAlias'])->name('detach-alias');
+        Route::delete('/{radarEquipment}', [App\Http\Controllers\Admin\RadarEquipmentController::class, 'destroy'])->name('destroy');
+    });
+
     Route::prefix('v2/social-posts')->name('admin.v2.social-posts.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\SocialPostController::class, 'index'])->name('index');
         Route::get('/recomendacao', [App\Http\Controllers\Admin\SocialPostController::class, 'recommendation'])->name('recommendation');
