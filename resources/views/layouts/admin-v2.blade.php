@@ -981,7 +981,7 @@
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.radar.index') }}" class="nav-link {{ request()->routeIs('admin.v2.radar.*') ? 'active' : '' }}">
                         <i class="bi bi-broadcast"></i>
-                        <span>Scarper AutoScout24</span>
+                        <span>Radar</span>
                     </a>
                 </div>
             </div>
