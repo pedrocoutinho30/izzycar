@@ -41,21 +41,24 @@ class Kernel extends ConsoleKernel
         // Avisar a administração de comissões de angariadores em atraso — todos os dias às 09:00
         $schedule->command('commissions:overdue-alert')->dailyAt('09:00');
 
-        // Relatório mensal — último dia de cada mês às 23:30
-        $schedule->command('reports:monthly')
-            ->dailyAt('23:30')
-            ->when(fn () => today()->day === today()->daysInMonth);
+        // Relatório mensal — dia 1 de cada mês (reporta o mês anterior, ver
+        // SendMonthlyReport::handle() - usa subDay() por causa disto)
+        $schedule->command('reports:monthly')->monthlyOn(1, '01:00');
 
-        // Relatório trimestral — último dia de Q1 (Mar), Q2 (Jun), Q3 (Set) às 23:40
-        // Q4 é coberto pelo relatório anual
+        // Relatório trimestral — dia 1 de abril/julho/outubro (reporta o trimestre
+        // anterior, ver SendQuarterlyReport::handle()). Q4 é coberto pelo anual.
         $schedule->command('reports:quarterly')
-            ->dailyAt('23:40')
-            ->when(fn () => in_array(today()->month, [3, 6, 9]) && today()->day === today()->daysInMonth);
+            ->dailyAt('01:10')
+            ->when(fn () => in_array(today()->month, [4, 7, 10]) && today()->day === 1);
 
-        // Relatório anual — 31 de dezembro às 23:50
-        $schedule->command('reports:annual')
-            ->dailyAt('23:50')
-            ->when(fn () => today()->month === 12 && today()->day === 31);
+        // Relatório anual — 1 de janeiro (reporta o ano anterior, ver
+        // SendAnnualReport::handle())
+        $schedule->command('reports:annual')->yearlyOn(1, 1, '01:20');
+
+        // Atualizar pesquisas ativas do Radar de Preços — 3x por dia (não de hora a
+        // hora: uma pesquisa com a AutoScout24 nos 8 países da Europa já demora
+        // minutos, várias seguidas pode demorar bastante mais)
+        $schedule->command('radar:refresh-active')->cron('0 6,14,22 * * *');
     }
 
     /**

@@ -18,7 +18,10 @@ class SendQuarterlyReport extends Command
     {
         Carbon::setLocale('pt_PT');
 
-        $date = now()->endOfDay();
+        // subDay(): o cron dispara no dia 1 do mês a seguir ao fim do trimestre
+        // (abril/julho/outubro), não no último dia do trimestre em si - "ontem" é
+        // que está sempre dentro do trimestre a reportar.
+        $date = now()->subDay()->endOfDay();
         $data = $service->generate($date);
 
         $this->info("A gerar relatório: {$data['label']}...");

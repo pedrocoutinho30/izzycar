@@ -21,10 +21,14 @@ class SendMonthlyReport extends Command
     {
         Carbon::setLocale('pt_PT');
 
+        // subDay() em vez de now() no default: o cron dispara no dia 1 do mês
+        // seguinte (não no último dia do mês em curso, que varia 28-31 e não dá
+        // para pôr num crontab fixo), por isso "ontem" é que está sempre dentro do
+        // mês a reportar.
         $monthArg = $this->option('month');
         $period   = $monthArg
             ? Carbon::createFromFormat('Y-m', $monthArg)->startOfMonth()
-            : now()->startOfMonth();
+            : now()->subDay()->startOfMonth();
 
         $this->info("A gerar relatório para {$period->locale('pt_PT')->translatedFormat('F Y')}...");
 
