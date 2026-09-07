@@ -16,6 +16,7 @@
         "ezyang/htmlpurifier": "^4.18",
         "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^3.11",
+        "laravel-notification-channels/webpush": "^12.1",
         "laravel/framework": "^12.0",
         "laravel/legacy-factories": "^1.4",
         "laravel/tinker": "^2.10.1",

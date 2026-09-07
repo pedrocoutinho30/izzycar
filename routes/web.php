@@ -201,6 +201,12 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
     Route::get('v2/search/resultados', [App\Http\Controllers\Admin\GlobalSearchController::class, 'results'])->name('admin.v2.search.results');
 
     // ============================================================
+    // PUSH NOTIFICATIONS (PWA)
+    // ============================================================
+    Route::post('v2/push-subscriptions', [App\Http\Controllers\Admin\PushSubscriptionController::class, 'store'])->name('admin.v2.push-subscriptions.store');
+    Route::delete('v2/push-subscriptions', [App\Http\Controllers\Admin\PushSubscriptionController::class, 'destroy'])->name('admin.v2.push-subscriptions.destroy');
+
+    // ============================================================
     // DASHBOARD FINANCEIRO
     // ============================================================
     Route::get('v2/financial', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'index'])->name('admin.v2.financial.dashboard');
@@ -250,6 +256,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::get('/create', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'create'])->name('create');
         Route::get('/create-from-form/{formProposalId}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'createFromForm'])->name('createFromForm');
         Route::post('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'store'])->name('store');
+        Route::post('/match-attributes-ai', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'matchAttributesAi'])->name('matchAttributesAi');
         Route::post('/import-from-listing', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'importFromListing'])->name('importFromListing');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'update'])->name('update');

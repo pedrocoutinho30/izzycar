@@ -7,6 +7,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Izzycar Admin') - Backoffice</title>
 
+    {{-- PWA — instalável no ecrã principal (Android/Chrome usa o manifest;
+         o iOS usa sobretudo o apple-touch-icon, por isso os dois ficam cá). --}}
+    <meta name="theme-color" content="#6e0707">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IzzyCar">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ asset('img/logo-arredondado.png') }}">
+
     <script>
         // Guarda a largura do ecrã num cookie, para o servidor poder escolher
         // valores por omissão adequados a mobile (ex.: calendário semanal em
@@ -921,21 +931,12 @@
         <!-- Spacer -->
 
 
-        <!-- Notifications -->
-        <div class="dropdown me-3 ms-auto">
-            <!-- <button class="btn-icon btn-secondary-modern" type="button" data-bs-toggle="dropdown">
+        <!-- Notificações push (PWA) -->
+        <div class="me-3 ms-auto">
+            <button class="btn-icon btn-secondary-modern" type="button" id="pushNotifBtn"
+                    title="Ativar notificações" style="display:none">
                 <i class="bi bi-bell"></i>
-            </button> -->
-            <!-- <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <h6 class="dropdown-header">Notificações</h6>
-                </li>
-                <li><a class="dropdown-item" href="#">Nova cotação recebida</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item text-center" href="#">Ver todas</a></li>
-            </ul> -->
+            </button>
         </div>
 
         <!-- User menu -->
@@ -1866,6 +1867,108 @@
             setInterval(poll, POLL_INTERVAL);
         })();
     </script>
+
+    <!-- PWA — Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker
+                    .register('/sw.js', { scope: '/gestao/' })
+                    .then(function (reg) {
+                        console.log('[PWA] Service Worker registado:', reg.scope);
+                    })
+                    .catch(function (err) {
+                        console.warn('[PWA] Falha no registo do SW:', err);
+                    });
+            });
+        }
+    </script>
+
+    {{-- PWA — Notificações push. Botão só aparece se o browser suportar
+         (Safari no iPhone só suporta dentro da app instalada no ecrã
+         principal — numa aba normal, o botão nem chega a mostrar). --}}
+    @hasanyrole('admin|gestor|cms')
+    <script>
+        (function () {
+            const VAPID_PUBLIC_KEY = @json(config('webpush.vapid.public_key'));
+            const btn = document.getElementById('pushNotifBtn');
+            if (!btn || !('serviceWorker' in navigator) || !('PushManager' in window) || !VAPID_PUBLIC_KEY) return;
+
+            function urlBase64ToUint8Array(base64String) {
+                const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+                const rawData = window.atob(base64);
+                return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+            }
+
+            function setState(subscribed) {
+                btn.classList.toggle('btn-secondary-modern', !subscribed);
+                btn.classList.toggle('btn-primary-modern', subscribed);
+                btn.title = subscribed ? 'Notificações ativas (clicar para desativar)' : 'Ativar notificações';
+                btn.dataset.subscribed = subscribed ? '1' : '0';
+            }
+
+            async function refreshState() {
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.getSubscription();
+                setState(!!sub);
+                btn.style.display = '';
+            }
+
+            async function subscribe() {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    alert('Sem permissão para notificações — não é possível ativar.');
+                    return;
+                }
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+                });
+                const json = sub.toJSON();
+                await fetch('{{ route('admin.v2.push-subscriptions.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(json),
+                });
+                setState(true);
+            }
+
+            async function unsubscribe() {
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.getSubscription();
+                if (!sub) { setState(false); return; }
+                const endpoint = sub.endpoint;
+                await sub.unsubscribe();
+                await fetch('{{ route('admin.v2.push-subscriptions.destroy') }}', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ endpoint }),
+                });
+                setState(false);
+            }
+
+            btn.addEventListener('click', function () {
+                if (btn.dataset.subscribed === '1') {
+                    unsubscribe();
+                } else {
+                    subscribe();
+                }
+            });
+
+            refreshState();
+        })();
+    </script>
+    @endhasanyrole
 
     @stack('scripts')
 </body>

@@ -15,6 +15,9 @@ use App\Mail\ImportFormConfirmationMail;
 use App\Models\LeadActivity;
 use App\Models\User;
 use App\Http\Controllers\Frontend\PageController;
+use App\Notifications\NewFormProposalNotification;
+use App\Notifications\NewLeadNotification;
+use App\Support\PushNotifier;
 
 class ImportController extends Controller
 {
@@ -60,6 +63,7 @@ class ImportController extends Controller
                 'angariador_code' => $angariadorCode,
                 'owner_id' => $angariadorOwner?->id,
             ]);
+            PushNotifier::notifyStaff(new NewLeadNotification($clientExist));
         } else {
             $updateData = [
                 'data_processing_consent' => $dataProcessingConsent,
@@ -84,6 +88,7 @@ class ImportController extends Controller
         unset($formPropposalData['data_processing_consent'], $formPropposalData['newsletter_consent'], $formPropposalData['angariador']);
         //Guardar o formulário de proposta
         $proposal = FormProposal::create($formPropposalData);
+        PushNotifier::notifyStaff(new NewFormProposalNotification($proposal));
 
         // Enviar email de confirmação ao cliente
         if ($clientExist->email) {

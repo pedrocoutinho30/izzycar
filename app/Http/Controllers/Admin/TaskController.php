@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\V3Vehicle;
+use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -117,7 +118,12 @@ class TaskController extends Controller
         ]);
 
         // Criar a tarefa
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        // Notifica quem foi atribuído — mas não a si próprio, se se auto-atribuir
+        if ($task->user_id && $task->user_id !== auth()->id()) {
+            $task->user?->notify(new TaskAssignedNotification($task));
+        }
 
         return redirect()
             ->route('admin.tasks.index')

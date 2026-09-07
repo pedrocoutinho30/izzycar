@@ -11,6 +11,9 @@ use App\Models\CostSimulator;
 use App\Models\LeadActivity;
 use App\Models\Setting;
 use App\Models\Brand;
+use App\Notifications\NewCostSimulatorNotification;
+use App\Notifications\NewLeadNotification;
+use App\Support\PushNotifier;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -117,6 +120,7 @@ class CostSimulatorController extends Controller
                 'data_processing_consent' => $dataProcessingConsent,
                 'newsletter_consent'      => $newsletterConsent,
             ]);
+            PushNotifier::notifyStaff(new NewLeadNotification($client));
         }
         // Normalizar e validar valor do carro
         $valorCarroRaw = $request->input('valor_carro', '');
@@ -197,6 +201,7 @@ class CostSimulatorController extends Controller
             'pais_matricula' => $request->input('pais_matricula'),
             'token' => $token,
         ]);
+        PushNotifier::notifyStaff(new NewCostSimulatorNotification($costSimulator));
 
         // Notificação interna
         Mail::raw("Novo Simulador de Custos submetido por {$client->name}, Email: {$client->email}, Telefone: {$client->phone}. Valor do Carro: {$valorCarro}€, ISV: {$isv}€, Custo Total: {$custoTotal}€.", function ($message) {
