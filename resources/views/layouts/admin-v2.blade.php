@@ -121,23 +121,6 @@
             font-size: 2rem;
         }
 
-        /* Botão de toggle do menu mobile */
-        .sidebar-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--admin-secondary);
-            cursor: pointer;
-            padding: 0.5rem;
-            margin-right: 1rem;
-            transition: var(--transition);
-        }
-
-        .sidebar-toggle:hover {
-            color: var(--admin-primary);
-        }
-
         /* Search bar na topbar */
         .topbar-search {
             position: absolute;
@@ -576,19 +559,10 @@
                 --sidebar-width: 280px;
             }
 
-            .sidebar-toggle {
-                display: block;
-            }
-
             .admin-sidebar {
                 transform: translateX(-100%);
                 width: var(--sidebar-width);
                 z-index: 1021;
-            }
-
-            .admin-sidebar.show {
-                transform: translateX(0);
-                box-shadow: var(--shadow-lg);
             }
 
             .admin-main {
@@ -641,25 +615,6 @@
             .btn-icon i {
                 font-size: 0.85rem;
             }
-        }
-
-        /* Overlay para mobile quando sidebar está aberta */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: calc(var(--topbar-height) + var(--banner-height));
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1020;
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .sidebar-overlay.show {
-            display: block;
-            opacity: 1;
         }
 
         @media (max-width: 992px) {
@@ -884,6 +839,21 @@
             transition: background 0.2s ease;
         }
 
+        /* Cabeçalhos de secção dentro do painel "Mais" (agrupa Conteúdo do
+           Site / Configurações / Sistema, tal como no sidebar de desktop). */
+        .abn-sheet-section-title {
+            padding: 1rem 0.75rem 0.35rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #999;
+        }
+
+        .abn-sheet-section-title:first-child {
+            padding-top: 0.25rem;
+        }
+
         .abn-sheet-item:hover,
         .abn-sheet-item:active {
             background: var(--admin-hover);
@@ -934,11 +904,6 @@
 
     <!-- TOPBAR -->
     <div class="admin-topbar">
-        <!-- Toggle sidebar (mobile) -->
-        <button class="sidebar-toggle" id="sidebarToggle">
-            <i class="bi bi-list"></i>
-        </button>
-
         <!-- Logo -->
         <a href="{{ route('admin.v2.dashboard') }}" class="admin-logo">
             <img src="{{ asset('img/logo_final.png') }}" alt="Izzycar Logo" style="height:80px;">
@@ -1354,14 +1319,14 @@
         </nav>
     </aside>
 
-    <!-- Overlay para mobile -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     @hasanyrole('admin|gestor|cms')
-    {{-- ═══════ MENU INFERIOR MOBILE — atalho para os 4 grupos do dia-a-dia,
-         cada um abre os submenus já definidos no sidebar de desktop. Resto
-         do menu (Conteúdo do Site, Configurações, Sistema) continua acessível
-         pelo hamburger habitual. ═══════ --}}
+    @php
+        $isMaisActive = in_array($activeGroup, ['conteudo', 'config', 'sistema'], true) || request()->routeIs('admin.v2.dashboard');
+    @endphp
+    {{-- ═══════ MENU INFERIOR MOBILE — não há hamburger em mobile; tudo passa
+         por aqui. Os 4 primeiros são os grupos do dia-a-dia, cada um abre os
+         submenus já definidos no sidebar de desktop; "Mais" cobre o resto
+         (Dashboard, Conteúdo do Site, Configurações, Sistema). ═══════ --}}
     <nav class="admin-bottom-nav" id="adminBottomNav" aria-label="Acesso rápido (mobile)">
         <button type="button" class="abn-item {{ $activeGroup === 'funil' ? 'is-active' : '' }}" data-group="funil">
             <span class="abn-icon-wrap"><i class="bi bi-funnel"></i></span>
@@ -1378,6 +1343,10 @@
         <button type="button" class="abn-item {{ $activeGroup === 'analise' ? 'is-active' : '' }}" data-group="analise">
             <span class="abn-icon-wrap"><i class="bi bi-bar-chart-line"></i></span>
             <span class="abn-label">Análise</span>
+        </button>
+        <button type="button" class="abn-item {{ $isMaisActive ? 'is-active' : '' }}" data-group="mais">
+            <span class="abn-icon-wrap"><i class="bi bi-three-dots"></i></span>
+            <span class="abn-label">Mais</span>
         </button>
     </nav>
 
@@ -1497,6 +1466,72 @@
                 </a>
             </div>
 
+            {{-- Mais: Dashboard + Conteúdo do Site + Configurações + Sistema --}}
+            <div class="abn-sheet-panel" data-panel="mais">
+                <a href="{{ route('admin.v2.dashboard') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.dashboard') ? 'active' : '' }}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <div class="abn-sheet-section-title">Conteúdo do Site</div>
+                <a href="{{ route('admin.news.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-richtext"></i>
+                    <span>Notícias</span>
+                </a>
+                <a href="{{ route('admin.testimonials.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
+                    <i class="bi bi-chat-quote"></i>
+                    <span>Testemunhos</span>
+                </a>
+                <a href="{{ route('admin.v2.newsletter-management.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
+                    <i class="bi bi-newspaper"></i>
+                    <span>Newsletter</span>
+                </a>
+                <a href="{{ route('admin.v2.menus.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.menus.*') ? 'active' : '' }}">
+                    <i class="bi bi-list-nested"></i>
+                    <span>Menus</span>
+                </a>
+                <a href="{{ route('admin.v2.social-posts.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.social-posts.*') ? 'active' : '' }}">
+                    <i class="bi bi-magic"></i>
+                    <span>Criador de Posts</span>
+                </a>
+
+                <div class="abn-sheet-section-title">Configurações</div>
+                <a href="{{ route('admin.v2.attribute-groups.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.attribute-groups.*') ? 'active' : '' }}">
+                    <i class="bi bi-folder"></i>
+                    <span>Grupos de Atributos</span>
+                </a>
+                <a href="{{ route('admin.v2.vehicle-attributes.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.vehicle-attributes.*') ? 'active' : '' }}">
+                    <i class="bi bi-tags"></i>
+                    <span>Atributos de Veículos</span>
+                </a>
+                <a href="{{ route('admin.v2.settings.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.settings.*') ? 'active' : '' }}">
+                    <i class="bi bi-gear"></i>
+                    <span>Configurações</span>
+                </a>
+
+                <div class="abn-sheet-section-title">Sistema</div>
+                <a href="{{ route('admin.v2.users.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.users.*') ? 'active' : '' }}">
+                    <i class="bi bi-person-gear"></i>
+                    <span>Utilizadores</span>
+                </a>
+                <a href="{{ route('admin.v2.roles.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.roles.*') ? 'active' : '' }}">
+                    <i class="bi bi-shield-lock"></i>
+                    <span>Perfis</span>
+                </a>
+                <a href="{{ route('admin.v2.permissions.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.permissions.*') ? 'active' : '' }}">
+                    <i class="bi bi-key"></i>
+                    <span>Permissões</span>
+                </a>
+                <a href="{{ route('admin.v2.audit-log') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.audit-log') ? 'active' : '' }}">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Log de Auditoria</span>
+                </a>
+                <a href="{{ route('admin.v2.manual') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.manual') ? 'active' : '' }}">
+                    <i class="bi bi-book"></i>
+                    <span>Manual de Utilizador</span>
+                </a>
+            </div>
+
         </div>
     </div>
     @endhasanyrole
@@ -1514,30 +1549,7 @@
 
     <!-- Scripts globais do admin -->
     <script>
-        /**
-         * SIDEBAR TOGGLE (Mobile)
-         * Controla abertura/fecho do menu lateral em mobile
-         */
         document.addEventListener('DOMContentLoaded', function() {
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.getElementById('adminSidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-
-            // Função para toggle da sidebar
-            function toggleSidebar() {
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('show');
-            }
-
-            // Event listeners
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', toggleSidebar);
-            }
-
-            if (overlay) {
-                overlay.addEventListener('click', toggleSidebar);
-            }
-
             /**
              * CSRF TOKEN
              * Adiciona token CSRF a todos os requests AJAX
@@ -1685,6 +1697,7 @@
                 operacoes: 'Operações',
                 rede: 'Angariadores & Parceiros',
                 analise: 'Análise & Ferramentas',
+                mais: 'Mais',
             };
 
             let openGroup = null;
