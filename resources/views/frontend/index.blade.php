@@ -46,55 +46,23 @@
     </div>
 </section>
 
-<!-- Trust Section -->
-<section class="trust-section">
-    <div class="container">
-        <div class="trust-content">
-            <div class="row align-items-center">
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <div class="trust-item fade-in-up">
-                        <span class="material-symbols-outlined">verified_user</span>
-                        <h4>100% Seguro</h4>
-                        <p>Processo transparente e garantido</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <div class="trust-item fade-in-up" data-delay="100">
-                        <span class="material-symbols-outlined">local_shipping</span>
-                        <h4>Entrega Rápida</h4>
-                        <p>3-6 semanas em média</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <div class="trust-item fade-in-up" data-delay="200">
-                        <span class="material-symbols-outlined">euro</span>
-                        <h4>Melhor Preço</h4>
-                        <p>Economize até 30%</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="trust-item fade-in-up" data-delay="300">
-                        <span class="material-symbols-outlined">support_agent</span>
-                        <h4>Suporte Total</h4>
-                        <p>Do início ao fim</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Services Section -->
+<!-- O Que Fazemos — cards no estilo bento (imagem de fundo), como no site atual -->
 <section class="services-section section-padding">
     <div class="container">
-        <div class="section-header text-center mb-5">
-            <span class="section-badge fade-in-up">Nossos Serviços</span>
-            <h2 class="section-title fade-in-up" data-delay="100">Como Podemos Ajudar</h2>
-            <p class="section-description fade-in-up" data-delay="200">Oferecemos uma gama completa de serviços para tornar a sua importação simples e segura</p>
+        <div class="section-header text-center mb-4">
+            <span class="section-badge fade-in-up">O Que Fazemos</span>
+            <h2 class="section-title fade-in-up" data-delay="100">Tudo o que precisa, num só sítio</h2>
+        </div>
+
+        <div class="road-divider fade-in-up" data-delay="150" aria-hidden="true">
+            <span class="road-divider-line"></span>
+            <svg class="road-divider-car" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><rect x="3" y="11" width="18" height="6" rx="2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/>
+            </svg>
         </div>
 
         <div class="row g-4">
-            <div class="col-lg-6 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <a href="{{ route('frontend.import') }}" class="service-bento fade-in-up">
                     <picture>
                         <source srcset="{{ asset('img/2.webp') }}" type="image/webp">
@@ -112,7 +80,7 @@
                 </a>
             </div>
 
-            <div class="col-lg-6 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <a href="{{ route('frontend.legalization') }}" class="service-bento fade-in-up" data-delay="100">
                     <picture>
                         <source srcset="{{ asset('img/1.webp') }}" type="image/webp">
@@ -129,131 +97,76 @@
                     </div>
                 </a>
             </div>
-        </div>
-    </div>
-</section>
 
-<!-- Why Choose Us Section -->
-<section class="why-section section-padding">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-5 mb-lg-0">
-                <div class="why-content">
-                    <span class="section-badge fade-in-up">Porque Escolher-nos</span>
-                    <h2 class="section-title fade-in-up" data-delay="100">Experiência e Confiança<br>ao Seu Serviço</h2>
-                    <p class="why-description fade-in-up" data-delay="200">
-                        A Izzycar é a sua parceira de confiança para importação de veículos. Trabalhamos com transparência total, sem custos escondidos.
-                    </p>
-
-                    <div class="why-features">
-                        <div class="why-feature fade-in-up" data-delay="300">
-                            <div class="why-feature-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </div>
-                            <div class="why-feature-content">
-                                <h4>Processo Transparente</h4>
-                                <p>Acompanhamento em tempo real de todas as etapas da importação</p>
-                            </div>
-                        </div>
-
-                        <div class="why-feature fade-in-up" data-delay="400">
-                            <div class="why-feature-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </div>
-                            <div class="why-feature-content">
-                                <h4>Inspeção Rigorosa</h4>
-                                <p>Todos os veículos são inspecionados antes da compra</p>
-                            </div>
-                        </div>
-
-                        <div class="why-feature fade-in-up" data-delay="500">
-                            <div class="why-feature-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </div>
-                            <div class="why-feature-content">
-                                <h4>Apoio Personalizado</h4>
-                                <p>Equipa dedicada disponível para esclarecer todas as suas dúvidas</p>
-                            </div>
-                        </div>
+            <div class="col-lg-4 col-md-6">
+                <a href="{{ route('vehicles.list') }}" class="service-bento fade-in-up" data-delay="200">
+                    <picture>
+                        <source srcset="{{ asset('img/3.webp') }}" type="image/webp">
+                        <img src="{{ asset('img/3.jpg') }}" alt="Veículos Usados" loading="lazy">
+                    </picture>
+                    <div class="service-bento-overlay"></div>
+                    <div class="service-bento-content">
+                        <h3 class="service-bento-title">Veículos Usados</h3>
+                        <p class="service-bento-description">Carros já preparados e prontos a conduzir, disponíveis para entrega imediata.</p>
+                        <span class="service-bento-link">
+                            Ver Viaturas
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </span>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-lg-6 d-flex align-items-stretch">
-                <div class="why-image-grid fade-in-up" data-delay="300" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1rem; height: 100%; max-height: 480px; min-height: 320px;">
-                    <div class="why-image-item why-image-large" style="grid-row: 1 / span 2; grid-column: 1 / 2; height: 100%;">
-                        <picture>
-                            <source srcset="{{ asset('img/2.webp') }}" type="image/webp">
-                            <img src="{{ asset('img/2.jpg') }}" alt="Profissionalismo Izzycar" loading="lazy" width="527" height="960" style="height: 100%; width: 100%; object-fit: cover; max-height: 480px;">
-                        </picture>
-                    </div>
-                    <div class="why-image-item" style="grid-row: 1 / 2; grid-column: 2 / 3; height: 100%;">
-                        <picture>
-                            <source srcset="{{ asset('img/1.webp') }}" type="image/webp">
-                            <img src="{{ asset('img/1.jpg') }}" alt="Qualidade Garantida" loading="lazy" width="768" height="960" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
-                        </picture>
-                    </div>
-                    <div class="why-image-item" style="grid-row: 2 / 3; grid-column: 2 / 3; height: 100%;">
-                        <picture>
-                            <source srcset="{{ asset('img/3.webp') }}" type="image/webp">
-                            <img src="{{ asset('img/3.jpg') }}" alt="Experiência Comprovada" loading="lazy" width="641" height="960" style="height: 100%; width: 100%; object-fit: cover; max-height: 240px;">
-                        </picture>
-                    </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Process Section -->
-<section class="process-section section-padding">
+<!-- Porquê Escolher-nos — 3 cards pequenos -->
+<section class="why-section-simple section-padding">
     <div class="container">
         <div class="section-header text-center mb-5">
-            <span class="section-badge fade-in-up">Como Funciona</span>
-            <h2 class="section-title fade-in-up" data-delay="100">Simples em 4 Passos</h2>
-            <p class="section-description fade-in-up" data-delay="200">Do contacto inicial à entrega do seu carro</p>
+            <span class="section-badge fade-in-up">Porquê Escolher-nos</span>
+            <h2 class="section-title fade-in-up" data-delay="100">Experiência e Confiança ao Seu Serviço</h2>
         </div>
 
-        <div class="process-steps-grid">
-            <div class="process-step-card fade-in-up">
-                <div class="process-step-num">01</div>
-                <h3>Pedido de Cotação</h3>
-                <p>Preencha o formulário com as características do carro que deseja. Respondemos em 24h com uma cotação detalhada e transparente.</p>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="why-mini-card fade-in-up">
+                    <div class="why-mini-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h4>Processo Transparente</h4>
+                    <p>Acompanhamento em tempo real de todas as etapas da importação.</p>
+                </div>
             </div>
 
-            <div class="process-step-card fade-in-up" data-delay="100">
-                <div class="process-step-num">02</div>
-                <h3>Procura e Seleção</h3>
-                <p>Procuramos o veículo perfeito para si nos melhores mercados europeus. Inspecionamos e enviamos relatório fotográfico completo.</p>
+            <div class="col-lg-4 col-md-6">
+                <div class="why-mini-card fade-in-up" data-delay="100">
+                    <div class="why-mini-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                    <h4>Inspeção Rigorosa</h4>
+                    <p>Todos os veículos são inspecionados antes da compra.</p>
+                </div>
             </div>
 
-            <div class="process-step-card fade-in-up" data-delay="200">
-                <div class="process-step-num">03</div>
-                <h3>Compra e Transporte</h3>
-                <p>Após aprovação, compramos e tratamos do transporte seguro até Portugal. Acompanhe todo o processo em tempo real.</p>
+            <div class="col-lg-4 col-md-6">
+                <div class="why-mini-card fade-in-up" data-delay="200">
+                    <div class="why-mini-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h4>Apoio Personalizado</h4>
+                    <p>Equipa dedicada disponível para esclarecer todas as suas dúvidas.</p>
+                </div>
             </div>
-
-            <div class="process-step-card fade-in-up" data-delay="300">
-                <div class="process-step-num">04</div>
-                <h3>Legalização e Entrega</h3>
-                <p>Tratamos de toda a papelada, inspeção e matrícula. Recebe o seu carro pronto a conduzir, com documentação completa.</p>
-            </div>
-        </div>
-
-        <div class="text-center mt-5 fade-in-up" data-delay="400">
-            <a href="{{ route('frontend.import') }}" class="btn-cta-modern">
-                Ver Processo Detalhado
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-            </a>
         </div>
     </div>
 </section>
@@ -456,7 +369,6 @@
     </div>
 </section>
 
-
 @push('styles')
 <style>
     /* ── Partners ── */
@@ -641,85 +553,11 @@
     }
 
     @keyframes bounce {
-
-        0%,
-        100% {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        50% {
-            transform: translateX(-50%) translateY(-10px);
-        }
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50%      { transform: translateX(-50%) translateY(-10px); }
     }
 
-    /* Trust Section */
-    .trust-section {
-        padding: 3rem 0;
-        background: linear-gradient(135deg, #0d0d0d 0%, #111111 50%, #0d0d0d 100%);
-    }
-
-    .trust-content {
-        padding: 2rem;
-        border-radius: var(--radius-sharp-md);
-        background: transparent;
-    }
-
-    .trust-item {
-        text-align: center;
-        padding: 1.75rem 1.5rem;
-        background: rgba(255,255,255,0.04);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: var(--radius-sharp-md);
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-
-    .trust-item:hover {
-        background: rgba(255,255,255,0.07);
-        border-color: rgba(153,0,0,0.4);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(153,0,0,0.2);
-        transform: translateY(-3px);
-    }
-
-    .trust-item .material-symbols-outlined {
-        font-size: 40px;
-        color: var(--accent-color);
-        margin-bottom: 1rem;
-    }
-
-    .trust-item h4 {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #fff;
-        margin-bottom: 0.5rem;
-    }
-
-    .trust-item p {
-        font-size: 0.95rem;
-        color: rgba(255,255,255,0.6);
-        margin: 0;
-    }
-
-    /* Services Section */
-    .services-section {
-        background: linear-gradient(135deg, #111111 0%, #161616 50%, #111111 100%);
-    }
-
-    .services-section .section-title {
-        color: #fff;
-    }
-
-    .services-section .section-description {
-        color: rgba(255,255,255,0.65);
-    }
-
-    .services-section .section-badge {
-        background: rgba(153,0,0,0.2);
-        color: #ff8080;
-    }
-
+    /* Section Headers (partilhados) */
     .section-padding {
         padding: 5rem 0;
     }
@@ -749,6 +587,20 @@
         color: #6c757d;
         max-width: 700px;
         margin: 0 auto;
+    }
+
+    /* ── O Que Fazemos ── */
+    .services-section {
+        background: linear-gradient(135deg, #111111 0%, #161616 50%, #111111 100%);
+    }
+
+    .services-section .section-title {
+        color: #fff;
+    }
+
+    .services-section .section-badge {
+        background: rgba(153,0,0,0.2);
+        color: #ff8080;
     }
 
     .service-bento {
@@ -836,241 +688,94 @@
         color: #ff6060;
     }
 
-    /* Why Section */
-    /* Why Section — override bg-light */
-    .why-section {
-        background: linear-gradient(160deg, #ffffff 0%, #fafafa 55%, #fff7f7 100%);
+    .road-divider {
         position: relative;
-        overflow: hidden;
+        display: flex;
+        align-items: center;
+        max-width: 640px;
+        margin: 0 auto 3rem;
+        height: 26px;
     }
-
-    .why-section::before {
-        content: '';
+    .road-divider-line {
         position: absolute;
-        top: -80px;
-        right: -80px;
-        width: 320px;
-        height: 320px;
-        background: radial-gradient(ellipse at center, rgba(153,0,0,0.06) 0%, transparent 70%);
-        pointer-events: none;
+        left: 0; right: 0; top: 50%;
+        height: 2px;
+        transform: translateY(-50%);
+        background-image: repeating-linear-gradient(90deg, rgba(255,128,128,0.4) 0 16px, transparent 16px 28px);
+        background-size: 200% 100%;
+        animation: roadMove 9s linear infinite;
     }
-
-    .why-section::after {
-        content: '';
-        position: absolute;
-        bottom: -60px;
-        left: -60px;
-        width: 250px;
-        height: 250px;
-        background: radial-gradient(ellipse at center, rgba(153,0,0,0.04) 0%, transparent 70%);
-        pointer-events: none;
-    }
-
-    .why-content {
-        padding-right: 2rem;
+    .road-divider-car {
         position: relative;
         z-index: 1;
+        color: #ff8080;
+        background: #161616;
+        padding: 0 6px;
+        animation: roadDrive 3.5s ease-in-out infinite;
+    }
+    @keyframes roadMove {
+        from { background-position: 0 0; }
+        to   { background-position: -200% 0; }
+    }
+    @keyframes roadDrive {
+        0%, 100% { transform: translateX(-6px); }
+        50%      { transform: translateX(6px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .road-divider-line, .road-divider-car { animation: none; }
     }
 
-    .why-description {
-        font-size: 1.05rem;
-        color: #555;
-        line-height: 1.85;
-        margin-bottom: 2rem;
+    /* ── Porquê Escolher-nos — 3 cards pequenos ── */
+    .why-section-simple {
+        background: linear-gradient(160deg, #ffffff 0%, #fafafa 55%, #fff7f7 100%);
     }
 
-    .why-feature {
-        display: flex;
-        gap: 1.25rem;
-        margin-bottom: 1rem;
-        padding: 1.25rem 1.5rem;
-        background: #ffffff;
-        border-radius: var(--radius-sharp-md);
+    .why-mini-card {
+        background: #fff;
         border: 1px solid rgba(0,0,0,0.06);
-        border-left: 3px solid transparent;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        border-radius: var(--radius-sharp-md);
+        padding: 2rem 1.75rem;
+        height: 100%;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
         transition: all 0.3s ease;
     }
 
-    .why-feature:hover {
-        transform: translateX(6px);
-        border-left-color: #990000;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.09);
+    .why-mini-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 32px rgba(0,0,0,0.1);
     }
 
-    .why-feature-icon {
-        flex-shrink: 0;
-        width: 48px;
-        height: 48px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+    .why-mini-icon {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 1.25rem;
         border-radius: var(--radius-sharp-sm);
+        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
         box-shadow: 0 4px 14px rgba(110,7,7,0.35);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.3s ease;
     }
 
-    .why-feature:hover .why-feature-icon {
+    .why-mini-card:hover .why-mini-icon {
         transform: scale(1.08);
-        box-shadow: 0 6px 20px rgba(110,7,7,0.5);
     }
 
-    .why-feature-icon svg {
-        color: white;
-    }
-
-    .why-feature-content h4 {
-        font-size: 1.05rem;
+    .why-mini-card h4 {
+        font-size: 1.1rem;
         font-weight: 700;
         color: #111;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.5rem;
     }
 
-    .why-feature-content p {
-        font-size: 0.9rem;
+    .why-mini-card p {
+        font-size: 0.92rem;
         color: #6c757d;
-        margin: 0;
         line-height: 1.6;
-    }
-
-    .why-image-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .why-image-item {
-        border-radius: var(--radius-sharp-md);
-        overflow: hidden;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.13);
-        border: 2px solid rgba(255,255,255,0.9);
-        transition: transform 0.35s ease, box-shadow 0.35s ease;
-    }
-
-    .why-image-item:hover {
-        transform: scale(1.02);
-        box-shadow: 0 14px 40px rgba(0,0,0,0.18);
-    }
-
-    .why-image-large {
-        grid-row: span 2;
-    }
-
-    .why-image-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    /* Process Section */
-    .process-section {
-        background: linear-gradient(160deg, #f7f7f7 0%, #fafafa 50%, #f5f5f5 100%);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .process-section::before {
-        content: '';
-        position: absolute;
-        top: -100px;
-        left: -100px;
-        width: 350px;
-        height: 350px;
-        background: radial-gradient(ellipse at center, rgba(153,0,0,0.05) 0%, transparent 70%);
-        pointer-events: none;
-    }
-
-    .process-steps-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-        position: relative;
-        max-width: 1100px;
-        margin: 0 auto;
-    }
-
-    /* Horizontal connector line */
-    .process-steps-grid::before {
-        content: '';
-        position: absolute;
-        top: 30px;
-        left: calc(30px + 1.5rem / 2);
-        right: calc(30px + 1.5rem / 2);
-        height: 2px;
-        background: linear-gradient(90deg, #990000 0%, rgba(153,0,0,0.15) 100%);
-        z-index: 0;
-    }
-
-    .process-step-card {
-        background: #ffffff;
-        border-radius: var(--radius-sharp-md);
-        padding: 2rem 1.5rem 1.75rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.07);
-        border: 1px solid rgba(0,0,0,0.06);
-        border-top: 3px solid transparent;
-        transition: all 0.3s ease;
-        position: relative;
-        z-index: 1;
-    }
-
-    .process-step-card:hover {
-        border-top-color: #990000;
-        transform: translateY(-5px);
-        box-shadow: 0 12px 32px rgba(0,0,0,0.11);
-    }
-
-    .process-step-num {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
-        font-weight: 800;
-        color: #fff;
-        box-shadow: 0 4px 16px rgba(153,0,0,0.4);
-        margin-bottom: 1.25rem;
-        border: 3px solid #ffffff;
-    }
-
-    .process-step-card h3 {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #111;
-        margin-bottom: 0.6rem;
-    }
-
-    .process-step-card p {
-        font-size: 0.9rem;
-        color: #6c757d;
-        line-height: 1.7;
         margin: 0;
-    }
-
-    .btn-cta-modern {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 16px 35px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
-        color: white;
-        border-radius: var(--radius-sharp-sm);
-        font-weight: 700;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        /* box-shadow: 0 8px 25px rgba(153, 0, 0, 0.3); */
-    }
-
-    .btn-cta-modern:hover {
-        transform: translateY(-3px);
-        /* box-shadow: 0 12px 35px rgba(153, 0, 0, 0.4); */
-        color: white;
     }
 
     /* Testimonials Section */
@@ -1223,6 +928,83 @@
         transform: translateY(-2px);
     }
 
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 0.8s ease forwards;
+    }
+
+    .fade-in-up[data-delay="80"]  { animation-delay: 0.08s; }
+    .fade-in-up[data-delay="100"] { animation-delay: 0.1s; }
+    .fade-in-up[data-delay="150"] { animation-delay: 0.15s; }
+    .fade-in-up[data-delay="160"] { animation-delay: 0.16s; }
+    .fade-in-up[data-delay="200"] { animation-delay: 0.2s; }
+    .fade-in-up[data-delay="240"] { animation-delay: 0.24s; }
+    .fade-in-up[data-delay="300"] { animation-delay: 0.3s; }
+    .fade-in-up[data-delay="400"] { animation-delay: 0.4s; }
+    .fade-in-up[data-delay="500"] { animation-delay: 0.5s; }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-description {
+            font-size: 1rem;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+        }
+
+        .btn-hero-primary,
+        .btn-hero-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .section-padding {
+            padding: 3rem 0;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+        }
+
+        .cta-title {
+            font-size: 2rem;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+        }
+
+        .btn-cta-primary,
+        .btn-cta-outline {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
     /* CTA Final Section */
     .cta-final-section {
         padding: 6rem 0;
@@ -1327,116 +1109,6 @@
 
     .cta-phone:hover {
         color: #990000;
-    }
-
-    /* Animations */
-    .fade-in-up {
-        opacity: 0;
-        transform: translateY(30px);
-        animation: fadeInUp 0.8s ease forwards;
-    }
-
-    .fade-in-up[data-delay="100"] {
-        animation-delay: 0.1s;
-    }
-
-    .fade-in-up[data-delay="200"] {
-        animation-delay: 0.2s;
-    }
-
-    .fade-in-up[data-delay="300"] {
-        animation-delay: 0.3s;
-    }
-
-    .fade-in-up[data-delay="400"] {
-        animation-delay: 0.4s;
-    }
-
-    .fade-in-up[data-delay="500"] {
-        animation-delay: 0.5s;
-    }
-
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Responsive */
-    @media (max-width: 992px) {
-        .hero-title {
-            font-size: 2.5rem;
-        }
-
-        .section-title {
-            font-size: 2rem;
-        }
-
-        .cta-title {
-            font-size: 2.5rem;
-        }
-
-        .why-content {
-            padding-right: 0;
-            margin-bottom: 3rem;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .hero-title {
-            font-size: 2rem;
-        }
-
-        .hero-description {
-            font-size: 1rem;
-        }
-
-        .hero-actions {
-            flex-direction: column;
-        }
-
-        .btn-hero-primary,
-        .btn-hero-secondary {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .section-padding {
-            padding: 3rem 0;
-        }
-
-        .section-title {
-            font-size: 1.75rem;
-        }
-
-        .process-steps-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .process-steps-grid::before {
-            display: none;
-        }
-
-        .cta-title {
-            font-size: 2rem;
-        }
-
-        .cta-buttons {
-            flex-direction: column;
-        }
-
-        .btn-cta-primary,
-        .btn-cta-outline {
-            width: 100%;
-            justify-content: center;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .process-steps-grid {
-            grid-template-columns: 1fr;
-        }
     }
 </style>
 @endpush

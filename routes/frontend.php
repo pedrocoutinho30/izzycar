@@ -54,10 +54,6 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::get('/brevemente', [PageController::class, 'comingSoon'])->name('frontend.coming-soon');
 
     Route::get('/', [VehiclesController::class, 'index'])->name('frontend.home');
-
-    // Protótipo de comparação do novo design do site público (não substitui
-    // as rotas/views atuais, não está ligado em nenhum menu).
-    Route::get('/novo/inicio', [\App\Http\Controllers\Frontend\NovoFrontController::class, 'home'])->name('novo-front.home');
     Route::get('/viaturas', [VehiclesController::class, 'vehicles'])->name('vehicles.list');
     Route::get('/viaturas-filtradas', [VehiclesController::class, 'filteredVehicles']);
     Route::get('/viaturas/{brand}/{model}/{id}', [VehiclesController::class, 'vehicleDetails'])->name('vehicles.details');

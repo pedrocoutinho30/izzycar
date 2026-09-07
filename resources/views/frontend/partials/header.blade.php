@@ -2,8 +2,17 @@
   @include('frontend.partials.menu-desktop')
 </div>
 
+{{-- Mobile: apenas uma barra superior fina com o logo — a navegação
+     acontece toda na barra inferior de ícones (mobile-bottom-nav). --}}
 <div class="mobile-only">
-  @include('frontend.partials.menu-mobile')
+  <nav class="mobile-topbar-slim">
+    <a href="{{ route('frontend.home') }}" class="mobile-topbar-slim-brand">
+      <picture>
+        <source srcset="{{ asset(preg_replace('/\.(png|jpe?g)$/i', '.webp', $logotipo)) }}" type="image/webp">
+        <img src="{{ asset($logotipo) }}" alt="Izzycar" width="121" height="80" fetchpriority="high">
+      </picture>
+    </a>
+  </nav>
 </div>
 
 <script>
@@ -182,5 +191,23 @@
     font-weight: bold;
     text-decoration: underline;
     /* underline para ativo */
+  }
+
+  .mobile-topbar-slim {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1030;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+    box-shadow: 0 2px 12px rgba(0,0,0,.25);
+  }
+  .mobile-topbar-slim-brand { display: flex; align-items: center; height: 100%; }
+  .mobile-topbar-slim-brand img { height: 36px; width: auto; }
+
+  @media (max-width: 991.98px) {
+    body { padding-top: 56px; }
   }
 </style>
