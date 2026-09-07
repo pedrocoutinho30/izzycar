@@ -618,6 +618,17 @@
             .topbar-user span {
                 display: none;
             }
+
+            /* Botões de ação (ver/editar/eliminar, etc.) mais pequenos em
+               mobile — ocupam menos espaço nas listagens. */
+            .btn-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .btn-icon i {
+                font-size: 0.85rem;
+            }
         }
 
         /* Overlay para mobile quando sidebar está aberta */
@@ -684,6 +695,212 @@
             top: calc(var(--topbar-height) + 1rem);
             right: 1rem;
             z-index: 1040;
+        }
+
+        /**
+         * MENU INFERIOR MOBILE (admin-bottom-nav)
+         * Atalho para os 4 grupos do dia-a-dia; cada botão abre um "sheet"
+         * com os submenus (mesmos itens/rotas do sidebar de desktop).
+         */
+        .admin-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1035;
+            height: 64px;
+            padding-bottom: env(safe-area-inset-bottom);
+            background: #fff;
+            border-top: 1px solid var(--admin-border);
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+        }
+
+        @media (max-width: 992px) {
+            .admin-bottom-nav { display: flex; align-items: stretch; justify-content: space-around; }
+            .admin-main { padding-bottom: calc(64px + env(safe-area-inset-bottom) + 1rem); }
+        }
+
+        .abn-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.2rem;
+            background: none;
+            border: none;
+            color: #888;
+            padding: 0.4rem 0.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .abn-icon-wrap {
+            display: flex;
+            line-height: 0;
+            font-size: 1.3rem;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .abn-label {
+            font-size: 0.66rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .abn-item.is-active {
+            color: var(--admin-primary);
+        }
+
+        .abn-item.is-active .abn-icon-wrap {
+            animation: abnBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes abnBounce {
+            0%   { transform: translateY(-6px) scale(0.92); }
+            60%  { transform: translateY(2px) scale(1.05); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .abn-item.is-active .abn-icon-wrap { animation: none; }
+        }
+
+        /* Overlay + sheet (submenu deslizante) */
+        .abn-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            /* Para mesmo acima do menu inferior — a barra fica sempre
+               visível e clicável, mesmo com o sheet aberto. */
+            bottom: calc(64px + env(safe-area-inset-bottom));
+            background: rgba(0,0,0,0.5);
+            z-index: 1036;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .abn-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .abn-sheet {
+            position: fixed;
+            left: 0;
+            right: 0;
+            /* Termina mesmo acima do menu inferior — nunca sobrepõe a barra,
+               para os separadores continuarem clicáveis com o sheet aberto. */
+            bottom: calc(64px + env(safe-area-inset-bottom));
+            z-index: 1037;
+            background: #fff;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
+            max-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease;
+        }
+
+        .abn-sheet.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .abn-sheet-handle {
+            width: 40px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--admin-border);
+            margin: 0.75rem auto 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .abn-sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.25rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            flex-shrink: 0;
+        }
+
+        .abn-sheet-close {
+            background: var(--admin-light);
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--admin-secondary);
+        }
+
+        .abn-sheet-body {
+            overflow-y: auto;
+            padding: 0.25rem 0.75rem 1rem;
+        }
+
+        .abn-sheet-panel {
+            display: none;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .abn-sheet-panel.is-active {
+            display: flex;
+        }
+
+        .abn-sheet-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.85rem 0.75rem;
+            border-radius: var(--border-radius);
+            color: var(--admin-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .abn-sheet-item:hover,
+        .abn-sheet-item:active {
+            background: var(--admin-hover);
+        }
+
+        .abn-sheet-item.active {
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-dark));
+            color: #fff;
+        }
+
+        .abn-sheet-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .abn-badge {
+            margin-left: auto;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.72rem;
+            border-radius: 50px;
+            background: var(--admin-primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .abn-sheet-item.active .abn-badge {
+            background: rgba(255,255,255,0.25);
         }
     </style>
 
@@ -811,16 +1028,12 @@
                         <span class="nav-badge" id="leads-nav-badge" {{ $leadsCount === 0 ? 'style=display:none' : '' }}>{{ $leadsCount }}</span>
                     </a>
                 </div>
-                <!-- <div class="nav-item">
-                    <a href="{{ route('admin.v2.pre-leads.index') }}" class="nav-link {{ request()->routeIs('admin.v2.pre-leads.*') ? 'active' : '' }}">
-                        <i class="bi bi-whatsapp"></i>
-                        <span>Pré-Leads</span>
-                        @php $preLeadsCount = \App\Models\PreLead::where('status', 'pendente')->count(); @endphp
-                        @if($preLeadsCount > 0)
-                        <span class="nav-badge">{{ $preLeadsCount }}</span>
-                        @endif
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.clients.index') }}" class="nav-link {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i>
+                        <span>Clientes</span>
                     </a>
-                </div> -->
+                </div>
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.form-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
                         <i class="bi bi-envelope"></i>
@@ -848,14 +1061,8 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.v2.clients.index') }}" class="nav-link {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
-                        <i class="bi bi-people"></i>
-                        <span>Clientes</span>
-                    </a>
-                </div>
-                <div class="nav-item">
                     <a href="{{ route('admin.v2.cost-simulators.index') }}" class="nav-link {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
-                        <i class="bi bi-dollar"></i>
+                        <i class="bi bi-currency-dollar"></i>
                         <span>Simulador Custos</span>
                         @php $newSimulationsCount = \App\Models\CostSimulator::where('read', 0)->count(); @endphp
                         @if($newSimulationsCount > 0)
@@ -873,33 +1080,21 @@
             <div class="collapse {{ $activeGroup === 'operacoes' ? 'show' : '' }}" id="navGroupOperacoes">
                 {{-- Consignações: oculto temporariamente --}}
                 <div class="nav-item">
-                    <a href="{{ route('admin.v3.vehicles.index') }}" class="nav-link {{ request()->routeIs('admin.v3.vehicles.*') ? 'active' : '' }}">
-                        <i class="bi bi-car-front-fill"></i>
-                        <span>Viaturas</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="{{ route('admin.v3.inspections.index') }}" class="nav-link {{ request()->routeIs('admin.v3.inspections.*') ? 'active' : '' }}">
-                        <i class="bi bi-clipboard-check"></i>
-                        <span>Inspeções</span>
-                    </a>
-                </div>
-                <div class="nav-item">
                     <a href="{{ route('admin.legalizations.index') }}" class="nav-link {{ request()->routeIs('admin.legalizations.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-check"></i>
                         <span>Legalizações</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.transport-quotes.index') }}" class="nav-link {{ request()->routeIs('admin.transport-quotes.*') ? 'active' : '' }}">
-                        <i class="bi bi-truck"></i>
-                        <span>Transportes</span>
+                    <a href="{{ route('admin.v3.vehicles.index') }}" class="nav-link {{ request()->routeIs('admin.v3.vehicles.*') ? 'active' : '' }}">
+                        <i class="bi bi-car-front-fill"></i>
+                        <span>Viaturas</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.v2.sales.index') }}" class="nav-link {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
-                        <i class="bi bi-graph-up-arrow"></i>
-                        <span>Vendas</span>
+                    <a href="{{ route('admin.tasks.index') }}" class="nav-link {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
+                        <i class="bi bi-check2-square"></i>
+                        <span>Tarefas</span>
                     </a>
                 </div>
                 <div class="nav-item">
@@ -909,9 +1104,21 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.tasks.index') }}" class="nav-link {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
-                        <i class="bi bi-check2-square"></i>
-                        <span>Tarefas</span>
+                    <a href="{{ route('admin.v2.sales.index') }}" class="nav-link {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>Vendas</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v3.inspections.index') }}" class="nav-link {{ request()->routeIs('admin.v3.inspections.*') ? 'active' : '' }}">
+                        <i class="bi bi-clipboard-check"></i>
+                        <span>Inspeções</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.transport-quotes.index') }}" class="nav-link {{ request()->routeIs('admin.transport-quotes.*') ? 'active' : '' }}">
+                        <i class="bi bi-truck"></i>
+                        <span>Transportes</span>
                     </a>
                 </div>
             </div>
@@ -1138,6 +1345,150 @@
     <!-- Overlay para mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+    @hasanyrole('admin|gestor|cms')
+    {{-- ═══════ MENU INFERIOR MOBILE — atalho para os 4 grupos do dia-a-dia,
+         cada um abre os submenus já definidos no sidebar de desktop. Resto
+         do menu (Conteúdo do Site, Configurações, Sistema) continua acessível
+         pelo hamburger habitual. ═══════ --}}
+    <nav class="admin-bottom-nav" id="adminBottomNav" aria-label="Acesso rápido (mobile)">
+        <button type="button" class="abn-item {{ $activeGroup === 'funil' ? 'is-active' : '' }}" data-group="funil">
+            <span class="abn-icon-wrap"><i class="bi bi-funnel"></i></span>
+            <span class="abn-label">Funil</span>
+        </button>
+        <button type="button" class="abn-item {{ $activeGroup === 'operacoes' ? 'is-active' : '' }}" data-group="operacoes">
+            <span class="abn-icon-wrap"><i class="bi bi-gear-wide-connected"></i></span>
+            <span class="abn-label">Operações</span>
+        </button>
+        <button type="button" class="abn-item {{ $activeGroup === 'rede' ? 'is-active' : '' }}" data-group="rede">
+            <span class="abn-icon-wrap"><i class="bi bi-person-badge"></i></span>
+            <span class="abn-label">Rede</span>
+        </button>
+        <button type="button" class="abn-item {{ $activeGroup === 'analise' ? 'is-active' : '' }}" data-group="analise">
+            <span class="abn-icon-wrap"><i class="bi bi-bar-chart-line"></i></span>
+            <span class="abn-label">Análise</span>
+        </button>
+    </nav>
+
+    <div class="abn-overlay" id="abnOverlay"></div>
+
+    <div class="abn-sheet" id="abnSheet">
+        <div class="abn-sheet-handle"></div>
+        <div class="abn-sheet-header">
+            <span id="abnSheetTitle">Funil de Vendas</span>
+            <button type="button" class="abn-sheet-close" id="abnSheetClose" aria-label="Fechar">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="abn-sheet-body">
+
+            {{-- Funil de Vendas --}}
+            <div class="abn-sheet-panel" data-panel="funil">
+                <a href="{{ route('admin.v2.leads.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.leads.*') ? 'active' : '' }}">
+                    <i class="bi bi-funnel"></i>
+                    <span>Leads</span>
+                    @php $mLeadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
+                    @if($mLeadsCount > 0)<span class="abn-badge">{{ $mLeadsCount }}</span>@endif
+                </a>
+                <a href="{{ route('admin.v2.clients.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
+                    <i class="bi bi-people"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="{{ route('admin.v2.form-proposals.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
+                    <i class="bi bi-envelope"></i>
+                    <span>Formulários</span>
+                    @php $mNewFormsCount = \App\Models\FormProposal::whereIn('status', ['novo', null])->count(); @endphp
+                    @if($mNewFormsCount > 0)<span class="abn-badge">{{ $mNewFormsCount }}</span>@endif
+                </a>
+                <a href="{{ route('admin.v2.proposals.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Cotações</span>
+                    @php $mPendingCount = \App\Models\Proposal::where('status', 'Pendente')->count(); @endphp
+                    @if($mPendingCount > 0)<span class="abn-badge">{{ $mPendingCount }}</span>@endif
+                </a>
+                <a href="{{ route('admin.v2.converted-proposals.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.converted-proposals.*') ? 'active' : '' }}">
+                    <i class="bi bi-check2-circle"></i>
+                    <span>Cotações Convertidas</span>
+                </a>
+                <a href="{{ route('admin.v2.cost-simulators.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
+                    <i class="bi bi-currency-dollar"></i>
+                    <span>Simulador Custos</span>
+                    @php $mNewSimulationsCount = \App\Models\CostSimulator::where('read', 0)->count(); @endphp
+                    @if($mNewSimulationsCount > 0)<span class="abn-badge">{{ $mNewSimulationsCount }}</span>@endif
+                </a>
+            </div>
+
+            {{-- Operações --}}
+            <div class="abn-sheet-panel" data-panel="operacoes">
+                <a href="{{ route('admin.legalizations.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.legalizations.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-check"></i>
+                    <span>Legalizações</span>
+                </a>
+                <a href="{{ route('admin.v3.vehicles.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v3.vehicles.*') ? 'active' : '' }}">
+                    <i class="bi bi-car-front-fill"></i>
+                    <span>Viaturas</span>
+                </a>
+                <a href="{{ route('admin.tasks.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
+                    <i class="bi bi-check2-square"></i>
+                    <span>Tarefas</span>
+                </a>
+                <a href="{{ route('admin.v2.movements.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.movements.*') || request()->routeIs('admin.v2.expenses.*') ? 'active' : '' }}">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Movimentos</span>
+                </a>
+                <a href="{{ route('admin.v2.sales.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span>Vendas</span>
+                </a>
+                <a href="{{ route('admin.v3.inspections.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v3.inspections.*') ? 'active' : '' }}">
+                    <i class="bi bi-clipboard-check"></i>
+                    <span>Inspeções</span>
+                </a>
+                <a href="{{ route('admin.transport-quotes.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.transport-quotes.*') ? 'active' : '' }}">
+                    <i class="bi bi-truck"></i>
+                    <span>Transportes</span>
+                </a>
+            </div>
+
+            {{-- Angariadores & Parceiros --}}
+            <div class="abn-sheet-panel" data-panel="rede">
+                <a href="{{ route('admin.v2.angariadores.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.angariadores.index') || request()->routeIs('admin.v2.angariadores.show') ? 'active' : '' }}">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Angariadores</span>
+                </a>
+                <a href="{{ route('admin.v2.angariadores.comissoes') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.angariadores.comissoes') ? 'active' : '' }}">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Comissões</span>
+                </a>
+                <a href="{{ route('admin.v2.suppliers.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.suppliers.*') ? 'active' : '' }}">
+                    <i class="bi bi-building"></i>
+                    <span>Fornecedores</span>
+                </a>
+                <a href="{{ route('admin.v2.partners.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.partners.*') ? 'active' : '' }}">
+                    <i class="bi bi-phone-vibrate"></i>
+                    <span>Parceiros</span>
+                </a>
+            </div>
+
+            {{-- Análise & Ferramentas --}}
+            <div class="abn-sheet-panel" data-panel="analise">
+                <a href="{{ route('admin.v2.reports.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.reports.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Relatórios</span>
+                </a>
+                <a href="{{ route('calculator.profit') }}" class="abn-sheet-item {{ request()->routeIs('calculator.profit') ? 'active' : '' }}">
+                    <i class="bi bi-calculator"></i>
+                    <span>Calculadora de Lucro</span>
+                </a>
+                <a href="{{ route('admin.v2.radar.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.radar.*') ? 'active' : '' }}">
+                    <i class="bi bi-broadcast"></i>
+                    <span>Radar</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+    @endhasanyrole
+
     <!-- MAIN CONTENT -->
     <main class="admin-main">
         <!-- Toast container para notificações -->
@@ -1299,6 +1650,62 @@
                     }
                 });
             }
+        });
+
+        /**
+         * MENU INFERIOR MOBILE — abre/fecha o "sheet" com os submenus do
+         * grupo tocado. Só um grupo aberto de cada vez; tocar no mesmo botão
+         * fecha; tocar noutro troca de painel sem fechar/reabrir.
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            const bottomNav = document.getElementById('adminBottomNav');
+            if (!bottomNav) return;
+
+            const tabs = Array.from(bottomNav.querySelectorAll('.abn-item'));
+            const overlay = document.getElementById('abnOverlay');
+            const sheet = document.getElementById('abnSheet');
+            const sheetTitle = document.getElementById('abnSheetTitle');
+            const sheetClose = document.getElementById('abnSheetClose');
+            const panels = Array.from(sheet.querySelectorAll('.abn-sheet-panel'));
+
+            const groupTitles = {
+                funil: 'Funil de Vendas',
+                operacoes: 'Operações',
+                rede: 'Angariadores & Parceiros',
+                analise: 'Análise & Ferramentas',
+            };
+
+            let openGroup = null;
+
+            function openSheet(group) {
+                panels.forEach(p => p.classList.toggle('is-active', p.dataset.panel === group));
+                sheetTitle.textContent = groupTitles[group] || '';
+                sheet.classList.add('show');
+                overlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                openGroup = group;
+            }
+
+            function closeSheet() {
+                sheet.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+                openGroup = null;
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const group = tab.dataset.group;
+                    if (openGroup === group) {
+                        closeSheet();
+                    } else {
+                        openSheet(group);
+                    }
+                });
+            });
+
+            overlay.addEventListener('click', closeSheet);
+            sheetClose.addEventListener('click', closeSheet);
         });
 
         /**

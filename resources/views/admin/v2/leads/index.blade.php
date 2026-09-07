@@ -86,66 +86,62 @@
     </div>
 
     @forelse($leads as $lead)
-    <div class="lead-card">
-        <div class="lead-card__avatar">
-            {{ strtoupper(substr($lead->name, 0, 1)) }}
-        </div>
-        <div class="lead-card__info">
-            <div class="lead-card__name">{{ $lead->name }}</div>
-            <div class="lead-card__meta">
-                @if($lead->email)
-                <span><i class="bi bi-envelope"></i> {{ $lead->email }}</span>
-                @endif
-                @if($lead->phone)
-                <span><i class="bi bi-telephone"></i> {{ $lead->phone }}</span>
-                @endif
-                <span><i class="bi bi-clock"></i> {{ $lead->created_at->diffForHumans() }}</span>
-                @if($lead->owner)
-                <span><i class="bi bi-person-badge"></i> {{ $lead->owner->name }}</span>
-                @endif
-            </div>
-        </div>
-        <div class="lead-card__badges">
-            @php
-                $sourceLabels = [
-                    'simulador'  => ['label' => 'Simulador', 'color' => 'info'],
-                    'importacao' => ['label' => 'Importação', 'color' => 'primary'],
-                    'retoma'     => ['label' => 'Retoma', 'color' => 'warning'],
-                    'manual'     => ['label' => 'Manual', 'color' => 'secondary'],
-                ];
-                $src = $sourceLabels[$lead->lead_source] ?? ['label' => 'Outro', 'color' => 'secondary'];
-                $statusLabels = [
-                    'nova'        => ['label' => 'Nova', 'color' => 'success'],
-                    'em_contacto' => ['label' => 'Em Contacto', 'color' => 'info'],
-                    'fria'        => ['label' => 'Fria', 'color' => 'secondary'],
-                    'perdida'     => ['label' => 'Perdida', 'color' => 'danger'],
-                ];
-                $st = $statusLabels[$lead->lead_status ?? 'nova'] ?? $statusLabels['nova'];
-            @endphp
-            <span class="badge bg-{{ $src['color'] }}">{{ $src['label'] }}</span>
-            <span class="badge bg-{{ $st['color'] }} bg-opacity-75">{{ $st['label'] }}</span>
-        </div>
-        <div class="item-actions">
-            <a href="{{ route('admin.v2.leads.show', $lead->id) }}"
-               class="btn btn-icon btn-primary-modern" title="Ver detalhes">
-                <i class="bi bi-eye"></i>
-            </a>
-            <form action="{{ route('admin.v2.leads.convert', $lead->id) }}" method="POST" class="d-inline"
-                  onsubmit="return confirm('Converter este lead em cliente?')">
-                @csrf
-                <button type="submit" class="btn btn-icon btn-success-modern" title="Converter em cliente">
-                    <i class="bi bi-person-check"></i>
-                </button>
-            </form>
-            <form action="{{ route('admin.v2.leads.destroy', $lead->id) }}" method="POST" class="d-inline"
-                  onsubmit="return confirm('Eliminar este lead?')">
-                @csrf @method('DELETE')
-                <button type="submit" class="btn btn-icon btn-danger-modern" title="Eliminar">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </form>
-        </div>
-    </div>
+    @php
+        $sourceLabels = [
+            'simulador'  => ['label' => 'Simulador', 'color' => 'info'],
+            'importacao' => ['label' => 'Importação', 'color' => 'primary'],
+            'retoma'     => ['label' => 'Retoma', 'color' => 'warning'],
+            'manual'     => ['label' => 'Manual', 'color' => 'secondary'],
+        ];
+        $src = $sourceLabels[$lead->lead_source] ?? ['label' => 'Outro', 'color' => 'secondary'];
+        $statusLabels = [
+            'nova'        => ['label' => 'Nova', 'color' => 'success'],
+            'em_contacto' => ['label' => 'Em Contacto', 'color' => 'info'],
+            'fria'        => ['label' => 'Fria', 'color' => 'secondary'],
+            'perdida'     => ['label' => 'Perdida', 'color' => 'danger'],
+        ];
+        $st = $statusLabels[$lead->lead_status ?? 'nova'] ?? $statusLabels['nova'];
+        $leadImage = 'https://ui-avatars.com/api/?name=' . urlencode($lead->name) . '&background=6e0707&color=fff&bold=true';
+    @endphp
+
+    @include('components.admin.item-card', [
+        'image' => $leadImage,
+        'title' => $lead->name,
+        'subtitle' => $lead->email,
+        'badges' => [
+            ['text' => $src['label'], 'color' => $src['color']],
+            ['text' => $st['label'], 'color' => $st['color']],
+        ],
+        'meta' => array_filter([
+            $lead->phone ? ['icon' => 'bi-telephone', 'text' => $lead->phone] : null,
+            ['icon' => 'bi-clock', 'text' => $lead->created_at->diffForHumans()],
+            $lead->owner ? ['icon' => 'bi-person-badge', 'text' => $lead->owner->name] : null,
+        ]),
+        'actions' => [
+            [
+                'href' => route('admin.v2.leads.show', $lead->id),
+                'icon' => 'bi-eye',
+                'label' => 'Ver detalhes',
+                'color' => 'primary',
+            ],
+            [
+                'href' => route('admin.v2.leads.convert', $lead->id),
+                'icon' => 'bi-person-check',
+                'label' => 'Converter em cliente',
+                'color' => 'success',
+                'method' => 'POST',
+                'confirm' => 'Converter este lead em cliente?',
+            ],
+            [
+                'href' => route('admin.v2.leads.destroy', $lead->id),
+                'icon' => 'bi-trash',
+                'label' => 'Eliminar',
+                'color' => 'danger',
+                'method' => 'DELETE',
+                'confirm' => 'Eliminar este lead?',
+            ],
+        ],
+    ])
     @empty
     @include('components.admin.empty-state', [
         'icon' => 'bi-funnel',
@@ -160,41 +156,3 @@
 @include('components.admin.pagination-footer', ['items' => $leads, 'label' => 'leads'])
 
 @endsection
-
-@push('styles')
-<style>
-.lead-card {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--admin-border);
-    transition: background .15s;
-}
-.lead-card:last-child { border-bottom: none; }
-.lead-card:hover { background: #fafafa; }
-
-.lead-card__avatar {
-    width: 42px; height: 42px; flex-shrink: 0;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--admin-primary), #990000);
-    color: #fff;
-    font-size: .95rem; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-}
-.lead-card__info { flex: 1; min-width: 0; }
-.lead-card__name { font-weight: 600; color: #111; font-size: .95rem; }
-.lead-card__meta {
-    display: flex; flex-wrap: wrap; gap: .75rem;
-    font-size: .78rem; color: #6c757d; margin-top: .2rem;
-}
-.lead-card__meta span { display: flex; align-items: center; gap: .3rem; }
-.lead-card__badges { flex-shrink: 0; }
-.lead-card__actions { display: flex; gap: .4rem; flex-shrink: 0; }
-
-@media(max-width: 768px) {
-    .lead-card { flex-wrap: wrap; }
-    .lead-card__actions { width: 100%; justify-content: flex-end; }
-}
-</style>
-@endpush

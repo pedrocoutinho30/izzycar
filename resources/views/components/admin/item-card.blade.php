@@ -198,6 +198,7 @@
     @media (max-width: 768px) {
         .item-actions {
             justify-content: flex-start;
+            gap: 0.4rem;
         }
 
         .item-image {
