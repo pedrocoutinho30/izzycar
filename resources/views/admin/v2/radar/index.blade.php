@@ -34,7 +34,8 @@
             <h5 class="modern-card-title mb-0"><i class="bi bi-car-front"></i> Pesquisas</h5>
             <span class="badge bg-secondary rounded-pill">{{ $searches->count() }} total</span>
         </div>
-        <div class="table-responsive">
+        {{-- Desktop: tabela (inalterada) --}}
+        <div class="table-responsive d-none d-lg-block">
             <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
@@ -112,6 +113,94 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        {{-- Mobile: cards --}}
+        <div class="d-lg-none p-3">
+            @forelse($searches as $search)
+                @php
+                    $run = $search->latestRun;
+                    $badgeColor = match($run?->status) {
+                        'ok' => 'success',
+                        'blocked' => 'warning',
+                        'error' => 'danger',
+                        default => 'secondary',
+                    };
+                    $badgeLabel = match($run?->status) {
+                        'ok' => 'Recolha OK',
+                        'blocked' => 'Bloqueado pelo site',
+                        'error' => 'Erro na recolha',
+                        default => 'Nunca corrida',
+                    };
+                @endphp
+                <div class="modern-card item-card">
+                    <div class="row g-3">
+                        <div class="col">
+                            <div class="item-header">
+                                <h5 class="item-title">
+                                    {{ $search->name }}
+                                    @if($search->new_listings_count > 0)
+                                        <span class="badge bg-danger ms-1">novo</span>
+                                    @endif
+                                </h5>
+                                <p class="item-subtitle">{{ $search->make ? ucfirst($search->make) : 'Todas as marcas' }}{{ $search->model ? ' ' . ucfirst($search->model) : '' }}</p>
+                            </div>
+
+                            <div class="item-badges mb-2">
+                                <span class="badge bg-{{ $badgeColor }} bg-opacity-75">{{ $badgeLabel }}</span>
+                            </div>
+
+                            <div class="item-meta">
+                                <span class="meta-item"><i class="bi bi-clock"></i>{{ $run?->started_at->diffForHumans() ?? 'Nunca corrida' }}</span>
+                                <span class="meta-item"><i class="bi bi-flag"></i>🇩🇪 {{ $search->listings_count }}</span>
+                                <span class="meta-item"><i class="bi bi-flag"></i>🇵🇹 {{ $search->pt_listings_count > 0 ? $search->pt_listings_count : '—' }}</span>
+                            </div>
+
+                            <div class="form-check form-switch mt-2">
+                                <input type="checkbox" class="form-check-input active-toggle" role="switch"
+                                       id="activeToggleMobile{{ $search->id }}" data-search-id="{{ $search->id }}"
+                                       {{ $search->is_active ? 'checked' : '' }}>
+                                <label class="form-check-label small text-muted" for="activeToggleMobile{{ $search->id }}">
+                                    Atualização automática
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="item-actions">
+                                <a href="{{ route('admin.v2.radar.show', $search) }}" class="btn btn-icon btn-secondary-modern" title="Ver anúncios">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <form method="POST" action="{{ route('admin.v2.radar.run', $search) }}" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-icon btn-primary-modern" title="Correr novamente">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </form>
+                                <a href="{{ route('admin.v2.radar.edit', $search) }}" class="btn btn-icon btn-secondary-modern" title="Editar pesquisa">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="POST" action="{{ route('admin.v2.radar.destroy', $search) }}" class="d-inline"
+                                      onsubmit="return confirm('Apagar a pesquisa &quot;{{ $search->name }}&quot;? Isto apaga também todos os anúncios e histórico de preços recolhidos. Não pode ser desfeito.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-icon btn-danger-modern" title="Apagar pesquisa">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                @include('components.admin.empty-state', [
+                    'icon' => 'bi-broadcast',
+                    'title' => 'Ainda não há pesquisas',
+                    'description' => 'Cria a primeira pesquisa para começar a acompanhar preços.',
+                    'actionUrl' => route('admin.v2.radar.create'),
+                    'actionText' => 'Nova Pesquisa',
+                ])
+            @endforelse
         </div>
     </div>
 

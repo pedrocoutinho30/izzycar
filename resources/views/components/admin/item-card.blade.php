@@ -93,7 +93,16 @@
         <div class="col-12 col-md-auto">
             <div class="item-actions">
                 @foreach($actions as $action)
-                    @if(isset($action['method']) && $action['method'] !== 'GET')
+                    @if(isset($action['onclick']))
+                    <button
+                        type="button"
+                        class="btn btn-icon btn-{{ $action['color'] ?? 'secondary' }}-modern"
+                        title="{{ $action['label'] ?? '' }}"
+                        onclick="{{ $action['onclick'] }}"
+                    >
+                        <i class="bi {{ $action['icon'] }}"></i>
+                    </button>
+                    @elseif(isset($action['method']) && $action['method'] !== 'GET')
                     <form action="{{ $action['href'] }}" method="POST" class="d-inline" onsubmit="return confirm('{{ $action['confirm'] ?? 'Tem certeza?' }}')">
                         @csrf
                         @method($action['method'])

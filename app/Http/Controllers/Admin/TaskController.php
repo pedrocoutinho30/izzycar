@@ -25,8 +25,12 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        // Obter tipo de visualização (mensal, semanal ou diária)
-        $view = $request->get('view', 'month'); // padrão: mensal
+        // Obter tipo de visualização (mensal, semanal ou diária). Em mobile o
+        // padrão é semanal (o mensal não cabe bem no ecrã) — sabemos que é
+        // mobile pelo cookie "viewport" (ver admin-v2.blade.php), que reflete
+        // a largura do ecrã na última página visitada.
+        $defaultView = $request->cookie('viewport') === 'mobile' ? 'week' : 'month';
+        $view = $request->get('view', $defaultView);
         $date = $request->get('date', now()->toDateString());
         $currentDate = Carbon::parse($date);
 

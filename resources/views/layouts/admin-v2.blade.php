@@ -7,6 +7,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Izzycar Admin') - Backoffice</title>
 
+    <script>
+        // Guarda a largura do ecrã num cookie, para o servidor poder escolher
+        // valores por omissão adequados a mobile (ex.: calendário semanal em
+        // vez de mensal em Tarefas) sem depender de sniffing de user-agent.
+        document.cookie = 'viewport=' + (window.innerWidth < 768 ? 'mobile' : 'desktop') + ';path=/;max-age=86400;SameSite=Lax';
+    </script>
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -605,6 +612,11 @@
 
             .admin-main {
                 padding: 1rem;
+                /* As grelhas Bootstrap (.row) usam margens negativas para
+                   compensar o padding das colunas — isso só funciona bem
+                   dentro de um .container. Aqui alarga ligeiramente a página
+                   e cria scroll horizontal; cortamos esse resíduo. */
+                overflow-x: hidden;
             }
 
             .page-title {

@@ -61,7 +61,8 @@
                 <a href="{{ route('admin.v3.vehicles.create') }}" class="d-block mt-2">Criar primeiro veículo</a>
             </div>
         @else
-        <div class="table-responsive">
+        {{-- Desktop: tabela (inalterada) --}}
+        <div class="table-responsive d-none d-lg-block">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
@@ -110,6 +111,35 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Mobile: cards (a tabela não cabe bem no ecrã) --}}
+        <div class="d-lg-none p-3">
+            @foreach($vehicles as $v)
+            @php
+                $adName = trim($v->brand . ' ' . $v->model . ' ' . $v->sub_model);
+                $adOnclick = 'openAdModal(' . $v->id . ', ' . json_encode($adName) . ', ' . ($v->ad_text ? 'true' : 'false') . ', ' . json_encode($v->ad_text) . ')';
+            @endphp
+            @include('components.admin.item-card', [
+                'image' => $v->coverPhoto ? asset('storage/' . $v->coverPhoto->path) : null,
+                'title' => trim($v->brand . ' ' . $v->model),
+                'subtitle' => trim($v->version . ($v->year ? ' · ' . $v->year : '') . ($v->kilometers ? ' · ' . number_format($v->kilometers) . ' km' : '')),
+                'badges' => [
+                    ['text' => $v->reference, 'color' => 'secondary'],
+                    ['text' => $v->status_label, 'color' => $v->status_color],
+                ],
+                'meta' => array_filter([
+                    $v->registration ? ['icon' => 'bi-upc-scan', 'text' => $v->registration] : null,
+                    $v->fuel ? ['icon' => 'bi-fuel-pump', 'text' => $v->fuel] : null,
+                ]),
+                'actions' => [
+                    ['href' => route('admin.v3.vehicles.edit', $v->id), 'icon' => 'bi-pencil', 'label' => 'Editar', 'color' => 'primary'],
+                    ['onclick' => $adOnclick, 'icon' => 'bi-megaphone', 'label' => 'Gerar Anúncio', 'color' => 'success'],
+                    ['href' => route('admin.v3.vehicles.destroy', $v->id), 'icon' => 'bi-trash', 'label' => 'Eliminar', 'color' => 'danger', 'method' => 'DELETE', 'confirm' => 'Eliminar este veículo?'],
+                ],
+            ])
+            @endforeach
+        </div>
+
         <div class="px-3 py-2">{{ $vehicles->links() }}</div>
         @endif
     </div>

@@ -163,12 +163,7 @@
     @endforelse
 </div>
 
-<!-- PAGINAÇÃO -->
-@if($sales->hasPages())
-<div class="pagination-wrapper">
-    {{ $sales->links() }}
-</div>
-@endif
+@include('components.admin.pagination-footer', ['items' => $sales, 'label' => 'vendas'])
 
 <style>
     .content-grid>* {

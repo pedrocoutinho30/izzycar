@@ -81,7 +81,8 @@
             </div>
             <div class="card-body p-0">
                 @if(count($reports) > 0)
-                <div class="table-responsive">
+                {{-- Desktop: tabela (inalterada) --}}
+                <div class="table-responsive d-none d-lg-block">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
@@ -124,6 +125,25 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Mobile: cards --}}
+                <div class="d-lg-none p-3">
+                    @foreach($reports as $report)
+                    @include('components.admin.item-card', [
+                        'title' => $report['label'],
+                        'badges' => [
+                            ['text' => $report['type_label'], 'color' => $report['type_color']],
+                        ],
+                        'meta' => [
+                            ['icon' => 'bi-hdd', 'text' => $report['size']],
+                            ['icon' => 'bi-calendar3', 'text' => $report['mtime']->format('d/m/Y H:i')],
+                        ],
+                        'actions' => [
+                            ['href' => route('admin.v2.reports.download', ['filename' => $report['name']]), 'icon' => 'bi-download', 'label' => 'Download', 'color' => 'danger'],
+                        ],
+                    ])
+                    @endforeach
                 </div>
                 @else
                 <div class="text-center py-5 text-muted">

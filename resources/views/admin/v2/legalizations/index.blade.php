@@ -44,7 +44,8 @@
                 </div>
             </div>
         @else
-        <div class="table-responsive">
+        {{-- Desktop: tabela (inalterada) --}}
+        <div class="table-responsive d-none d-lg-block">
             <table class="table table-sm table-hover align-middle mb-0" id="legalizationsTable">
                 <thead class="table-light">
                     <tr>
@@ -116,6 +117,36 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Mobile: cards (a tabela não cabe bem no ecrã) --}}
+        <div class="d-lg-none p-3" id="legalizationsCards">
+            @foreach($legalizations as $leg)
+            @php
+                $progress = $leg->progressPercent();
+                $docsCount = $leg->documents->count();
+                $progressColor = $progress === 100 ? 'success' : ($progress > 0 ? 'info' : 'secondary');
+            @endphp
+            <div class="legalization-card-row">
+                @include('components.admin.item-card', [
+                    'title' => trim($leg->marca . ' ' . $leg->modelo),
+                    'subtitle' => $leg->client?->name,
+                    'badges' => array_filter([
+                        ['text' => $progress . '% concluído', 'color' => $progressColor],
+                        ['text' => $docsCount . ' ' . ($docsCount === 1 ? 'documento' : 'documentos'), 'color' => 'secondary'],
+                    ]),
+                    'meta' => array_filter([
+                        $leg->num_homologacao ? ['icon' => 'bi-upc-scan', 'text' => $leg->num_homologacao] : null,
+                        ['icon' => 'bi-calendar3', 'text' => $leg->created_at->format('d/m/Y')],
+                    ]),
+                    'actions' => [
+                        ['href' => route('admin.legalizations.show', $leg), 'icon' => 'bi-eye', 'label' => 'Ver', 'color' => 'primary'],
+                        ['href' => route('admin.legalizations.edit', $leg), 'icon' => 'bi-pencil', 'label' => 'Editar', 'color' => 'secondary'],
+                        ['href' => route('admin.legalizations.destroy', $leg), 'icon' => 'bi-trash', 'label' => 'Eliminar', 'color' => 'danger', 'method' => 'DELETE', 'confirm' => 'Eliminar esta legalização e todos os documentos associados?'],
+                    ],
+                ])
+            </div>
+            @endforeach
+        </div>
         @endif
     </div>
 </div>
@@ -127,6 +158,9 @@
 document.getElementById('tableSearch')?.addEventListener('input', function () {
     const q = this.value.toLowerCase();
     document.querySelectorAll('#legalizationsTable tbody tr').forEach(row => {
+        row.style.display = !q || row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+    document.querySelectorAll('#legalizationsCards .legalization-card-row').forEach(row => {
         row.style.display = !q || row.textContent.toLowerCase().includes(q) ? '' : 'none';
     });
 });

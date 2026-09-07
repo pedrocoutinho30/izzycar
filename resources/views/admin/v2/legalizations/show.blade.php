@@ -285,7 +285,7 @@
                         <div class="mt-2 d-flex flex-wrap gap-1">
                             @foreach($passo['docs'] as $docSlug)
                             @php $uploaded = $legalization->hasDocument($docSlug); @endphp
-                            <span class="badge {{ $uploaded ? 'bg-transparent text-success border border-success' : 'bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25' }}"
+                            <span class="badge doc-requirement-badge {{ $uploaded ? 'bg-transparent text-success border border-success' : 'bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25' }}"
                                   title="{{ $documentos[$docSlug] ?? $docSlug }}">
                                 <i class="bi {{ $uploaded ? 'bi-check-circle-fill' : 'bi-x-circle' }} me-1"></i>
                                 {{ Str::limit($documentos[$docSlug] ?? $docSlug, 35) }}
@@ -328,7 +328,7 @@
                     <div class="flex-grow-1 small">
                         <div class="fw-semibold {{ $doc ? '' : 'text-muted' }}">{{ $label }}</div>
                         @if($doc)
-                        <div class="text-muted" style="font-size:.78rem">
+                        <div class="text-muted doc-filename" style="font-size:.78rem" title="{{ $doc->nome_original }}">
                             <i class="bi bi-file-earmark me-1"></i>{{ $doc->nome_original }}
                         </div>
                         @endif
@@ -481,6 +481,24 @@
     .step-item.step-done { border-left-color: var(--admin-success); }
     .doc-item { transition: background .2s; }
     .doc-item:hover { background: rgba(0,0,0,.02); }
+    /* Nomes de ficheiro muito longos não devem alargar o card — cortam com
+       "..." (o nome completo continua acessível no tooltip). */
+    .doc-item .flex-grow-1 { min-width: 0; }
+    .doc-item .fw-semibold,
+    .doc-item .doc-filename {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    /* Badges de requisitos de documento (nomes longos não devem alargar a
+       página em ecrãs estreitos). */
+    .doc-requirement-badge {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: bottom;
+    }
     .step-checkbox:checked { background-color: var(--admin-success); border-color: var(--admin-success); }
     .tracking-wide { letter-spacing: .05em; }
 </style>
