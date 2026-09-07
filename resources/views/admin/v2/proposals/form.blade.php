@@ -143,21 +143,19 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
                             <i class="bi bi-link-45deg"></i>
                             URL do Anúncio
                         </label>
-                        <div class="input-group">
-                            <input
-                                type="url"
-                                name="url"
-                                id="url"
-                                class="form-control @error('url') is-invalid @enderror"
-                                placeholder="https://exemplo.com/anuncio"
-                                value="{{ old('url', $proposal->url ?? '') }}">
-                            <button type="button" class="btn btn-outline-secondary" id="importListingBtn">
-                                <i class="bi bi-magic"></i> Importar dados do anúncio
-                            </button>
-                        </div>
+                        <input
+                            type="url"
+                            name="url"
+                            id="url"
+                            class="form-control @error('url') is-invalid @enderror"
+                            placeholder="https://exemplo.com/anuncio"
+                            value="{{ old('url', $proposal->url ?? '') }}">
                         @error('url')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <button type="button" class="btn btn-outline-secondary mt-2" id="importListingBtn">
+                            <i class="bi bi-magic"></i> Importar dados do anúncio
+                        </button>
                         <div id="importListingResult" class="small mt-1"></div>
                     </div>
                 </div>
@@ -729,6 +727,48 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
                 </div>
             </div>
 
+            {{-- SECÇÃO: Upload de Imagem --}}
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5 class="modern-card-title">
+                        <i class="bi bi-image"></i>
+                        Imagem do Veículo
+                    </h5>
+                </div>
+
+                <div class="mb-3">
+                    <label for="image" class="form-label">Imagem do veículo</label>
+                    <input
+                        type="file"
+                        name="image"
+                        id="image"
+                        class="form-control @error('image') is-invalid @enderror"
+                        accept="image/*">
+                    <small class="text-muted">Formatos aceites: JPG, PNG, WEBP, GIF, SVG, AVIF (máx 16MB). Se adicionar uma nova imagem, substitui a anterior.</small>
+                    @error('image')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Preview de imagem existente -->
+                @if(isset($proposal) && $proposal->images)
+                <div class="existing-image">
+                    <label class="form-label">Imagem atual:</label>
+                    <div class="image-preview">
+                        @php
+                            $proposalImageRaw  = is_array($proposal->images) ? $proposal->images[0] : $proposal->images;
+                            $proposalImageBase = preg_replace('/_(thumb|medium|large)\.(avif|webp)$/', '', $proposalImageRaw);
+                        @endphp
+                        <picture>
+                            <source srcset="{{ asset('storage/' . $proposalImageBase . '_medium.avif') }}" type="image/avif">
+                            <source srcset="{{ asset('storage/' . $proposalImageBase . '_medium.webp') }}" type="image/webp">
+                            <img src="{{ asset('storage/' . $proposalImageBase . '_medium.webp') }}" alt="Imagem" style="max-width: 300px; border-radius: 8px;">
+                        </picture>
+                    </div>
+                </div>
+                @endif
+            </div>
+
             {{-- SECÇÃO: Ações --}}
             @include('components.admin.action-card', [
             'cancelButtonHref' => route('admin.v2.proposals.index'),
@@ -814,48 +854,6 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
                 @endif
             </div>
             @endif
-
-            {{-- SECÇÃO: Upload de Imagem --}}
-            <div class="modern-card">
-                <div class="modern-card-header">
-                    <h5 class="modern-card-title">
-                        <i class="bi bi-image"></i>
-                        Imagem do Veículo
-                    </h5>
-                </div>
-
-                <div class="mb-3">
-                    <label for="image" class="form-label">Imagem do veículo</label>
-                    <input
-                        type="file"
-                        name="image"
-                        id="image"
-                        class="form-control @error('image') is-invalid @enderror"
-                        accept="image/*">
-                    <small class="text-muted">Formatos aceites: JPG, PNG, WEBP, GIF, SVG, AVIF (máx 16MB). Se adicionar uma nova imagem, substitui a anterior.</small>
-                    @error('image')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <!-- Preview de imagem existente -->
-                @if(isset($proposal) && $proposal->images)
-                <div class="existing-image">
-                    <label class="form-label">Imagem atual:</label>
-                    <div class="image-preview">
-                        @php
-                            $proposalImageRaw  = is_array($proposal->images) ? $proposal->images[0] : $proposal->images;
-                            $proposalImageBase = preg_replace('/_(thumb|medium|large)\.(avif|webp)$/', '', $proposalImageRaw);
-                        @endphp
-                        <picture>
-                            <source srcset="{{ asset('storage/' . $proposalImageBase . '_medium.avif') }}" type="image/avif">
-                            <source srcset="{{ asset('storage/' . $proposalImageBase . '_medium.webp') }}" type="image/webp">
-                            <img src="{{ asset('storage/' . $proposalImageBase . '_medium.webp') }}" alt="Imagem" style="max-width: 300px; border-radius: 8px;">
-                        </picture>
-                    </div>
-                </div>
-                @endif
-            </div>
 
             {{-- SECÇÃO: Quick Info --}}
             <div class="modern-card">
