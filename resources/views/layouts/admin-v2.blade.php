@@ -1448,6 +1448,10 @@
                     <i class="bi bi-phone-vibrate"></i>
                     <span>Parceiros</span>
                 </a>
+                <a href="{{ route('admin.v2.social-posts.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.social-posts.*') ? 'active' : '' }}">
+                    <i class="bi bi-magic"></i>
+                    <span>Criador de Posts</span>
+                </a>
             </div>
 
             {{-- Análise & Ferramentas --}}
