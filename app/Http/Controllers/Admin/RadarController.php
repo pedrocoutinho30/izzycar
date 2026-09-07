@@ -312,6 +312,7 @@ class RadarController extends Controller
             'fuelOptions' => $taxonomy->getFuelTypes(),
             'gearOptions' => $taxonomy->getGearOptions(),
             'powertypeOptions' => $taxonomy->getPowerTypes(),
+            'colorOptions' => $taxonomy->getBodyColors(),
             'ptMakes' => $ptTaxonomy->getMakes(),
             'ptFuelOptions' => StandvirtualTaxonomyService::FUEL_OPTIONS,
             'ptGearOptions' => StandvirtualTaxonomyService::GEAR_OPTIONS,
@@ -367,6 +368,12 @@ class RadarController extends Controller
             $spec['service_history'] = true;
         }
 
+        // "bcol" vem guardado como string separada por vírgulas ("11,14") - o
+        // formulário precisa de um array para marcar as checkboxes certas.
+        if (!empty($spec['bcol'])) {
+            $spec['color'] = explode(',', (string) $spec['bcol']);
+        }
+
         return view('admin.v2.radar.create', [
             'search' => $radarSearch,
             'spec' => $spec,
@@ -374,6 +381,7 @@ class RadarController extends Controller
             'fuelOptions' => $taxonomy->getFuelTypes(),
             'gearOptions' => $taxonomy->getGearOptions(),
             'powertypeOptions' => $taxonomy->getPowerTypes(),
+            'colorOptions' => $taxonomy->getBodyColors(),
             'ptMakes' => $ptTaxonomy->getMakes(),
             'ptFuelOptions' => StandvirtualTaxonomyService::FUEL_OPTIONS,
             'ptGearOptions' => StandvirtualTaxonomyService::GEAR_OPTIONS,
@@ -568,6 +576,7 @@ class RadarController extends Controller
         $fuelCodes = array_column($taxonomy->getFuelTypes(), 'value');
         $gearCodes = array_column($taxonomy->getGearOptions(), 'value');
         $powertypeCodes = array_column($taxonomy->getPowerTypes(), 'value');
+        $colorCodes = array_column($taxonomy->getBodyColors(), 'value');
 
         // Motorização/variante/equipamento só existem depois de escolher marca+modelo,
         // por isso só valida contra a lista real da AutoScout24 quando há modelo.
@@ -594,6 +603,8 @@ class RadarController extends Controller
             'priceto' => ['nullable', 'integer', 'min:0'],
             'custtype' => ['nullable', 'in:D,P'],
             'service_history' => ['nullable', 'boolean'],
+            'color' => ['nullable', 'array'],
+            'color.*' => ['string', 'in:'.implode(',', $colorCodes)],
 
             'pt_enabled' => ['nullable', 'boolean'],
             'pt_make' => ['nullable', 'string', 'max:255', 'required_if:pt_enabled,1'],
@@ -624,6 +635,13 @@ class RadarController extends Controller
             ->filter(fn ($value) => $value !== null && $value !== '')
             ->map(fn ($value, $key) => in_array($key, $integerFilters, true) ? (int) $value : $value)
             ->all();
+
+        // bcol = cor exterior, vários códigos separados por vírgula (confirmado
+        // empiricamente 2026-09-05 - ver scraper/filters.py). "color" no formulário
+        // é um array (várias cores selecionáveis), por isso junta-se aqui.
+        if (!empty($validated['color'])) {
+            $filters['bcol'] = implode(',', $validated['color']);
+        }
 
         // eq=49 = "Scheckheftgepflegt" (histórico de revisões completo), confirmado
         // empiricamente (2026-09-03) - ver scarperAutoscout/scraper/filters.py.

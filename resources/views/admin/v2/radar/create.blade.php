@@ -189,6 +189,23 @@
                         </label>
                     </div>
                 </div>
+
+                <div class="col-12">
+                    <label class="form-label">Cor exterior</label>
+                    <div class="row g-2">
+                        @php $selectedColors = $val('color', []); @endphp
+                        @foreach($colorOptions as $option)
+                        <div class="col-md-2 col-6">
+                            <div class="form-check">
+                                <input type="checkbox" name="color[]" value="{{ $option['value'] }}" id="f_color_{{ $option['value'] }}" class="form-check-input"
+                                       {{ in_array($option['value'], $selectedColors) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="f_color_{{ $option['value'] }}">{{ $option['label'] }}</label>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    <div class="form-text">Deixa tudo por marcar para pesquisar todas as cores. Podes selecionar várias.</div>
+                </div>
             </div>
         </div>
 

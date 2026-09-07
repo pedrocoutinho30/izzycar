@@ -54,6 +54,23 @@ class AutoscoutTaxonomyService
         'kw' => 'kW',
     ];
 
+    private const BODY_COLOR_LABELS_PT = [
+        '1' => 'Bege',
+        '2' => 'Azul',
+        '3' => 'Castanho',
+        '4' => 'Bronze',
+        '5' => 'Amarelo',
+        '6' => 'Cinzento',
+        '7' => 'Verde',
+        '10' => 'Vermelho',
+        '11' => 'Preto',
+        '12' => 'Prateado',
+        '13' => 'Violeta',
+        '14' => 'Branco',
+        '15' => 'Laranja',
+        '16' => 'Dourado',
+    ];
+
     public function getMakes(): array
     {
         return Cache::remember('autoscout:taxonomy:makes', now()->addDays(self::CACHE_TTL_DAYS), function () {
@@ -150,6 +167,20 @@ class AutoscoutTaxonomyService
     public function getPowerTypes(): array
     {
         return $this->taxonomyOptions('powerType', self::POWERTYPE_LABELS_PT);
+    }
+
+    /**
+     * Cor exterior - parâmetro real "bcol" (confirmado empiricamente 2026-09-05,
+     * já que nem "color" nem "bodyColor" nem "colour" fazem nada - a AutoScout24
+     * ignora-os silenciosamente). Aceita vários códigos separados por vírgula
+     * (confirmado: bcol=11,14 devolve exatamente a soma de bcol=11 + bcol=14),
+     * daí o formulário permitir selecionar várias cores.
+     *
+     * @return array<int, array{value: string, label: string}>
+     */
+    public function getBodyColors(): array
+    {
+        return $this->taxonomyOptions('bodyColor', self::BODY_COLOR_LABELS_PT);
     }
 
     private function taxonomyOptions(string $taxonomyKey, array $ptLabels): array

@@ -25,8 +25,15 @@ from urllib.parse import quote, urlencode
 #                            "equipment" param name - that one is silently ignored by the site.
 #   sort / desc          -> sort field + direction
 #   page                 -> pagination
+#   bcol                 -> exterior colour code(s), comma-separated for multiple (confirmed
+#                            2026-09-05: bcol=11,14 returns exactly the sum of bcol=11 + bcol=14).
+#                            Neither "color" nor "bodyColor" nor "colour" do anything - AutoScout24
+#                            silently ignores them, same trap as "equipment" vs "eq". Full code list
+#                            in AutoscoutTaxonomyService::getBodyColors() (Laravel side) via
+#                            taxonomy.bodyColor: 1=Beige 2=Blau 3=Braun 4=Bronze 5=Gelb 6=Grau
+#                            7=Grün 10=Rot 11=Schwarz 12=Silber 13=Violett 14=Weiß 15=Orange 16=Gold.
 #
-# Still unconfirmed / not yet reverse-engineered: body type, zip + radius, doors, colour.
+# Still unconfirmed / not yet reverse-engineered: body type, zip + radius, doors.
 # Extend DEFAULTS / pass extra raw query params through `filters` in the search YAML once
 # known - grab a URL from the site's own filter UI and diff it against this list.
 #
