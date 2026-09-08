@@ -279,6 +279,95 @@
         </div>
       </div>
 
+      {{-- ── STEP 4: Retoma ── --}}
+      <div class="if-card if-reveal">
+        <div class="if-card__head">
+          <div class="if-card__step">4</div>
+          <div>
+            <h2 class="if-card__title">Retoma</h2>
+            <p class="if-card__sub">Tem uma viatura para dar como retoma?</p>
+          </div>
+        </div>
+
+        <div class="if-grid if-grid--1 mb-if">
+          <div class="if-field">
+            <label class="if-label" for="retoma_option">Tem uma viatura para retoma?</label>
+            <select name="retoma_option" id="retoma_option" class="if-select">
+              <option value="">Escolha uma opção</option>
+              <option value="sim">Sim</option>
+              <option value="nao">Não</option>
+            </select>
+          </div>
+        </div>
+
+        {{-- Conditional: retoma --}}
+        <div id="retoma_box" class="if-conditional" style="display:none">
+          <div class="if-conditional__inner">
+            <div class="if-notice">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <p>Infelizmente, não aceitamos retomas em viaturas que são importadas diretamente para o comprador.
+                Ainda assim, se quiser enviar-nos algumas fotos e informações sobre a sua viatura atual, podemos
+                partilhá-la com a nossa rede de contactos e tentar encontrar um interessado — sem qualquer custo
+                para si.</p>
+            </div>
+
+            <div class="if-grid mt-if">
+              <div class="if-field">
+                <label class="if-label" for="retoma_brand">Marca</label>
+                <input type="text" name="retoma_brand" id="retoma_brand" class="if-input" placeholder="ex: Volkswagen">
+              </div>
+              <div class="if-field">
+                <label class="if-label" for="retoma_model">Modelo</label>
+                <input type="text" name="retoma_model" id="retoma_model" class="if-input" placeholder="ex: Golf">
+              </div>
+              <div class="if-field">
+                <label class="if-label" for="retoma_year">Ano</label>
+                <select name="retoma_year" id="retoma_year" class="if-select">
+                  <option value="">Escolha um ano</option>
+                  @php for($y = date('Y'); $y >= 1980; $y--): @endphp
+                  <option value="{{ $y }}">{{ $y }}</option>
+                  @php endfor; @endphp
+                </select>
+              </div>
+              <div class="if-field">
+                <label class="if-label" for="retoma_km">Quilómetros</label>
+                <input type="number" name="retoma_km" id="retoma_km" class="if-input" placeholder="ex: 85000" min="0">
+              </div>
+              <div class="if-field">
+                <label class="if-label" for="retoma_fuel">Combustível</label>
+                <select name="retoma_fuel" id="retoma_fuel" class="if-select">
+                  <option value="">Escolha</option>
+                  <option value="gasolina">Gasolina</option>
+                  <option value="diesel">Diesel</option>
+                  <option value="hibrido_plugin_gasolina">Híbrido Plug-in / Gasolina</option>
+                  <option value="hibrido_plugin_diesel">Híbrido Plug-in / Diesel</option>
+                  <option value="eletrico">Elétrico</option>
+                </select>
+              </div>
+              <div class="if-field if-field--full">
+                <label class="if-label" for="retoma_info">Mais informações</label>
+                <textarea name="retoma_info" id="retoma_info" class="if-textarea" rows="3" placeholder="Estado geral, extras, danos, revisões recentes..."></textarea>
+              </div>
+            </div>
+
+            <div class="if-field if-field--full mt-if">
+              <label class="if-label">Fotos da viatura</label>
+              <div class="if-upload-zone" id="ifRetomaDropZone">
+                <input type="file" name="retoma_photos[]" id="ifRetomaPhotos" accept="image/*" multiple class="if-upload-input">
+                <div class="if-upload-content" aria-hidden="true">
+                  <div class="if-upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+                  <p class="if-upload-title">Arraste as fotos para aqui</p>
+                  <p class="if-upload-sub">ou <span class="if-upload-link">clique para selecionar</span></p>
+                  <p class="if-upload-hint">Máx. 10 fotos · JPG, PNG, WEBP · 5 MB por foto</p>
+                </div>
+              </div>
+              <div id="ifRetomaPreviews" class="if-previews" style="display:none"></div>
+              <p id="ifRetomaPhotoCount" class="if-photo-count" style="display:none"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {{-- ── Consents + Submit ── --}}
       <div class="if-card if-reveal">
         <div class="if-consents">
@@ -373,6 +462,90 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 
+  /* ── retoma conditional ── */
+  const retomaOpt   = document.getElementById('retoma_option');
+  const retomaBox   = document.getElementById('retoma_box');
+  const reqRetoma   = ['retoma_brand','retoma_model','retoma_year','retoma_km','retoma_fuel'];
+
+  retomaOpt.addEventListener('change', function () {
+    if (this.value === 'sim') {
+      retomaBox.style.display = '';
+      reqRetoma.forEach(id => { const el = document.getElementById(id); if (el) el.setAttribute('required','required'); });
+    } else {
+      retomaBox.style.display = 'none';
+      reqRetoma.forEach(id => { const el = document.getElementById(id); if (el) el.removeAttribute('required'); });
+    }
+  });
+
+  /* ── retoma: upload de fotos (drag & drop) ── */
+  const rtDropZone = document.getElementById('ifRetomaDropZone');
+  const rtPhotos    = document.getElementById('ifRetomaPhotos');
+  const rtPreviews  = document.getElementById('ifRetomaPreviews');
+  const rtCount     = document.getElementById('ifRetomaPhotoCount');
+  let retomaFiles   = [];
+
+  rtDropZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    this.classList.add('if-drop-active');
+  });
+  rtDropZone.addEventListener('dragleave', function (e) {
+    if (!rtDropZone.contains(e.relatedTarget)) this.classList.remove('if-drop-active');
+  });
+  rtDropZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    this.classList.remove('if-drop-active');
+    addRetomaFiles(e.dataTransfer.files);
+  });
+  rtPhotos.addEventListener('change', function () {
+    addRetomaFiles(this.files);
+    this.value = '';
+  });
+
+  function addRetomaFiles(newFiles) {
+    Array.from(newFiles).forEach(function (f) {
+      if (!f.type.startsWith('image/')) return;
+      if (f.size > 5 * 1024 * 1024) {
+        alert(f.name + ': ficheiro demasiado grande (máx. 5 MB)');
+        return;
+      }
+      if (retomaFiles.length >= 10) {
+        alert('Máximo de 10 fotos permitidas.');
+        return;
+      }
+      retomaFiles.push(f);
+    });
+    renderRetomaPreviews();
+  }
+
+  function renderRetomaPreviews() {
+    rtPreviews.innerHTML = '';
+    if (retomaFiles.length === 0) {
+      rtPreviews.style.display = 'none';
+      rtCount.style.display = 'none';
+      return;
+    }
+    rtPreviews.style.display = 'grid';
+    rtCount.style.display = 'block';
+    rtCount.textContent = retomaFiles.length + ' foto' + (retomaFiles.length > 1 ? 's' : '') + ' selecionada' + (retomaFiles.length > 1 ? 's' : '');
+
+    retomaFiles.forEach(function (f, i) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const wrap = document.createElement('div');
+        wrap.className = 'if-preview-item';
+        wrap.innerHTML =
+          '<img src="' + e.target.result + '" alt="">' +
+          '<button type="button" class="if-preview-remove" data-i="' + i + '"><i class="bi bi-x"></i></button>';
+        wrap.querySelector('.if-preview-remove').addEventListener('click', function () {
+          retomaFiles.splice(parseInt(this.dataset.i), 1);
+          renderRetomaPreviews();
+        });
+        rtPreviews.appendChild(wrap);
+      };
+      reader.readAsDataURL(f);
+    });
+  }
+
   /* ── AJAX submit ── */
   const form    = document.getElementById('importForm');
   const btn     = document.getElementById('ifSubmit');
@@ -385,13 +558,17 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:if-spin .8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" opacity=".25"/><path d="M21 12A9 9 0 003 12"/></svg> A enviar...';
     errBox.style.display = 'none';
 
+    const fd = new FormData(form);
+    fd.delete('retoma_photos[]');
+    retomaFiles.forEach(f => fd.append('retoma_photos[]', f));
+
     fetch('{{ route('frontend.import-submit') }}', {
       method: 'POST',
       headers: {
         'X-CSRF-TOKEN': document.querySelector('[name="_token"]').value,
         'Accept': 'application/json'
       },
-      body: new FormData(form)
+      body: fd
     })
     .then(r => r.json().then(data => ({ ok: r.ok, data })))
     .then(({ ok, data }) => {
@@ -399,6 +576,9 @@ document.addEventListener('DOMContentLoaded', function () {
         form.reset();
         adLinksBox.style.display = 'none';
         prefBox.style.display = 'none';
+        retomaBox.style.display = 'none';
+        retomaFiles = [];
+        renderRetomaPreviews();
         success.style.display = 'flex';
         success.scrollIntoView({ behavior:'smooth', block:'center' });
       } else {
@@ -554,6 +734,48 @@ document.addEventListener('DOMContentLoaded', function () {
   background: var(--if-light); border:1.5px dashed var(--if-border);
   border-radius:var(--radius-sharp-md); padding:1.5rem;
 }
+.mt-if { margin-top:1.25rem; }
+
+/* ── Notice (retoma) ── */
+.if-notice {
+  display:flex; align-items:flex-start; gap:.75rem;
+  background:#fff8f0; border:1px solid #fde3b8;
+  border-radius:var(--radius-sharp-sm); padding:1rem 1.25rem;
+}
+.if-notice svg { flex-shrink:0; color:#b45309; margin-top:.15rem; }
+.if-notice p { font-size:.85rem; color:#6b4a00; line-height:1.65; margin:0; }
+
+/* ── Upload zone (galeria de fotos) ── */
+.if-upload-zone {
+  position:relative; border:2px dashed var(--if-border); border-radius:var(--radius-sharp-md);
+  text-align:center; transition:.25s; background:#fafafa; overflow:hidden;
+}
+.if-upload-zone:hover, .if-drop-active {
+  border-color: var(--if-brand); background:rgba(110,7,7,.03);
+}
+.if-upload-input {
+  position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; z-index:2;
+}
+.if-upload-content { padding:2.5rem 1.5rem; pointer-events:none; }
+.if-upload-icon  { font-size:2.25rem; color:#d1d5db; margin-bottom:.65rem; }
+.if-upload-title { font-size:.95rem; font-weight:700; color:#374151; margin-bottom:.3rem; }
+.if-upload-sub   { font-size:.85rem; color: var(--if-gray); margin-bottom:.4rem; }
+.if-upload-link  { color: var(--if-brand); font-weight:700; text-decoration:underline; }
+.if-upload-hint  { font-size:.75rem; color:#9ca3af; margin:0; }
+.if-previews {
+  margin-top:1.1rem; display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(100px,1fr)); gap:.65rem;
+}
+.if-preview-item { position:relative; border-radius:var(--radius-sharp-sm); overflow:hidden; aspect-ratio:1; background:#f3f4f6; }
+.if-preview-item img { width:100%; height:100%; object-fit:cover; display:block; }
+.if-preview-remove {
+  position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%;
+  background:rgba(0,0,0,.55); color:#fff; border:none;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:.8rem; line-height:1;
+  transition:background .2s;
+}
+.if-preview-remove:hover { background:#dc2626; }
+.if-photo-count { margin-top:.6rem; font-size:.8rem; color: var(--if-gray); font-weight:600; }
 
 
 /* ── Radio group ── */

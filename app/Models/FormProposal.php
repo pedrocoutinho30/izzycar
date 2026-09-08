@@ -27,11 +27,23 @@ class FormProposal extends Model
         'budget',
         'gearbox',
         'extras',
+        'retoma_option',
+        'retoma_brand',
+        'retoma_model',
+        'retoma_year',
+        'retoma_km',
+        'retoma_fuel',
+        'retoma_info',
+        'retoma_photos',
         'client_id',
         'angariador_code',
         'status',
         'version',
         'proposal_id'
+    ];
+
+    protected $casts = [
+        'retoma_photos' => 'array',
     ];
 
     public function client()

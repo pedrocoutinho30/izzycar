@@ -169,15 +169,55 @@
             @endif
 
             <!-- Retoma -->
-            @if($formProposal->has_trade_in)
+            @if($formProposal->retoma_option === 'sim')
                 <div class="detail-card">
                     <div class="detail-card-header">
                         <h3><i class="bi bi-arrow-left-right"></i> Retoma</h3>
                     </div>
                     <div class="detail-card-body">
-                        <div class="alert alert-info mb-0">
-                            <i class="bi bi-info-circle"></i> Cliente tem interesse em retoma
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Marca</span>
+                                <span class="detail-value">{{ $formProposal->retoma_brand ?? '-' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Modelo</span>
+                                <span class="detail-value">{{ $formProposal->retoma_model ?? '-' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Ano</span>
+                                <span class="detail-value">{{ $formProposal->retoma_year ?? '-' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">KM</span>
+                                <span class="detail-value">{{ $formProposal->retoma_km ? number_format($formProposal->retoma_km, 0, ',', '.') . ' km' : '-' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Combustível</span>
+                                <span class="detail-value">{{ $formProposal->retoma_fuel ?? '-' }}</span>
+                            </div>
                         </div>
+
+                        @if($formProposal->retoma_info)
+                            <div class="mt-3">
+                                <span class="detail-label">Mais Informações</span>
+                                <p class="detail-value">{{ $formProposal->retoma_info }}</p>
+                            </div>
+                        @endif
+
+                        @if(!empty($formProposal->retoma_photos))
+                            <div class="mt-3">
+                                <span class="detail-label">Fotos</span>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    @foreach($formProposal->retoma_photos as $photo)
+                                        <a href="{{ Storage::disk('public')->url($photo) }}" target="_blank">
+                                            <img src="{{ Storage::disk('public')->url($photo) }}" alt="Foto retoma"
+                                                 style="width:90px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endif

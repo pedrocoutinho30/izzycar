@@ -12,6 +12,7 @@ use App\Models\Client;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ImportFormConfirmationMail;
+use App\Mail\FinancingDocumentsMail;
 use App\Models\LeadActivity;
 use App\Models\User;
 use App\Http\Controllers\Frontend\PageController;
@@ -36,11 +37,40 @@ class ImportController extends Controller
             'angariador'              => 'nullable|string|max:100',
             'ad_option'               => 'nullable|in:sim,nao_sei,nao_nao',
             'ad_links'                => 'nullable|required_if:ad_option,sim|string|max:5000',
+            'retoma_option'           => 'nullable|in:sim,nao',
+            'retoma_brand'            => 'nullable|required_if:retoma_option,sim|string|max:100',
+            'retoma_model'            => 'nullable|required_if:retoma_option,sim|string|max:100',
+            'retoma_year'             => 'nullable|required_if:retoma_option,sim|integer|min:1950|max:' . (date('Y') + 1),
+            'retoma_km'               => 'nullable|required_if:retoma_option,sim|integer|min:0|max:2000000',
+            'retoma_fuel'             => 'nullable|required_if:retoma_option,sim|string|max:50',
+            'retoma_info'             => 'nullable|string|max:2000',
+            'retoma_photos'           => 'nullable|array|max:10',
+            'retoma_photos.*'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         // Aqui podes gravar na BD
 
         $formPropposalData = $request->all();
+
+        // Fotos da retoma são processadas à parte e substituídas por um array
+        // de caminhos guardados (o array de UploadedFile não pode ir para o
+        // FormProposal::create() diretamente).
+        unset($formPropposalData['retoma_photos']);
+        $retomaPhotoPaths = [];
+        if ($request->hasFile('retoma_photos')) {
+            $ref = 'RTM-' . strtoupper(substr(md5(microtime()), 0, 6));
+            foreach ($request->file('retoma_photos') as $photo) {
+                if (!$photo || !$photo->isValid()) {
+                    continue;
+                }
+                try {
+                    $retomaPhotoPaths[] = $photo->store('retoma/' . $ref, 'public');
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+        }
+        $formPropposalData['retoma_photos'] = $retomaPhotoPaths;
         $dataProcessingConsent = $request->boolean('data_processing_consent');
         $newsletterConsent = $request->boolean('newsletter_consent');
         $angariadorCode = $request->filled('angariador') ? $request->input('angariador') : null;
@@ -93,6 +123,12 @@ class ImportController extends Controller
         // Enviar email de confirmação ao cliente
         if ($clientExist->email) {
             Mail::to($clientExist->email)->send(new ImportFormConfirmationMail($proposal, $clientExist));
+
+            // Se optou por financiamento, envia também a documentação necessária
+            // para o processo de crédito pessoal.
+            if ($proposal->payment_type === 'financiamento') {
+                Mail::to($clientExist->email)->send(new FinancingDocumentsMail($proposal, $clientExist));
+            }
         }
 
         // Registar na timeline
@@ -163,6 +199,21 @@ class ImportController extends Controller
             Budget: {$proposal->budget} \n
             Caixa: {$proposal->gearbox} \n
             Extras: {$proposal->extras} \n
+            ";
+        }
+
+        // Se tem retoma, adiciona os dados da viatura atual
+        if ($proposal->retoma_option === 'sim') {
+            $numFotos = count($proposal->retoma_photos ?? []);
+            $body .= "
+            --- Retoma ---\n
+            Marca: {$proposal->retoma_brand} \n
+            Modelo: {$proposal->retoma_model} \n
+            Ano: {$proposal->retoma_year} \n
+            KM: {$proposal->retoma_km} \n
+            Combustível: {$proposal->retoma_fuel} \n
+            Mais informações: {$proposal->retoma_info} \n
+            Fotos: {$numFotos} \n
             ";
         }
 
