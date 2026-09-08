@@ -18,7 +18,7 @@ use Symfony\Component\Yaml\Yaml;
 class RadarController extends Controller
 {
     /** Colunas que a view de detalhe pode usar para ordenar - lista fechada para não abrir um "orderBy" a qualquer coluna via query string. */
-    private const SORTABLE_COLUMNS = ['price_eur', 'mileage_km', 'first_registration_year'];
+    private const SORTABLE_COLUMNS = ['price_eur', 'mileage_km', 'first_registration_year', 'first_seen_at'];
 
     /** "rank" não é uma coluna da BD - é a posição no ranking calculado por RadarValueScoreService, ordenada em PHP (ver paginateByRank()). */
     private const SORT_OPTIONS = [...self::SORTABLE_COLUMNS, 'rank'];
@@ -73,8 +73,17 @@ class RadarController extends Controller
 
     public function show(Request $request, RadarSearch $radarSearch, RadarValueScoreService $valueScores)
     {
-        $sort = in_array($request->query('sort'), self::SORT_OPTIONS, true) ? $request->query('sort') : 'price_eur';
+        $requestedSort = $request->query('sort');
+        $sort = in_array($requestedSort, self::SORT_OPTIONS, true) ? $requestedSort : 'price_eur';
         $dir = $request->query('dir') === 'desc' ? 'desc' : 'asc';
+
+        // Sem sort explícito na query string, a tabela AutoScout24 mostra por
+        // omissão os anúncios mais recentes primeiro; a de Portugal mantém o
+        // comportamento antigo (preço). Um clique num cabeçalho (que afeta as
+        // duas tabelas, ver _sort-link) continua a sobrepor-se a isto.
+        $deSort = $requestedSort ? $sort : 'first_seen_at';
+        $deDir  = $requestedSort ? $dir : 'desc';
+
         $hasPt = $radarSearch->standvirtual_base_url || $radarSearch->carmine_base_url;
 
         // Ranking "melhor combinação ano/kms/preço" dentro de cada origem, e quais
@@ -91,7 +100,7 @@ class RadarController extends Controller
                 ? $this->paginateByRank($this->listingsQuery($radarSearch, self::PT_SOURCES, $request, 'price_eur', 'asc'), $scores['pt_ranks'], $dir, $request, 'pt_page')
                 : null;
         } else {
-            $listings = $this->listingsQuery($radarSearch, 'autoscout24', $request, $sort, $dir)->paginate(25, ['*'], 'de_page')->withQueryString();
+            $listings = $this->listingsQuery($radarSearch, 'autoscout24', $request, $deSort, $deDir)->paginate(25, ['*'], 'de_page')->withQueryString();
             $ptListings = $hasPt
                 ? $this->listingsQuery($radarSearch, self::PT_SOURCES, $request, $sort, $dir)->paginate(25, ['*'], 'pt_page')->withQueryString()
                 : null;
