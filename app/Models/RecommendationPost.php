@@ -19,11 +19,17 @@ class RecommendationPost extends Model
         'savings',
         'url',
         'image',
+        'gallery_photos',
+        'gallery_layouts',
+        'gallery_photos_per_slide',
     ];
 
     protected $casts = [
         'equipment' => 'array',
         'price' => 'decimal:2',
         'savings' => 'decimal:2',
+        'gallery_photos' => 'array',
+        'gallery_layouts' => 'array',
+        'gallery_photos_per_slide' => 'integer',
     ];
 }

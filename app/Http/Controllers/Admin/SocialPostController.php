@@ -50,6 +50,12 @@ class SocialPostController extends Controller
             'savings' => 'nullable|numeric|min:0',
             'url' => 'nullable|url|max:1000',
             'image' => 'nullable|image|max:8192',
+            'gallery_photos' => 'nullable|array|max:12',
+            'gallery_photos.*' => 'nullable|image|max:8192',
+            'gallery_layouts' => 'nullable|string|max:2000',
+            'gallery_photos_per_slide' => 'nullable|integer|in:1,3',
+            'gallery_order' => 'nullable|string|max:4000',
+            'remove_gallery_photos' => 'nullable|string|max:2000',
         ]);
 
         $validated['equipment'] = collect(explode("\n", $validated['equipment_raw'] ?? ''))
@@ -71,6 +77,46 @@ class SocialPostController extends Controller
             unset($validated['image']);
         }
 
+        // Galeria de fotos ("mais fotos do carro"): o cliente envia a ordem
+        // final desejada em "gallery_order" (tokens "existing:<path>" ou
+        // "new:<índice>", este último referente à posição do ficheiro em
+        // gallery_photos[]) — isto permite reordenar livremente fotos já
+        // guardadas misturadas com fotos novas, sem perder a ordem escolhida.
+        $toRemove = array_filter(json_decode($request->input('remove_gallery_photos', '[]'), true) ?: []);
+        foreach ($toRemove as $path) {
+            Storage::disk('public')->delete($path);
+        }
+
+        $storedNewPaths = [];
+        if ($request->hasFile('gallery_photos')) {
+            foreach ($request->file('gallery_photos') as $idx => $photo) {
+                if ($photo && $photo->isValid()) {
+                    $storedNewPaths[$idx] = $photo->store('recommendation-posts/gallery', 'public');
+                }
+            }
+        }
+
+        $order = json_decode($request->input('gallery_order', '[]'), true) ?: [];
+        $galleryPhotos = [];
+        foreach ($order as $token) {
+            if (str_starts_with($token, 'existing:')) {
+                $path = substr($token, 9);
+                if (!in_array($path, $toRemove, true)) {
+                    $galleryPhotos[] = $path;
+                }
+            } elseif (str_starts_with($token, 'new:')) {
+                $idx = (int) substr($token, 4);
+                if (isset($storedNewPaths[$idx])) {
+                    $galleryPhotos[] = $storedNewPaths[$idx];
+                }
+            }
+        }
+
+        $validated['gallery_photos'] = array_slice($galleryPhotos, 0, 12);
+        $validated['gallery_layouts'] = json_decode($request->input('gallery_layouts', '{}'), true) ?: [];
+        $validated['gallery_photos_per_slide'] = $request->input('gallery_photos_per_slide', 3);
+        unset($validated['remove_gallery_photos'], $validated['gallery_order']);
+
         $post->fill($validated);
         $post->save();
 
@@ -82,6 +128,9 @@ class SocialPostController extends Controller
     {
         if ($post->image) {
             Storage::disk('public')->delete($post->image);
+        }
+        foreach ($post->gallery_photos ?? [] as $path) {
+            Storage::disk('public')->delete($path);
         }
         $post->delete();
 

@@ -19,11 +19,16 @@
 <div class="row g-4">
     <!-- FORMULÁRIO -->
     <div class="col-lg-5">
-        <form method="POST" action="{{ route('admin.v2.social-posts.store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('admin.v2.social-posts.store') }}" enctype="multipart/form-data" id="postForm">
             @csrf
             @if(isset($post))
             <input type="hidden" name="id" value="{{ $post->id }}">
             @endif
+            <input type="hidden" name="remove_gallery_photos" id="f_remove_gallery_photos" value="[]">
+            <input type="hidden" name="gallery_layouts" id="f_gallery_layouts" value="{}">
+            <input type="hidden" name="gallery_order" id="f_gallery_order" value="[]">
+            <input type="hidden" name="gallery_photos_per_slide" id="f_photos_per_slide_hidden" value="{{ old('gallery_photos_per_slide', optional($post)->gallery_photos_per_slide ?: 3) }}">
+            <input type="file" name="gallery_photos[]" id="f_gallery" multiple accept="image/*" style="display:none">
             <div class="modern-card">
                 <div class="modern-card-header">
                     <h5 class="modern-card-title">
@@ -95,6 +100,21 @@
                         @if(isset($post) && $post->image)
                         <div class="form-text">Já tens uma foto guardada — só precisas de escolher uma nova se quiseres substituí-la.</div>
                         @endif
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Mais fotos do carro <span class="text-muted">(até 12 fotos)</span></label>
+                        <input type="file" id="f_gallery_visible" class="form-control" accept="image/*" multiple>
+                        <div class="form-text">Arrasta as fotos para as reordenar. Escolhe abaixo quantas fotos aparecem em cada slide extra ("Fotos do Carro").</div>
+
+                        <div class="mt-2" style="max-width:260px;">
+                            <select id="f_photos_per_slide" class="form-select form-select-sm">
+                                <option value="3">3 fotos por slide (com disposição)</option>
+                                <option value="1">1 foto por slide (destaque)</option>
+                            </select>
+                        </div>
+
+                        <div id="galleryThumbs" class="d-flex flex-wrap gap-2 mt-2"></div>
                     </div>
                 </div>
 
@@ -168,11 +188,24 @@
                 </button>
             </div>
         </div>
+
+        <div class="modern-card mt-4">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title">
+                    <i class="bi bi-images"></i>
+                    Fotos do Carro <span class="text-muted small">(3 por slide)</span>
+                </h5>
+            </div>
+
+            <div id="gallerySlidesContainer">
+                <p class="text-muted text-center py-4 mb-0">Adiciona fotos no formulário para gerar os slides.</p>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Alvos de exportação, fora do ecrã, sempre ao tamanho real (1080x1080) -->
-<div style="position:absolute; left:-99999px; top:0;">
+<div style="position:absolute; left:-99999px; top:0;" class="export-offscreen">
     <div id="exportFrame1"></div>
     <div id="exportFrame2"></div>
     <div id="exportFrame1V2"></div>
@@ -191,6 +224,7 @@
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
 <script>
 (function () {
     const LOGO_URL = '{{ asset('img/logo-transparente.png') }}';
@@ -198,7 +232,13 @@
 
     const state = {
         imageDataUrl: @json(isset($post) && $post->image ? Illuminate\Support\Facades\Storage::url($post->image) : null),
+        imageNaturalW: null,
+        imageNaturalH: null,
+        gallery: @json(isset($post) && $post->gallery_photos ? collect($post->gallery_photos)->map(fn ($p) => ['url' => Illuminate\Support\Facades\Storage::url($p), 'isNew' => false, 'existingPath' => $p])->values() : []),
+        galleryLayouts: @json(optional($post)->gallery_layouts ?: (object) []),
+        photosPerSlide: {{ (int) (optional($post)->gallery_photos_per_slide ?: 3) }},
     };
+    let removedExistingGalleryPaths = [];
 
     function getFormData() {
         const equipmentLines = document.getElementById('f_equipment').value
@@ -245,13 +285,46 @@
     // Largura de referência do card de texto (a foto continua a ocupar o slide todo por trás).
     const CARD_RATIO = 0.56;
 
+    /**
+     * O "truque" de mostrar metade da foto por slide usava background-size
+     * fixo (200% 100%), o que ESTICA a imagem sempre que a proporção real
+     * não é exatamente 2:1 — ficando disforme. Em vez disso, medimos as
+     * dimensões reais da imagem e escalamos só pela altura (sem distorcer),
+     * cortando a largura que sobra — tal como um "object-fit:cover" a dobrar
+     * a largura do slide.
+     */
+    function imageCoverWidthPercent() {
+        if (!state.imageNaturalW || !state.imageNaturalH) return 200;
+        const scaledWidth = state.imageNaturalW * (1080 / state.imageNaturalH);
+        return Math.max((scaledWidth / 1080) * 100, 100).toFixed(2);
+    }
+
+    function measureHeroImage(url) {
+        if (!url) {
+            state.imageNaturalW = null;
+            state.imageNaturalH = null;
+            return;
+        }
+        const img = new Image();
+        img.onload = function () {
+            state.imageNaturalW = img.naturalWidth;
+            state.imageNaturalH = img.naturalHeight;
+            renderAll();
+        };
+        img.onerror = function () {
+            state.imageNaturalW = null;
+            state.imageNaturalH = null;
+        };
+        img.src = url;
+    }
+
     function fullBackgroundStyle(data, side) {
         if (!data.image) {
             return `background: radial-gradient(120% 140% at 50% 0%, #241c14 0%, #14100c 60%, #0b0906 100%);`;
         }
         const position = side === 'left' ? 'left center' : 'right center';
         return `background-image: linear-gradient(180deg, rgba(5,4,3,0.35) 0%, rgba(5,4,3,0.05) 25%, rgba(5,4,3,0.1) 55%, rgba(5,4,3,0.5) 100%), url('${data.image}');
-                background-size: 100% 100%, 200% 100%;
+                background-size: 100% 100%, ${imageCoverWidthPercent()}% 100%;
                 background-position: center, ${position};
                 background-repeat: no-repeat;`;
     }
@@ -277,7 +350,7 @@
                 <div style="width:${px(size,150)}; height:${px(size,100)};">
                     <img src="${LOGO_URL}" style="width:100%; height:100%; object-fit:contain; object-position:left top;">
                 </div>
-                <span style="font-size:${px(size,13)}; font-weight:700; color:#fff; background:rgba(255,255,255,0.14); border-radius:999px; padding:${px(size,4)} ${px(size,12)};">${pageLabel}</span>
+                ${pageLabel ? `<span style="font-size:${px(size,13)}; font-weight:700; color:#fff; background:rgba(255,255,255,0.14); border-radius:999px; padding:${px(size,4)} ${px(size,12)};">${pageLabel}</span>` : ''}
             </div>`;
     }
 
@@ -370,7 +443,7 @@
         const darkAngle = textSide === 'left' ? '90deg' : '270deg';
         const radialPos = textSide === 'left' ? '10% 0%' : '90% 0%';
         return `background-image: linear-gradient(${darkAngle}, rgba(5,4,3,0.95) 0%, rgba(5,4,3,0.74) 32%, rgba(5,4,3,0.3) 58%, rgba(5,4,3,0.05) 82%), radial-gradient(140% 120% at ${radialPos}, rgba(0,0,0,0.55), transparent 50%), url('${data.image}');
-                background-size: 100% 100%, 100% 100%, 200% 100%;
+                background-size: 100% 100%, 100% 100%, ${imageCoverWidthPercent()}% 100%;
                 background-position: center, center, ${imgAnchor};
                 background-repeat: no-repeat;`;
     }
@@ -451,6 +524,230 @@
             </div>`;
     }
 
+    /**
+     * "Fotos do Carro": slides extra com 3 fotos cada, disposição escolhida
+     * pelo utilizador por slide (uma das 4 abaixo). Cada foto é um <img
+     * object-fit:cover> absolutamente posicionado — sem canvas, mesma
+     * abordagem do resto do ficheiro.
+     */
+    const GALLERY_LAYOUTS = {
+        'hero-duo': 'Foto grande + 2 em baixo',
+        'stripes': 'Faixas horizontais',
+        'triptych': 'Tríptico vertical',
+        'big-stack': 'Grande + 2 empilhadas',
+    };
+    const GALLERY_LAYOUT_ORDER = Object.keys(GALLERY_LAYOUTS);
+    const GALLERY_GAP = 8;
+
+    function photoTile(size, url, top, left, width, height) {
+        return `<div style="position:absolute; top:${px(size,top)}; left:${px(size,left)}; width:${px(size,width)}; height:${px(size,height)}; overflow:hidden; background:#1a1512;">
+            <img src="${url}" style="width:100%; height:100%; object-fit:cover; display:block;">
+        </div>`;
+    }
+
+    function photoGridHtml(size, photos, layout) {
+        const g = GALLERY_GAP;
+        if (photos.length <= 1) {
+            return photos[0] ? photoTile(size, photos[0], 0, 0, 1080, 1080) : '';
+        }
+        if (photos.length === 2) {
+            const w = (1080 - g) / 2;
+            return photoTile(size, photos[0], 0, 0, w, 1080) + photoTile(size, photos[1], 0, w + g, w, 1080);
+        }
+        switch (layout) {
+            case 'stripes': {
+                const h = (1080 - 2 * g) / 3;
+                return photoTile(size, photos[0], 0, 0, 1080, h)
+                     + photoTile(size, photos[1], h + g, 0, 1080, h)
+                     + photoTile(size, photos[2], 2 * (h + g), 0, 1080, h);
+            }
+            case 'triptych': {
+                const w = (1080 - 2 * g) / 3;
+                return photoTile(size, photos[0], 0, 0, w, 1080)
+                     + photoTile(size, photos[1], 0, w + g, w, 1080)
+                     + photoTile(size, photos[2], 0, 2 * (w + g), w, 1080);
+            }
+            case 'big-stack': {
+                const wBig = 1080 * 0.6 - g / 2;
+                const wSmall = 1080 - wBig - g;
+                const hSmall = (1080 - g) / 2;
+                return photoTile(size, photos[0], 0, 0, wBig, 1080)
+                     + photoTile(size, photos[1], 0, wBig + g, wSmall, hSmall)
+                     + photoTile(size, photos[2], hSmall + g, wBig + g, wSmall, hSmall);
+            }
+            case 'hero-duo':
+            default: {
+                const hBig = 1080 * 0.6 - g / 2;
+                const hSmall = 1080 - hBig - g;
+                const wSmall = (1080 - g) / 2;
+                return photoTile(size, photos[0], 0, 0, 1080, hBig)
+                     + photoTile(size, photos[1], hBig + g, 0, wSmall, hSmall)
+                     + photoTile(size, photos[2], hBig + g, wSmall + g, wSmall, hSmall);
+            }
+        }
+    }
+
+    function gallerySlideHtml(size, data, photos, layout, pageLabel) {
+        const title = [data.brand, data.model].filter(Boolean).join(' ');
+        return `
+            <div style="width:${size}px; height:${size}px; position:relative; font-family:'Inter',-apple-system,'Helvetica Neue',Arial,sans-serif; color:#fff; background:#0b0906; overflow:hidden;">
+                ${photoGridHtml(size, photos, layout)}
+                <div style="position:absolute; inset:0; pointer-events:none; background: linear-gradient(180deg, transparent 78%, rgba(0,0,0,0.6) 100%);"></div>
+                ${title ? `<div style="position:absolute; left:${px(size,44)}; bottom:${px(size,26)}; font-size:${px(size,20)}; font-weight:800;">${title}</div>` : ''}
+                ${headerOverlayHtml(size, pageLabel)}
+            </div>`;
+    }
+
+    function getGalleryPhotoUrls() {
+        return state.gallery.map(g => g.url);
+    }
+
+    let galleryThumbsSortable = null;
+
+    function renderGalleryThumbs() {
+        const wrap = document.getElementById('galleryThumbs');
+        wrap.innerHTML = state.gallery.map((g, i) => `
+            <div style="position:relative; width:70px; height:70px; cursor:grab;">
+                <img src="${g.url}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; border:1px solid #ddd; pointer-events:none;">
+                <button type="button" class="btn btn-sm btn-danger" style="position:absolute; top:-6px; right:-6px; width:22px; height:22px; padding:0; line-height:1; border-radius:50%;" onclick="window.__removeGalleryPhoto(${i})">×</button>
+            </div>`).join('');
+
+        if (!galleryThumbsSortable && window.Sortable) {
+            galleryThumbsSortable = Sortable.create(wrap, {
+                animation: 150,
+                forceFallback: true,
+                onEnd: function (evt) {
+                    const [moved] = state.gallery.splice(evt.oldIndex, 1);
+                    state.gallery.splice(evt.newIndex, 0, moved);
+                    renderGalleryThumbs();
+                    renderGallerySection();
+                },
+            });
+        }
+    }
+
+    function renderGallerySection() {
+        const data = getFormData();
+        const photos = getGalleryPhotoUrls();
+        const container = document.getElementById('gallerySlidesContainer');
+
+        if (photos.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center py-4 mb-0">Adiciona fotos no formulário para gerar os slides.</p>';
+            return;
+        }
+
+        const perSlide = state.photosPerSlide || 3;
+        const slideCount = Math.max(1, Math.ceil(photos.length / perSlide));
+        let html = '<div class="d-flex flex-wrap gap-4 justify-content-center">';
+        for (let i = 1; i <= slideCount; i++) {
+            const slidePhotos = photos.slice((i - 1) * perSlide, (i - 1) * perSlide + perSlide);
+            const layout = state.galleryLayouts[i] || GALLERY_LAYOUT_ORDER[(i - 1) % GALLERY_LAYOUT_ORDER.length];
+            const pageLabel = slideCount > 1 ? `${i}/${slideCount}` : '';
+            html += `
+                <div class="text-center">
+                    <div class="post-preview-frame">${gallerySlideHtml(340, data, slidePhotos, layout, pageLabel)}</div>
+                    ${slidePhotos.length === 3 ? `
+                    <select class="form-select form-select-sm mt-2" onchange="window.__setGalleryLayout(${i}, this.value)">
+                        ${GALLERY_LAYOUT_ORDER.map(key => `<option value="${key}" ${layout === key ? 'selected' : ''}>${GALLERY_LAYOUTS[key]}</option>`).join('')}
+                    </select>` : ''}
+                    <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="window.__downloadGallerySlide(${i})">
+                        <i class="bi bi-download"></i> Descarregar Slide ${i}
+                    </button>
+                </div>`;
+        }
+        html += '</div><div class="text-center mt-4"><button type="button" class="btn btn-primary" onclick="window.__downloadAllGallerySlides()"><i class="bi bi-download"></i> Descarregar todos os slides</button></div>';
+        container.innerHTML = html;
+    }
+
+    window.__removeGalleryPhoto = function (index) {
+        const [removed] = state.gallery.splice(index, 1);
+        if (removed && removed.existingPath) {
+            removedExistingGalleryPaths.push(removed.existingPath);
+        }
+        renderGalleryThumbs();
+        renderGallerySection();
+    };
+
+    window.__setGalleryLayout = function (slideIndex, layout) {
+        state.galleryLayouts[slideIndex] = layout;
+        renderGallerySection();
+    };
+
+    function downloadHtmlString(html1080, filename) {
+        const wrapper = document.querySelector('.export-offscreen');
+        const temp = document.createElement('div');
+        temp.innerHTML = html1080;
+        wrapper.appendChild(temp);
+        return html2canvas(temp.firstElementChild, { width: 1080, height: 1080, useCORS: true }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).finally(() => wrapper.removeChild(temp));
+    }
+
+    window.__downloadGallerySlide = function (slideIndex) {
+        const data = getFormData();
+        const photos = getGalleryPhotoUrls();
+        const perSlide = state.photosPerSlide || 3;
+        const slideCount = Math.max(1, Math.ceil(photos.length / perSlide));
+        const slidePhotos = photos.slice((slideIndex - 1) * perSlide, (slideIndex - 1) * perSlide + perSlide);
+        const layout = state.galleryLayouts[slideIndex] || GALLERY_LAYOUT_ORDER[(slideIndex - 1) % GALLERY_LAYOUT_ORDER.length];
+        const pageLabel = slideCount > 1 ? `${slideIndex}/${slideCount}` : '';
+        const html = gallerySlideHtml(1080, data, slidePhotos, layout, pageLabel);
+        return downloadHtmlString(html, `slide-fotos-${String(slideIndex).padStart(2, '0')}.png`);
+    };
+
+    window.__downloadAllGallerySlides = async function () {
+        const photos = getGalleryPhotoUrls();
+        const perSlide = state.photosPerSlide || 3;
+        const slideCount = Math.max(1, Math.ceil(photos.length / perSlide));
+        for (let i = 1; i <= slideCount; i++) {
+            await window.__downloadGallerySlide(i);
+        }
+    };
+
+    document.getElementById('f_photos_per_slide').value = String(state.photosPerSlide);
+    document.getElementById('f_photos_per_slide').addEventListener('change', function () {
+        state.photosPerSlide = parseInt(this.value, 10) || 3;
+        document.getElementById('f_photos_per_slide_hidden').value = state.photosPerSlide;
+        renderGallerySection();
+    });
+
+    document.getElementById('f_gallery_visible').addEventListener('change', function (e) {
+        const files = Array.from(e.target.files);
+        this.value = '';
+        const remainingSlots = 12 - state.gallery.length;
+        files.slice(0, remainingSlots).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                state.gallery.push({ url: evt.target.result, isNew: true, existingPath: null, file });
+                renderGalleryThumbs();
+                renderGallerySection();
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    document.getElementById('postForm').addEventListener('submit', function () {
+        const dt = new DataTransfer();
+        const order = [];
+        let newIndex = 0;
+        state.gallery.forEach(g => {
+            if (g.isNew) {
+                dt.items.add(g.file);
+                order.push('new:' + newIndex);
+                newIndex++;
+            } else {
+                order.push('existing:' + g.existingPath);
+            }
+        });
+        document.getElementById('f_gallery').files = dt.files;
+        document.getElementById('f_gallery_order').value = JSON.stringify(order);
+        document.getElementById('f_remove_gallery_photos').value = JSON.stringify(removedExistingGalleryPaths);
+        document.getElementById('f_gallery_layouts').value = JSON.stringify(state.galleryLayouts);
+    });
+
     function renderAll() {
         const data = getFormData();
 
@@ -463,6 +760,8 @@
         document.getElementById('previewFrame2V2').innerHTML = slide2HtmlV2(340, data);
         document.getElementById('exportFrame1V2').innerHTML = slide1HtmlV2(1080, data);
         document.getElementById('exportFrame2V2').innerHTML = slide2HtmlV2(1080, data);
+
+        renderGallerySection();
     }
 
     document.querySelectorAll('#f_brand, #f_model, #f_version, #f_mileage, #f_power, #f_fuel, #f_year, #f_equipment, #f_price, #f_savings, #f_url')
@@ -474,6 +773,7 @@
         const reader = new FileReader();
         reader.onload = function (evt) {
             state.imageDataUrl = evt.target.result;
+            measureHeroImage(state.imageDataUrl);
             renderAll();
         };
         reader.readAsDataURL(file);
@@ -503,6 +803,8 @@
         await downloadNode('exportFrame2V2', 'slide-02-editorial.png');
     });
 
+    renderGalleryThumbs();
+    measureHeroImage(state.imageDataUrl);
     renderAll();
 })();
 </script>
