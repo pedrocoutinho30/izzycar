@@ -342,7 +342,7 @@
         return `border-radius:${radius}; background:linear-gradient(160deg, rgba(9,7,6,0.96) 0%, rgba(9,7,6,0.9) 100%); border:1px solid rgba(255,255,255,0.08); box-shadow:0 ${px(size,20)} ${px(size,50)} rgba(0,0,0,0.35);`;
     }
 
-    function headerOverlayHtml(size, pageLabel) {
+    function headerOverlayHtml(size) {
         const pad = px(size, 44);
         return `
             <div style="position:absolute; inset:0; pointer-events:none; background: radial-gradient(circle at top left, rgba(0,0,0,0.5), transparent 45%), radial-gradient(circle at top right, rgba(0,0,0,0.5), transparent 45%);"></div>
@@ -350,7 +350,6 @@
                 <div style="width:${px(size,150)}; height:${px(size,100)};">
                     <img src="${LOGO_URL}" style="width:100%; height:100%; object-fit:contain; object-position:left top;">
                 </div>
-                ${pageLabel ? `<span style="font-size:${px(size,13)}; font-weight:700; color:#fff; background:rgba(255,255,255,0.14); border-radius:999px; padding:${px(size,4)} ${px(size,12)};">${pageLabel}</span>` : ''}
             </div>`;
     }
 
@@ -398,7 +397,7 @@
                         ${equipmentHtml}
                     </div>
                 </div>
-                ${headerOverlayHtml(size, '1/2')}
+                ${headerOverlayHtml(size)}
             </div>`;
     }
 
@@ -422,7 +421,7 @@
                     <div style="font-size:${px(size,14.5)}; font-weight:800; margin-bottom:${px(size,4)};">Simular a minha importação</div>
                     <div style="font-size:${px(size,13)}; font-weight:700; color:#ffd8d8;">izzycar.pt →</div>
                 </div>
-                ${headerOverlayHtml(size, '2/2')}
+                ${headerOverlayHtml(size)}
             </div>`;
     }
 
@@ -497,7 +496,7 @@
                     ${featureRows}
                     ${equipmentHtml}
                 </div>
-                ${headerOverlayHtml(size, '1/2')}
+                ${headerOverlayHtml(size)}
             </div>`;
     }
 
@@ -520,7 +519,7 @@
                     <div style="font-size:${px(size,18)}; font-weight:800; margin-bottom:${px(size,4)};">Simular a minha importação</div>
                     <div style="font-size:${px(size,15)}; font-weight:700; color:#ffd8d8;">izzycar.pt →</div>
                 </div>
-                ${headerOverlayHtml(size, '2/2')}
+                ${headerOverlayHtml(size)}
             </div>`;
     }
 
@@ -587,14 +586,14 @@
         }
     }
 
-    function gallerySlideHtml(size, data, photos, layout, pageLabel) {
+    function gallerySlideHtml(size, data, photos, layout) {
         const title = [data.brand, data.model].filter(Boolean).join(' ');
         return `
             <div style="width:${size}px; height:${size}px; position:relative; font-family:'Inter',-apple-system,'Helvetica Neue',Arial,sans-serif; color:#fff; background:#0b0906; overflow:hidden;">
                 ${photoGridHtml(size, photos, layout)}
                 <div style="position:absolute; inset:0; pointer-events:none; background: linear-gradient(180deg, transparent 78%, rgba(0,0,0,0.6) 100%);"></div>
                 ${title ? `<div style="position:absolute; left:${px(size,44)}; bottom:${px(size,26)}; font-size:${px(size,20)}; font-weight:800;">${title}</div>` : ''}
-                ${headerOverlayHtml(size, pageLabel)}
+                ${headerOverlayHtml(size)}
             </div>`;
     }
 
@@ -642,10 +641,9 @@
         for (let i = 1; i <= slideCount; i++) {
             const slidePhotos = photos.slice((i - 1) * perSlide, (i - 1) * perSlide + perSlide);
             const layout = state.galleryLayouts[i] || GALLERY_LAYOUT_ORDER[(i - 1) % GALLERY_LAYOUT_ORDER.length];
-            const pageLabel = slideCount > 1 ? `${i}/${slideCount}` : '';
             html += `
                 <div class="text-center">
-                    <div class="post-preview-frame">${gallerySlideHtml(340, data, slidePhotos, layout, pageLabel)}</div>
+                    <div class="post-preview-frame">${gallerySlideHtml(340, data, slidePhotos, layout)}</div>
                     ${slidePhotos.length === 3 ? `
                     <select class="form-select form-select-sm mt-2" onchange="window.__setGalleryLayout(${i}, this.value)">
                         ${GALLERY_LAYOUT_ORDER.map(key => `<option value="${key}" ${layout === key ? 'selected' : ''}>${GALLERY_LAYOUTS[key]}</option>`).join('')}
@@ -690,11 +688,9 @@
         const data = getFormData();
         const photos = getGalleryPhotoUrls();
         const perSlide = state.photosPerSlide || 3;
-        const slideCount = Math.max(1, Math.ceil(photos.length / perSlide));
         const slidePhotos = photos.slice((slideIndex - 1) * perSlide, (slideIndex - 1) * perSlide + perSlide);
         const layout = state.galleryLayouts[slideIndex] || GALLERY_LAYOUT_ORDER[(slideIndex - 1) % GALLERY_LAYOUT_ORDER.length];
-        const pageLabel = slideCount > 1 ? `${slideIndex}/${slideCount}` : '';
-        const html = gallerySlideHtml(1080, data, slidePhotos, layout, pageLabel);
+        const html = gallerySlideHtml(1080, data, slidePhotos, layout);
         return downloadHtmlString(html, `slide-fotos-${String(slideIndex).padStart(2, '0')}.png`);
     };
 
