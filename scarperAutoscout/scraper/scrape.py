@@ -33,11 +33,20 @@ def _run_source(source, base_url, search_id, db, max_pages=None):
     listings + price history, mark disappeared listings (for that source only) as
     removed, and log the run.
 
+    `base_url` is normally a single URL string, but can also be a list of URLs
+    that all belong to the SAME logical source (ex.: AutoScout24 .de + .com -
+    ver run_search) - todos os resultados juntam-se sob o mesmo `source` e uma
+    única passagem de `mark_removed`, para não haver risco de um domínio "ver
+    menos" nesta corrida e marcar como removidos anúncios que só o outro
+    domínio devolveu.
+
     `max_pages` caps how many result pages are fetched - intended for smoke-testing
     against production data. When set, marking removed listings is skipped, since a
     capped run only sees a partial result set and would otherwise wrongly flag real
     listings beyond the cap as removed.
     """
+    base_urls = [base_url] if isinstance(base_url, str) else list(base_url)
+
     iter_results = SOURCES[source]["iter_results"]
     blocked_error = SOURCES[source]["blocked_error"]
 
@@ -47,37 +56,42 @@ def _run_source(source, base_url, search_id, db, max_pages=None):
     pages_scraped = 0
     status = "ok"
     error_message = None
+    all_ok = True
 
     equipment_fetcher = EQUIPMENT_FETCHERS.get(source)
 
     try:
-        for listing, page in iter_results(base_url, max_pages=max_pages):
-            listing_id, is_new = db.upsert_listing(listing, search_id)
-            seen_external_ids.append(listing.external_id)
-            pages_scraped = max(pages_scraped, page)
+        for url in base_urls:
+            try:
+                for listing, page in iter_results(url, max_pages=max_pages):
+                    listing_id, is_new = db.upsert_listing(listing, search_id)
+                    seen_external_ids.append(listing.external_id)
+                    pages_scraped = max(pages_scraped, page)
 
-            # Equipamento só se vai buscar a anúncios NOVOS (pedido HTTP extra por
-            # anúncio à página de detalhe) - ver equipment_client.py. Falhas aqui
-            # não abortam a recolha do anúncio em si, só ficam sem equipamento.
-            if is_new and equipment_fetcher and listing.url:
-                try:
-                    raw_items = equipment_fetcher(listing.url)
-                    equipment_ids = [
-                        db.get_or_create_equipment(source, item["raw_key"], item["raw_label"])
-                        for item in raw_items
-                    ]
-                    db.set_listing_equipment(listing_id, equipment_ids)
-                except Exception:  # noqa: BLE001 - equipamento é best-effort
-                    pass
+                    # Equipamento só se vai buscar a anúncios NOVOS (pedido HTTP extra por
+                    # anúncio à página de detalhe) - ver equipment_client.py. Falhas aqui
+                    # não abortam a recolha do anúncio em si, só ficam sem equipamento.
+                    if is_new and equipment_fetcher and listing.url:
+                        try:
+                            raw_items = equipment_fetcher(listing.url)
+                            equipment_ids = [
+                                db.get_or_create_equipment(source, item["raw_key"], item["raw_label"])
+                                for item in raw_items
+                            ]
+                            db.set_listing_equipment(listing_id, equipment_ids)
+                        except Exception:  # noqa: BLE001 - equipamento é best-effort
+                            pass
+            except blocked_error as exc:
+                all_ok = False
+                status = "blocked"
+                error_message = str(exc)
+            except Exception as exc:  # noqa: BLE001 - surface any failure into the run log
+                all_ok = False
+                status = "error"
+                error_message = str(exc)
 
-        if max_pages is None:
+        if max_pages is None and all_ok:
             db.mark_removed(search_id, source, seen_external_ids)
-    except blocked_error as exc:
-        status = "blocked"
-        error_message = str(exc)
-    except Exception as exc:  # noqa: BLE001 - surface any failure into the run log
-        status = "error"
-        error_message = str(exc)
     finally:
         db.finish_run(
             run_id,
@@ -118,7 +132,17 @@ def run_search(search_row, db=None, max_pages=None):
             base_url = search_row.get(source_config["url_field"])
             if not base_url:
                 continue
-            results.append(_run_source(source, base_url, search_row["id"], db, max_pages=max_pages))
+
+            urls_to_run = base_url
+            if source == "autoscout24":
+                # A .com é o mesmo catálogo/base de dados da .de (confirmado
+                # empiricamente - mesmos IDs de anúncio, mesma estrutura JSON),
+                # mas por vezes devolve anúncios que a .de não devolve para os
+                # mesmos filtros. Corre as duas sob a mesma origem
+                # 'autoscout24' - o dedup por external_id junta-as sozinho.
+                urls_to_run = [base_url, base_url.replace("autoscout24.de", "autoscout24.com")]
+
+            results.append(_run_source(source, urls_to_run, search_row["id"], db, max_pages=max_pages))
 
         if max_pages is None and any(r["source"] in PT_SOURCES for r in results):
             duplicates_found = db.mark_pt_duplicates(search_row["id"])
