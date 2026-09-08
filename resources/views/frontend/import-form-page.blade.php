@@ -546,6 +546,37 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  /* ── Erros de validação (por campo) ── */
+  function clearFieldErrors() {
+    document.querySelectorAll('.if-field-error').forEach(el => el.remove());
+    document.querySelectorAll('.if-invalid').forEach(el => el.classList.remove('if-invalid'));
+  }
+
+  function showFieldErrors(errors) {
+    clearFieldErrors();
+    let firstField = null;
+    Object.keys(errors).forEach(function (key) {
+      const field = document.getElementById(key) || document.getElementsByName(key)[0];
+      if (!field) return;
+      field.classList.add('if-invalid');
+      const msg = document.createElement('span');
+      msg.className = 'if-field-error';
+      msg.textContent = errors[key][0];
+      field.insertAdjacentElement('afterend', msg);
+      if (!firstField) firstField = field;
+    });
+    if (firstField) firstField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  /* ── Limpar erro de um campo assim que o utilizador o corrige ── */
+  document.getElementById('importForm').addEventListener('input', function (e) {
+    const field = e.target;
+    if (!field.classList || !field.classList.contains('if-invalid')) return;
+    field.classList.remove('if-invalid');
+    const next = field.nextElementSibling;
+    if (next && next.classList.contains('if-field-error')) next.remove();
+  });
+
   /* ── AJAX submit ── */
   const form    = document.getElementById('importForm');
   const btn     = document.getElementById('ifSubmit');
@@ -573,7 +604,12 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(r => r.json().then(data => ({ ok: r.ok, data })))
     .then(({ ok, data }) => {
       if (ok && data.status === 'success') {
+        clearFieldErrors();
         form.reset();
+        adOpt.value = '';
+        retomaOpt.value = '';
+        clearRequired();
+        reqRetoma.forEach(id => { const el = document.getElementById(id); if (el) el.removeAttribute('required'); });
         adLinksBox.style.display = 'none';
         prefBox.style.display = 'none';
         retomaBox.style.display = 'none';
@@ -581,10 +617,14 @@ document.addEventListener('DOMContentLoaded', function () {
         renderRetomaPreviews();
         success.style.display = 'flex';
         success.scrollIntoView({ behavior:'smooth', block:'center' });
-      } else {
-        console.error('Falha ao submeter o formulário de importação:', data);
-        throw new Error();
+        return;
       }
+      if (data && data.errors) {
+        showFieldErrors(data.errors);
+        return;
+      }
+      console.error('Falha ao submeter o formulário de importação:', data);
+      errBox.style.display = 'flex';
     })
     .catch(() => {
       errBox.style.display = 'flex';
@@ -724,6 +764,10 @@ document.addEventListener('DOMContentLoaded', function () {
   border-color: var(--if-brand);
   box-shadow:0 0 0 3px rgba(110,7,7,.1);
 }
+.if-input.if-invalid, .if-select.if-invalid, .if-textarea.if-invalid {
+  border-color:#dc2626;
+}
+.if-field-error { display:block; font-size:.75rem; color:#dc2626; margin-top:.4rem; }
 .input-group .if-input { border-radius:var(--radius-sharp-sm) 0 0 var(--radius-sharp-sm); border-right:0; flex:1 1 auto; width:1%; min-width:0; }
 .input-group .input-group-text { border-radius:0 var(--radius-sharp-sm) var(--radius-sharp-sm) 0; border:1.5px solid var(--if-border); border-left:0; background:#f8f8f8; font-weight:600; }
 .if-textarea { resize:vertical; min-height:90px; }

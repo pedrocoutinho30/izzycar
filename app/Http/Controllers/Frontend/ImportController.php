@@ -26,7 +26,19 @@ class ImportController extends Controller
     {
         $validated = $request->validate([
             'name'                    => 'required|string|max:255',
-            'phone'                   => ['required', 'string', 'max:20', 'regex:/^(\+351|00351|351)?[\s\-]?[29]\d{8}$/'],
+            'phone'                   => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $digits = preg_replace('/[^0-9]/', '', $value);
+                    if (strlen($digits) > 9) {
+                        $digits = substr($digits, -9);
+                    }
+                    if (!preg_match('/^9[1236][0-9]{7}$/', $digits)) {
+                        $fail('O telemóvel indicado não é válido. Utilize um número de telemóvel português (ex: 912 345 678).');
+                    }
+                },
+            ],
             'email'                   => 'required|email:rfc',
             'source'                  => 'nullable|string|max:100',
             'message'                 => 'nullable|string|max:2000',
@@ -71,6 +83,15 @@ class ImportController extends Controller
             }
         }
         $formPropposalData['retoma_photos'] = $retomaPhotoPaths;
+
+        // Normaliza o telemóvel (remove espaços/traços/prefixo internacional)
+        // para manter o formato consistente na BD e na procura de duplicados.
+        $phoneDigits = preg_replace('/[^0-9]/', '', $formPropposalData['phone']);
+        if (strlen($phoneDigits) > 9) {
+            $phoneDigits = substr($phoneDigits, -9);
+        }
+        $formPropposalData['phone'] = $phoneDigits;
+
         $dataProcessingConsent = $request->boolean('data_processing_consent');
         $newsletterConsent = $request->boolean('newsletter_consent');
         $angariadorCode = $request->filled('angariador') ? $request->input('angariador') : null;
