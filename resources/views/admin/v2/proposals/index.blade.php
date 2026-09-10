@@ -178,6 +178,15 @@ return [$client->id => $client->name];
         $isStale = in_array($proposal->status, ['Pendente', 'Enviado']) && $proposal->created_at->lt(now()->subDays(30));
 
         $extraActions = [];
+        if ($proposal->status !== 'Aprovada') {
+            $extraActions[] = [
+                'icon'    => 'bi-check-circle',
+                'href'    => '#',
+                'color'   => 'success',
+                'label'   => 'Aceitar Cotação',
+                'onclick' => "acceptOne({$proposal->id}, this)"
+            ];
+        }
         if ($proposal->status !== 'Reprovada') {
             $extraActions[] = [
                 'icon'    => 'bi-x-circle',
@@ -506,6 +515,33 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 const CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
+
+function acceptOne(id, btn) {
+    if (!confirm('Aceitar esta cotação? Isto vai criar a Cotação Convertida correspondente.')) return;
+    btn.disabled = true;
+
+    fetch('{{ route("admin.v2.proposals.accept", ":id") }}'.replace(':id', id), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const wrapper = btn.closest('.proposal-card-wrapper') || btn.closest('.item-card');
+            if (wrapper) {
+                wrapper.style.transition = 'opacity 0.4s, transform 0.4s';
+                wrapper.style.opacity = '0';
+                wrapper.style.transform = 'translateX(20px)';
+            }
+            showStaleToast('Cotação aceite! A abrir a cotação convertida...', 'success');
+            setTimeout(() => { window.location.href = data.redirect; }, 900);
+        } else {
+            btn.disabled = false;
+            showStaleToast(data.message || 'Erro ao aceitar a cotação.', 'error');
+        }
+    })
+    .catch(() => { btn.disabled = false; showStaleToast('Erro ao aceitar a cotação.', 'error'); });
+}
 
 function rejectOne(id, btn) {
     if (!confirm('Reprovar esta cotação?')) return;
