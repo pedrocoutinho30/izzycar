@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Mpdf;
 use App\Models\Brand;
 use App\Models\ConvertedProposal;
+use App\Models\ConvertedProposalDocument;
 use App\Models\FormProposal;
 use App\Models\VehicleAttribute;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -904,9 +905,24 @@ class ProposalController extends Controller
         // Gerar PDF em memória
         $pdfContent = ContractService::generateContractPdf($client);
 
+        // Guardar o contrato gerado para ficar visível na página da cotação
+        // convertida ("Documentos Gerados/Enviados"), já que é enviado ao
+        // cliente por email mas nunca era persistido em lado nenhum.
+        $nomeFicheiro = 'contrato_' . $convertedProposal->id . '_' . now()->format('YmdHis') . '.pdf';
+        $caminho = "converted-proposals/{$convertedProposal->id}/{$nomeFicheiro}";
+        Storage::disk('local')->put($caminho, $pdfContent);
+        ConvertedProposalDocument::create([
+            'converted_proposal_id' => $convertedProposal->id,
+            'tipo' => 'gerado',
+            'nome_original' => 'Contrato de Prestação de Serviços',
+            'caminho' => $caminho,
+            'enviado_em' => now(),
+        ]);
+
         // Enviar para o cliente e em cc para admin
         Mail::to($client->email)
             ->cc('geral@izzycar.pt')
+            ->bcc('izzycarpt@gmail.com')
             ->send(new ProposalAcceptedMail($convertedProposal, $pdfContent, $data));
 
         // Enviar também ao angariador da lead (se existir), para que possa
@@ -915,6 +931,7 @@ class ProposalController extends Controller
         $owner = $convertedProposal->owner;
         if ($owner && $owner->email) {
             Mail::to($owner->email)
+                ->bcc('izzycarpt@gmail.com')
                 ->send(new ProposalAcceptedMail($convertedProposal, $pdfContent, $data, forAngariador: true));
         }
     }

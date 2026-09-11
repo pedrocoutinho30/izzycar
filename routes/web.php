@@ -632,6 +632,9 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/documents/signed', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'uploadSignedDocument'])->name('documents.uploadSigned');
+        Route::get('/{id}/documents/{document}/download', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'downloadDocument'])->name('documents.download');
+        Route::delete('/{id}/documents/{document}', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'deleteDocument'])->name('documents.destroy');
     });
 
     // ============================================================

@@ -839,13 +839,11 @@ $pendingValue = $totalValue - $paidValue;
                             </button>
                         </form>
 
-                        <form action="{{ route('admin.v2.angariadores.upload-receipt', $convertedProposal->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                            @csrf
-                            <label class="btn btn-sm btn-outline-secondary mb-0">
-                                <i class="bi bi-upload me-1"></i>{{ $convertedProposal->comprovativo_pagamento ? 'Substituir comprovativo' : 'Anexar comprovativo' }}
-                                <input type="file" name="comprovativo" accept=".jpg,.jpeg,.png,.pdf" class="d-none" onchange="this.form.submit()">
-                            </label>
-                        </form>
+                        <label class="btn btn-sm btn-outline-secondary mb-0">
+                            <i class="bi bi-upload me-1"></i>{{ $convertedProposal->comprovativo_pagamento ? 'Substituir comprovativo' : 'Anexar comprovativo' }}
+                            <input type="file" name="comprovativo" accept=".jpg,.jpeg,.png,.pdf" class="d-none"
+                                   onchange="ajaxFileUpload(this, '{{ route('admin.v2.angariadores.upload-receipt', $convertedProposal->id) }}')">
+                        </label>
                     </div>
 
                     @if($convertedProposal->comprovativo_pagamento)
@@ -883,6 +881,69 @@ $pendingValue = $totalValue - $paidValue;
                     </div>
                 </div>
             </div>
+
+            @if($isEdit)
+            <!-- DOCUMENTOS GERADOS/ENVIADOS -->
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5 class="modern-card-title"><i class="bi bi-file-earmark-check"></i> Documentos Gerados/Enviados</h5>
+                </div>
+                <div class="p-3">
+                    @php $generatedDocs = $convertedProposal->documents->where('tipo', 'gerado'); @endphp
+                    @if($generatedDocs->isEmpty())
+                        <p class="text-muted small mb-0">Ainda não foi gerado nenhum documento.</p>
+                    @else
+                        <ul class="list-unstyled mb-0">
+                            @foreach($generatedDocs as $doc)
+                            <li class="d-flex align-items-center justify-content-between py-1 border-bottom">
+                                <div>
+                                    <a href="{{ route('admin.v2.converted-proposals.documents.download', [$convertedProposal->id, $doc->id]) }}" target="_blank">
+                                        <i class="bi bi-file-earmark-pdf me-1"></i>{{ $doc->nome_original }}
+                                    </a>
+                                    @if($doc->enviado_em)
+                                    <div class="text-muted small">Enviado em {{ $doc->enviado_em->format('d/m/Y H:i') }}</div>
+                                    @endif
+                                </div>
+                            </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            </div>
+
+            <!-- DOCUMENTOS ASSINADOS -->
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5 class="modern-card-title"><i class="bi bi-file-earmark-lock2"></i> Documentos Assinados</h5>
+                </div>
+                <div class="p-3">
+                    @php $signedDocs = $convertedProposal->documents->where('tipo', 'assinado'); @endphp
+                    @if($signedDocs->isNotEmpty())
+                    <ul class="list-unstyled mb-2">
+                        @foreach($signedDocs as $doc)
+                        <li class="d-flex align-items-center justify-content-between py-1 border-bottom">
+                            <a href="{{ route('admin.v2.converted-proposals.documents.download', [$convertedProposal->id, $doc->id]) }}" target="_blank">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>{{ $doc->nome_original }}
+                            </a>
+                            <button type="button" class="btn btn-sm btn-link text-danger p-0"
+                                    onclick="ajaxDeleteDocument('{{ route('admin.v2.converted-proposals.documents.destroy', [$convertedProposal->id, $doc->id]) }}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </li>
+                        @endforeach
+                    </ul>
+                    @else
+                    <p class="text-muted small mb-2">Ainda não há documentos assinados carregados.</p>
+                    @endif
+
+                    <label class="btn btn-sm btn-outline-secondary mb-0">
+                        <i class="bi bi-upload me-1"></i>Carregar documento assinado
+                        <input type="file" name="ficheiro" accept=".jpg,.jpeg,.png,.pdf" class="d-none"
+                               onchange="ajaxFileUpload(this, '{{ route('admin.v2.converted-proposals.documents.uploadSigned', $convertedProposal->id) }}')">
+                    </label>
+                </div>
+            </div>
+            @endif
 
             @if($isEdit && isset($statusHistory) && $statusHistory->isNotEmpty())
             <!-- HISTÓRICO DE ESTADOS -->
@@ -964,6 +1025,51 @@ function togglePaidRow(checkbox) {
         dot.classList.replace('paid', 'pending');
         label.textContent = 'Pendente';
     }
+}
+
+// Estes uploads/remoções vivem dentro do <form> gigante de edição da cotação
+// convertida — um <form> aninhado dentro doutro não é HTML válido e o browser
+// ignora-o, submetendo tudo para a action do formulário exterior (guardar a
+// cotação). Por isso estes campos/botões não são <form>s próprios: disparam
+// um pedido via fetch() para a rota certa e recarregam a página no fim.
+function ajaxFileUpload(input, url) {
+    if (!input.files.length) return;
+    const fd = new FormData();
+    fd.append(input.name, input.files[0]);
+    fetch(url, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}' },
+        body: fd,
+    })
+    .then(r => {
+        if (r.ok) {
+            showToast('Documento carregado com sucesso.', 'success');
+            setTimeout(() => window.location.reload(), 900);
+        } else {
+            showToast('Erro ao carregar o documento.', 'error');
+        }
+    })
+    .catch(() => showToast('Erro de rede ao carregar o documento.', 'error'));
+}
+
+function ajaxDeleteDocument(url) {
+    if (!confirm('Remover este documento?')) return;
+    const fd = new FormData();
+    fd.append('_method', 'DELETE');
+    fetch(url, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}' },
+        body: fd,
+    })
+    .then(r => {
+        if (r.ok) {
+            showToast('Documento removido.', 'success');
+            setTimeout(() => window.location.reload(), 900);
+        } else {
+            showToast('Erro ao remover o documento.', 'error');
+        }
+    })
+    .catch(() => showToast('Erro de rede ao remover o documento.', 'error'));
 }
 
 function showToast(msg, type) {

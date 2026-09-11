@@ -82,13 +82,10 @@ class ProposalV2Controller extends Controller
                   ->where('created_at', '<', $staleCutoff);
         }
 
-        // FILTRO: Status — por defeito só mostra Pendente/Enviado; para ver as
-        // restantes (Aprovada, Reprovada, Sem resposta) é preciso escolher
-        // esse estado explicitamente no filtro.
+        // FILTRO: Status — por omissão mostra todas ("Todos" no filtro envia
+        // status="", que não deve aplicar nenhum where).
         if ($request->filled('status')) {
             $query->where('status', $request->status);
-        } elseif (!$request->boolean('stale')) {
-            $query->whereIn('status', $staleStatuses);
         }
 
         // FILTRO: Cliente

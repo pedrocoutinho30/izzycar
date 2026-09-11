@@ -80,6 +80,11 @@ class ConvertedProposal extends Model
         return $this->belongsTo(User::class, 'owner_id');
     }
 
+    public function documents()
+    {
+        return $this->hasMany(ConvertedProposalDocument::class);
+    }
+
     protected static function booted()
     {
         static::updated(function ($proposal) {
