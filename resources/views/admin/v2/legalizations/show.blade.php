@@ -128,6 +128,9 @@
                 <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modelo1460Modal">
                     <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Mod. 1460/1 (ISV)
                 </button>
+                <a href="{{ route('admin.legalizations.modelo1ra', $legalization) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Gerar Modelo 1 RA
+                </a>
                 <div class="input-group input-group-sm">
                     <input type="text" class="form-control font-monospace" id="trackingLinkInput" value="{{ $legalization->trackingUrl() }}" readonly>
                     <button class="btn btn-outline-secondary" type="button" onclick="copyTrackingLink()" title="Copiar link de acompanhamento">

@@ -9,6 +9,7 @@ use App\Models\Legalization;
 use App\Models\LegalizationDocument;
 use App\Models\V3Vehicle;
 use App\Services\Modelo1460PdfService;
+use App\Services\Modelo1RaPdfService;
 use App\Services\Modelo9PdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -336,6 +337,20 @@ class LegalizationController extends Controller
     {
         $pdfContent = (new Modelo9PdfService())->generate($legalization);
         $filename   = 'modelo9_imt_' . $legalization->id . '.pdf';
+
+        return response($pdfContent, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    // ---------------------------------------------------------------
+    // Gerar Modelo 1 RA — Requerimento de Registo Automóvel (IRN)
+    // ---------------------------------------------------------------
+    public function generateModelo1Ra(Legalization $legalization)
+    {
+        $pdfContent = (new Modelo1RaPdfService())->generate($legalization);
+        $filename   = 'modelo1ra_registo_automovel_' . $legalization->id . '.pdf';
 
         return response($pdfContent, 200, [
             'Content-Type'        => 'application/pdf',
