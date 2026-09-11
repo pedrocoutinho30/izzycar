@@ -40,7 +40,7 @@ class ConvertedProposalController extends Controller
     {
 
         $validator = \Validator::make($request->all(), [
-            'status' => 'required|in:Iniciada,Negociação Carro,Transporte,IPO,DAV,ISV,IMT,Matriculação,Entrega,Registo automóvel,Concluido,Cancelado',
+            'status' => 'required|in:Iniciada,Negociação Carro,Pagamento do Carro,Transporte,IPO,DAV,ISV,IMT,Matriculação,Entrega,Registo automóvel,Concluido,Cancelado',
             'url' => 'nullable|url',
             'client_id' => 'required|exists:clients,id',
             'proposal_id' => 'required|exists:proposals,id',
@@ -114,6 +114,7 @@ class ConvertedProposalController extends Controller
         $allStatus = [
             ['status' => 'Iniciada', 'icon' => 'fa fa-play'],
             ['status' => 'Negociação Carro', 'icon' => 'fa fa-car'],
+            ['status' => 'Pagamento do Carro', 'icon' => 'bi bi-credit-card'],
 
             ['status' => 'Transporte', 'icon' => 'fa fa-truck'],
             ['status' => 'IPO', 'icon' => 'fa fa-car'],

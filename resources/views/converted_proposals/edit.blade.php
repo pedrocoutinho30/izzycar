@@ -17,7 +17,7 @@
                 <label for="status" class="form-label">Estado</label>
                 <select name="status" id="status" class="form-control"
                     data-id="{{ $convertedProposal->id }}">
-                    @foreach(['Iniciada','Negociação Carro','Transporte','IPO','DAV','ISV','Matriculação','IMT','Entrega','Registo automóvel','Concluido','Cancelado'] as $status)
+                    @foreach(['Iniciada','Negociação Carro','Pagamento do Carro','Transporte','IPO','DAV','ISV','Matriculação','IMT','Entrega','Registo automóvel','Concluido','Cancelado'] as $status)
                     <option value="{{ $status }}" {{ $convertedProposal->status === $status ? 'selected' : '' }}>
                         {{ $status }}
                     </option>

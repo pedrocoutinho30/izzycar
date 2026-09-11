@@ -42,6 +42,8 @@
         $message = "Demos início ao processo do seu carro. Em breve terá novidades sobre os próximos passos.";
         } elseif ($newStatus === 'Negociação Carro') {
         $message = "Estamos a negociar o seu carro com o stand de origem, para garantir as melhores condições para si.";
+        } elseif ($newStatus === 'Pagamento do Carro') {
+        $message = "A negociação ficou fechada e estamos agora a tratar do pagamento do seu carro ao stand de origem.";
         } elseif ($newStatus === 'Transporte') {
         $message = "O seu carro já está a caminho! O transporte foi iniciado e em breve chegará a Portugal.";
         } elseif ($newStatus === 'IPO') {

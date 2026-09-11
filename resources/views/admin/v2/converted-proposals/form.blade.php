@@ -386,6 +386,7 @@ $isEdit = isset($convertedProposal);
 $allStatusSteps = [
     ['key' => 'Iniciada',          'icon' => 'bi-play-circle',          'label' => 'Iniciada'],
     ['key' => 'Negociação Carro',  'icon' => 'bi-chat-dots',            'label' => 'Negociação'],
+    ['key' => 'Pagamento do Carro', 'icon' => 'bi-credit-card',         'label' => 'Pagamento'],
     ['key' => 'Transporte',        'icon' => 'bi-truck',                'label' => 'Transporte'],
     ['key' => 'IPO',               'icon' => 'bi-clipboard-check',      'label' => 'IPO'],
     ['key' => 'DAV',               'icon' => 'bi-file-earmark-check',   'label' => 'DAV'],
