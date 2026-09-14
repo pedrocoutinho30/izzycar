@@ -174,6 +174,18 @@
                     <i class="bi bi-globe2 me-1"></i>Veículo Importado
                 </label>
             </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="home_featured" id="homeFeatured" value="1"
+                       {{ old('home_featured', $vehicle->home_featured) ? 'checked' : '' }}>
+                <label class="form-check-label" for="homeFeatured">
+                    <i class="bi bi-star-fill me-1"></i>Destacar na Homepage
+                </label>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <label class="form-label small mb-0 text-muted" for="homeFeaturedOrder">Ordem no destaque</label>
+                <input type="number" name="home_featured_order" id="homeFeaturedOrder" class="form-control form-control-sm" style="max-width:80px"
+                       value="{{ old('home_featured_order', $vehicle->home_featured_order) }}" min="0" placeholder="0">
+            </div>
         </div>
         <div class="col-md-4 d-flex align-items-end">
             <div id="importedHint" class="small {{ $vehicle->is_imported ? '' : 'd-none' }}" style="padding-bottom:.3rem">

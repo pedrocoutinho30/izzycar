@@ -126,7 +126,7 @@
         <div class="section-header text-center mb-4">
             <span class="section-badge fade-in-up">Os Nossos Veículos</span>
             <h2 class="section-title fade-in-up" data-delay="100">Alguns dos Nossos Veículos</h2>
-            <p class="section-description fade-in-up" data-delay="150">Viaturas já preparadas e prontas a conduzir, disponíveis para entrega imediata.</p>
+            <p class="section-description fade-in-up" data-delay="150">Conheça alguns dos veículos que já importámos para os nossos clientes.</p>
         </div>
 
         <div class="row g-4">

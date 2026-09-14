@@ -188,6 +188,8 @@ class V3VehicleController extends Controller
         ]);
 
         $validated['show_online'] = $request->boolean('show_online');
+        $validated['home_featured'] = $request->boolean('home_featured');
+        $validated['home_featured_order'] = $request->filled('home_featured_order') ? (int) $request->input('home_featured_order') : null;
         $validated['is_imported'] = $request->boolean('is_imported');
         if (empty($validated['month'])) {
             $validated['day'] = null;

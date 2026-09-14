@@ -37,8 +37,15 @@ class VehiclesController extends Controller
             return $vehicles->count();
         });
 
+        // Mostra os veículos marcados manualmente como "Destacar na Homepage"
+        // (ordenados por home_featured_order); se nenhum estiver marcado,
+        // cai para os últimos 3 adicionados, para a secção nunca ficar vazia.
         $last_vehicles = Cache::remember('v3last_vehicles', 600, function () use ($vehicles) {
-            return $vehicles->sortByDesc('created_at')->take(3);
+            $featured = $vehicles->where('home_featured', true)
+                ->sortBy(fn ($v) => $v->home_featured_order ?? PHP_INT_MAX)
+                ->values();
+
+            return $featured->isNotEmpty() ? $featured : $vehicles->sortByDesc('created_at')->take(3);
         });
 
         $page = Page::where('slug', 'homepage')

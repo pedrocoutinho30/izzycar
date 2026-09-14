@@ -21,7 +21,7 @@ class V3Vehicle extends Model
         'kilometers', 'power', 'cylinder_capacity',
         'color', 'vin', 'registration',
         'manufacture_date', 'register_date', 'available_to_sell_date',
-        'notes', 'ad_text', 'show_online', 'is_imported', 'status',
+        'notes', 'ad_text', 'show_online', 'home_featured', 'home_featured_order', 'is_imported', 'status',
         // Purchase
         'supplier_id',
         'purchase_price', 'purchase_date', 'purchase_type',
@@ -36,6 +36,7 @@ class V3Vehicle extends Model
         'available_to_sell_date' => 'date',
         'purchase_date'          => 'date',
         'show_online'            => 'boolean',
+        'home_featured'          => 'boolean',
         'is_imported'            => 'boolean',
         'purchase_price'         => 'float',
         'purchase_vat_rate'      => 'float',
