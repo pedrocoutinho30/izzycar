@@ -182,8 +182,8 @@
         </div>
 
         <div class="text-center mt-5">
-            <a href="{{ route('vehicles.list') }}" class="btn-hero-secondary">
-                <span>Ver Todas as Viaturas</span>
+            <a href="{{ route('vehicles.list') }}" class="veh-home-more-btn">
+                <span>Ver Todas</span>
                 <span class="material-symbols-outlined">arrow_forward</span>
             </a>
         </div>
@@ -911,6 +911,26 @@
     }
 
     .veh-home-card:hover .veh-home-cta { color: var(--accent-color); }
+
+    .veh-home-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 36px;
+        background: transparent;
+        color: var(--accent-color);
+        border: 2px solid var(--accent-color);
+        border-radius: var(--radius-sharp-sm);
+        font-size: 1.05rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .veh-home-more-btn:hover {
+        background: var(--accent-color);
+        color: #fff;
+    }
 
     /* ── Porquê Escolher-nos — 3 cards pequenos ── */
     .why-section-simple {
