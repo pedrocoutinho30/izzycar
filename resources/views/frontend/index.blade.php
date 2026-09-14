@@ -119,6 +119,78 @@
     </div>
 </section>
 
+@if($last_vehicles->isNotEmpty())
+<!-- Os Nossos Veículos — 3 últimos adicionados ao stock -->
+<section class="veh-home-section section-padding">
+    <div class="container">
+        <div class="section-header text-center mb-4">
+            <span class="section-badge fade-in-up">Os Nossos Veículos</span>
+            <h2 class="section-title fade-in-up" data-delay="100">Alguns dos Nossos Veículos</h2>
+            <p class="section-description fade-in-up" data-delay="150">Viaturas já preparadas e prontas a conduzir, disponíveis para entrega imediata.</p>
+        </div>
+
+        <div class="row g-4">
+            @foreach($last_vehicles as $vehicle)
+            @php
+                $cover = $vehicle->coverPhoto;
+                $coverUrl = $cover ? asset('storage/' . $cover->path) : asset('img/no-image.png');
+            @endphp
+            <div class="col-lg-4 col-md-6">
+                <a href="{{ route('vehicles.details', [
+                    'brand' => Str::slug($vehicle->brand ?? ''),
+                    'model' => Str::slug($vehicle->model ?? ''),
+                    'id'    => $vehicle->reference
+                ]) }}" class="veh-home-card fade-in-up">
+                    <div class="veh-home-img-wrap">
+                        <img src="{{ $coverUrl }}" loading="lazy"
+                             alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
+                             style="object-position: {{ $vehicle->coverPhoto?->focal_x ?? 50 }}% {{ $vehicle->coverPhoto?->focal_y ?? 50 }}%">
+                        @if($vehicle->status === 'reservado')
+                        <span class="veh-home-badge veh-home-badge--reservado">Reservado</span>
+                        @elseif($vehicle->status === 'vendido')
+                        <span class="veh-home-badge veh-home-badge--vendido">Vendido</span>
+                        @endif
+                    </div>
+                    <div class="veh-home-body">
+                        <div class="veh-home-title">
+                            <span class="veh-home-brand">{{ $vehicle->brand }}</span>
+                            <span class="veh-home-model">{{ $vehicle->model }}</span>
+                        </div>
+                        <div class="veh-home-specs">
+                            @if($vehicle->year)
+                            <span class="veh-home-spec"><i class="bi bi-calendar3"></i> {{ $vehicle->year_label }}</span>
+                            @endif
+                            @if($vehicle->kilometers)
+                            <span class="veh-home-spec"><i class="bi bi-speedometer2"></i> {{ number_format($vehicle->kilometers, 0, ',', ' ') }} km</span>
+                            @endif
+                            @if($vehicle->fuel)
+                            <span class="veh-home-spec"><i class="bi bi-fuel-pump"></i> {{ $vehicle->fuel }}</span>
+                            @endif
+                        </div>
+                        <div class="veh-home-footer">
+                            @if($vehicle->status === 'reservado' || $vehicle->status === 'vendido')
+                            <span class="veh-home-cta">Ver detalhes <i class="bi bi-arrow-right"></i></span>
+                            @elseif($vehicle->asking_price)
+                            <span class="veh-home-price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }} €</span>
+                            <span class="veh-home-cta">Ver detalhes <i class="bi bi-arrow-right"></i></span>
+                            @endif
+                        </div>
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{{ route('vehicles.list') }}" class="btn-hero-secondary">
+                <span>Ver Todas as Viaturas</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+        </div>
+    </div>
+</section>
+@endif
+
 <!-- Porquê Escolher-nos — 3 cards pequenos -->
 <section class="why-section-simple section-padding">
     <div class="container">
@@ -724,6 +796,121 @@
     @media (prefers-reduced-motion: reduce) {
         .road-divider-line, .road-divider-car { animation: none; }
     }
+
+    /* ── Os Nossos Veículos ── */
+    .veh-home-section {
+        background: #fff;
+    }
+
+    .veh-home-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: var(--radius-sharp-md);
+        overflow: hidden;
+        text-decoration: none;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .veh-home-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+    }
+
+    .veh-home-img-wrap {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        background: #f4f4f4;
+        overflow: hidden;
+    }
+
+    .veh-home-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .veh-home-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 5px 14px;
+        border-radius: var(--radius-sharp-sm);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #fff;
+    }
+
+    .veh-home-badge--reservado { background: #d97706; }
+    .veh-home-badge--vendido   { background: #6b7280; }
+
+    .veh-home-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 1.25rem;
+    }
+
+    .veh-home-title {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        align-items: baseline;
+        margin-bottom: 0.6rem;
+    }
+
+    .veh-home-brand {
+        font-weight: 800;
+        font-size: 1.05rem;
+        color: #111;
+    }
+
+    .veh-home-model {
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .veh-home-specs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .veh-home-specs i { color: var(--accent-color); margin-right: 0.25rem; }
+
+    .veh-home-footer {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.75rem;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .veh-home-price {
+        font-weight: 800;
+        font-size: 1.15rem;
+        color: var(--accent-color);
+    }
+
+    .veh-home-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #111;
+    }
+
+    .veh-home-card:hover .veh-home-cta { color: var(--accent-color); }
 
     /* ── Porquê Escolher-nos — 3 cards pequenos ── */
     .why-section-simple {

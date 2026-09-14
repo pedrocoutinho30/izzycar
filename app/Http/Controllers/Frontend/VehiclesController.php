@@ -38,7 +38,7 @@ class VehiclesController extends Controller
         });
 
         $last_vehicles = Cache::remember('v3last_vehicles', 600, function () use ($vehicles) {
-            return $vehicles->sortByDesc('created_at')->take(5);
+            return $vehicles->sortByDesc('created_at')->take(3);
         });
 
         $page = Page::where('slug', 'homepage')
