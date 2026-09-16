@@ -50,7 +50,30 @@ class RadarValueScoreService
             'de_ranks' => $this->ranks($deScored),
             'pt_ranks' => $this->ranks($ptScored),
             'de_stars' => $deStars,
+            'de_scores' => $deScored->pluck('score', 'id')->all(),
+            'pt_scores' => $ptScored->pluck('score', 'id')->all(),
         ];
+    }
+
+    /**
+     * Traduz o score bruto (0 a 3 - soma de 3 frações 0/1, 1.5 = neutro) num
+     * nível de oportunidade para apresentação visual (cor discreta + rótulo),
+     * usado nos cartões do Radar em vez do número em bruto.
+     *
+     * @return array{label: string, class: string}
+     */
+    public static function tier(?float $score): array
+    {
+        if ($score === null) {
+            return ['label' => 'Sem dados', 'class' => 'radar-tier-none'];
+        }
+
+        return match (true) {
+            $score >= 2.0 => ['label' => 'Excelente', 'class' => 'radar-tier-excelente'],
+            $score >= 1.5 => ['label' => 'Bom', 'class' => 'radar-tier-bom'],
+            $score >= 1.0 => ['label' => 'Médio', 'class' => 'radar-tier-medio'],
+            default => ['label' => 'Fraco', 'class' => 'radar-tier-fraco'],
+        };
     }
 
     /** @param string|array<int, string> $source */

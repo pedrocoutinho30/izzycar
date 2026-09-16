@@ -156,17 +156,17 @@
         </div>
         <p class="text-muted small px-3 pb-2 mb-0">
             <span class="badge bg-light text-dark border">Nº</span> = posição no ranking de melhor combinação ano/kms/preço desta origem (1 = melhor).
+            A cor do cartão indica a mesma coisa de forma visual (verde = melhor negócio, vermelho = pior).
             @if(!empty($deStars))
                 &nbsp;⭐ = melhor combinação ano/kms/preço do que o melhor anúncio em Portugal.
             @endif
         </p>
-        <div class="modern-card-body p-0">
+        <div class="modern-card-body p-3">
             @include('admin.v2.radar._listings-table', [
                 'listings' => $listings,
                 'ranks' => $deRanks,
+                'scores' => $deScores,
                 'stars' => $deStars,
-                'cheapestId' => $deStats['cheapest_id'],
-                'mostExpensiveId' => $deStats['most_expensive_id'],
                 'importCost' => (float) ($radarSearch->import_cost_eur ?? 0),
                 'newSince' => $newSince,
             ])
@@ -191,13 +191,12 @@
                 Anúncios que parecem ser o mesmo carro em ambos os sites são automaticamente fundidos num só.
             @endif
         </p>
-        <div class="modern-card-body p-0">
+        <div class="modern-card-body p-3">
             @include('admin.v2.radar._listings-table', [
                 'listings' => $ptListings,
                 'averageToggle' => true,
                 'ranks' => $ptRanks,
-                'cheapestId' => $ptStats['cheapest_id'],
-                'mostExpensiveId' => $ptStats['most_expensive_id'],
+                'scores' => $ptScores,
                 'showSource' => $radarSearch->standvirtual_base_url && $radarSearch->carmine_base_url,
                 'newSince' => $newSince,
             ])
@@ -296,9 +295,8 @@
         })
             .then(r => r.json())
             .then(data => {
-                const row = checkbox.closest('tr');
-                row.classList.toggle('text-muted', !checkbox.checked);
-                row.style.opacity = checkbox.checked ? '' : '.55';
+                const card = checkbox.closest('.radar-card');
+                card.classList.toggle('radar-card--excluded', !checkbox.checked);
                 updateStats(data);
             })
             .finally(() => { checkbox.disabled = false; });
@@ -306,4 +304,113 @@
 })();
 </script>
 @endif
+
+@push('styles')
+<style>
+    /* Radar — cartões de oportunidade (RadarValueScoreService::tier()).
+       Cor discreta (borda esquerda + selo pequeno), não o cartão inteiro,
+       para o sinal ser visível sem ficar berrante. */
+    .radar-card {
+        position: relative;
+        height: 100%;
+        background: #fff;
+        border: 1px solid var(--admin-border, #dee2e6);
+        border-left: 4px solid transparent;
+        border-radius: var(--border-radius, 12px);
+        padding: 0.9rem 1rem;
+        transition: var(--transition, all .2s ease);
+    }
+
+    .radar-card:hover {
+        box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,.08));
+    }
+
+    .radar-card--excluded {
+        opacity: .5;
+    }
+
+    .radar-tier-excelente { border-left-color: #198754; }
+    .radar-tier-bom       { border-left-color: #6fbf73; }
+    .radar-tier-medio     { border-left-color: #ffc107; }
+    .radar-tier-fraco     { border-left-color: #dc3545; }
+    .radar-tier-none      { border-left-color: #adb5bd; }
+
+    .radar-tier-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+    }
+
+    .radar-tier-excelente .radar-tier-badge { background: rgba(25,135,84,.12); color: #146c43; }
+    .radar-tier-bom .radar-tier-badge       { background: rgba(111,191,115,.15); color: #3f7a44; }
+    .radar-tier-medio .radar-tier-badge     { background: rgba(255,193,7,.18); color: #8a6400; }
+    .radar-tier-fraco .radar-tier-badge     { background: rgba(220,53,69,.12); color: #a52834; }
+    .radar-tier-none .radar-tier-badge      { background: rgba(173,181,189,.2); color: #495057; }
+
+    .radar-badge-novo {
+        background: rgba(13,110,253,.12);
+        color: #0d47a1;
+        font-weight: 600;
+    }
+
+    .radar-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .radar-card-title {
+        font-weight: 700;
+        color: var(--admin-secondary, #111);
+    }
+
+    .radar-card-version {
+        margin-bottom: 0.4rem;
+    }
+
+    .radar-card-specs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem 0.9rem;
+        font-size: 0.82rem;
+        color: #495057;
+        margin: 0.5rem 0 0.7rem;
+    }
+
+    .radar-card-specs i { color: var(--admin-primary, #6e0707); margin-right: 0.2rem; }
+
+    .radar-card-footer {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding-top: 0.6rem;
+        border-top: 1px solid var(--admin-light, #f8f9fa);
+    }
+
+    .radar-card-price {
+        font-weight: 800;
+        font-size: 1.05rem;
+        color: var(--admin-secondary, #111);
+    }
+
+    .radar-card-actions a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--admin-light, #f8f9fa);
+        color: var(--admin-primary, #6e0707);
+        margin-left: 0.35rem;
+    }
+
+    .radar-sort-chip a { font-size: 0.85rem; font-weight: 600; }
+</style>
+@endpush
 @endsection

@@ -134,6 +134,8 @@ class RadarController extends Controller
             'deRanks' => $scores['de_ranks'],
             'ptRanks' => $scores['pt_ranks'],
             'deStars' => $scores['de_stars'],
+            'deScores' => $scores['de_scores'],
+            'ptScores' => $scores['pt_scores'],
             'runs' => $runs,
             'sort' => $sort,
             'dir' => $dir,
