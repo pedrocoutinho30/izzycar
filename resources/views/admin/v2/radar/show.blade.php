@@ -157,6 +157,7 @@
         <p class="text-muted small px-3 pb-2 mb-0">
             <span class="badge bg-light text-dark border">Nº</span> = posição no ranking de melhor combinação ano/kms/preço desta origem (1 = melhor).
             A cor do cartão indica a mesma coisa de forma visual (verde = melhor negócio, vermelho = pior).
+            Quando a versão indica um trim acima da base (ex.: "trim +35%"), o preço é ajustado antes de comparar, para não penalizar versões topo de gama só por serem mais caras.
             @if(!empty($deStars))
                 &nbsp;⭐ = melhor combinação ano/kms/preço do que o melhor anúncio em Portugal.
             @endif
@@ -370,6 +371,18 @@
 
     .radar-card-version {
         margin-bottom: 0.4rem;
+    }
+
+    .radar-trim-note {
+        display: inline-block;
+        margin-left: 0.4rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #8a6400;
+        background: rgba(255,193,7,.15);
+        border-radius: 999px;
+        padding: 0.05rem 0.5rem;
+        cursor: help;
     }
 
     .radar-card-specs {

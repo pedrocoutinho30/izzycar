@@ -22,6 +22,12 @@ use Illuminate\Support\Collection;
  * sempre o "custo de importação" definido na pesquisa (radar_searches.
  * import_cost_eur) - a comparação/ranking deve refletir o custo REAL de trazer
  * o carro para Portugal, não só o preço de tabela no anúncio original.
+ *
+ * O preço usado no score é também dividido pelo trim_price_multiplier do
+ * anúncio (classificado por IA - ver RadarTrimPriceAiService/
+ * ClassifyRadarListingTrims), para que versões topo de gama (ex.: "Turbo S")
+ * não pareçam sempre má compra só por serem naturalmente mais caras do que a
+ * versão base (ex.: "4S") do mesmo modelo.
  */
 class RadarValueScoreService
 {
@@ -98,11 +104,20 @@ class RadarValueScoreService
             $query->whereHas('equipment', fn ($q) => $q->where('radar_equipment.id', $equipmentId));
         }
 
-        $rows = $query->get(['id', 'price_eur', 'mileage_km', 'first_registration_year']);
+        $rows = $query->get(['id', 'price_eur', 'mileage_km', 'first_registration_year', 'trim_price_multiplier']);
 
         if ($priceOffset != 0) {
             $rows->each(fn ($row) => $row->price_eur += $priceOffset);
         }
+
+        // Preço ajustado ao nível de trim/versão (ver RadarTrimPriceAiService):
+        // uma versão topo de gama naturalmente mais cara não deve parecer "má
+        // compra" só por isso - o score deve refletir se é um bom negócio PARA
+        // essa versão, não o preço absoluto. Sem classificação (ainda não
+        // processado pela IA), o multiplicador é 1.0 e nada muda.
+        $rows->each(function ($row) {
+            $row->adjusted_price = $row->price_eur / ($row->trim_price_multiplier ?: 1.0);
+        });
 
         return $rows;
     }
@@ -110,7 +125,7 @@ class RadarValueScoreService
     private function bounds(Collection $rows): array
     {
         return [
-            'price' => [$rows->min('price_eur'), $rows->max('price_eur')],
+            'price' => [$rows->min('adjusted_price'), $rows->max('adjusted_price')],
             'km' => [$rows->min('mileage_km'), $rows->max('mileage_km')],
             'year' => [$rows->min('first_registration_year'), $rows->max('first_registration_year')],
         ];
@@ -130,7 +145,7 @@ class RadarValueScoreService
     private function scoreRows(Collection $rows, array $bounds): Collection
     {
         return $rows->map(function ($row) use ($bounds) {
-            $score = $this->fraction($row->price_eur, $bounds['price'][0], $bounds['price'][1], false)
+            $score = $this->fraction($row->adjusted_price, $bounds['price'][0], $bounds['price'][1], false)
                 + $this->fraction($row->mileage_km, $bounds['km'][0], $bounds['km'][1], false)
                 + $this->fraction($row->first_registration_year, $bounds['year'][0], $bounds['year'][1], true);
 

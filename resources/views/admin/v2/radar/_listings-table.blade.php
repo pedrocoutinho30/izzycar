@@ -64,7 +64,14 @@ o Nº de ranking já dava, mas percetível de relance sem ler números.
                     @endif
                 </div>
                 @if($listing->version)
-                <div class="radar-card-version text-muted small">{{ $listing->version }}</div>
+                <div class="radar-card-version text-muted small">
+                    {{ $listing->version }}
+                    @if($listing->trim_price_multiplier && $listing->trim_price_multiplier > 1.05)
+                        <span class="radar-trim-note" title="Estimativa por IA de quanto esta versão costuma custar a mais do que a versão base do modelo - o score já tem isto em conta.">
+                            trim +{{ number_format(($listing->trim_price_multiplier - 1) * 100, 0) }}%
+                        </span>
+                    @endif
+                </div>
                 @endif
 
                 <div class="radar-card-specs">

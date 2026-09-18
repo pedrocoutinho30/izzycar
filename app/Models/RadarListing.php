@@ -10,7 +10,7 @@ class RadarListing extends Model
         'external_id', 'source', 'radar_search_id', 'make', 'model', 'version',
         'first_registration_year', 'mileage_km', 'power_hp', 'fuel', 'gearbox',
         'body_type', 'seller_type', 'seller_name', 'seller_phone', 'location_zip', 'location_city',
-        'price_eur', 'include_in_average', 'duplicate_of_listing_id', 'url',
+        'price_eur', 'trim_price_multiplier', 'trim_classified_at', 'include_in_average', 'duplicate_of_listing_id', 'url',
         'first_seen_at', 'last_seen_at', 'removed_at',
     ];
 
@@ -19,6 +19,8 @@ class RadarListing extends Model
         'first_seen_at' => 'datetime',
         'last_seen_at' => 'datetime',
         'removed_at' => 'datetime',
+        'trim_classified_at' => 'datetime',
+        'trim_price_multiplier' => 'float',
     ];
 
     public function search()

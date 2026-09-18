@@ -59,6 +59,11 @@ class Kernel extends ConsoleKernel
         // hora: uma pesquisa com a AutoScout24 nos 8 países da Europa já demora
         // minutos, várias seguidas pode demorar bastante mais)
         $schedule->command('radar:refresh-active')->cron('0 6,14,22 * * *');
+
+        // Classificar (via IA) o multiplicador de preço de trim dos anúncios
+        // novos que o refresh acima acabou de trazer - 30min depois, para dar
+        // tempo ao scrape de terminar.
+        $schedule->command('radar:classify-trims')->cron('30 6,14,22 * * *');
     }
 
     /**
