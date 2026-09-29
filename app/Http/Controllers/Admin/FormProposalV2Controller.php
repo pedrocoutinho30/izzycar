@@ -17,13 +17,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\FormProposal;
 use App\Models\Client;
+use App\Services\ImportOpportunityService;
 use Illuminate\Http\Request;
 
 class FormProposalV2Controller extends Controller
 {
     public function index(Request $request)
     {
-        $query = FormProposal::orderBy('created_at', 'desc');
+        $query = FormProposal::withCount('opportunities')->orderBy('created_at', 'desc');
 
         // Filtros
         if ($request->filled('status')) {
@@ -53,10 +54,14 @@ class FormProposalV2Controller extends Controller
         return view('admin.v2.form-proposals.index', compact('formProposals', 'stats'));
     }
 
-    public function show($id)
+    public function show($id, ImportOpportunityService $opportunityService)
     {
-        $formProposal = FormProposal::findOrFail($id);
-        return view('admin.v2.form-proposals.show', compact('formProposal'));
+        $formProposal = FormProposal::with('opportunities.checklistEntries')->findOrFail($id);
+
+        $opportunityProgress = $formProposal->opportunities
+            ->mapWithKeys(fn ($opportunity) => [$opportunity->id => $opportunityService->progress($opportunity)]);
+
+        return view('admin.v2.form-proposals.show', compact('formProposal', 'opportunityProgress'));
     }
 
     public function updateStatus(Request $request, $id)
@@ -105,9 +110,12 @@ class FormProposalV2Controller extends Controller
         return response()->json(['success' => true, 'count' => $formProposals->count()]);
     }
 
-    public function destroy($id)
+    public function destroy($id, ImportOpportunityService $opportunityService)
     {
         $formProposal = FormProposal::findOrFail($id);
+
+        // As oportunidades são eliminadas em cascata pela FK; as fotos não.
+        $opportunityService->deletePhotosFor($formProposal);
         $formProposal->delete();
 
         return redirect()->route('admin.v2.form-proposals.index')

@@ -313,6 +313,9 @@
             </div>
         </div>
     </div>
+
+    <div class="mt-4">@include('admin.v2.form-proposals.opportunities._flash')</div>
+    @include('admin.v2.form-proposals.partials.opportunities')
 </div>
 
 <style>

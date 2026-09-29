@@ -50,4 +50,9 @@ class FormProposal extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    public function opportunities()
+    {
+        return $this->hasMany(ImportOpportunity::class)->latest();
+    }
 }

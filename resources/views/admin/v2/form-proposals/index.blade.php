@@ -164,7 +164,9 @@
                         'label' => 'Eliminar',
                         'color' => 'danger',
                         'method' => 'delete',
-                        'confirm' => 'Tem a certeza que pretende eliminar este formulário?'
+                        'confirm' => $form->opportunities_count > 0
+                            ? "Este pedido tem {$form->opportunities_count} oportunidade(s), que também serão eliminadas. Tem a certeza que pretende eliminar este formulário?"
+                            : 'Tem a certeza que pretende eliminar este formulário?'
                     ]
                 ]
             ])

@@ -256,6 +256,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::get('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'create'])->name('create');
         Route::get('/create-from-form/{formProposalId}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'createFromForm'])->name('createFromForm');
+        Route::get('/create-from-opportunity/{opportunity}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'createFromOpportunity'])->name('createFromOpportunity');
         Route::post('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'store'])->name('store');
         Route::post('/match-attributes-ai', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'matchAttributesAi'])->name('matchAttributesAi');
         Route::post('/import-from-listing', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'importFromListing'])->name('importFromListing');
@@ -345,6 +346,21 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
         Route::get('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'show'])->name('show');
         Route::patch('/{id}/status', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'updateStatus'])->name('update-status');
         Route::delete('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'destroy'])->name('destroy');
+    });
+
+    // ============================================================
+    // OPORTUNIDADES DE UM PEDIDO DE IMPORTAÇÃO
+    // ============================================================
+    Route::prefix('v2/form-proposals/{formProposal}/oportunidades')->name('admin.v2.form-proposals.opportunities.')->scopeBindings()->group(function () {
+        Route::post('/', [App\Http\Controllers\Admin\ImportOpportunityController::class, 'store'])->name('store');
+        Route::get('/{opportunity}', [App\Http\Controllers\Admin\ImportOpportunityController::class, 'show'])->name('show');
+        Route::put('/{opportunity}', [App\Http\Controllers\Admin\ImportOpportunityController::class, 'update'])->name('update');
+        Route::delete('/{opportunity}', [App\Http\Controllers\Admin\ImportOpportunityController::class, 'destroy'])->name('destroy');
+        Route::patch('/{opportunity}/estado', [App\Http\Controllers\Admin\ImportOpportunityController::class, 'updateStatus'])->name('update-status');
+        Route::patch('/{opportunity}/checklist', [App\Http\Controllers\Admin\ImportOpportunityController::class, 'updateChecklist'])->name('update-checklist');
+        Route::patch('/{opportunity}/notas', [App\Http\Controllers\Admin\ImportOpportunityController::class, 'updateNotes'])->name('update-notes');
+        Route::post('/{opportunity}/contactos', [App\Http\Controllers\Admin\ImportOpportunityContactController::class, 'store'])->name('contacts.store');
+        Route::delete('/{opportunity}/contactos/{contact}', [App\Http\Controllers\Admin\ImportOpportunityContactController::class, 'destroy'])->name('contacts.destroy');
     });
 
     // ============================================================

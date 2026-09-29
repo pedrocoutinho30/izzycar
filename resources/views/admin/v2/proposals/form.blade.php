@@ -41,14 +41,22 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
 
 @if(isset($formProposal))
 <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-left:4px solid #3b82f6;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-    <i class="bi bi-envelope-fill" style="font-size:1.3rem;color:#3b82f6;flex-shrink:0"></i>
+    <i class="bi {{ isset($importOpportunity) ? 'bi-car-front-fill' : 'bi-envelope-fill' }}" style="font-size:1.3rem;color:#3b82f6;flex-shrink:0"></i>
     <div style="flex:1">
+        @isset($importOpportunity)
+        <strong style="display:block;font-size:0.9rem;color:#1e40af">Cotação a partir da oportunidade {{ $importOpportunity->title }} — pedido de {{ $formProposal->name }}</strong>
+        <span style="font-size:0.8rem;color:#3b82f6">Os dados foram pré-preenchidos com o carro da oportunidade. Confirma e completa antes de guardar.</span>
+        @if(!empty($catalogWarning))
+        <span style="display:block;font-size:0.8rem;color:#b45309;margin-top:0.25rem"><i class="bi bi-exclamation-triangle"></i> {{ $catalogWarning }}</span>
+        @endif
+        @else
         <strong style="display:block;font-size:0.9rem;color:#1e40af">Cotação a partir do formulário de {{ $formProposal->name }}</strong>
         <span style="font-size:0.8rem;color:#3b82f6">Os dados foram pré-preenchidos com as preferências do pedido. Confirma e completa antes de guardar.</span>
+        @endisset
     </div>
-    <a href="{{ route('admin.v2.form-proposals.show', $formProposal->id) }}"
+    <a href="{{ isset($importOpportunity) ? route('admin.v2.form-proposals.opportunities.show', [$formProposal->id, $importOpportunity->id]) : route('admin.v2.form-proposals.show', $formProposal->id) }}"
        style="font-size:0.8rem;font-weight:600;color:#3b82f6;text-decoration:none;padding:0.4rem 0.8rem;border:1.5px solid #3b82f6;border-radius:8px;white-space:nowrap">
-        <i class="bi bi-arrow-left"></i> Ver formulário
+        <i class="bi bi-arrow-left"></i> {{ isset($importOpportunity) ? 'Ver oportunidade' : 'Ver formulário' }}
     </a>
 </div>
 @endif
@@ -67,6 +75,9 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
     @if(isset($formProposal))
     <input type="hidden" name="form_proposal_id" value="{{ $formProposal->id }}">
     @endif
+    @isset($importOpportunity)
+    <input type="hidden" name="import_opportunity_id" value="{{ $importOpportunity->id }}">
+    @endisset
 
     <div class="row g-4">
         <!-- Coluna Principal (Esquerda) -->
@@ -749,6 +760,13 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+
+                @if(isset($importOpportunity) && $importOpportunity->photo_url)
+                <div class="d-flex align-items-center gap-2 mb-3 small text-muted">
+                    <img src="{{ $importOpportunity->photo_url }}" alt="" style="width:64px;height:48px;object-fit:cover;border-radius:6px">
+                    Sem nova imagem, será usada a foto da oportunidade.
+                </div>
+                @endif
 
                 <!-- Preview de imagem existente -->
                 @if(isset($proposal) && $proposal->images)

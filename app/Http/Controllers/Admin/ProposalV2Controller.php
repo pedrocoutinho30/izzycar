@@ -42,7 +42,9 @@ use App\Models\Brand;
 use App\Models\VehicleAttribute;
 use App\Models\ProposalAttributeValue;
 use App\Models\AttributeGroup;
+use App\Models\ImportOpportunity;
 use App\Services\ImageOptimizerService;
+use App\Services\ImportOpportunityService;
 use App\Services\VehicleListingImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -207,29 +209,8 @@ class ProposalV2Controller extends Controller
     {
         $formProposal = FormProposal::findOrFail($formProposalId);
 
-        $clients = Client::where('is_lead', false)->orderBy('name')->get();
-        $leads   = Client::where('is_lead', true)->orderBy('name')->get();
-        $brands  = Brand::with(['models' => function ($q) { $q->orderBy('name'); }])->get();
-
-        $groupOrder = AttributeGroup::orderBy('order')->get()->pluck('name')->toArray();
-        $attributes = VehicleAttribute::orderBy('order')->get()
-            ->groupBy('attribute_group')
-            ->sortBy(fn ($group, $key) => array_search($key, $groupOrder));
-
-        $defaults = [
-            'transport_cost'             => 1350,
-            'ipo_cost'                   => 100,
-            'imt_cost'                   => 45,
-            'registration_cost'          => 65,
-            'isv_cost'                   => 0,
-            'license_plate_cost'         => 20,
-            'inspection_commission_cost' => 350,
-            'commission_cost'            => 615,
-            'iuc_cost'                   => 0,
-        ];
-
         // Objeto pré-preenchido com dados do formulário
-        $proposal = (object) [
+        $proposal = $this->prefilledProposal([
             'client_id'           => $formProposal->client_id,
             'brand'               => $formProposal->brand,
             'model'               => $formProposal->model,
@@ -238,23 +219,104 @@ class ProposalV2Controller extends Controller
             'proposed_car_value'  => $formProposal->budget,
             'proposed_car_mileage'=> $formProposal->km_max,
             'notes'               => $formProposal->message,
-            'status'              => 'Pendente',
-            'url'                 => null,
-            'year'                => null,
-            'mileage'             => null,
-            'engine_capacity'     => null,
-            'co2'                 => null,
-            'value'               => null,
-            'proposed_car_year_month' => null,
-            'proposed_car_notes'  => null,
-            'proposed_car_features' => null,
-            'other_links'         => null,
-            'images'              => null,
-        ];
+        ]);
 
-        return view('admin.v2.proposals.form', compact(
-            'clients', 'leads', 'brands', 'attributes', 'defaults', 'proposal', 'formProposal'
-        ));
+        return view('admin.v2.proposals.form', $this->formViewData() + compact('proposal', 'formProposal'));
+    }
+
+    /**
+     * Cotação a partir de uma Oportunidade do Pedido de Importação: o mesmo
+     * formulário, pré-preenchido com o carro encontrado. Uma cotação por
+     * oportunidade — se já existir, abre-a.
+     */
+    public function createFromOpportunity(ImportOpportunity $opportunity)
+    {
+        if ($opportunity->proposal_id && $opportunity->proposal) {
+            return redirect()->route('admin.v2.proposals.edit', $opportunity->proposal_id)
+                ->with('info', 'Esta oportunidade já tem cotação.');
+        }
+
+        $formProposal = $opportunity->formProposal;
+        $importOpportunity = $opportunity;
+        $viewData = $this->formViewData();
+
+        // Marca/modelo são selects do catálogo: na oportunidade são texto livre,
+        // por isso procura-se o nome equivalente sem diferenciar maiúsculas.
+        $sameName = fn (string $a, ?string $b) => mb_strtolower(trim($a)) === mb_strtolower(trim((string) $b));
+        $catalogBrand = $viewData['brands']->first(fn ($brand) => $sameName($brand->name, $opportunity->brand));
+        $catalogModel = $catalogBrand?->models->first(fn ($model) => $sameName($model->name, $opportunity->model));
+        $catalogWarning = ! $catalogBrand || ! $catalogModel
+            ? "\"{$opportunity->brand} {$opportunity->model}\" não corresponde a uma marca/modelo do catálogo — selecione manualmente."
+            : null;
+
+        $proposal = $this->prefilledProposal([
+            'client_id'               => $formProposal->client_id,
+            'brand'                   => $catalogBrand?->name ?? $opportunity->brand,
+            'model'                   => $catalogModel?->name ?? $opportunity->model,
+            'version'                 => $opportunity->version,
+            'fuel'                    => $opportunity->fuel?->proposalLabel(),
+            'url'                     => $opportunity->listing_url,
+            'proposed_car_year_month' => $opportunity->year,
+            'proposed_car_mileage'    => $opportunity->mileage,
+            'proposed_car_value'      => $opportunity->price,
+            // Notas internas (não aparecem na página pública da cotação).
+            'notes'                   => implode("\n\n", array_filter([$opportunity->vehicle_notes, $formProposal->message])) ?: null,
+        ]);
+
+        return view('admin.v2.proposals.form', $viewData + compact('proposal', 'formProposal', 'importOpportunity', 'catalogWarning'));
+    }
+
+    /** Dados partilhados pelos formulários de cotação pré-preenchidos. */
+    private function formViewData(): array
+    {
+        $groupOrder = AttributeGroup::orderBy('order')->get()->pluck('name')->toArray();
+
+        return [
+            'clients' => Client::where('is_lead', false)->orderBy('name')->get(),
+            'leads' => Client::where('is_lead', true)->orderBy('name')->get(),
+            'brands' => Brand::with(['models' => function ($q) { $q->orderBy('name'); }])->get(),
+            'attributes' => VehicleAttribute::orderBy('order')->get()
+                ->groupBy('attribute_group')
+                ->sortBy(fn ($group, $key) => array_search($key, $groupOrder)),
+            'defaults' => [
+                'transport_cost'             => 1350,
+                'ipo_cost'                   => 100,
+                'imt_cost'                   => 45,
+                'registration_cost'          => 65,
+                'isv_cost'                   => 0,
+                'license_plate_cost'         => 20,
+                'inspection_commission_cost' => 350,
+                'commission_cost'            => 615,
+                'iuc_cost'                   => 0,
+            ],
+        ];
+    }
+
+    /** Objeto "proposta" para o formulário, com todos os campos que a view lê. */
+    private function prefilledProposal(array $values): object
+    {
+        return (object) ($values + [
+            'client_id'               => null,
+            'brand'                   => null,
+            'model'                   => null,
+            'version'                 => null,
+            'fuel'                    => null,
+            'proposed_car_value'      => null,
+            'proposed_car_mileage'    => null,
+            'notes'                   => null,
+            'status'                  => 'Pendente',
+            'url'                     => null,
+            'year'                    => null,
+            'mileage'                 => null,
+            'engine_capacity'         => null,
+            'co2'                     => null,
+            'value'                   => null,
+            'proposed_car_year_month' => null,
+            'proposed_car_notes'      => null,
+            'proposed_car_features'   => null,
+            'other_links'             => null,
+            'images'                  => null,
+        ]);
     }
 
     /**
@@ -293,6 +355,7 @@ class ProposalV2Controller extends Controller
         // Validar dados do formulário
         $validated = $request->validate([
             'form_proposal_id' => 'nullable|exists:form_proposals,id',
+            'import_opportunity_id' => 'nullable|exists:import_opportunities,id',
             'client_id' => 'required|exists:clients,id',
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
@@ -326,7 +389,16 @@ class ProposalV2Controller extends Controller
 
         // Remover campos que não vão para a tabela proposals
         $formProposalId = $validated['form_proposal_id'] ?? null;
-        unset($validated['image'], $validated['form_proposal_id']);
+        $importOpportunity = isset($validated['import_opportunity_id'])
+            ? ImportOpportunity::find($validated['import_opportunity_id'])
+            : null;
+        unset($validated['image'], $validated['form_proposal_id'], $validated['import_opportunity_id']);
+
+        // Uma cotação por oportunidade (protege contra duplo submit).
+        if ($importOpportunity?->proposal_id && $importOpportunity->proposal) {
+            return redirect()->route('admin.v2.proposals.edit', $importOpportunity->proposal_id)
+                ->with('info', 'Esta oportunidade já tem cotação.');
+        }
 
         // Gerar código único para a proposta
         $validated['proposal_code'] = strtoupper(substr($validated['brand'], 0, 1) .
@@ -361,20 +433,28 @@ class ProposalV2Controller extends Controller
             }
         }
 
-        // Processar upload de imagem (se existir)
+        // Processar upload de imagem (se existir); sem upload, usa a foto da oportunidade
+        $opportunityService = app(ImportOpportunityService::class);
         if ($request->hasFile('image')) {
             $this->handleImageUpload($proposal, $request->file('image'));
+        } elseif ($importOpportunity && ($photo = $opportunityService->photoAsUpload($importOpportunity))) {
+            $this->handleImageUpload($proposal, $photo);
         }
 
-        // Ligar ao formulário de origem e marcar como convertido
+        // Ligar ao formulário de origem e marcar como convertido. Vindo de uma
+        // oportunidade, o pedido pode ter várias cotações — mantém a primeira.
         if ($formProposalId) {
             $formProposal = FormProposal::find($formProposalId);
             if ($formProposal) {
                 $formProposal->update([
-                    'proposal_id' => $proposal->id,
+                    'proposal_id' => $importOpportunity && $formProposal->proposal_id ? $formProposal->proposal_id : $proposal->id,
                     'status'      => 'convertido',
                 ]);
             }
+        }
+
+        if ($importOpportunity) {
+            $opportunityService->linkProposal($importOpportunity, $proposal, $request->user());
         }
 
         // Registar na timeline do cliente/lead
