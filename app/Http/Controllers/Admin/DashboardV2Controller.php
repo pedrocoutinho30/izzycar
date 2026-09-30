@@ -352,7 +352,7 @@ class DashboardV2Controller extends Controller
                 ->count();
 
             // Propostas Convertidas
-            $convertedProposals[] = ConvertedProposal::whereYear('created_at', $current->year)
+            $convertedProposals[] = ConvertedProposal::notCancelled()->whereYear('created_at', $current->year)
                 ->whereMonth('created_at', $current->month)
                 ->count();
 
@@ -397,7 +397,7 @@ class DashboardV2Controller extends Controller
         $costSimulators1 = \App\Models\CostSimulator::whereYear('created_at', $period1Start->year)
             ->whereMonth('created_at', $period1Start->month)
             ->count();
-        $convertedProposals1 = ConvertedProposal::whereYear('created_at', $period1Start->year)
+        $convertedProposals1 = ConvertedProposal::notCancelled()->whereYear('created_at', $period1Start->year)
             ->whereMonth('created_at', $period1Start->month)
             ->count();
 
@@ -411,7 +411,7 @@ class DashboardV2Controller extends Controller
         $costSimulators2 = \App\Models\CostSimulator::whereYear('created_at', $period2Start->year)
             ->whereMonth('created_at', $period2Start->month)
             ->count();
-        $convertedProposals2 = ConvertedProposal::whereYear('created_at', $period2Start->year)
+        $convertedProposals2 = ConvertedProposal::notCancelled()->whereYear('created_at', $period2Start->year)
             ->whereMonth('created_at', $period2Start->month)
             ->count();
 

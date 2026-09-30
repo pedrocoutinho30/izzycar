@@ -9,6 +9,9 @@ class ConvertedProposal extends Model
 {
     use HasFactory;
 
+    /** "Cancelado" é o valor antigo (V1); o V2 grava "Cancelada". */
+    public const CANCELLED_STATUSES = ['Cancelada', 'Cancelado'];
+
     protected $fillable = [
         'status',
         'url',
@@ -57,6 +60,12 @@ class ConvertedProposal extends Model
     ];
 
     // Relacionamentos
+    /** Só as que estão realmente convertidas (exclui as canceladas). */
+    public function scopeNotCancelled($query)
+    {
+        return $query->where(fn ($q) => $q->whereNotIn('status', self::CANCELLED_STATUSES)->orWhereNull('status'));
+    }
+
     public function client() {
         return $this->belongsTo(Client::class);
     }
