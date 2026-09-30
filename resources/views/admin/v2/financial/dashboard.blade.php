@@ -130,20 +130,30 @@
             <i class="bi bi-journal-text me-2"></i>Movimentos Financeiros
             <span class="badge bg-secondary ms-2">{{ $movements->count() }}</span>
         </h5>
-        <a href="{{ route('admin.v2.financial.seed') }}" class="btn btn-outline-secondary btn-sm"
-           onclick="return confirm('Sincronizar todos os dados existentes? Isto irá reprocessar vendas, veículos e despesas.')">
-            <i class="bi bi-arrow-clockwise me-1"></i> Sincronizar Dados Históricos
-        </a>
+        @role('admin')
+        <form action="{{ route('admin.v2.financial.seed') }}" method="POST" class="d-inline"
+              onsubmit="return confirm('Sincronizar todos os dados existentes? Isto irá reprocessar vendas, veículos e despesas.')">
+            @csrf
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-clockwise me-1"></i> Sincronizar Dados Históricos
+            </button>
+        </form>
+        @endrole
     </div>
 
     @if($movements->isEmpty())
         <div class="modern-card-body p-5 text-center text-muted">
             <i class="bi bi-inbox fs-1 d-block mb-3"></i>
             <p class="mb-2">Sem movimentos para o período selecionado.</p>
-            <a href="{{ route('admin.v2.financial.seed') }}" class="btn btn-primary-modern"
-               onclick="return confirm('Sincronizar todos os dados existentes?')">
-                <i class="bi bi-arrow-clockwise me-1"></i> Sincronizar Dados Históricos
-            </a>
+            @role('admin')
+            <form action="{{ route('admin.v2.financial.seed') }}" method="POST" class="d-inline"
+                  onsubmit="return confirm('Sincronizar todos os dados existentes?')">
+                @csrf
+                <button type="submit" class="btn btn-primary-modern">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Sincronizar Dados Históricos
+                </button>
+            </form>
+            @endrole
         </div>
     @else
         <div class="table-responsive">

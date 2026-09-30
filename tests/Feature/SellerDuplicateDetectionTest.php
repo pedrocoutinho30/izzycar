@@ -26,7 +26,7 @@ class SellerDuplicateDetectionTest extends TestCase
         Cache::forever('frontend_menus', collect());
         Cache::forever('site_logo', '');
 
-        $this->user = User::factory()->create(['password' => 'secret', 'last_name' => 'Teste']);
+        $this->user = $this->backofficeUser();
         $this->muller = Seller::create(['name' => 'Autohaus Müller GmbH', 'country' => 'DE']);
         $this->muller->syncDomains(['autohaus-muller.de']);
         $this->hans = $this->muller->contacts()->create([

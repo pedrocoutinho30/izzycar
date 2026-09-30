@@ -25,7 +25,7 @@ class SellerTest extends TestCase
         Cache::forever('frontend_menus', collect());
         Cache::forever('site_logo', '');
 
-        $this->user = User::factory()->create(['password' => 'secret', 'last_name' => 'Teste']);
+        $this->user = $this->backofficeUser();
     }
 
     private function makeSeller(array $attributes = []): Seller

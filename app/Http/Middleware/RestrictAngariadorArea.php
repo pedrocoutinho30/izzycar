@@ -12,12 +12,18 @@ use Illuminate\Http\Request;
  *
  * Também se aplica durante impersonation (o admin a "ver como" um angariador
  * fica sujeito às mesmas regras, tal como o próprio angariador veria).
+ *
+ * Um utilizador sem nenhum perfil não tem acesso ao backoffice.
  */
 class RestrictAngariadorArea
 {
     public function handle(Request $request, Closure $next)
     {
         $user = $request->user();
+
+        if ($user && $user->roles->isEmpty()) {
+            abort(403, 'A sua conta não tem nenhum perfil atribuído. Contacte a administração.');
+        }
 
         if (!$user || !$user->hasRole('angariador') || $user->hasAnyRole(['admin', 'gestor', 'cms'])) {
             return $next($request);

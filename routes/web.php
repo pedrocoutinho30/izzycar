@@ -57,7 +57,9 @@ Route::post('/proposals/{proposal}/accept', [ProposalController::class, 'accept'
 Route::get('/proposta/{brand}/{model}/{version}/{id}/timeline', [ConvertedProposalController::class, 'detailTimeline'])
     ->name('converted-proposals.timeline');
 
-Auth::routes();
+// Sem registo público: as contas de backoffice são criadas pela administração
+// e os angariadores candidatam-se em /registo-angariador.
+Auth::routes(['register' => false]);
 
 Route::get('/definir-password/{token}', [App\Http\Controllers\Auth\SetPasswordController::class, 'show'])
     ->name('password.setup');
@@ -211,7 +213,8 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
     // DASHBOARD FINANCEIRO
     // ============================================================
     Route::get('v2/financial', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'index'])->name('admin.v2.financial.dashboard');
-    Route::get('v2/financial/seed', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'seedExisting'])->name('admin.v2.financial.seed');
+    // Apaga e regenera movimentos financeiros — só admin, e nunca por GET.
+    Route::post('v2/financial/seed', [App\Http\Controllers\Admin\FinancialDashboardController::class, 'seedExisting'])->middleware('role:admin')->name('admin.v2.financial.seed');
 
     // ============================================================
     // RADAR DE PREÇOS AUTOSCOUT24

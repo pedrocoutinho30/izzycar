@@ -54,6 +54,16 @@ class LoginController extends Controller
             ]);
         }
 
+        if ($user->roles->isEmpty()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'A sua conta não tem nenhum perfil atribuído. Contacte a administração.',
+            ]);
+        }
+
         return null;
     }
 

@@ -36,7 +36,7 @@ class ImportOpportunityTest extends TestCase
         Cache::forever('frontend_menus', collect());
         Cache::forever('site_logo', '');
 
-        $this->user = User::factory()->create(['password' => 'secret', 'last_name' => 'Teste']);
+        $this->user = $this->backofficeUser();
         $this->formProposal = FormProposal::create([
             'name' => 'João Silva',
             'email' => 'joao@example.com',
