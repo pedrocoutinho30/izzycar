@@ -614,6 +614,27 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(funct
     });
 
     // ============================================================
+    // VENDEDORES (stands/empresas) E CONTACTOS
+    // ============================================================
+    Route::prefix('v2/vendedores')->name('admin.v2.sellers.')->scopeBindings()->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\SellerController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\SellerController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\SellerController::class, 'store'])->name('store');
+        Route::get('/pesquisa', [App\Http\Controllers\Admin\SellerController::class, 'search'])->name('search');
+        Route::post('/verificar-duplicados', [App\Http\Controllers\Admin\SellerController::class, 'checkDuplicates'])->name('check-duplicates');
+        Route::get('/{seller}', [App\Http\Controllers\Admin\SellerController::class, 'show'])->name('show');
+        Route::get('/{seller}/edit', [App\Http\Controllers\Admin\SellerController::class, 'edit'])->name('edit');
+        Route::put('/{seller}', [App\Http\Controllers\Admin\SellerController::class, 'update'])->name('update');
+        Route::patch('/{seller}/estado', [App\Http\Controllers\Admin\SellerController::class, 'toggleActive'])->name('toggle-active');
+        Route::delete('/{seller}', [App\Http\Controllers\Admin\SellerController::class, 'destroy'])->name('destroy');
+        Route::get('/{seller}/contactos', [App\Http\Controllers\Admin\SellerController::class, 'contacts'])->name('contacts.index');
+        Route::post('/{seller}/contactos', [App\Http\Controllers\Admin\SellerContactController::class, 'store'])->name('contacts.store');
+        Route::put('/{seller}/contactos/{contact}', [App\Http\Controllers\Admin\SellerContactController::class, 'update'])->name('contacts.update');
+        Route::patch('/{seller}/contactos/{contact}/principal', [App\Http\Controllers\Admin\SellerContactController::class, 'setPrimary'])->name('contacts.primary');
+        Route::patch('/{seller}/contactos/{contact}/estado', [App\Http\Controllers\Admin\SellerContactController::class, 'toggleActive'])->name('contacts.toggle-active');
+    });
+
+    // ============================================================
     // MENUS V2
     // ============================================================
     Route::prefix('v2/menus')->name('admin.v2.menus.')->group(function () {

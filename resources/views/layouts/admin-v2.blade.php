@@ -972,7 +972,7 @@
                 $navGroups = [
                     'funil' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.form-proposals.*', 'admin.v2.proposals.*', 'admin.v2.converted-proposals.*', 'admin.v2.clients.*', 'admin.v2.cost-simulators.*'],
                     'operacoes' => ['admin.v3.vehicles.*', 'admin.v3.inspections.*', 'admin.legalizations.*', 'admin.transport-quotes.*', 'admin.v2.sales.*', 'admin.v2.movements.*', 'admin.v2.expenses.*', 'admin.tasks.*'],
-                    'rede' => ['admin.v2.angariadores.*', 'admin.v2.suppliers.*', 'admin.v2.partners.*'],
+                    'rede' => ['admin.v2.angariadores.*', 'admin.v2.sellers.*', 'admin.v2.suppliers.*', 'admin.v2.partners.*'],
                     'analise' => ['admin.v2.reports.*', 'calculator.profit', 'admin.v2.comparator.*', 'car-analysis.*', 'admin.v2.radar.*'],
                     'conteudo' => ['admin.news.*', 'admin.testimonials.*', 'admin.v2.newsletter-management.*', 'admin.v2.menus.*', 'admin.v2.social-posts.*'],
                     'config' => ['admin.v2.attribute-groups.*', 'admin.v2.vehicle-attributes.*', 'admin.v2.settings.*'],
@@ -1117,6 +1117,12 @@
                     <a href="{{ route('admin.v2.angariadores.comissoes') }}" class="nav-link {{ request()->routeIs('admin.v2.angariadores.comissoes') ? 'active' : '' }}">
                         <i class="bi bi-cash-coin"></i>
                         <span>Comissões</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.sellers.index') }}" class="nav-link {{ request()->routeIs('admin.v2.sellers.*') ? 'active' : '' }}">
+                        <i class="bi bi-shop"></i>
+                        <span>Vendedores</span>
                     </a>
                 </div>
                 <div class="nav-item">
@@ -1440,6 +1446,10 @@
                 <a href="{{ route('admin.v2.angariadores.comissoes') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.angariadores.comissoes') ? 'active' : '' }}">
                     <i class="bi bi-cash-coin"></i>
                     <span>Comissões</span>
+                </a>
+                <a href="{{ route('admin.v2.sellers.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.sellers.*') ? 'active' : '' }}">
+                    <i class="bi bi-shop"></i>
+                    <span>Vendedores</span>
                 </a>
                 <a href="{{ route('admin.v2.suppliers.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.suppliers.*') ? 'active' : '' }}">
                     <i class="bi bi-building"></i>

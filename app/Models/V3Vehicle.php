@@ -24,6 +24,7 @@ class V3Vehicle extends Model
         'notes', 'ad_text', 'show_online', 'home_featured', 'home_featured_order', 'is_imported', 'status',
         // Purchase
         'supplier_id',
+        'seller_id', 'seller_contact_id',
         'purchase_price', 'purchase_date', 'purchase_type',
         'purchase_vat_rate', 'purchase_vat_paid',
         'asking_price',
@@ -62,6 +63,16 @@ class V3Vehicle extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function seller(): BelongsTo
+    {
+        return $this->belongsTo(Seller::class);
+    }
+
+    public function sellerContact(): BelongsTo
+    {
+        return $this->belongsTo(SellerContact::class);
     }
 
     public function photos(): HasMany

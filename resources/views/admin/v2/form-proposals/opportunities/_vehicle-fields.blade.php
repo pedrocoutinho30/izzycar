@@ -4,6 +4,11 @@
 @php
     $quick = $quick ?? false;
     $o = $opportunity ?? null;
+    // Depois de um erro de validação, mostrar o vendedor/contacto escolhidos.
+    $pickerSeller = old('seller_id') ? \App\Models\Seller::with('activeContacts')->find(old('seller_id')) : $o?->seller;
+    $pickerContact = old('seller_contact_id')
+        ? \App\Models\SellerContact::where('seller_id', $pickerSeller?->id)->find(old('seller_contact_id'))
+        : (old('seller_id') ? null : $o?->sellerContact);
     $val = fn ($field, $default = null) => old($field, $o ? ($o->{$field} instanceof \BackedEnum ? $o->{$field}->value : $o->{$field}) : $default);
     $err = fn ($field) => $errors->has($field) ? 'is-invalid' : '';
 @endphp
@@ -37,24 +42,22 @@
             @error('price')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-12">
         <label class="form-label">URL do anúncio</label>
         <input type="url" name="listing_url" class="form-control {{ $err('listing_url') }}" value="{{ $val('listing_url') }}" placeholder="https://...">
         @error('listing_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
-    <div class="col-md-4">
-        <label class="form-label">Vendedor / Stand</label>
-        <input type="text" name="seller_name" class="form-control {{ $err('seller_name') }}" value="{{ $val('seller_name') }}" maxlength="255">
-        @error('seller_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    <div class="col-12">
+        @include('admin.v2.sellers._picker', ['seller' => $pickerSeller, 'contact' => $pickerContact])
     </div>
 </div>
 
 @if($quick)
 <a class="d-inline-block mt-3 small" data-bs-toggle="collapse" href="#oppMoreFields" role="button"
-   aria-expanded="{{ $errors->hasAny(['version','fuel','vin','country','seller_contact','photo']) ? 'true' : 'false' }}">
+   aria-expanded="{{ $errors->hasAny(['version','fuel','vin','country','photo']) ? 'true' : 'false' }}">
     <i class="bi bi-chevron-down"></i> Mais detalhes (opcional)
 </a>
-<div class="collapse {{ $errors->hasAny(['version','fuel','vin','country','seller_contact','photo']) ? 'show' : '' }}" id="oppMoreFields">
+<div class="collapse {{ $errors->hasAny(['version','fuel','vin','country','photo']) ? 'show' : '' }}" id="oppMoreFields">
 @endif
 
 <div class="row g-3 mt-0">
@@ -89,12 +92,7 @@
         </select>
         @error('country')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
-    <div class="col-md-6">
-        <label class="form-label">Contacto do vendedor</label>
-        <input type="text" name="seller_contact" class="form-control {{ $err('seller_contact') }}" value="{{ $val('seller_contact') }}" placeholder="+49 ... ou email" maxlength="255">
-        @error('seller_contact')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    </div>
-    <div class="col-md-6">
+    <div class="col-md-12">
         <label class="form-label">Foto</label>
         <input type="file" name="photo" class="form-control {{ $err('photo') }}" accept="image/jpeg,image/png,image/webp">
         @error('photo')<div class="invalid-feedback">{{ $message }}</div>@enderror

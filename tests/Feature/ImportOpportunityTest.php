@@ -8,6 +8,7 @@ use App\Enums\OpportunityStatus;
 use App\Models\FormProposal;
 use App\Models\ImportOpportunity;
 use App\Models\OpportunityChecklistItem;
+use App\Models\Seller;
 use App\Models\User;
 use App\Services\ImportOpportunityService;
 use Illuminate\Http\UploadedFile;
@@ -62,6 +63,14 @@ class ImportOpportunityTest extends TestCase
         ]);
     }
 
+    private function makeSeller(string $name = 'Autohaus XYZ'): Seller
+    {
+        $seller = Seller::create(['name' => $name, 'country' => 'DE']);
+        $seller->contacts()->create(['name' => 'Hans Müller', 'email' => 'hans@autohaus-xyz.de', 'is_primary' => true]);
+
+        return $seller;
+    }
+
     private function item(string $checklist, string $slug): OpportunityChecklistItem
     {
         return OpportunityChecklistItem::whereHas('checklist', fn ($q) => $q->where('slug', $checklist))
@@ -88,6 +97,8 @@ class ImportOpportunityTest extends TestCase
 
     public function test_quick_create_only_requires_brand_and_model(): void
     {
+        $seller = $this->makeSeller();
+
         $this->actingAs($this->user)
             ->post($this->route('store'), [
                 'brand' => 'BMW',
@@ -96,7 +107,8 @@ class ImportOpportunityTest extends TestCase
                 'mileage' => 68400,
                 'price' => 29500,
                 'listing_url' => 'https://suchen.mobile.de/fahrzeuge/details.html?id=1',
-                'seller_name' => 'Autohaus XYZ',
+                'seller_id' => $seller->id,
+                'seller_contact_id' => $seller->contacts->first()->id,
             ])
             ->assertRedirect(route('admin.v2.form-proposals.show', $this->formProposal->id) . '#oportunidades')
             ->assertSessionHasNoErrors();
@@ -108,6 +120,25 @@ class ImportOpportunityTest extends TestCase
         $this->assertSame(ContactStatus::NotContacted, $opportunity->contact_status);
         $this->assertSame('EUR', $opportunity->currency);
         $this->assertSame($this->user->id, $opportunity->created_by);
+        $this->assertTrue($opportunity->seller->is($seller));
+        $this->assertSame('Hans Müller', $opportunity->sellerContact->name);
+    }
+
+    public function test_opportunity_contact_must_belong_to_the_chosen_seller(): void
+    {
+        $seller = $this->makeSeller();
+        $other = $this->makeSeller('Outro Stand');
+
+        $this->actingAs($this->user)
+            ->post($this->route('store'), [
+                'brand' => 'BMW',
+                'model' => 'i4',
+                'seller_id' => $seller->id,
+                'seller_contact_id' => $other->contacts->first()->id,
+            ])
+            ->assertSessionHasErrors('seller_contact_id');
+
+        $this->assertSame(0, ImportOpportunity::count());
     }
 
     public function test_create_validates_input(): void
@@ -183,7 +214,8 @@ class ImportOpportunityTest extends TestCase
 
     public function test_partial_update_keeps_other_fields(): void
     {
-        $opportunity = $this->makeOpportunity(['seller_name' => 'Autohaus XYZ']);
+        $seller = $this->makeSeller();
+        $opportunity = $this->makeOpportunity(['seller_id' => $seller->id]);
 
         $this->actingAs($this->user)
             ->put($this->route('update', $opportunity->id), [
@@ -195,7 +227,7 @@ class ImportOpportunityTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $opportunity->refresh();
-        $this->assertSame('Autohaus XYZ', $opportunity->seller_name);
+        $this->assertSame($seller->id, $opportunity->seller_id);
         $this->assertSame('Tesla', $opportunity->brand);
         $this->assertSame(ContactStatus::Replied, $opportunity->contact_status);
         $this->assertSame('2026-10-02', $opportunity->next_followup_at->toDateString());
@@ -364,7 +396,7 @@ class ImportOpportunityTest extends TestCase
     {
         $opportunity = $this->makeOpportunity([
             'brand' => 'BMW', 'model' => 'i4', 'year' => 2022, 'mileage' => 68400, 'price' => 29500,
-            'seller_name' => 'Autohaus XYZ', 'status' => 'aguardar_resposta', 'contact_method' => 'whatsapp',
+            'seller_id' => $this->makeSeller()->id, 'status' => 'aguardar_resposta', 'contact_method' => 'whatsapp',
             'last_contacted_at' => '2026-09-29 10:00', 'fuel' => 'eletrico',
         ]);
         $this->makeOpportunity(['brand' => 'Tesla', 'model' => 'Model 3', 'status' => 'rejeitado']);
@@ -372,7 +404,7 @@ class ImportOpportunityTest extends TestCase
         $service = app(ImportOpportunityService::class);
         $service->setChecklistStatus($opportunity, $this->item('base', 'vin')->id, ChecklistItemStatus::Confirmed, $this->user);
 
-        $formProposal = $this->formProposal->load('opportunities.checklistEntries');
+        $formProposal = $this->formProposal->load(['opportunities.checklistEntries', 'opportunities.seller']);
         $html = view('admin.v2.form-proposals.partials.opportunities', [
             'formProposal' => $formProposal,
             'opportunityProgress' => $formProposal->opportunities->mapWithKeys(fn ($o) => [$o->id => $service->progress($o)]),

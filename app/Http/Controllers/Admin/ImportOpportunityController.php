@@ -41,7 +41,7 @@ class ImportOpportunityController extends Controller
 
     public function show(FormProposal $formProposal, ImportOpportunity $opportunity)
     {
-        $opportunity->load(['checklistEntries', 'contacts.user', 'creator']);
+        $opportunity->load(['checklistEntries', 'contacts.user', 'creator', 'seller.activeContacts', 'sellerContact']);
 
         return view('admin.v2.form-proposals.opportunities.show', [
             'formProposal' => $formProposal,

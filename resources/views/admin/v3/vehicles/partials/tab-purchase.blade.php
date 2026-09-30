@@ -4,6 +4,25 @@
     <div class="row g-3">
 
         <div class="col-12">
+            <h6 class="text-muted text-uppercase fw-semibold mb-2" style="font-size:.7rem;letter-spacing:.06em">Vendedor</h6>
+        </div>
+
+        <div class="col-12">
+            @include('admin.v2.sellers._picker', [
+                'seller' => $vehicle->seller,
+                'contact' => $vehicle->sellerContact,
+                'labelClass' => 'form-label fw-semibold',
+                'useOld' => false,
+            ])
+            <div class="form-text">
+                Quem vendeu este veículo à IzzyCar.
+                @if($vehicle->seller)
+                    <a href="{{ route('admin.v2.sellers.show', $vehicle->seller_id) }}" target="_blank">Abrir ficha de {{ $vehicle->seller->name }}</a>
+                @endif
+            </div>
+        </div>
+
+        <div class="col-12 mt-2">
             <h6 class="text-muted text-uppercase fw-semibold mb-2" style="font-size:.7rem;letter-spacing:.06em">Fornecedor & Data</h6>
         </div>
 

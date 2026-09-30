@@ -56,7 +56,7 @@ class FormProposalV2Controller extends Controller
 
     public function show($id, ImportOpportunityService $opportunityService)
     {
-        $formProposal = FormProposal::with('opportunities.checklistEntries')->findOrFail($id);
+        $formProposal = FormProposal::with(['opportunities.checklistEntries', 'opportunities.seller'])->findOrFail($id);
 
         $opportunityProgress = $formProposal->opportunities
             ->mapWithKeys(fn ($opportunity) => [$opportunity->id => $opportunityService->progress($opportunity)]);

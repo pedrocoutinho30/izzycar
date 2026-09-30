@@ -3,7 +3,7 @@
 @php $showUrl = route('admin.v2.form-proposals.opportunities.show', [$formProposal->id, $opportunity->id]); @endphp
 <div class="col-md-6 col-xl-4" data-opp-card
      data-status="{{ $opportunity->status->value }}"
-     data-search="{{ \Illuminate\Support\Str::lower(implode(' ', array_filter([$opportunity->brand, $opportunity->model, $opportunity->version, $opportunity->seller_name]))) }}"
+     data-search="{{ \Illuminate\Support\Str::lower(implode(' ', array_filter([$opportunity->brand, $opportunity->model, $opportunity->version, $opportunity->seller?->name]))) }}"
      data-price="{{ $opportunity->price ?? '' }}"
      data-year="{{ $opportunity->year ?? '' }}"
      data-mileage="{{ $opportunity->mileage ?? '' }}"
@@ -29,7 +29,7 @@
             </div>
 
             <div class="opp-card-meta">
-                <span><i class="bi bi-shop"></i> {{ $opportunity->seller_name ?: 'Vendedor por indicar' }}</span>
+                <span><i class="bi bi-shop"></i> {{ $opportunity->seller?->name ?? 'Vendedor por indicar' }}</span>
                 @if($opportunity->contact_method)
                 <span><i class="bi {{ $opportunity->contact_method->icon() }}"></i> {{ $opportunity->contact_method->label() }}</span>
                 @endif

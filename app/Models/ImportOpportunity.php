@@ -53,8 +53,8 @@ class ImportOpportunity extends Model
         'country',
         'photo_path',
         'vehicle_notes',
-        'seller_name',
-        'seller_contact',
+        'seller_id',
+        'seller_contact_id',
         'status',
         'contact_method',
         'contact_status',
@@ -94,6 +94,16 @@ class ImportOpportunity extends Model
         return $this->belongsTo(Proposal::class);
     }
 
+    public function seller(): BelongsTo
+    {
+        return $this->belongsTo(Seller::class);
+    }
+
+    public function sellerContact(): BelongsTo
+    {
+        return $this->belongsTo(SellerContact::class);
+    }
+
     public function checklistEntries(): HasMany
     {
         return $this->hasMany(ImportOpportunityChecklistEntry::class);
@@ -130,20 +140,5 @@ class ImportOpportunity extends Model
         }
 
         return number_format((float) $this->price, 0, ',', '.') . ' €';
-    }
-
-    /**
-     * Número só com dígitos para links wa.me/tel — null se o contacto do
-     * vendedor não parecer um telefone (ex. um email).
-     */
-    public function getSellerPhoneDigitsAttribute(): ?string
-    {
-        if (blank($this->seller_contact) || str_contains($this->seller_contact, '@')) {
-            return null;
-        }
-
-        $digits = preg_replace('/\D/', '', $this->seller_contact);
-
-        return strlen($digits) >= 9 ? $digits : null;
     }
 }

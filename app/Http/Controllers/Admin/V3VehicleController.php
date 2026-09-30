@@ -20,6 +20,7 @@ use App\Services\SaleCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\ImageManager;
 
@@ -93,6 +94,8 @@ class V3VehicleController extends Controller
     {
         $vehicle = V3Vehicle::with([
             'supplier',
+            'seller.activeContacts',
+            'sellerContact',
             'photos',
             'documents',
             'expenses'        => fn ($q) => $q->orderBy('expense_date', 'desc'),
@@ -206,6 +209,8 @@ class V3VehicleController extends Controller
 
         $validated = $request->validate([
             'supplier_id'       => 'nullable|exists:suppliers,id',
+            'seller_id'         => 'nullable|exists:sellers,id',
+            'seller_contact_id' => ['nullable', Rule::exists('seller_contacts', 'id')->where('seller_id', $request->input('seller_id'))],
             'purchase_price'    => 'nullable|numeric|min:0',
             'purchase_date'     => 'nullable|date',
             'purchase_type'     => 'nullable|in:Geral,Margem,Sem Iva',

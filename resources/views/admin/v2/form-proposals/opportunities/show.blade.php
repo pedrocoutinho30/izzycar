@@ -59,7 +59,14 @@
             </div>
 
             <div class="opp-summary-grid my-3">
-                <div><div class="label">Vendedor</div><div class="value">{{ $opportunity->seller_name ?: '—' }}</div></div>
+                <div><div class="label">Vendedor</div><div class="value">
+                    @if($opportunity->seller)
+                        <a href="{{ route('admin.v2.sellers.show', $opportunity->seller_id) }}">{{ $opportunity->seller->name }}</a>
+                        @if($opportunity->sellerContact)<div class="small text-muted">{{ $opportunity->sellerContact->name }}</div>@endif
+                    @else
+                        —
+                    @endif
+                </div></div>
                 <div><div class="label">Contacto</div><div class="value">{{ $opportunity->contact_method?->label() ?? '—' }} · <span class="badge text-bg-{{ $opportunity->contact_status->color() }} fw-normal">{{ $opportunity->contact_status->label() }}</span></div></div>
                 <div><div class="label">Último contacto</div><div class="value">{{ $opportunity->last_contacted_at?->format('d/m/Y H:i') ?? '—' }}</div></div>
                 <div><div class="label">Próximo follow-up</div><div class="value {{ $opportunity->next_followup_at?->isPast() ? 'text-danger' : '' }}">{{ $opportunity->next_followup_at?->format('d/m/Y') ?? '—' }}</div></div>
@@ -75,11 +82,15 @@
                     @if($opportunity->listing_url)
                     <a href="{{ $opportunity->listing_url }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="bi bi-box-arrow-up-right"></i> Anúncio</a>
                     @endif
-                    @if($opportunity->seller_phone_digits)
-                    <a href="https://wa.me/{{ $opportunity->seller_phone_digits }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success"><i class="bi bi-whatsapp"></i> WhatsApp</a>
-                    <a href="tel:+{{ $opportunity->seller_phone_digits }}" class="btn btn-sm btn-outline-success"><i class="bi bi-telephone"></i></a>
-                    @elseif(filter_var($opportunity->seller_contact, FILTER_VALIDATE_EMAIL))
-                    <a href="mailto:{{ $opportunity->seller_contact }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-envelope"></i> Email</a>
+                    @php $sellerContact = $opportunity->sellerContact; @endphp
+                    @if($sellerContact?->whatsapp_digits)
+                    <a href="https://wa.me/{{ $sellerContact->whatsapp_digits }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+                    @endif
+                    @if($sellerContact?->phone_normalized)
+                    <a href="tel:+{{ $sellerContact->phone_normalized }}" class="btn btn-sm btn-outline-success" title="Ligar"><i class="bi bi-telephone"></i></a>
+                    @endif
+                    @if($sellerContact?->email)
+                    <a href="mailto:{{ $sellerContact->email }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-envelope"></i> Email</a>
                     @endif
                 </div>
             </div>
@@ -144,7 +155,16 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label">Contacto do vendedor</label>
-                        <input type="text" name="seller_contact" class="form-control" value="{{ $cv('seller_contact', $opportunity->seller_contact) }}" maxlength="255" placeholder="+49 ... ou email">
+                        @if($sellerContact)
+                        <div class="small">
+                            <strong>{{ $sellerContact->name }}</strong>@if($sellerContact->role) · {{ $sellerContact->role }}@endif
+                            @if($sellerContact->email)<br><i class="bi bi-envelope text-muted"></i> {{ $sellerContact->email }}@endif
+                            @if($sellerContact->phone)<br><i class="bi bi-telephone text-muted"></i> {{ $sellerContact->phone }}@endif
+                            @if($sellerContact->whatsapp)<br><i class="bi bi-whatsapp text-muted"></i> {{ $sellerContact->whatsapp }}@endif
+                        </div>
+                        @else
+                        <div class="small text-muted">Escolha o vendedor e o contacto em <a href="#veiculo">Dados do veículo</a>.</div>
+                        @endif
                     </div>
                     <div class="col-12">
                         <label class="form-label">Contacto utilizado</label>
