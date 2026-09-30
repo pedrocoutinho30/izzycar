@@ -112,19 +112,25 @@ $existAction = isset($user) ? 'Editar' : 'Criar';
                         @enderror
                     </div>
 
-                    <div class="col-md-6">
-                        <label for="role" class="form-label">Perfil <span class="text-danger">*</span></label>
-                        <select name="role" id="role" class="form-select @error('role') is-invalid @enderror" required onchange="toggleAngariadorFields(this.value)">
-                            <option value="">Selecione um perfil</option>
+                    <div class="col-12">
+                        <label class="form-label">Perfis <span class="text-danger">*</span></label>
+                        @php $selectedRoles = old('roles', isset($user) ? $user->roles->pluck('name')->all() : []); @endphp
+                        <div class="d-flex flex-wrap gap-3 @error('roles') is-invalid @enderror">
                             @foreach($roles as $role)
-                                <option value="{{ $role->name }}"
-                                    {{ old('role', isset($user) && $user->roles->first()?->name == $role->name ? $role->name : '') == $role->name ? 'selected' : '' }}>
-                                    {{ $role->name }}
-                                </option>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="roles[]" value="{{ $role->name }}"
+                                       id="role_{{ $role->id }}" data-role-checkbox
+                                       @checked(in_array($role->name, $selectedRoles, true))>
+                                <label class="form-check-label" for="role_{{ $role->id }}">{{ $role->name }}</label>
+                            </div>
                             @endforeach
-                        </select>
-                        @error('role')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        </div>
+                        <div class="form-text">As permissões do utilizador são a soma das dos seus perfis (prevalece o âmbito mais abrangente).</div>
+                        @error('roles')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                        @error('roles.*')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -203,11 +209,15 @@ $existAction = isset($user) ? 'Editar' : 'Criar';
 </form>
 
 <script>
-function toggleAngariadorFields(role) {
-    document.getElementById('angariadorFields').style.display = (role === 'angariador') ? '' : 'none';
+function toggleAngariadorFields() {
+    const isAngariador = !!document.querySelector('[data-role-checkbox][value="angariador"]:checked');
+    document.getElementById('angariadorFields').style.display = isAngariador ? '' : 'none';
 }
+document.addEventListener('change', function (event) {
+    if (event.target.matches('[data-role-checkbox]')) toggleAngariadorFields();
+});
 document.addEventListener('DOMContentLoaded', function () {
-    toggleAngariadorFields(document.getElementById('role').value);
+    toggleAngariadorFields();
 
     const codeInput = document.getElementById('referral_code');
     const preview = document.getElementById('referralPreview');

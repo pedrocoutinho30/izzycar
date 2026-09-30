@@ -72,7 +72,7 @@ class LoginController extends Controller
         session()->flash('success', 'You are logged in!');
 
         $user = $this->guard()->user();
-        if ($user && $user->hasRole('angariador') && !$user->hasAnyRole(['admin', 'gestor', 'cms'])) {
+        if ($user && $user->isAngariadorOnly()) {
             return route('admin.angariador.dashboard');
         }
 

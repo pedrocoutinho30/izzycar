@@ -88,7 +88,12 @@
             @endif
         </div>
 
-        <!-- Ações -->
+        <!-- Ações (só as que o utilizador pode fazer) -->
+        @php
+            $permissions = app(\App\Permissions\PermissionService::class);
+            $actions = array_values(array_filter($actions, fn ($action) => isset($action['onclick']) || !auth()->check()
+                || $permissions->canAccessUrl(auth()->user(), $action['href'], $action['method'] ?? 'GET')));
+        @endphp
         @if(count($actions) > 0)
         <div class="col-12 col-md-auto">
             <div class="item-actions">

@@ -9,6 +9,7 @@ use App\Models\Legalization;
 use App\Models\Proposal;
 use App\Models\Sale;
 use App\Models\V3Vehicle;
+use App\Permissions\PermissionService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -47,17 +48,31 @@ class GlobalSearchController extends Controller
         ]);
     }
 
+    /**
+     * Cada secção só entra se o utilizador puder abrir os resultados (a rota
+     * de destino) — as permissões e o âmbito ficam garantidos pela mesma
+     * regra do middleware.
+     */
+    private const SECTIONS = [
+        'searchLeads' => 'admin.v2.leads.show',
+        'searchClients' => 'admin.v2.clients.show',
+        'searchProposals' => 'admin.v2.proposals.edit',
+        'searchFormProposals' => 'admin.v2.form-proposals.show',
+        'searchLegalizations' => 'admin.legalizations.show',
+        'searchVehicles' => 'admin.v3.vehicles.edit',
+        'searchSales' => 'admin.v2.sales.edit',
+    ];
+
     private function searchAll(string $term, int $limit): array
     {
-        return array_values(array_filter([
-            $this->searchLeads($term, $limit),
-            $this->searchClients($term, $limit),
-            $this->searchProposals($term, $limit),
-            $this->searchFormProposals($term, $limit),
-            $this->searchLegalizations($term, $limit),
-            $this->searchVehicles($term, $limit),
-            $this->searchSales($term, $limit),
-        ]));
+        $user = auth()->user();
+        $permissions = app(PermissionService::class);
+
+        return array_values(array_filter(array_map(
+            fn (string $method, string $route) => $permissions->canAccessRoute($user, $route) ? $this->{$method}($term, $limit) : null,
+            array_keys(self::SECTIONS),
+            self::SECTIONS,
+        )));
     }
 
     private function searchLeads(string $term, int $limit): ?array

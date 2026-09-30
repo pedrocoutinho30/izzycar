@@ -47,6 +47,15 @@ return [
             'level' => 'debug',
         ],
 
+        // Decisões do middleware AuthorizeResource (ver php artisan permissions:report).
+        'permissions' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/permissions.log'),
+            'level' => 'debug',
+            'days' => 60,
+            'formatter' => Monolog\Formatter\JsonFormatter::class,
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

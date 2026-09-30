@@ -4,38 +4,50 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Permissions\PermissionRegistry;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class PermissionV2Controller extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Catálogo de permissões (config/permissions.php), só de consulta: as
+     * permissões atribuem-se nos perfis.
+     */
+    public function index(PermissionRegistry $registry)
     {
-        $query = Permission::query();
+        $roles = Role::with('permissions:id,name')->orderBy('name')->get();
+        $roleGrants = $roles->mapWithKeys(fn (Role $role) => [
+            $role->name => $registry->permissionsToGrants($role->permissions->pluck('name')),
+        ]);
 
-        // Filtro de pesquisa
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
-
-        $permissions = $query->orderBy('name')->paginate(20)->withQueryString();
-
-        // Estatísticas
         $stats = [
             [
-                'title' => 'Total de Permissões',
-                'value' => Permission::count(),
+                'title' => 'Permissões do catálogo',
+                'value' => count($registry->permissionNames()),
                 'color' => 'primary',
                 'icon' => 'bi-key'
             ],
             [
-                'title' => 'Perfis',
-                'value' => \Spatie\Permission\Models\Role::count(),
+                'title' => 'Objetos',
+                'value' => count($registry->resources()),
                 'color' => 'info',
+                'icon' => 'bi-grid-3x3-gap'
+            ],
+            [
+                'title' => 'Perfis',
+                'value' => $roles->count(),
+                'color' => 'success',
                 'icon' => 'bi-person-badge'
             ]
         ];
 
-        return view('admin.v2.permissions.index', compact('permissions', 'stats'));
+        return view('admin.v2.permissions.index', [
+            'modules' => $registry->modules(),
+            'registry' => $registry,
+            'roleGrants' => $roleGrants,
+            'stats' => $stats,
+        ]);
     }
 
     public function create()

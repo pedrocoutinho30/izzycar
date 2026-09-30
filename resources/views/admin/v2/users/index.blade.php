@@ -54,12 +54,9 @@
             'title' => $user->name . ' ' . $user->last_name,
             'subtitle' => $user->email,
             'image' => 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=6e0707&color=fff&bold=true',
-            'badges' => [
-                [
-                    'text' => $user->roles->first()?->name ?? 'Sem perfil',
-                    'color' => 'primary'
-                ]
-            ],
+            'badges' => $user->roles->isEmpty()
+                ? [['text' => 'Sem perfil', 'color' => 'secondary']]
+                : $user->roles->map(fn ($role) => ['text' => $role->name, 'color' => 'primary'])->all(),
             'meta' => [
                 [
                     'icon' => 'bi-envelope',

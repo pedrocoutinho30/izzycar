@@ -349,7 +349,7 @@
                                 {{ $proposal->created_at->format('d/m/Y') }}
                             </td>
                             <td class="text-end">
-                                <a href="{{ route('proposals.edit', $proposal->id) }}" class="btn btn-sm btn-outline-secondary">
+                                <a href="{{ route('admin.v2.proposals.edit', $proposal->id) }}" class="btn btn-sm btn-outline-secondary">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </td>

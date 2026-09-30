@@ -93,6 +93,17 @@ class User extends Authenticatable
     }
 
     /**
+     * Só tem o perfil angariador: usa o portal próprio (admin.angariador.*)
+     * em vez do backoffice. Com outro perfil além deste, usa o backoffice.
+     */
+    public function isAngariadorOnly(): bool
+    {
+        $roles = $this->getRoleNames();
+
+        return $roles->isNotEmpty() && $roles->every(fn ($role) => $role === 'angariador');
+    }
+
+    /**
      * Gera um código de angariador único a partir do nome (ex: "João Silva"
      * → "joaosilva"; se já existir, acrescenta um número: "joaosilva2").
      */

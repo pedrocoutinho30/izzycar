@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SetPasswordMail;
+use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 
 class UserV2Controller extends Controller
@@ -73,10 +75,13 @@ class UserV2Controller extends Controller
             'location' => 'nullable|string|max:255',
             'nif' => 'nullable|string|max:20',
             'iban' => 'nullable|string|max:40',
-            'role' => 'required|exists:roles,name',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'exists:roles,name',
             'referral_code' => 'nullable|string|max:100|alpha_dash|unique:users,referral_code',
             'commission_fixed_value' => 'nullable|numeric|min:0',
         ]);
+
+        $this->ensureCanAssignRoles($validated['roles'], []);
 
         $user = User::create([
             'name' => $validated['name'],
@@ -93,7 +98,8 @@ class UserV2Controller extends Controller
             'commission_fixed_value' => $this->resolveCommissionValue($validated),
         ]);
 
-        $user->assignRole($validated['role']);
+        $user->syncRoles($validated['roles']);
+        AuditLog::record('user_roles_updated', "Perfis de {$user->name} {$user->last_name}: " . implode(', ', $validated['roles']), $user, ['roles' => []], ['roles' => array_values($validated['roles'])]);
 
         $this->sendSetPasswordEmail($user);
 
@@ -124,7 +130,7 @@ class UserV2Controller extends Controller
             return $validated['referral_code'];
         }
 
-        if ($validated['role'] !== 'angariador') {
+        if (!in_array('angariador', $validated['roles'], true)) {
             return null;
         }
 
@@ -137,11 +143,27 @@ class UserV2Controller extends Controller
      */
     private function resolveCommissionValue(array $validated): ?float
     {
-        if ($validated['role'] !== 'angariador') {
+        if (!in_array('angariador', $validated['roles'], true)) {
             return $validated['commission_fixed_value'] ?? null;
         }
 
         return $validated['commission_fixed_value'] ?? 100;
+    }
+
+    /**
+     * Só um admin pode dar ou tirar o perfil admin — quem gere utilizadores
+     * não se pode promover a si próprio.
+     *
+     * @param  list<string>  $newRoles
+     * @param  list<string>  $oldRoles
+     */
+    private function ensureCanAssignRoles(array $newRoles, array $oldRoles): void
+    {
+        $touchesAdmin = in_array('admin', $newRoles, true) !== in_array('admin', $oldRoles, true);
+
+        if ($touchesAdmin && !auth()->user()?->hasRole('admin')) {
+            throw ValidationException::withMessages(['roles' => 'Só um administrador pode atribuir ou retirar o perfil admin.']);
+        }
     }
 
     public function edit($id)
@@ -164,7 +186,8 @@ class UserV2Controller extends Controller
             'nif' => 'nullable|string|max:20',
             'iban' => 'nullable|string|max:40',
             'password' => 'nullable|string|min:6|confirmed',
-            'role' => 'required|exists:roles,name',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'exists:roles,name',
             'referral_code' => ['nullable', 'string', 'max:100', 'alpha_dash', Rule::unique('users', 'referral_code')->ignore($user->id)],
             'commission_fixed_value' => 'nullable|numeric|min:0',
         ]);
@@ -183,8 +206,22 @@ class UserV2Controller extends Controller
             $user->password = $validated['password'];
         }
 
+        $oldRoles = $user->getRoleNames()->sort()->values()->all();
+        $this->ensureCanAssignRoles($validated['roles'], $oldRoles);
+
         $user->save();
-        $user->syncRoles([$validated['role']]);
+        $user->syncRoles($validated['roles']);
+
+        $newRoles = collect($validated['roles'])->sort()->values()->all();
+        if ($oldRoles !== $newRoles) {
+            AuditLog::record(
+                'user_roles_updated',
+                "Perfis de {$user->name} {$user->last_name} alterados: " . (implode(', ', $oldRoles) ?: '—') . ' → ' . implode(', ', $newRoles),
+                $user,
+                ['roles' => $oldRoles],
+                ['roles' => $newRoles, 'added' => array_values(array_diff($newRoles, $oldRoles)), 'removed' => array_values(array_diff($oldRoles, $newRoles))]
+            );
+        }
 
         return redirect()->route('admin.v2.users.index')
             ->with('success', 'Utilizador atualizado com sucesso!');

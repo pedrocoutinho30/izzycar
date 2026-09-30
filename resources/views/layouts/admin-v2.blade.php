@@ -920,13 +920,13 @@
         </a>
 
         <!-- Search bar -->
-        @hasanyrole('admin|gestor|cms')
+        @if(!auth()->user()->isAngariadorOnly())
         <div class="topbar-search position-relative d-none d-lg-block">
             <i class="bi bi-search search-icon"></i>
             <input type="text" placeholder="Pesquisar clientes, leads, cotações, viaturas..." id="globalSearch" autocomplete="off">
             <div class="global-search-results" id="globalSearchResults"></div>
         </div>
-        @endhasanyrole
+        @endif
 
         <!-- Spacer -->
 
@@ -967,7 +967,7 @@
     <!-- SIDEBAR -->
     <aside class="admin-sidebar" id="adminSidebar">
         <nav class="sidebar-nav">
-        @hasanyrole('admin|gestor|cms')
+        @if(!auth()->user()->isAngariadorOnly())
             @php
                 $navGroups = [
                     'funil' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.form-proposals.*', 'admin.v2.proposals.*', 'admin.v2.converted-proposals.*', 'admin.v2.clients.*', 'admin.v2.cost-simulators.*'],
@@ -985,19 +985,23 @@
             @endphp
 
             <!-- Dashboard -->
+            @canroute('admin.v2.dashboard')
             <div class="nav-item">
                 <a href="{{ route('admin.v2.dashboard') }}" class="nav-link {{ request()->routeIs('admin.v2.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
             </div>
+            @endcanroute
 
+            @canroutes(['admin.v2.leads.index', 'admin.v2.clients.index', 'admin.v2.form-proposals.index', 'admin.v2.proposals.index', 'admin.v2.converted-proposals.index', 'admin.v2.cost-simulators.index'])
             {{-- ═══════ FUNIL DE VENDAS ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupFunil" aria-expanded="{{ $activeGroup === 'funil' ? 'true' : 'false' }}">
                 <span>Funil de Vendas</span>
                 <i class="bi bi-chevron-down nav-group__chevron"></i>
             </button>
             <div class="collapse {{ $activeGroup === 'funil' ? 'show' : '' }}" id="navGroupFunil">
+                @canroute('admin.v2.leads.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.leads.index') }}" class="nav-link {{ request()->routeIs('admin.v2.leads.*') ? 'active' : '' }}">
                         <i class="bi bi-funnel"></i>
@@ -1006,12 +1010,16 @@
                         <span class="nav-badge" id="leads-nav-badge" {{ $leadsCount === 0 ? 'style=display:none' : '' }}>{{ $leadsCount }}</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.clients.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.clients.index') }}" class="nav-link {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
                         <i class="bi bi-people"></i>
                         <span>Clientes</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.form-proposals.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.form-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
                         <i class="bi bi-envelope"></i>
@@ -1022,6 +1030,8 @@
                         @endif
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.proposals.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-text"></i>
@@ -1032,12 +1042,16 @@
                         @endif
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.converted-proposals.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.converted-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.converted-proposals.*') ? 'active' : '' }}">
                         <i class="bi bi-check2-circle"></i>
                         <span>Cotações Convertidas</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.cost-simulators.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.cost-simulators.index') }}" class="nav-link {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
                         <i class="bi bi-currency-dollar"></i>
@@ -1048,8 +1062,11 @@
                         @endif
                     </a>
                 </div>
+                @endcanroute
             </div>
+            @endcanroutes
 
+            @canroutes(['admin.legalizations.index', 'admin.v3.vehicles.index', 'admin.tasks.index', 'admin.v2.movements.index', 'admin.v2.sales.index', 'admin.v3.inspections.index', 'admin.transport-quotes.index'])
             {{-- ═══════ OPERAÇÕES ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupOperacoes" aria-expanded="{{ $activeGroup === 'operacoes' ? 'true' : 'false' }}">
                 <span>Operações</span>
@@ -1057,106 +1074,138 @@
             </button>
             <div class="collapse {{ $activeGroup === 'operacoes' ? 'show' : '' }}" id="navGroupOperacoes">
                 {{-- Consignações: oculto temporariamente --}}
+                @canroute('admin.legalizations.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.legalizations.index') }}" class="nav-link {{ request()->routeIs('admin.legalizations.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-check"></i>
                         <span>Legalizações</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v3.vehicles.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v3.vehicles.index') }}" class="nav-link {{ request()->routeIs('admin.v3.vehicles.*') ? 'active' : '' }}">
                         <i class="bi bi-car-front-fill"></i>
                         <span>Viaturas</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.tasks.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.tasks.index') }}" class="nav-link {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
                         <i class="bi bi-check2-square"></i>
                         <span>Tarefas</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.movements.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.movements.index') }}" class="nav-link {{ request()->routeIs('admin.v2.movements.*') || request()->routeIs('admin.v2.expenses.*') ? 'active' : '' }}">
                         <i class="bi bi-journal-text"></i>
                         <span>Movimentos</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.sales.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.sales.index') }}" class="nav-link {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
                         <i class="bi bi-graph-up-arrow"></i>
                         <span>Vendas</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v3.inspections.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v3.inspections.index') }}" class="nav-link {{ request()->routeIs('admin.v3.inspections.*') ? 'active' : '' }}">
                         <i class="bi bi-clipboard-check"></i>
                         <span>Inspeções</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.transport-quotes.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.transport-quotes.index') }}" class="nav-link {{ request()->routeIs('admin.transport-quotes.*') ? 'active' : '' }}">
                         <i class="bi bi-truck"></i>
                         <span>Transportes</span>
                     </a>
                 </div>
+                @endcanroute
             </div>
+            @endcanroutes
 
+            @canroutes(['admin.v2.angariadores.index', 'admin.v2.angariadores.comissoes', 'admin.v2.sellers.index', 'admin.v2.suppliers.index', 'admin.v2.partners.index'])
             {{-- ═══════ ANGARIADORES & PARCEIROS ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupRede" aria-expanded="{{ $activeGroup === 'rede' ? 'true' : 'false' }}">
                 <span>Angariadores &amp; Parceiros</span>
                 <i class="bi bi-chevron-down nav-group__chevron"></i>
             </button>
             <div class="collapse {{ $activeGroup === 'rede' ? 'show' : '' }}" id="navGroupRede">
+                @canroute('admin.v2.angariadores.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.angariadores.index') }}" class="nav-link {{ request()->routeIs('admin.v2.angariadores.index') || request()->routeIs('admin.v2.angariadores.show') ? 'active' : '' }}">
                         <i class="bi bi-person-badge"></i>
                         <span>Angariadores</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.angariadores.comissoes')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.angariadores.comissoes') }}" class="nav-link {{ request()->routeIs('admin.v2.angariadores.comissoes') ? 'active' : '' }}">
                         <i class="bi bi-cash-coin"></i>
                         <span>Comissões</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.sellers.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.sellers.index') }}" class="nav-link {{ request()->routeIs('admin.v2.sellers.*') ? 'active' : '' }}">
                         <i class="bi bi-shop"></i>
                         <span>Vendedores</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.suppliers.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.suppliers.index') }}" class="nav-link {{ request()->routeIs('admin.v2.suppliers.*') ? 'active' : '' }}">
                         <i class="bi bi-building"></i>
                         <span>Fornecedores</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.partners.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.partners.index') }}" class="nav-link {{ request()->routeIs('admin.v2.partners.*') ? 'active' : '' }}">
                         <i class="bi bi-phone-vibrate"></i>
                         <span>Parceiros</span>
                     </a>
                 </div>
+                @endcanroute
             </div>
+            @endcanroutes
 
+            @canroutes(['admin.v2.reports.index', 'calculator.profit', 'admin.v2.radar.index'])
             {{-- ═══════ ANÁLISE & FERRAMENTAS ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupAnalise" aria-expanded="{{ $activeGroup === 'analise' ? 'true' : 'false' }}">
                 <span>Análise &amp; Ferramentas</span>
                 <i class="bi bi-chevron-down nav-group__chevron"></i>
             </button>
             <div class="collapse {{ $activeGroup === 'analise' ? 'show' : '' }}" id="navGroupAnalise">
+                @canroute('admin.v2.reports.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.reports.index') }}" class="nav-link {{ request()->routeIs('admin.v2.reports.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-bar-graph"></i>
                         <span>Relatórios</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('calculator.profit')
                 <div class="nav-item">
                     <a href="{{ route('calculator.profit') }}" class="nav-link {{ request()->routeIs('calculator.profit') ? 'active' : '' }}">
                         <i class="bi bi-calculator"></i>
                         <span>Calculadora de Lucro</span>
                     </a>
                 </div>
+                @endcanroute
                 <!-- <div class="nav-item">
                     <a href="{{ route('admin.v2.comparator.index') }}" class="nav-link {{ request()->routeIs('admin.v2.comparator.*') ? 'active' : '' }}">
                         <i class="bi bi-columns-gap"></i>
@@ -1169,115 +1218,151 @@
                         <span>Análise de Carros</span>
                     </a>
                 </div> -->
+                @canroute('admin.v2.radar.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.radar.index') }}" class="nav-link {{ request()->routeIs('admin.v2.radar.*') ? 'active' : '' }}">
                         <i class="bi bi-broadcast"></i>
                         <span>Radar</span>
                     </a>
                 </div>
+                @endcanroute
             </div>
+            @endcanroutes
 
+            @canroutes(['admin.news.index', 'admin.testimonials.index', 'admin.v2.newsletter-management.index', 'admin.v2.menus.index', 'admin.v2.social-posts.index'])
             {{-- ═══════ CONTEÚDO DO SITE ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupConteudo" aria-expanded="{{ $activeGroup === 'conteudo' ? 'true' : 'false' }}">
                 <span>Conteúdo do Site</span>
                 <i class="bi bi-chevron-down nav-group__chevron"></i>
             </button>
             <div class="collapse {{ $activeGroup === 'conteudo' ? 'show' : '' }}" id="navGroupConteudo">
+                @canroute('admin.news.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.news.index') }}" class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
                         <i class="bi bi-file-richtext"></i>
                         <span>Notícias</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.testimonials.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.testimonials.index') }}" class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
                         <i class="bi bi-chat-quote"></i>
                         <span>Testemunhos</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.newsletter-management.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.newsletter-management.index') }}" class="nav-link {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
                         <i class="bi bi-newspaper"></i>
                         <span>Newsletter</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.menus.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.menus.index') }}" class="nav-link {{ request()->routeIs('admin.v2.menus.*') ? 'active' : '' }}">
                         <i class="bi bi-list-nested"></i>
                         <span>Menus</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.social-posts.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.social-posts.index') }}" class="nav-link {{ request()->routeIs('admin.v2.social-posts.*') ? 'active' : '' }}">
                         <i class="bi bi-magic"></i>
                         <span>Criador de Posts</span>
                     </a>
                 </div>
+                @endcanroute
             </div>
+            @endcanroutes
 
+            @canroutes(['admin.v2.attribute-groups.index', 'admin.v2.vehicle-attributes.index', 'admin.v2.settings.index'])
             {{-- ═══════ CONFIGURAÇÕES ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupConfig" aria-expanded="{{ $activeGroup === 'config' ? 'true' : 'false' }}">
                 <span>Configurações</span>
                 <i class="bi bi-chevron-down nav-group__chevron"></i>
             </button>
             <div class="collapse {{ $activeGroup === 'config' ? 'show' : '' }}" id="navGroupConfig">
+                @canroute('admin.v2.attribute-groups.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.attribute-groups.index') }}" class="nav-link {{ request()->routeIs('admin.v2.attribute-groups.*') ? 'active' : '' }}">
                         <i class="bi bi-folder"></i>
                         <span>Grupos de Atributos</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.vehicle-attributes.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.vehicle-attributes.index') }}" class="nav-link {{ request()->routeIs('admin.v2.vehicle-attributes.*') ? 'active' : '' }}">
                         <i class="bi bi-tags"></i>
                         <span>Atributos de Veículos</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.settings.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.settings.index') }}" class="nav-link {{ request()->routeIs('admin.v2.settings.*') ? 'active' : '' }}">
                         <i class="bi bi-gear"></i>
                         <span>Configurações</span>
                     </a>
                 </div>
+                @endcanroute
             </div>
+            @endcanroutes
 
+            @canroutes(['admin.v2.users.index', 'admin.v2.roles.index', 'admin.v2.permissions.index', 'admin.v2.audit-log', 'admin.v2.manual'])
             {{-- ═══════ SISTEMA ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupSistema" aria-expanded="{{ $activeGroup === 'sistema' ? 'true' : 'false' }}">
                 <span>Sistema</span>
                 <i class="bi bi-chevron-down nav-group__chevron"></i>
             </button>
             <div class="collapse {{ $activeGroup === 'sistema' ? 'show' : '' }}" id="navGroupSistema">
+                @canroute('admin.v2.users.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.users.index') }}" class="nav-link {{ request()->routeIs('admin.v2.users.*') ? 'active' : '' }}">
                         <i class="bi bi-person-gear"></i>
                         <span>Utilizadores</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.roles.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.roles.index') }}" class="nav-link {{ request()->routeIs('admin.v2.roles.*') ? 'active' : '' }}">
                         <i class="bi bi-shield-lock"></i>
                         <span>Perfis</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.permissions.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.permissions.index') }}" class="nav-link {{ request()->routeIs('admin.v2.permissions.*') ? 'active' : '' }}">
                         <i class="bi bi-key"></i>
                         <span>Permissões</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.audit-log')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.audit-log') }}" class="nav-link {{ request()->routeIs('admin.v2.audit-log') ? 'active' : '' }}">
                         <i class="bi bi-shield-check"></i>
                         <span>Log de Auditoria</span>
                     </a>
                 </div>
+                @endcanroute
+                @canroute('admin.v2.manual')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.manual') }}" class="nav-link {{ request()->routeIs('admin.v2.manual') ? 'active' : '' }}">
                         <i class="bi bi-book"></i>
                         <span>Manual de Utilizador</span>
                     </a>
                 </div>
+                @endcanroute
             </div>
+            @endcanroutes
+
         @else
             {{-- Angariador puro: apenas a sua própria área --}}
             <div class="nav-item">
@@ -1322,11 +1407,11 @@
                     <span>Perguntas Frequentes</span>
                 </a>
             </div>
-        @endhasanyrole
+        @endif
         </nav>
     </aside>
 
-    @hasanyrole('admin|gestor|cms')
+    @if(!auth()->user()->isAngariadorOnly())
     @php
         $isMaisActive = in_array($activeGroup, ['conteudo', 'config', 'sistema'], true) || request()->routeIs('admin.v2.dashboard');
     @endphp
@@ -1335,22 +1420,30 @@
          submenus já definidos no sidebar de desktop; "Mais" cobre o resto
          (Dashboard, Conteúdo do Site, Configurações, Sistema). ═══════ --}}
     <nav class="admin-bottom-nav" id="adminBottomNav" aria-label="Acesso rápido (mobile)">
+        @canroutes(['admin.v2.leads.index', 'admin.v2.clients.index', 'admin.v2.form-proposals.index', 'admin.v2.proposals.index', 'admin.v2.converted-proposals.index', 'admin.v2.cost-simulators.index'])
         <button type="button" class="abn-item {{ $activeGroup === 'funil' ? 'is-active' : '' }}" data-group="funil">
             <span class="abn-icon-wrap"><i class="bi bi-funnel"></i></span>
             <span class="abn-label">Funil</span>
         </button>
+        @endcanroutes
+        @canroutes(['admin.legalizations.index', 'admin.v3.vehicles.index', 'admin.tasks.index', 'admin.v2.movements.index', 'admin.v2.sales.index', 'admin.v3.inspections.index', 'admin.transport-quotes.index'])
         <button type="button" class="abn-item {{ $activeGroup === 'operacoes' ? 'is-active' : '' }}" data-group="operacoes">
             <span class="abn-icon-wrap"><i class="bi bi-gear-wide-connected"></i></span>
             <span class="abn-label">Operações</span>
         </button>
+        @endcanroutes
+        @canroutes(['admin.v2.angariadores.index', 'admin.v2.angariadores.comissoes', 'admin.v2.sellers.index', 'admin.v2.suppliers.index', 'admin.v2.partners.index', 'admin.v2.social-posts.index'])
         <button type="button" class="abn-item {{ $activeGroup === 'rede' ? 'is-active' : '' }}" data-group="rede">
             <span class="abn-icon-wrap"><i class="bi bi-person-badge"></i></span>
             <span class="abn-label">Rede</span>
         </button>
+        @endcanroutes
+        @canroutes(['admin.v2.reports.index', 'calculator.profit', 'admin.v2.radar.index'])
         <button type="button" class="abn-item {{ $activeGroup === 'analise' ? 'is-active' : '' }}" data-group="analise">
             <span class="abn-icon-wrap"><i class="bi bi-bar-chart-line"></i></span>
             <span class="abn-label">Análise</span>
         </button>
+        @endcanroutes
         <button type="button" class="abn-item {{ $isMaisActive ? 'is-active' : '' }}" data-group="mais">
             <span class="abn-icon-wrap"><i class="bi bi-three-dots"></i></span>
             <span class="abn-label">Mais</span>
@@ -1371,185 +1464,263 @@
 
             {{-- Funil de Vendas --}}
             <div class="abn-sheet-panel" data-panel="funil">
+                @canroute('admin.v2.leads.index')
                 <a href="{{ route('admin.v2.leads.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.leads.*') ? 'active' : '' }}">
                     <i class="bi bi-funnel"></i>
                     <span>Leads</span>
                     @php $mLeadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
                     @if($mLeadsCount > 0)<span class="abn-badge">{{ $mLeadsCount }}</span>@endif
                 </a>
+                @endcanroute
+                @canroute('admin.v2.clients.index')
                 <a href="{{ route('admin.v2.clients.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
                     <i class="bi bi-people"></i>
                     <span>Clientes</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.form-proposals.index')
                 <a href="{{ route('admin.v2.form-proposals.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
                     <i class="bi bi-envelope"></i>
                     <span>Formulários</span>
                     @php $mNewFormsCount = \App\Models\FormProposal::whereIn('status', ['novo', null])->count(); @endphp
                     @if($mNewFormsCount > 0)<span class="abn-badge">{{ $mNewFormsCount }}</span>@endif
                 </a>
+                @endcanroute
+                @canroute('admin.v2.proposals.index')
                 <a href="{{ route('admin.v2.proposals.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text"></i>
                     <span>Cotações</span>
                     @php $mPendingCount = \App\Models\Proposal::where('status', 'Pendente')->count(); @endphp
                     @if($mPendingCount > 0)<span class="abn-badge">{{ $mPendingCount }}</span>@endif
                 </a>
+                @endcanroute
+                @canroute('admin.v2.converted-proposals.index')
                 <a href="{{ route('admin.v2.converted-proposals.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.converted-proposals.*') ? 'active' : '' }}">
                     <i class="bi bi-check2-circle"></i>
                     <span>Cotações Convertidas</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.cost-simulators.index')
                 <a href="{{ route('admin.v2.cost-simulators.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
                     <i class="bi bi-currency-dollar"></i>
                     <span>Simulador Custos</span>
                     @php $mNewSimulationsCount = \App\Models\CostSimulator::where('read', 0)->count(); @endphp
                     @if($mNewSimulationsCount > 0)<span class="abn-badge">{{ $mNewSimulationsCount }}</span>@endif
                 </a>
+                @endcanroute
             </div>
 
             {{-- Operações --}}
             <div class="abn-sheet-panel" data-panel="operacoes">
+                @canroute('admin.legalizations.index')
                 <a href="{{ route('admin.legalizations.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.legalizations.*') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-check"></i>
                     <span>Legalizações</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v3.vehicles.index')
                 <a href="{{ route('admin.v3.vehicles.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v3.vehicles.*') ? 'active' : '' }}">
                     <i class="bi bi-car-front-fill"></i>
                     <span>Viaturas</span>
                 </a>
+                @endcanroute
+                @canroute('admin.tasks.index')
                 <a href="{{ route('admin.tasks.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
                     <i class="bi bi-check2-square"></i>
                     <span>Tarefas</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.movements.index')
                 <a href="{{ route('admin.v2.movements.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.movements.*') || request()->routeIs('admin.v2.expenses.*') ? 'active' : '' }}">
                     <i class="bi bi-journal-text"></i>
                     <span>Movimentos</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.sales.index')
                 <a href="{{ route('admin.v2.sales.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
                     <i class="bi bi-graph-up-arrow"></i>
                     <span>Vendas</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v3.inspections.index')
                 <a href="{{ route('admin.v3.inspections.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v3.inspections.*') ? 'active' : '' }}">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Inspeções</span>
                 </a>
+                @endcanroute
+                @canroute('admin.transport-quotes.index')
                 <a href="{{ route('admin.transport-quotes.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.transport-quotes.*') ? 'active' : '' }}">
                     <i class="bi bi-truck"></i>
                     <span>Transportes</span>
                 </a>
+                @endcanroute
             </div>
 
             {{-- Angariadores & Parceiros --}}
             <div class="abn-sheet-panel" data-panel="rede">
+                @canroute('admin.v2.angariadores.index')
                 <a href="{{ route('admin.v2.angariadores.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.angariadores.index') || request()->routeIs('admin.v2.angariadores.show') ? 'active' : '' }}">
                     <i class="bi bi-person-badge"></i>
                     <span>Angariadores</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.angariadores.comissoes')
                 <a href="{{ route('admin.v2.angariadores.comissoes') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.angariadores.comissoes') ? 'active' : '' }}">
                     <i class="bi bi-cash-coin"></i>
                     <span>Comissões</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.sellers.index')
                 <a href="{{ route('admin.v2.sellers.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.sellers.*') ? 'active' : '' }}">
                     <i class="bi bi-shop"></i>
                     <span>Vendedores</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.suppliers.index')
                 <a href="{{ route('admin.v2.suppliers.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.suppliers.*') ? 'active' : '' }}">
                     <i class="bi bi-building"></i>
                     <span>Fornecedores</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.partners.index')
                 <a href="{{ route('admin.v2.partners.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.partners.*') ? 'active' : '' }}">
                     <i class="bi bi-phone-vibrate"></i>
                     <span>Parceiros</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.social-posts.index')
                 <a href="{{ route('admin.v2.social-posts.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.social-posts.*') ? 'active' : '' }}">
                     <i class="bi bi-magic"></i>
                     <span>Criador de Posts</span>
                 </a>
+                @endcanroute
             </div>
 
             {{-- Análise & Ferramentas --}}
             <div class="abn-sheet-panel" data-panel="analise">
+                @canroute('admin.v2.reports.index')
                 <a href="{{ route('admin.v2.reports.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.reports.*') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-bar-graph"></i>
                     <span>Relatórios</span>
                 </a>
+                @endcanroute
+                @canroute('calculator.profit')
                 <a href="{{ route('calculator.profit') }}" class="abn-sheet-item {{ request()->routeIs('calculator.profit') ? 'active' : '' }}">
                     <i class="bi bi-calculator"></i>
                     <span>Calculadora de Lucro</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.radar.index')
                 <a href="{{ route('admin.v2.radar.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.radar.*') ? 'active' : '' }}">
                     <i class="bi bi-broadcast"></i>
                     <span>Radar</span>
                 </a>
+                @endcanroute
             </div>
 
             {{-- Mais: Dashboard + Conteúdo do Site + Configurações + Sistema --}}
             <div class="abn-sheet-panel" data-panel="mais">
+                @canroute('admin.v2.dashboard')
                 <a href="{{ route('admin.v2.dashboard') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
+                @endcanroute
 
+                @canroutes(['admin.news.index', 'admin.testimonials.index', 'admin.v2.newsletter-management.index', 'admin.v2.menus.index', 'admin.v2.social-posts.index'])
                 <div class="abn-sheet-section-title">Conteúdo do Site</div>
+                @canroute('admin.news.index')
                 <a href="{{ route('admin.news.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
                     <i class="bi bi-file-richtext"></i>
                     <span>Notícias</span>
                 </a>
+                @endcanroute
+                @canroute('admin.testimonials.index')
                 <a href="{{ route('admin.testimonials.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
                     <i class="bi bi-chat-quote"></i>
                     <span>Testemunhos</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.newsletter-management.index')
                 <a href="{{ route('admin.v2.newsletter-management.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.newsletter-management.*') ? 'active' : '' }}">
                     <i class="bi bi-newspaper"></i>
                     <span>Newsletter</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.menus.index')
                 <a href="{{ route('admin.v2.menus.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.menus.*') ? 'active' : '' }}">
                     <i class="bi bi-list-nested"></i>
                     <span>Menus</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.social-posts.index')
                 <a href="{{ route('admin.v2.social-posts.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.social-posts.*') ? 'active' : '' }}">
                     <i class="bi bi-magic"></i>
                     <span>Criador de Posts</span>
                 </a>
+                @endcanroute
+                @endcanroutes
 
+                @canroutes(['admin.v2.attribute-groups.index', 'admin.v2.vehicle-attributes.index', 'admin.v2.settings.index'])
                 <div class="abn-sheet-section-title">Configurações</div>
+                @canroute('admin.v2.attribute-groups.index')
                 <a href="{{ route('admin.v2.attribute-groups.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.attribute-groups.*') ? 'active' : '' }}">
                     <i class="bi bi-folder"></i>
                     <span>Grupos de Atributos</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.vehicle-attributes.index')
                 <a href="{{ route('admin.v2.vehicle-attributes.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.vehicle-attributes.*') ? 'active' : '' }}">
                     <i class="bi bi-tags"></i>
                     <span>Atributos de Veículos</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.settings.index')
                 <a href="{{ route('admin.v2.settings.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.settings.*') ? 'active' : '' }}">
                     <i class="bi bi-gear"></i>
                     <span>Configurações</span>
                 </a>
+                @endcanroute
+                @endcanroutes
 
+                @canroutes(['admin.v2.users.index', 'admin.v2.roles.index', 'admin.v2.permissions.index', 'admin.v2.audit-log', 'admin.v2.manual'])
                 <div class="abn-sheet-section-title">Sistema</div>
+                @canroute('admin.v2.users.index')
                 <a href="{{ route('admin.v2.users.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.users.*') ? 'active' : '' }}">
                     <i class="bi bi-person-gear"></i>
                     <span>Utilizadores</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.roles.index')
                 <a href="{{ route('admin.v2.roles.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.roles.*') ? 'active' : '' }}">
                     <i class="bi bi-shield-lock"></i>
                     <span>Perfis</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.permissions.index')
                 <a href="{{ route('admin.v2.permissions.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.permissions.*') ? 'active' : '' }}">
                     <i class="bi bi-key"></i>
                     <span>Permissões</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.audit-log')
                 <a href="{{ route('admin.v2.audit-log') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.audit-log') ? 'active' : '' }}">
                     <i class="bi bi-shield-check"></i>
                     <span>Log de Auditoria</span>
                 </a>
+                @endcanroute
+                @canroute('admin.v2.manual')
                 <a href="{{ route('admin.v2.manual') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.manual') ? 'active' : '' }}">
                     <i class="bi bi-book"></i>
                     <span>Manual de Utilizador</span>
                 </a>
+                @endcanroute
+                @endcanroutes
             </div>
 
         </div>
     </div>
-    @endhasanyrole
+    @endif
 
     <!-- MAIN CONTENT -->
     <main class="admin-main">
@@ -1806,6 +1977,7 @@
          *  - Envia notificação nativa do browser (se autorizado)
          *  - Actualiza o badge do menu
          */
+        @canroute('admin.v2.api.new-leads')
         (function initLeadNotifications() {
             const POLL_INTERVAL = 30000; // 30 segundos
             const API_URL       = '{{ route("admin.v2.api.new-leads") }}';
@@ -1876,6 +2048,7 @@
             // Só pollar se o utilizador está autenticado (layout admin)
             setInterval(poll, POLL_INTERVAL);
         })();
+        @endcanroute
     </script>
 
     <!-- PWA — Service Worker -->
@@ -1897,7 +2070,7 @@
     {{-- PWA — Notificações push. Botão só aparece se o browser suportar
          (Safari no iPhone só suporta dentro da app instalada no ecrã
          principal — numa aba normal, o botão nem chega a mostrar). --}}
-    @hasanyrole('admin|gestor|cms')
+    @if(!auth()->user()->isAngariadorOnly())
     <script>
         (function () {
             const VAPID_PUBLIC_KEY = @json(config('webpush.vapid.public_key'));
@@ -1978,7 +2151,7 @@
             refreshState();
         })();
     </script>
-    @endhasanyrole
+    @endif
 
     @stack('scripts')
 </body>

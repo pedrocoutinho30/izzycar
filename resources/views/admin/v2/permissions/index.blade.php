@@ -11,87 +11,78 @@
         ['icon' => '', 'label' => 'Permissões']
     ],
     'title' => 'Permissões',
-    'subtitle' => 'Gerir permissões do sistema',
-    'actionHref' => route('admin.v2.permissions.create'),
-    'actionLabel' => 'Nova Permissão'
+    'subtitle' => 'Catálogo por categoria, objeto, ação e âmbito — as permissões atribuem-se nos perfis',
+    'extraActions' => [
+        ['href' => route('admin.v2.roles.index'), 'label' => 'Gerir perfis', 'icon' => 'bi-person-badge', 'class' => 'btn-primary-modern'],
+    ],
 ])
 
 <!-- Stats Cards -->
 @include('components.admin.stats-cards', ['stats' => $stats])
 
-<!-- Filter Bar -->
-@include('components.admin.filter-bar', [
-    'filters' => [
-        [
-            'type' => 'text',
-            'name' => 'search',
-            'label' => 'Pesquisar',
-            'placeholder' => 'Pesquisar por nome...',
-            'value' => request('search')
-        ]
-    ]
-])
+<div class="alert alert-info">
+    <i class="bi bi-shield-check me-2"></i>
+    O perfil <strong>admin</strong> tem acesso total e não aparece na tabela.
+    <strong>Todos</strong> = todos os registos; <strong>Próprios</strong> = só os registos associados ao utilizador.
+</div>
 
-<!-- Lista de Permissões -->
+@php $actionKeys = ['view', 'create', 'update', 'delete']; @endphp
+
+@foreach($modules as $moduleKey => $resources)
 <div class="modern-card">
     <div class="modern-card-header">
         <h5 class="modern-card-title">
-            <i class="bi bi-list-ul"></i>
-            Lista de Permissões
+            <i class="bi bi-grid-3x3-gap"></i>
+            {{ $registry->moduleLabel($moduleKey) }}
         </h5>
-        <span class="badge bg-secondary rounded-pill">{{ $permissions->total() }} total</span>
+        <span class="badge bg-secondary rounded-pill">{{ $resources->count() }} objetos</span>
     </div>
-    @forelse($permissions as $permission)
-        @include('components.admin.item-card', [
-            'title' => $permission->name,
-            'subtitle' => 'Permissão do sistema',
-            'image' => null,
-            'badges' => [
-                [
-                    'text' => 'Permissão',
-                    'color' => 'primary',
-                    'icon' => 'bi-key'
-                ]
-            ],
-            'meta' => [
-                [
-                    'icon' => 'bi-calendar',
-                    'text' => 'Criada em ' . $permission->created_at->format('d/m/Y')
-                ]
-            ],
-            'actions' => [
-                [
-                    'href' => route('admin.v2.permissions.edit', $permission->id),
-                    'icon' => 'bi-pencil',
-                    'label' => 'Editar',
-                    'color' => 'primary'
-                ],
-                [
-                    'href' => route('admin.v2.permissions.destroy', $permission->id),
-                    'icon' => 'bi-trash',
-                    'label' => 'Eliminar',
-                    'color' => 'danger',
-                    'method' => 'delete',
-                    'confirm' => 'Tem certeza que deseja eliminar esta permissão?'
-                ]
-            ]
-        ])
-    @empty
-        @include('components.admin.empty-state', [
-            'icon' => 'bi-key',
-            'title' => 'Nenhuma permissão encontrada',
-            'description' => 'Crie a primeira permissão do sistema.',
-            'actionUrl' => route('admin.v2.permissions.create'),
-            'actionText' => 'Criar Permissão'
-        ])
-    @endforelse
+    <div class="modern-card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:22%">Objeto</th>
+                        @foreach($actionKeys as $action)
+                        <th>{{ $registry->actionLabel($action) }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($resources as $resourceKey => $resource)
+                    <tr>
+                        <td>
+                            <strong>{{ $resource['label'] }}</strong>
+                            <div class="small text-muted font-monospace">{{ $resourceKey }}</div>
+                        </td>
+                        @foreach($actionKeys as $action)
+                        <td class="small">
+                            @if(!array_key_exists($action, $resource['actions']))
+                                <span class="text-muted">—</span>
+                            @else
+                                @if($resource['actions'][$action])
+                                    <div class="text-muted mb-1">
+                                        {{ collect($resource['actions'][$action])->map(fn ($scope) => $registry->scopeLabel($scope))->implode(' / ') }}
+                                    </div>
+                                @endif
+                                @foreach($roleGrants as $roleName => $grants)
+                                    @php $grant = $grants[$resourceKey][$action] ?? null; @endphp
+                                    @if($grant && $roleName !== 'admin')
+                                        <span class="badge {{ $grant === 'own' ? 'bg-warning text-dark' : 'bg-light text-dark border' }} mb-1">
+                                            {{ $roleName }}@if(is_string($grant)) · {{ $registry->scopeLabel($grant) }}@endif
+                                        </span>
+                                    @endif
+                                @endforeach
+                            @endif
+                        </td>
+                        @endforeach
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-<!-- Paginação -->
-@if($permissions->hasPages())
-<div class="pagination-wrapper">
-    {{ $permissions->links() }}
-</div>
-@endif
+@endforeach
 
 @endsection

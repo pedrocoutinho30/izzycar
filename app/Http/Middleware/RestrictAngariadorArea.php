@@ -25,7 +25,7 @@ class RestrictAngariadorArea
             abort(403, 'A sua conta não tem nenhum perfil atribuído. Contacte a administração.');
         }
 
-        if (!$user || !$user->hasRole('angariador') || $user->hasAnyRole(['admin', 'gestor', 'cms'])) {
+        if (!$user || !$user->isAngariadorOnly()) {
             return $next($request);
         }
 

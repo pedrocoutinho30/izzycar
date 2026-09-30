@@ -14,13 +14,16 @@ use Illuminate\Notifications\Notification;
 class PushNotifier
 {
     /**
-     * Notifica todos os utilizadores com acesso de gestão (admin, gestor,
-     * cms) — mesmo público que já vê os badges/toasts de "nova lead" no BO.
+     * Notifica quem gere as leads (admin e perfis com "Leads → Ver → Todos") —
+     * o mesmo público que vê os badges/toasts de "nova lead" no BO.
      */
     public static function notifyStaff(Notification $notification): void
     {
         try {
-            User::role(['admin', 'gestor', 'cms'])->get()->each->notify($notification);
+            User::role('admin')->get()
+                ->merge(User::permission('leads.view.all')->get())
+                ->unique('id')
+                ->each->notify($notification);
         } catch (\Throwable $e) {
             report($e);
         }

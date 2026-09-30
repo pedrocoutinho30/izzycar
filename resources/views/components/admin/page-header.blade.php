@@ -7,6 +7,14 @@
     $extraActions = $extraActions ?? [];
     $subtitle     = $subtitle     ?? null;
     $breadcrumbs  = $breadcrumbs  ?? [];
+
+    // Botões para páginas a que o utilizador não tem acesso não aparecem
+    // (a rota continua protegida no backend — isto é só consequência).
+    $permissions  = app(\App\Permissions\PermissionService::class);
+    $allowed      = fn ($href) => blank($href) || !auth()->check() || $permissions->canAccessUrl(auth()->user(), $href);
+    $extraActions = array_values(array_filter($extraActions, fn ($xa) => $allowed($xa['href'] ?? null)));
+    $action2Href  = $allowed($action2Href) ? $action2Href : null;
+    $actionHref   = $allowed($actionHref) ? $actionHref : null;
 @endphp
 
 <div class="page-header">

@@ -35,7 +35,7 @@
         <p class="empty-message text-muted mb-4">{{ $message }}</p>
     @endif
     
-    @if($action)
+    @if($action && (!auth()->check() || app(\App\Permissions\PermissionService::class)->canAccessUrl(auth()->user(), $action['href'])))
         <a href="{{ $action['href'] }}" class="btn btn-primary-modern">
             @if(isset($action['icon']))
                 <i class="bi {{ $action['icon'] }} text-white"></i>

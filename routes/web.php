@@ -87,7 +87,7 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
     Lfm::routes();
 });
 
-Route::prefix('gestao')->middleware(['auth', 'restrictAngariador'])->group(function () {
+Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeResource'])->group(function () {
 
 
     Route::get('/simulador-isv', [ImportSimulatorController::class, 'index'])->name('isv.simulator');

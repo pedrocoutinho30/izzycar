@@ -86,7 +86,7 @@ class ImportOpportunityTest extends TestCase
 
     public function test_angariador_only_users_cannot_access(): void
     {
-        Role::create(['name' => 'angariador']);
+        Role::findOrCreate('angariador', 'web');
         $angariador = User::factory()->create(['password' => 'secret', 'last_name' => 'Teste']);
         $angariador->assignRole('angariador');
 

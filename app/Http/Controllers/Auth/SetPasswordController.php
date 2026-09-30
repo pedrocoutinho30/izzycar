@@ -49,7 +49,7 @@ class SetPasswordController extends Controller
 
         Auth::login($user);
 
-        if ($user->hasRole('angariador') && !$user->hasAnyRole(['admin', 'gestor', 'cms'])) {
+        if ($user->isAngariadorOnly()) {
             $redirectTo = route('admin.angariador.dashboard');
         } else {
             $redirectTo = RouteServiceProvider::HOME;
