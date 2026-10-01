@@ -776,6 +776,11 @@ class ProposalController extends Controller
 
     public function accept(Proposal $proposal, Request $request)
     {
+        $request->validate(
+            ['validate_identification_number' => 'nullable|date'],
+            ['validate_identification_number.date' => 'A validade do documento não é uma data válida.']
+        );
+
         //0. Atualizar dados do cliente
         $input = $request->only([
             'email',
@@ -783,6 +788,7 @@ class ProposalController extends Controller
             'postal_code',
             'city',
             'identification_number',
+            'validate_identification_number',
             'phone',
             'vat_number'
 

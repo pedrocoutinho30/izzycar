@@ -150,6 +150,12 @@ class Modelo9PdfService
         'anotacoes_especiais' => [124.0, 680.8, 539.2],
     ];
 
+    /** Primeiros 9 caracteres do nº do documento, sem espaços nem separadores. */
+    public static function documentNumber(?string $identificationNumber): string
+    {
+        return mb_substr(preg_replace('/[^\p{L}\p{N}]/u', '', (string) $identificationNumber), 0, 9);
+    }
+
     public function generate(Legalization $legalization): string
     {
         $legalization->loadMissing('client');
@@ -190,7 +196,9 @@ class Modelo9PdfService
             $this->writeComb($mpdf, 'localidade_l2', $client->city ?? '');
             $this->writeComb($mpdf, 'codigo_postal', $client->postal_code ?? '');
             $this->writeComb($mpdf, 'nif', $client->vat_number ?? '');
-            $this->writeComb($mpdf, 'doc_identificacao', str_replace(' ', '', $client->identification_number ?? ''));
+            // O campo só tem 10 quadrados: do Cartão de Cidadão ("12345678 9 ZZ1")
+            // vai só o nº de identificação civil com o dígito de controlo.
+            $this->writeComb($mpdf, 'doc_identificacao', self::documentNumber($client->identification_number));
 
             if ($client->validate_identification_number) {
                 $validade = \Carbon\Carbon::parse($client->validate_identification_number);

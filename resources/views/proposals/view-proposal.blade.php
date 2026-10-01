@@ -508,7 +508,7 @@
           $missingFields = [];
           if(!$client->phone || !$client->email || !$client->address ||
              !$client->postal_code || !$client->city || !$client->vat_number ||
-             !$client->identification_number) {
+             !$client->identification_number || !$client->validate_identification_number) {
             $missingFields = true;
           }
         @endphp
@@ -559,6 +559,13 @@
         <div class="iz-modal__field">
           <label class="iz-modal__label">Nº Cartão de Cidadão</label>
           <input type="text" name="identification_number" class="iz-modal__input" placeholder="00000000 0 ZZ0" required>
+        </div>
+        @endif
+
+        @if(!$client->validate_identification_number)
+        <div class="iz-modal__field">
+          <label class="iz-modal__label">Validade do Cartão de Cidadão</label>
+          <input type="date" name="validate_identification_number" class="iz-modal__input" required>
         </div>
         @endif
 
