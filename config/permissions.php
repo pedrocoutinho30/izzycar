@@ -64,9 +64,10 @@ return [
                 ],
                 'form-proposals' => [
                     'label' => 'Formulários',
-                    // Os pedidos chegam pelo site — não há "criar" no backoffice.
-                    // As Oportunidades vivem dentro de cada pedido (editar).
-                    'actions' => ['view' => ['all', 'own'], 'update' => [], 'delete' => []],
+                    // Pedidos de importação: chegam pelo site ou são criados à mão
+                    // dentro da lead/cliente. As Oportunidades vivem dentro de
+                    // cada pedido (editar).
+                    'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => [], 'delete' => []],
                     'owner' => 'client.owner_id',
                     'routes' => ['admin.v2.form-proposals.*', 'admin.v2.consignment-evaluations.*'],
                     'own_routes' => ['admin.angariador.formularios'],

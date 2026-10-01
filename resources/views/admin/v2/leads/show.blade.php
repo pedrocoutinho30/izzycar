@@ -20,147 +20,8 @@
     {{-- Coluna principal --}}
     <div class="col-lg-8">
 
-        {{-- Formulários de importação --}}
-        @if($formProposals->isNotEmpty())
-        @foreach($formProposals as $fp)
-        <div class="modern-card mb-4">
-            <div class="modern-card-header">
-                <h5 class="modern-card-title">
-                    <i class="bi bi-envelope-open"></i>
-                    Pedido de Importação
-                    <span class="badge bg-{{ match($fp->status) {
-                        'novo'       => 'warning',
-                        'em_analise' => 'info',
-                        'convertido' => 'success',
-                        'rejeitado'  => 'danger',
-                        default      => 'secondary'
-                    } }} ms-2 fw-normal fs-xs">{{ ucfirst(str_replace('_', ' ', $fp->status)) }}</span>
-                </h5>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="text-muted small">{{ $fp->created_at->format('d/m/Y H:i') }}</span>
-                    <a href="{{ route('admin.v2.form-proposals.show', $fp->id) }}"
-                       class="btn btn-icon btn-primary-modern" title="Abrir pedido completo">
-                        <i class="bi bi-arrow-up-right-square"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="fp-grid">
-                {{-- Mensagem --}}
-                @if($fp->message)
-                <div class="fp-block fp-block--full">
-                    <div class="fp-label">Mensagem</div>
-                    <div class="fp-value">{{ $fp->message }}</div>
-                </div>
-                @endif
-
-                {{-- Veículo pretendido --}}
-                @if($fp->brand || $fp->model || $fp->version)
-                <div class="fp-block">
-                    <div class="fp-label">Veículo</div>
-                    <div class="fp-value">{{ implode(' ', array_filter([$fp->brand, $fp->model, $fp->version])) }}</div>
-                </div>
-                @endif
-
-                @if($fp->fuel)
-                <div class="fp-block">
-                    <div class="fp-label">Combustível</div>
-                    <div class="fp-value">{{ $fp->fuel }}</div>
-                </div>
-                @endif
-
-                @if($fp->gearbox)
-                <div class="fp-block">
-                    <div class="fp-label">Caixa</div>
-                    <div class="fp-value">{{ $fp->gearbox }}</div>
-                </div>
-                @endif
-
-                @if($fp->color)
-                <div class="fp-block">
-                    <div class="fp-label">Cor</div>
-                    <div class="fp-value">{{ $fp->color }}</div>
-                </div>
-                @endif
-
-                @if($fp->year_min)
-                <div class="fp-block">
-                    <div class="fp-label">Ano mínimo</div>
-                    <div class="fp-value">{{ $fp->year_min }}</div>
-                </div>
-                @endif
-
-                @if($fp->km_max)
-                <div class="fp-block">
-                    <div class="fp-label">Km máximos</div>
-                    <div class="fp-value">{{ number_format($fp->km_max, 0, ',', '.') }} km</div>
-                </div>
-                @endif
-
-                @if($fp->budget)
-                <div class="fp-block">
-                    <div class="fp-label">Orçamento</div>
-                    <div class="fp-value fw-semibold">€ {{ number_format($fp->budget, 0, ',', '.') }}</div>
-                </div>
-                @endif
-
-                @if($fp->payment_type)
-                <div class="fp-block">
-                    <div class="fp-label">Pagamento</div>
-                    <div class="fp-value">{{ $fp->payment_type }}</div>
-                </div>
-                @endif
-
-                @if($fp->estimated_purchase_date)
-                <div class="fp-block">
-                    <div class="fp-label">Compra prevista</div>
-                    @php
-                        $purchaseLabels = [
-                            '1_3_meses'   => '1 a 3 meses',
-                            '3_6_meses'   => '3 a 6 meses',
-                            '6_12_meses'  => '6 a 12 meses',
-                            'mais_1_ano'  => 'Mais de 1 ano',
-                        ];
-                        $purchaseDisplay = $purchaseLabels[$fp->estimated_purchase_date]
-                            ?? (is_numeric(strtotime($fp->estimated_purchase_date))
-                                ? \Carbon\Carbon::parse($fp->estimated_purchase_date)->format('d/m/Y')
-                                : $fp->estimated_purchase_date);
-                    @endphp
-                    <div class="fp-value">{{ $purchaseDisplay }}</div>
-                </div>
-                @endif
-
-                @if($fp->source)
-                <div class="fp-block">
-                    <div class="fp-label">Origem</div>
-                    <div class="fp-value">{{ $fp->source }}</div>
-                </div>
-                @endif
-
-                @if($fp->ad_option && $fp->ad_option !== 'nao_nao')
-                <div class="fp-block">
-                    <div class="fp-label">Já encontrou anúncio?</div>
-                    <div class="fp-value">{{ $fp->ad_option === 'sim' ? 'Sim' : 'Não sabe' }}</div>
-                </div>
-                @endif
-
-                @if($fp->ad_links)
-                <div class="fp-block fp-block--full">
-                    <div class="fp-label">Links de anúncios</div>
-                    <div class="fp-value">{{ $fp->ad_links }}</div>
-                </div>
-                @endif
-
-                @if($fp->extras)
-                <div class="fp-block fp-block--full">
-                    <div class="fp-label">Extras pretendidos</div>
-                    <div class="fp-value">{{ $fp->extras }}</div>
-                </div>
-                @endif
-            </div>
-        </div>
-        @endforeach
-        @endif
+        {{-- Pedidos de importação (do site ou criados à mão) e as suas oportunidades --}}
+        @include('admin.v2.form-proposals._client-requests', ['client' => $lead, 'requests' => $formProposals])
 
         {{-- Simulações de custos --}}
         @if($simulators->isNotEmpty())
@@ -230,14 +91,6 @@
         </div>
         @endif
 
-        @if($formProposals->isEmpty() && $simulators->isEmpty())
-        <div class="modern-card mb-4">
-            <div class="p-4 text-center text-muted">
-                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                Sem atividade registada para este lead.
-            </div>
-        </div>
-        @endif
 
         @include('admin.v2.clients.partials.car-candidates', ['client' => $lead])
 
@@ -503,22 +356,6 @@
 
 @push('styles')
 <style>
-.fp-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 0;
-    padding: .25rem 1.25rem 1.25rem;
-}
-.fp-block {
-    padding: .65rem .75rem;
-    border-right: 1px solid #f5f5f5;
-    border-bottom: 1px solid #f5f5f5;
-}
-.fp-block--full { grid-column: 1 / -1; }
-.fp-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #aaa; margin-bottom: .2rem; }
-.fp-value { font-size: .88rem; color: #222; word-break: break-word; }
-.fs-xs { font-size: .72rem; }
-
 .lead-activity-item {
     display: flex; gap: 1rem; padding: 1rem 1.25rem;
     border-bottom: 1px solid var(--admin-border);

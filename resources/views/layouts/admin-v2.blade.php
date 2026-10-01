@@ -994,7 +994,7 @@
             </div>
             @endcanroute
 
-            @canroutes(['admin.v2.leads.index', 'admin.v2.clients.index', 'admin.v2.form-proposals.index', 'admin.v2.proposals.index', 'admin.v2.converted-proposals.index', 'admin.v2.cost-simulators.index'])
+            @canroutes(['admin.v2.leads.index', 'admin.v2.clients.index', 'admin.v2.proposals.index', 'admin.v2.converted-proposals.index', 'admin.v2.cost-simulators.index'])
             {{-- ═══════ FUNIL DE VENDAS ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupFunil" aria-expanded="{{ $activeGroup === 'funil' ? 'true' : 'false' }}">
                 <span>Funil de Vendas</span>
@@ -1016,18 +1016,6 @@
                     <a href="{{ route('admin.v2.clients.index') }}" class="nav-link {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
                         <i class="bi bi-people"></i>
                         <span>Clientes</span>
-                    </a>
-                </div>
-                @endcanroute
-                @canroute('admin.v2.form-proposals.index')
-                <div class="nav-item">
-                    <a href="{{ route('admin.v2.form-proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
-                        <i class="bi bi-envelope"></i>
-                        <span>Formulários</span>
-                        @php $newFormsCount = \App\Models\FormProposal::whereIn('status', ['novo', null])->count(); @endphp
-                        @if($newFormsCount > 0)
-                        <span class="nav-badge">{{ $newFormsCount }}</span>
-                        @endif
                     </a>
                 </div>
                 @endcanroute
@@ -1420,7 +1408,7 @@
          submenus já definidos no sidebar de desktop; "Mais" cobre o resto
          (Dashboard, Conteúdo do Site, Configurações, Sistema). ═══════ --}}
     <nav class="admin-bottom-nav" id="adminBottomNav" aria-label="Acesso rápido (mobile)">
-        @canroutes(['admin.v2.leads.index', 'admin.v2.clients.index', 'admin.v2.form-proposals.index', 'admin.v2.proposals.index', 'admin.v2.converted-proposals.index', 'admin.v2.cost-simulators.index'])
+        @canroutes(['admin.v2.leads.index', 'admin.v2.clients.index', 'admin.v2.proposals.index', 'admin.v2.converted-proposals.index', 'admin.v2.cost-simulators.index'])
         <button type="button" class="abn-item {{ $activeGroup === 'funil' ? 'is-active' : '' }}" data-group="funil">
             <span class="abn-icon-wrap"><i class="bi bi-funnel"></i></span>
             <span class="abn-label">Funil</span>
@@ -1476,14 +1464,6 @@
                 <a href="{{ route('admin.v2.clients.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.clients.*') ? 'active' : '' }}">
                     <i class="bi bi-people"></i>
                     <span>Clientes</span>
-                </a>
-                @endcanroute
-                @canroute('admin.v2.form-proposals.index')
-                <a href="{{ route('admin.v2.form-proposals.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.form-proposals.*') ? 'active' : '' }}">
-                    <i class="bi bi-envelope"></i>
-                    <span>Formulários</span>
-                    @php $mNewFormsCount = \App\Models\FormProposal::whereIn('status', ['novo', null])->count(); @endphp
-                    @if($mNewFormsCount > 0)<span class="abn-badge">{{ $mNewFormsCount }}</span>@endif
                 </a>
                 @endcanroute
                 @canroute('admin.v2.proposals.index')

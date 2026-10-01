@@ -37,6 +37,7 @@ class ImportOpportunityTest extends TestCase
         Cache::forever('site_logo', '');
 
         $this->user = $this->backofficeUser();
+        $this->vehicleCatalog(['BMW' => ['i4', 'X1'], 'Tesla' => ['Model 3', 'Model Y']]);
         $this->formProposal = FormProposal::create([
             'name' => 'João Silva',
             'email' => 'joao@example.com',
@@ -139,6 +140,53 @@ class ImportOpportunityTest extends TestCase
             ->assertSessionHasErrors('seller_contact_id');
 
         $this->assertSame(0, ImportOpportunity::count());
+    }
+
+    public function test_brand_and_model_must_come_from_the_catalog(): void
+    {
+        $this->actingAs($this->user)
+            ->post($this->route('store'), ['brand' => 'Marca Inventada', 'model' => 'i4'])
+            ->assertSessionHasErrors(['brand', 'model']);
+
+        $this->actingAs($this->user)
+            ->post($this->route('store'), ['brand' => 'BMW', 'model' => 'Model 3'])
+            ->assertSessionHasErrors('model');
+
+        // Maiúsculas/minúsculas não importam.
+        $this->actingAs($this->user)
+            ->post($this->route('store'), ['brand' => 'bmw', 'model' => 'I4'])
+            ->assertSessionHasNoErrors();
+    }
+
+    public function test_legacy_brand_outside_the_catalog_is_kept_when_unchanged(): void
+    {
+        $opportunity = $this->makeOpportunity(['brand' => 'Lynk & Co', 'model' => '01']);
+
+        $this->actingAs($this->user)
+            ->put($this->route('update', $opportunity->id), ['section' => 'veiculo', 'brand' => 'Lynk & Co', 'model' => '01', 'year' => 2023])
+            ->assertSessionHasNoErrors();
+        $this->assertSame(2023, $opportunity->fresh()->year);
+
+        $this->actingAs($this->user)
+            ->put($this->route('update', $opportunity->id), ['section' => 'veiculo', 'brand' => 'Lynk & Co', 'model' => '02'])
+            ->assertSessionHasErrors('model');
+    }
+
+    public function test_opportunity_form_uses_catalog_selects(): void
+    {
+        $opportunity = $this->makeOpportunity(['brand' => 'Lynk & Co', 'model' => '01']);
+
+        $this->actingAs($this->user)
+            ->get(route('admin.v2.form-proposals.show', $this->formProposal->id))
+            ->assertOk()
+            ->assertSee('<select name="brand" id="oppQuickBrand"', false)
+            ->assertSee('IZ_VEHICLE_CATALOG', false);
+
+        $this->actingAs($this->user)
+            ->get($this->route('show', $opportunity->id))
+            ->assertOk()
+            ->assertSee('Lynk &amp; Co (fora do catálogo)', false)
+            ->assertSee('data-current="01"', false);
     }
 
     public function test_create_validates_input(): void

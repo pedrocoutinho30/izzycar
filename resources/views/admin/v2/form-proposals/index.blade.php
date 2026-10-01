@@ -1,6 +1,6 @@
 @extends('layouts.admin-v2')
 
-@section('title', 'Formulários de Cotação')
+@section('title', 'Pedidos do site')
 
 @section('content')
 
@@ -9,10 +9,11 @@
 @include('components.admin.page-header', [
 'breadcrumbs' => [
 ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-['icon' => 'bi bi-file-earmark-text', 'label' => 'Formulários de Cotação', 'href' => ''],
+['icon' => 'bi bi-funnel', 'label' => 'Leads', 'href' => route('admin.v2.leads.index')],
+['icon' => 'bi bi-file-earmark-text', 'label' => 'Pedidos do site', 'href' => ''],
 ],
-'title' => 'Formulários de Cotação',
-'subtitle' => 'Pedidos recebidos através do website',
+'title' => 'Pedidos do site',
+'subtitle' => 'Triagem dos pedidos de importação — cada pedido fica também na ficha da lead/cliente',
 'actionHref' => '',
 'actionLabel' => ''
 ])

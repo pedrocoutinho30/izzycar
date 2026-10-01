@@ -112,8 +112,9 @@ class ClientV2Controller extends Controller
         ])->findOrFail($id);
 
         $activities = $client->activities;
+        $formProposals = \App\Models\FormProposal::where('client_id', $client->id)->withCount('opportunities')->latest()->get();
 
-        return view('admin.v2.clients.show', compact('client', 'activities'));
+        return view('admin.v2.clients.show', compact('client', 'activities', 'formProposals'));
     }
 
     public function saveFollowup(Request $request, $id)

@@ -58,6 +58,12 @@
                 @include('admin.v2.form-proposals.opportunities._status-dropdown')
             </div>
 
+            @if($opportunity->client_quote_requested_at)
+            <div class="alert alert-primary py-2 mb-2">
+                <i class="bi bi-hand-index-thumb me-1"></i>
+                O cliente pediu cotação para esta viatura em {{ $opportunity->client_quote_requested_at->format('d/m/Y \à\s H:i') }} (a partir das outras opções de outra cotação).
+            </div>
+            @endif
             <div class="opp-summary-grid my-3">
                 <div><div class="label">Vendedor</div><div class="value">
                     @if($opportunity->seller)

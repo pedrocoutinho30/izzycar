@@ -55,6 +55,7 @@ class ImportOpportunity extends Model
         'vehicle_notes',
         'seller_id',
         'seller_contact_id',
+        'client_quote_requested_at',
         'status',
         'contact_method',
         'contact_status',
@@ -76,6 +77,7 @@ class ImportOpportunity extends Model
         'contact_status' => ContactStatus::class,
         'last_contacted_at' => 'datetime',
         'next_followup_at' => 'date',
+        'client_quote_requested_at' => 'datetime',
     ];
 
     protected $attributes = [

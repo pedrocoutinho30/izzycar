@@ -298,6 +298,63 @@
     </div>
   </section>
 
+  {{-- ── OUTRAS OPÇÕES (restantes oportunidades do mesmo pedido) ── --}}
+  @if(isset($otherOpportunities) && $otherOpportunities->isNotEmpty())
+  <section class="iz-section iz-reveal" id="outras-opcoes">
+    <div class="iz-section-head">
+      <div class="iz-section-head__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+      <div>
+        <h2 class="iz-section-title">Outras opções encontradas para si</h2>
+        <p class="iz-section-sub">Viaturas que também analisámos para o seu pedido</p>
+      </div>
+    </div>
+
+    <div class="iz-alt-grid">
+      @foreach($otherOpportunities as $alt)
+      @php $altName = trim($alt->brand . ' ' . $alt->model); @endphp
+      <article class="iz-alt">
+        <div class="iz-alt__photo" @if($alt->photo_url) style="background-image:url('{{ $alt->photo_url }}')" @endif>
+          @unless($alt->photo_url)
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 17h14M6 17l1.5-5h9L18 17M7 17v2M17 17v2"/><circle cx="8" cy="14.5" r=".8"/><circle cx="16" cy="14.5" r=".8"/></svg>
+          @endunless
+        </div>
+        <div class="iz-alt__body">
+          <div class="iz-alt__title">{{ $altName }}</div>
+          @if($alt->version)<div class="iz-alt__version">{{ $alt->version }}</div>@endif
+          <div class="iz-alt__specs">
+            @if($alt->year)<span>{{ $alt->year }}</span>@endif
+            @if($alt->mileage !== null)<span>{{ number_format($alt->mileage, 0, ',', '.') }} km</span>@endif
+          </div>
+          <div class="iz-alt__price">{{ $alt->formatted_price ?? 'Preço sob consulta' }}</div>
+          <div class="iz-alt__actions">
+            @if($alt->listing_url)
+            <a href="{{ $alt->listing_url }}" target="_blank" rel="noopener nofollow" class="iz-alt__link">Ver anúncio
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M8 7h9v9"/></svg>
+            </a>
+            @endif
+            @if($alt->client_quote_requested_at)
+            <span class="iz-alt__requested">✓ Cotação pedida</span>
+            @else
+            <button type="button" class="iz-alt__quote" data-alt-quote
+                    data-url="{{ route('proposals.request-alternative', [$proposal->proposal_code, $alt->id]) }}"
+                    data-token="{{ csrf_token() }}">Pedir cotação</button>
+            @endif
+          </div>
+        </div>
+      </article>
+      @endforeach
+    </div>
+
+    <p class="iz-alt-note">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span>Os valores apresentados são os preços dos anúncios. O valor do serviço Izzycar pode variar ligeiramente de viatura para viatura — se preferir uma destas opções, carregue em <strong>Pedir cotação</strong> e enviamos-lhe a cotação dessa viatura.</span>
+    </p>
+    <p class="iz-alt-feedback" data-alt-feedback hidden></p>
+  </section>
+  @endif
+
   {{-- ── EQUIPMENT ── --}}
   @if(count($attributes) > 0)
   <section class="iz-section iz-reveal">
@@ -602,6 +659,36 @@
 
 @push('scripts')
 <script>
+/* Outras opções: pedir cotação (email automático à equipa, o cliente só clica). */
+document.querySelectorAll('[data-alt-quote]').forEach(button => {
+  button.addEventListener('click', async () => {
+    const feedback = document.querySelector('[data-alt-feedback]');
+    button.disabled = true;
+    button.textContent = 'A enviar…';
+    try {
+      const response = await fetch(button.dataset.url, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': button.dataset.token },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.message || 'Não foi possível enviar o pedido. Tente novamente.');
+      const done = document.createElement('span');
+      done.className = 'iz-alt__requested';
+      done.textContent = '✓ Cotação pedida';
+      button.replaceWith(done);
+      feedback.classList.remove('is-error');
+      feedback.textContent = 'Recebemos o seu pedido — vamos preparar a cotação e entramos em contacto consigo.';
+      feedback.hidden = false;
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = 'Pedir cotação';
+      feedback.classList.add('is-error');
+      feedback.textContent = error.message;
+      feedback.hidden = false;
+    }
+  });
+});
+
 /* ── Modal ── */
 function openModal() {
   document.getElementById('modalBackdrop').classList.add('is-open');
@@ -968,6 +1055,47 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
   display:flex; align-items:center; gap:.5rem;
   font-size:.82rem; color:#374151; padding:.35rem 0;
 }
+
+/* ── Outras opções ── */
+.iz-alt-grid {
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:1rem;
+}
+.iz-alt {
+  display:flex; gap:.9rem; background:var(--iz-white); border:1px solid var(--iz-border);
+  border-radius:12px; padding:.75rem; box-shadow:var(--iz-shadow);
+}
+.iz-alt__photo {
+  width:96px; height:72px; flex-shrink:0; border-radius:8px;
+  background:var(--iz-light) center / cover no-repeat;
+  display:flex; align-items:center; justify-content:center; color:#c4c8cf;
+}
+.iz-alt__body { min-width:0; display:flex; flex-direction:column; gap:.15rem; }
+.iz-alt__title { font-weight:700; font-size:.92rem; color:var(--iz-dark); line-height:1.25; }
+.iz-alt__version { font-size:.78rem; color:var(--iz-gray); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.iz-alt__specs { font-size:.78rem; color:var(--iz-gray); display:flex; gap:.6rem; }
+.iz-alt__price { font-weight:800; color:var(--iz-brand); font-size:.98rem; margin-top:.1rem; }
+.iz-alt__actions { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:.25rem; align-items:center; }
+.iz-alt__link { font-size:.78rem; font-weight:600; color:var(--iz-dark); text-decoration:none; display:inline-flex; align-items:center; gap:.2rem; }
+.iz-alt__link:hover { color:var(--iz-brand); }
+.iz-alt__quote {
+  font-size:.75rem; font-weight:700; color:var(--iz-brand); text-decoration:none;
+  border:1px solid var(--iz-brand); border-radius:999px; padding:.15rem .6rem;
+}
+.iz-alt__quote { background:transparent; cursor:pointer; font-family:inherit; }
+.iz-alt__quote:hover { background:var(--iz-brand); color:var(--iz-white); }
+.iz-alt__quote[disabled] { opacity:.6; cursor:wait; }
+.iz-alt__requested { font-size:.75rem; font-weight:700; color:#15803d; }
+#outras-opcoes .iz-alt-feedback {
+  margin-top:.75rem; font-size:.88rem; font-weight:600; color:#15803d;
+  background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:.7rem .9rem;
+}
+#outras-opcoes .iz-alt-feedback.is-error { color:#b91c1c; background:#fef2f2; border-color:#fecaca; }
+.iz-alt-note {
+  display:flex; gap:.5rem; align-items:flex-start; margin-top:1rem;
+  font-size:.82rem; color:var(--iz-gray); background:var(--iz-light);
+  border:1px solid var(--iz-border); border-radius:10px; padding:.75rem .9rem;
+}
+.iz-alt-note svg { flex-shrink:0; margin-top:.1rem; color:var(--iz-brand); }
 
 /* ── Timeline ── */
 .iz-timeline {

@@ -29,6 +29,9 @@
             </div>
 
             <div class="opp-card-meta">
+                @if($opportunity->client_quote_requested_at)
+                <span class="text-primary fw-semibold"><i class="bi bi-hand-index-thumb"></i> Cliente pediu cotação · {{ $opportunity->client_quote_requested_at->format('d/m/Y H:i') }}</span>
+                @endif
                 <span><i class="bi bi-shop"></i> {{ $opportunity->seller?->name ?? 'Vendedor por indicar' }}</span>
                 @if($opportunity->contact_method)
                 <span><i class="bi {{ $opportunity->contact_method->icon() }}"></i> {{ $opportunity->contact_method->label() }}</span>

@@ -77,7 +77,7 @@ class PermissionCatalogTest extends TestCase
         $this->assertContains('leads.create', $names);
         $this->assertContains('reports.view', $names);
         $this->assertNotContains('reports.create', $names);
-        $this->assertNotContains('form-proposals.create', $names);
+        $this->assertContains('form-proposals.create', $names);
 
         $this->assertEqualsCanonicalizing(
             ['leads.view.own', 'leads.create', 'leads.update.own', 'proposals.view.own', 'proposals.update.own', 'form-proposals.view.own', 'commissions.view.own'],

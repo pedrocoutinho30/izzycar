@@ -1,19 +1,33 @@
 @extends('layouts.admin-v2')
 
-@section('title', 'Detalhes do Formulário')
+@section('title', 'Pedido de importação — ' . $formProposal->label)
 
 @section('content')
 
 
     <!-- Page Header -->
+@php
+    // O pedido vive dentro da lead/cliente.
+    $requestClient = $formProposal->client;
+    $clientCrumb = match (true) {
+        $requestClient === null => ['icon' => 'bi bi-file-earmark-text', 'label' => 'Pedidos do site', 'href' => route('admin.v2.form-proposals.index')],
+        (bool) $requestClient->is_lead => ['icon' => 'bi bi-funnel', 'label' => 'Lead: ' . $requestClient->name, 'href' => route('admin.v2.leads.show', $requestClient->id) . '#pedidos'],
+        default => ['icon' => 'bi bi-person', 'label' => 'Cliente: ' . $requestClient->name, 'href' => route('admin.v2.clients.show', $requestClient->id) . '#pedidos'],
+    };
+    $wanted = trim(implode(' ', array_filter([$formProposal->brand, $formProposal->model, $formProposal->version])));
+@endphp
 @include('components.admin.page-header', [
 'breadcrumbs' => [
 ['icon' => 'bi bi-house-door', 'label' => 'Dashboard', 'href' => route('admin.v2.dashboard')],
-['icon' => 'bi bi-file-earmark-text', 'label' => 'Formulários', 'href' => route('admin.v2.form-proposals.index')],
-['icon' => '', 'label' => 'Detalhes do Formulário']
+$clientCrumb,
+['icon' => '', 'label' => $formProposal->label]
 ],
-'title' => 'Pedido de ' . $formProposal->name,
-'subtitle' => $formProposal->brand ? ($formProposal->brand . ' ' . ($formProposal->model ?? '') . ($formProposal->version ? ' · ' . $formProposal->version : '')) : 'Sem preferência de veículo',
+'title' => $formProposal->label,
+'subtitle' => implode(' · ', array_filter([
+    $requestClient?->name ?? $formProposal->name,
+    $formProposal->isManual() ? 'Pedido criado no backoffice' : 'Pedido do site',
+    filled($formProposal->title) ? ($wanted ?: null) : null,
+])),
 'actionHref' => $formProposal->proposal_id ? route('admin.v2.proposals.edit', $formProposal->proposal_id) : route('admin.v2.proposals.createFromForm', $formProposal->id),
 'actionLabel' => $formProposal->proposal_id ? 'Ver Cotação' : 'Criar Cotação'
 ])
@@ -55,7 +69,13 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Origem</span>
-                            <span class="detail-value">{{ $formProposal->source ?? 'Website' }}</span>
+                            <span class="detail-value">
+                                @if($formProposal->isManual())
+                                    Criado no backoffice
+                                @else
+                                    Site{{ $formProposal->source ? ' · ' . $formProposal->source : '' }}
+                                @endif
+                            </span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Tipo de Pagamento</span>
@@ -251,6 +271,7 @@
                             <option value="novo" {{ ($formProposal->status ?? 'novo') === 'novo' ? 'selected' : '' }}>Novo</option>
                             <option value="em_analise" {{ ($formProposal->status ?? '') === 'em_analise' ? 'selected' : '' }}>Em Análise</option>
                             <option value="convertido" {{ ($formProposal->status ?? '') === 'convertido' ? 'selected' : '' }}>Convertido</option>
+                            <option value="rejeitado" {{ ($formProposal->status ?? '') === 'rejeitado' ? 'selected' : '' }}>Rejeitado</option>
                             <option value="arquivado" {{ ($formProposal->status ?? '') === 'arquivado' ? 'selected' : '' }}>Arquivado</option>
                         </select>
                     </form>
@@ -260,6 +281,7 @@
                             'novo' => 'danger',
                             'em_analise' => 'warning',
                             'convertido' => 'success',
+                            'rejeitado' => 'danger',
                             'arquivado' => 'secondary'
                         ];
                         $currentStatus = $formProposal->status ?? 'novo';
@@ -268,6 +290,12 @@
                     <div class="alert alert-{{ $statusColors[$currentStatus] ?? 'secondary' }} mb-0">
                         <small>Estado atual do pedido</small>
                     </div>
+
+                    @canroute('admin.v2.form-proposals.update')
+                    <button type="button" class="btn btn-secondary-modern w-100 mt-3" data-bs-toggle="modal" data-bs-target="#editRequestModal">
+                        <i class="bi bi-pencil"></i> Editar pedido
+                    </button>
+                    @endcanroute
                 </div>
             </div>
 
@@ -278,13 +306,19 @@
                 </div>
                 <div class="detail-card-body">
                     <div class="detail-item">
-                        <span class="detail-label">Recebido em</span>
+                        <span class="detail-label">{{ $formProposal->isManual() ? 'Criado em' : 'Recebido em' }}</span>
                         <span class="detail-value">{{ $formProposal->created_at->format('d/m/Y H:i') }}</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Há quanto tempo</span>
                         <span class="detail-value">{{ $formProposal->created_at->diffForHumans() }}</span>
                     </div>
+                    @if($formProposal->creator)
+                    <div class="detail-item">
+                        <span class="detail-label">Criado por</span>
+                        <span class="detail-value">{{ $formProposal->creator->name }}</span>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -316,6 +350,35 @@
 
     <div class="mt-4">@include('admin.v2.form-proposals.opportunities._flash')</div>
     @include('admin.v2.form-proposals.partials.opportunities')
+
+    @canroute('admin.v2.form-proposals.update')
+    @php $openEdit = $errors->any() && old('_form') === 'edit-request'; @endphp
+    <div class="modal fade" id="editRequestModal" tabindex="-1" aria-hidden="true" @if($openEdit) data-edit-request-open @endif>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <form action="{{ route('admin.v2.form-proposals.update', $formProposal->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="_form" value="edit-request">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar pedido</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        @include('admin.v2.form-proposals._request-fields', ['formProposal' => $formProposal, 'useOld' => $openEdit])
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-modern"><i class="bi bi-check"></i> Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @push('scripts')
+    <script>document.querySelectorAll('[data-edit-request-open]').forEach(modal => new bootstrap.Modal(modal).show());</script>
+    @endpush
+    @endcanroute
 </div>
 
 <style>

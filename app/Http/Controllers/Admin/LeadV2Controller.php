@@ -158,7 +158,7 @@ class LeadV2Controller extends Controller
             'owner',
         ])->findOrFail($id);
 
-        $formProposals = FormProposal::where('client_id', $id)->orderBy('created_at', 'desc')->get();
+        $formProposals = FormProposal::where('client_id', $id)->withCount('opportunities')->orderBy('created_at', 'desc')->get();
         $simulators    = CostSimulator::where('client_id', $id)->orderBy('created_at', 'desc')->get();
         $activities    = \App\Models\LeadActivity::where('client_id', $id)->with('user')->orderBy('created_at', 'desc')->get();
         $angariadores  = User::role('angariador')->orderBy('name')->get();

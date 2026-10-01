@@ -52,6 +52,10 @@ use App\Http\Controllers\AttributeGroupController;
 
 // Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');
 Route::get('proposta/{proposal_code}', [ProposalController::class, 'detail'])->name('proposals.detail');
+// O cliente pede cotação de uma das "outras opções" da cotação (envia email à equipa).
+Route::post('proposta/{proposal_code}/opcoes/{opportunity}/pedir-cotacao', [ProposalController::class, 'requestAlternativeQuote'])
+    ->middleware('throttle:10,1')
+    ->name('proposals.request-alternative');
 Route::post('/proposals/{proposal}/accept', [ProposalController::class, 'accept'])
     ->name('proposals.accept');
 Route::get('/proposta/{brand}/{model}/{version}/{id}/timeline', [ConvertedProposalController::class, 'detailTimeline'])
@@ -346,7 +350,9 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     Route::prefix('v2/form-proposals')->name('admin.v2.form-proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'index'])->name('index');
         Route::post('/bulk-status', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'bulkUpdateStatus'])->name('bulk-status');
+        Route::post('/', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'store'])->name('store');
         Route::get('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'show'])->name('show');
+        Route::put('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'update'])->name('update');
         Route::patch('/{id}/status', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'updateStatus'])->name('update-status');
         Route::delete('/{id}', [App\Http\Controllers\Admin\FormProposalV2Controller::class, 'destroy'])->name('destroy');
     });

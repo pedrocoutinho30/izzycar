@@ -7,6 +7,7 @@ use App\Enums\ContactStatus;
 use App\Enums\OpportunityStatus;
 use App\Enums\VehicleFuel;
 use App\Models\ImportOpportunity;
+use App\Support\VehicleCatalog;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,9 +33,14 @@ abstract class ImportOpportunityRequest extends FormRequest
 
     public function rules(): array
     {
+        // Marca e modelo vêm dos selects do catálogo; um valor antigo fora do
+        // catálogo só é aceite se não mudar.
+        $current = $this->route('opportunity');
+        [$brandRule, $modelRule] = VehicleCatalog::rules($this->input('brand'), $current?->brand, $current?->model);
+
         return [
-            'brand' => 'required|string|max:100',
-            'model' => 'required|string|max:100',
+            'brand' => ['required', 'string', 'max:100', $brandRule],
+            'model' => ['required', 'string', 'max:100', $modelRule],
             'version' => 'nullable|string|max:255',
             'year' => 'nullable|integer|min:1950|max:' . (now()->year + 1),
             'mileage' => 'nullable|integer|min:0|max:2000000',

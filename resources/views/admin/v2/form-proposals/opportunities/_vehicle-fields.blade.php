@@ -14,16 +14,15 @@
 @endphp
 
 <div class="row g-3">
-    <div class="col-md-6">
-        <label class="form-label">Marca <span class="text-danger">*</span></label>
-        <input type="text" name="brand" class="form-control {{ $err('brand') }}" value="{{ $val('brand', $defaults['brand'] ?? null) }}" required maxlength="100">
-        @error('brand')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">Modelo <span class="text-danger">*</span></label>
-        <input type="text" name="model" class="form-control {{ $err('model') }}" value="{{ $val('model', $defaults['model'] ?? null) }}" required maxlength="100">
-        @error('model')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    </div>
+    @include('admin.v2.partials._brand-model-select', [
+        'brand' => $val('brand', $defaults['brand'] ?? null),
+        'model' => $val('model', $defaults['model'] ?? null),
+        'required' => true,
+        'colClass' => 'col-md-6',
+        'idPrefix' => $quick ? 'oppQuick' : 'oppEdit',
+        'brandError' => $err('brand'),
+        'modelError' => $err('model'),
+    ])
     <div class="col-md-4">
         <label class="form-label">Ano</label>
         <input type="number" name="year" class="form-control {{ $err('year') }}" value="{{ $val('year') }}" min="1950" max="{{ now()->year + 1 }}">

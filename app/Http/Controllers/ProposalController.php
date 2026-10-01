@@ -631,8 +631,72 @@ class ProposalController extends Controller
         });
 
         $client = Client::find($proposal->client_id);
+        $otherOpportunities = $this->otherOpportunities($proposal);
 
-        return view('proposals.view-proposal', compact('proposal', 'attributes', 'potencia', 'caixa', 'cilindrada', 'client'));
+        return view('proposals.view-proposal', compact('proposal', 'attributes', 'potencia', 'caixa', 'cilindrada', 'client', 'otherOpportunities'));
+    }
+
+    /**
+     * O cliente carrega em "Pedir cotação" numa das outras opções da sua
+     * cotação: a equipa recebe um email (o cliente não envia nada). Um
+     * segundo clique na mesma opção não volta a enviar.
+     */
+    public function requestAlternativeQuote(string $proposalCode, int $opportunity)
+    {
+        $proposal = Proposal::where('proposal_code', $proposalCode)->firstOrFail();
+        $alternative = $this->otherOpportunities($proposal)->firstWhere('id', $opportunity);
+        abort_unless($alternative, 404);
+
+        if ($alternative->client_quote_requested_at) {
+            return response()->json(['success' => true, 'already' => true]);
+        }
+
+        $client = Client::find($proposal->client_id);
+        $car = trim(implode(' ', array_filter([$alternative->brand, $alternative->model, $alternative->version])));
+
+        try {
+            Mail::to(config('mail.admin_address', 'geral@izzycar.pt'))
+                ->send(new \App\Mail\AlternativeQuoteRequestedMail($proposal, $alternative, $client));
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json(['success' => false, 'message' => 'Não foi possível enviar o pedido. Tente novamente ou contacte-nos.'], 500);
+        }
+
+        $alternative->update(['client_quote_requested_at' => now()]);
+
+        if ($client) {
+            \App\Models\LeadActivity::log(
+                $client->id,
+                'Pediu cotação de outra opção',
+                "Na cotação {$proposal->proposal_code} pediu cotação para {$car}.",
+                'bi-hand-index-thumb',
+                'primary'
+            );
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Cotação criada a partir de uma Oportunidade: as restantes oportunidades
+     * do mesmo pedido (exceto as rejeitadas) aparecem ao cliente como
+     * alternativas, para poder pedir cotação de outra.
+     */
+    private function otherOpportunities(Proposal $proposal): \Illuminate\Support\Collection
+    {
+        $source = \App\Models\ImportOpportunity::where('proposal_id', $proposal->id)->first();
+
+        if (!$source) {
+            return collect();
+        }
+
+        return \App\Models\ImportOpportunity::where('form_proposal_id', $source->form_proposal_id)
+            ->whereKeyNot($source->id)
+            ->where('status', '!=', \App\Enums\OpportunityStatus::Rejected->value)
+            ->orderByRaw('price is null')
+            ->orderBy('price')
+            ->get();
     }
 
 

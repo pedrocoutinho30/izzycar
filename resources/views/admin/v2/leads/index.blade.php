@@ -11,6 +11,10 @@
     ],
     'title' => 'Leads',
     'subtitle' => 'Potenciais clientes que ainda não foram convertidos',
+    'extraActions' => [
+        // Os pedidos vivem dentro da lead/cliente; esta lista serve para a triagem dos que chegam pelo site.
+        ['href' => route('admin.v2.form-proposals.index', ['status' => 'novo']), 'label' => 'Pedidos do site' . (($newSiteRequests = \App\Models\FormProposal::where(fn ($q) => $q->where('status', 'novo')->orWhereNull('status'))->count()) ? " ({$newSiteRequests} novos)" : ''), 'icon' => 'bi-envelope-open', 'class' => 'btn-secondary-modern'],
+    ],
     'actionHref' => route('admin.v2.leads.create'),
     'actionLabel' => 'Nova Lead'
 ])

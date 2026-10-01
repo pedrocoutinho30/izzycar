@@ -207,6 +207,9 @@
             </form>
         </div>
 
+        {{-- Pedidos de importação (do site ou criados à mão) e as suas oportunidades --}}
+        @include('admin.v2.form-proposals._client-requests', ['client' => $client, 'requests' => $formProposals])
+
         {{-- Viaturas do cliente sem venda (importações) --}}
         @if($client->vehicles->count())
         <div class="modern-card mb-4">
