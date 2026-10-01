@@ -107,6 +107,16 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Validade do Documento</label>
+                            <input type="date" name="validate_identification_number" class="form-control @error('validate_identification_number') is-invalid @enderror"
+                                value="{{ old('validate_identification_number', isset($client) && $client->validate_identification_number ? $client->validate_identification_number->format('Y-m-d') : '') }}">
+                            <div class="form-text">Preenche a validade no Modelo 9 do IMT.</div>
+                            @error('validate_identification_number')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     <!-- Contactos -->
