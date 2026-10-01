@@ -70,7 +70,6 @@
         <select id="fpBulkStatus" class="form-select form-select-sm" style="max-width:200px">
             <option value="novo">Novo</option>
             <option value="em_analise">Em Análise</option>
-            <option value="convertido">Convertido</option>
             <option value="rejeitado">Rejeitado</option>
             <option value="arquivado">Arquivado</option>
         </select>

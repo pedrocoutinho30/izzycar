@@ -3,7 +3,10 @@
 namespace App\Services;
 
 use App\Models\Client;
+use App\Enums\OpportunityStatus;
 use App\Models\ConvertedProposal;
+use App\Models\FormProposal;
+use App\Models\ImportOpportunity;
 use App\Models\LeadActivity;
 use App\Models\Proposal;
 use App\Models\StatusProposalHistory;
@@ -61,6 +64,9 @@ class ProposalAcceptanceService
                     'converted_proposal_id' => $converted->id,
                 ]);
 
+                // O pedido de importação só fica "convertido" quando há cotação aceite.
+                $this->linkedRequests($proposal)->each(fn (FormProposal $request) => $request->update(['status' => 'convertido']));
+
                 LeadActivity::log(
                     $client->id,
                     'Cotação aceite',
@@ -75,6 +81,57 @@ class ProposalAcceptanceService
             // Outro pedido aceitou-a entretanto (índice único em proposal_id).
             throw new ProposalAcceptanceException('Esta cotação já foi aceite.');
         }
+    }
+
+    /**
+     * Única forma de mudar o estado de uma cotação no backoffice:
+     * - "Aprovada" passa sempre pela aceitação (cria a cotação convertida);
+     * - uma cotação aceite não volta a outro estado (cancela-se a convertida);
+     * - "Reprovada" marca como rejeitada a oportunidade que lhe deu origem.
+     * Grava pelo model, para o observer correr (emails "Enviado", log).
+     *
+     * @throws ProposalAcceptanceException
+     */
+    public function changeStatus(Proposal $proposal, string $status): void
+    {
+        if ($proposal->status === $status) {
+            return;
+        }
+
+        if ($proposal->isAccepted() && $status !== 'Aprovada') {
+            throw new ProposalAcceptanceException("A cotação #{$proposal->id} já foi aceite e não pode mudar de estado — para a anular, cancele a cotação convertida.");
+        }
+
+        if ($status === 'Aprovada') {
+            $this->accept($proposal, byClient: false);
+
+            return;
+        }
+
+        $proposal->status = $status;
+        $proposal->save();
+
+        if ($status === 'Reprovada') {
+            ImportOpportunity::where('proposal_id', $proposal->id)
+                ->where('status', '!=', OpportunityStatus::Rejected->value)
+                ->get()
+                ->each(fn (ImportOpportunity $opportunity) => $opportunity->update(['status' => OpportunityStatus::Rejected]));
+        }
+    }
+
+    /**
+     * Pedidos de importação a que a cotação pertence: o pedido aponta para
+     * ela, ou a cotação nasceu de uma oportunidade do pedido.
+     *
+     * @return \Illuminate\Support\Collection<int, FormProposal>
+     */
+    public function linkedRequests(Proposal $proposal): \Illuminate\Support\Collection
+    {
+        $ids = FormProposal::where('proposal_id', $proposal->id)->pluck('id')
+            ->merge(ImportOpportunity::where('proposal_id', $proposal->id)->pluck('form_proposal_id'))
+            ->unique();
+
+        return FormProposal::whereIn('id', $ids)->get();
     }
 
     /** @throws ProposalAcceptanceException */

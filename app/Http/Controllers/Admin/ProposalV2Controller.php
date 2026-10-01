@@ -33,6 +33,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\FormProposal;
+use App\Services\ProposalAcceptanceException;
+use App\Services\ProposalAcceptanceService;
 use App\Models\Proposal;
 use App\Models\Client;
 use App\Models\LeadActivity;
@@ -408,8 +410,10 @@ class ProposalV2Controller extends Controller
             $validated['other_links'] = json_encode($validated['other_links']);
         }
 
-        // Definir status default se não fornecido
-        $validated['status'] = $validated['status'] ?? 'Pendente';
+        // O estado escolhido aplica-se no fim, pelo serviço (ex. "Aprovada"
+        // cria a cotação convertida); a cotação nasce sempre "Pendente".
+        $requestedStatus = $validated['status'] ?? 'Pendente';
+        $validated['status'] = 'Pendente';
 
         // Criar proposta
         $proposal = Proposal::create($validated);
@@ -439,14 +443,15 @@ class ProposalV2Controller extends Controller
             $this->handleImageUpload($proposal, $photo);
         }
 
-        // Ligar ao formulário de origem e marcar como convertido. Vindo de uma
-        // oportunidade, o pedido pode ter várias cotações — mantém a primeira.
+        // Ligar ao pedido de origem. Vindo de uma oportunidade, o pedido pode
+        // ter várias cotações — mantém a primeira. O pedido fica "em análise";
+        // só passa a "convertido" quando uma cotação for aceite.
         if ($formProposalId) {
             $formProposal = FormProposal::find($formProposalId);
             if ($formProposal) {
                 $formProposal->update([
                     'proposal_id' => $importOpportunity && $formProposal->proposal_id ? $formProposal->proposal_id : $proposal->id,
-                    'status'      => 'convertido',
+                    'status'      => in_array($formProposal->status, [null, 'novo'], true) ? 'em_analise' : $formProposal->status,
                 ]);
             }
         }
@@ -464,6 +469,14 @@ class ProposalV2Controller extends Controller
             'bi-file-earmark-text-fill',
             'primary'
         );
+
+        if ($requestedStatus !== 'Pendente') {
+            try {
+                app(ProposalAcceptanceService::class)->changeStatus($proposal, $requestedStatus);
+            } catch (ProposalAcceptanceException $e) {
+                return redirect()->route('admin.v2.proposals.edit', $proposal->id)->with('error', $e->getMessage());
+            }
+        }
 
         return redirect()
             ->route('admin.v2.proposals.index')
@@ -579,8 +592,14 @@ class ProposalV2Controller extends Controller
         }
 
         $oldStatus = $proposal->status;
+        $requestedStatus = $validated['status'] ?? $oldStatus;
+        unset($validated['status']);
 
-        // Atualizar proposta
+        if ($proposal->isAccepted() && $requestedStatus !== 'Aprovada') {
+            return back()->withInput()->withErrors(['status' => 'Esta cotação já foi aceite e não pode mudar de estado — para a anular, cancele a cotação convertida.']);
+        }
+
+        // Atualizar proposta (o estado é aplicado no fim, pelo serviço)
         $proposal->update($validated);
 
         // Remover atributos antigos
@@ -604,6 +623,14 @@ class ProposalV2Controller extends Controller
         // Processar nova imagem (se existir, substitui a antiga)
         if ($request->hasFile('image')) {
             $this->handleImageUpload($proposal, $request->file('image'));
+        }
+
+        if ($requestedStatus && $requestedStatus !== $oldStatus) {
+            try {
+                app(ProposalAcceptanceService::class)->changeStatus($proposal->fresh(), $requestedStatus);
+            } catch (ProposalAcceptanceException $e) {
+                return redirect()->route('admin.v2.proposals.edit', $proposal->id)->with('error', $e->getMessage());
+            }
         }
 
         // Registar mudança de estado na timeline (só se mudou)
@@ -722,18 +749,26 @@ class ProposalV2Controller extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(Request $request, $id, ProposalAcceptanceService $statuses)
     {
         $request->validate(['status' => 'required|string|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta']);
 
         $proposal = Proposal::findOrFail($id);
-        $proposal->status = $request->status;
-        $proposal->save();
 
-        return response()->json(['success' => true, 'status' => $proposal->status]);
+        try {
+            $statuses->changeStatus($proposal, $request->status);
+        } catch (ProposalAcceptanceException $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['success' => true, 'status' => $proposal->fresh()->status]);
     }
 
-    public function bulkUpdateStatus(Request $request)
+    /**
+     * Em massa, cotação a cotação pelo serviço (e não com um UPDATE direto),
+     * para "Aprovada" criar a cotação convertida e o observer correr.
+     */
+    public function bulkUpdateStatus(Request $request, ProposalAcceptanceService $statuses)
     {
         $data = $request->validate([
             'ids' => 'required|array|min:1',
@@ -741,23 +776,37 @@ class ProposalV2Controller extends Controller
             'status' => 'required|string|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta',
         ]);
 
-        Proposal::whereIn('id', $data['ids'])->update(['status' => $data['status']]);
-
-        return response()->json(['success' => true]);
+        return response()->json($this->applyStatus(Proposal::whereIn('id', $data['ids'])->get(), $data['status'], $statuses));
     }
 
-    public function bulkReject(Request $request)
+    public function bulkReject(Request $request, ProposalAcceptanceService $statuses)
     {
         $ids = $request->input('ids', []);
 
-        if (empty($ids)) {
-            Proposal::whereIn('status', ['Pendente', 'Enviado'])
-                    ->where('created_at', '<', now()->subDays(30))
-                    ->update(['status' => 'Reprovada']);
-        } else {
-            Proposal::whereIn('id', $ids)->update(['status' => 'Reprovada']);
+        $proposals = empty($ids)
+            ? Proposal::whereIn('status', ['Pendente', 'Enviado'])->where('created_at', '<', now()->subDays(30))->get()
+            : Proposal::whereIn('id', $ids)->get();
+
+        return response()->json($this->applyStatus($proposals, 'Reprovada', $statuses));
+    }
+
+    /** @return array{success: bool, count: int, skipped: list<string>} */
+    private function applyStatus($proposals, string $status, ProposalAcceptanceService $statuses): array
+    {
+        $count = 0;
+        $skipped = [];
+
+        foreach ($proposals as $proposal) {
+            try {
+                if ($proposal->status !== $status) {
+                    $statuses->changeStatus($proposal, $status);
+                    $count++;
+                }
+            } catch (ProposalAcceptanceException $e) {
+                $skipped[] = $e->getMessage();
+            }
         }
 
-        return response()->json(['success' => true]);
+        return ['success' => true, 'count' => $count, 'skipped' => $skipped];
     }
 }

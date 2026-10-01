@@ -807,6 +807,38 @@ $pendingValue = $totalValue - $paidValue;
                 </div>
             </div>
 
+            <!-- VIATURA E LEGALIZAÇÃO -->
+            @if($isEdit)
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5 class="modern-card-title"><i class="bi bi-car-front-fill"></i> Viatura e Legalização</h5>
+                </div>
+                <div class="p-3">
+                    @if($convertedProposal->v3Vehicle)
+                        @php $vehicle = $convertedProposal->v3Vehicle; @endphp
+                        <p class="mb-2">
+                            <a href="{{ route('admin.v3.vehicles.edit', $vehicle->id) }}"><strong>{{ $vehicle->reference }}</strong> — {{ $vehicle->brand }} {{ $vehicle->model }}</a>
+                        </p>
+                        @if($vehicle->legalization)
+                            @php $pct = $vehicle->legalization->progressPercent(); @endphp
+                            <p class="small text-muted mb-0">
+                                Legalização: <span class="badge bg-{{ $pct === 100 ? 'success' : ($pct > 0 ? 'info' : 'secondary') }}">{{ $pct }}%</span>
+                                <span class="d-block mt-1">No separador "Legalização" da viatura.</span>
+                            </p>
+                        @endif
+                    @else
+                        <p class="small text-muted mb-2">Cria a viatura do cliente e o processo de legalização com os dados desta cotação (marca, modelo, versão, ano, km, matrícula, vendedor).</p>
+                        @can('vehicles.create')
+                        {{-- O formulário fica fora do <form> principal (createVehicleForm, no fim da página). --}}
+                        <button type="submit" form="createVehicleForm" class="btn btn-sm btn-primary-modern w-100">
+                            <i class="bi bi-plus"></i> Criar viatura e legalização
+                        </button>
+                        @endcan
+                    @endif
+                </div>
+            </div>
+            @endif
+
             <!-- COMISSÃO DO ANGARIADOR -->
             @if($isEdit && $convertedProposal->owner_id)
             <div class="modern-card">
@@ -980,6 +1012,13 @@ $pendingValue = $totalValue - $paidValue;
         </div>
     </div>
 </form>
+
+@if($isEdit && !$convertedProposal->v3_vehicle_id)
+<form id="createVehicleForm" action="{{ route('admin.v2.converted-proposals.create-vehicle', $convertedProposal->id) }}" method="POST" class="d-none"
+      onsubmit="return confirm('Criar a viatura do cliente e a legalização a partir desta cotação convertida?')">
+    @csrf
+</form>
+@endif
 
 @if($isEdit && $convertedProposal->owner_id)
 <form id="commissionToggleForm" action="{{ route('admin.v2.angariadores.toggle-paid', $convertedProposal->id) }}" method="POST" class="d-none">

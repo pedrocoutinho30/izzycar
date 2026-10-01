@@ -563,13 +563,17 @@ function rejectOne(id, btn) {
                 setTimeout(() => wrapper.remove(), 450);
             }
             showStaleToast('Cotação reprovada.', 'success');
+        } else {
+            btn.disabled = false;
+            showStaleToast(data.message || 'Não foi possível reprovar.', 'error');
         }
     })
     .catch(() => { btn.disabled = false; showStaleToast('Erro ao reprovar.', 'error'); });
 }
 
 function bulkRejectAll() {
-    const total = {{ $proposals->total() ?? 0 }};
+    // Número real das que vão ser reprovadas (todas as +30 dias), não o do filtro atual.
+    const total = {{ $staleCount ?? 0 }};
     if (!confirm(`Reprovar TODAS as cotações com +30 dias sem resposta (${total} no total)?\n\nEsta ação não pode ser desfeita.`)) return;
 
     fetch('{{ route("admin.v2.proposals.bulkReject") }}', {
@@ -580,7 +584,7 @@ function bulkRejectAll() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showStaleToast('Cotações reprovadas com sucesso.', 'success');
+            showStaleToast(`${data.count ?? 0} cotação(ões) reprovada(s).` + (data.skipped?.length ? ` ${data.skipped.length} já aceite(s) ficaram como estavam.` : ''), 'success');
             setTimeout(() => window.location.href = '{{ route("admin.v2.proposals.index") }}', 1200);
         }
     })
@@ -635,6 +639,9 @@ function prApplyBulkStatus() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
+            if (data.skipped?.length) {
+                alert(`${data.count} cotação(ões) atualizada(s).\n\nNão alteradas:\n- ` + data.skipped.join('\n- '));
+            }
             window.location.reload();
         } else {
             showStaleToast('Erro ao atualizar o estado.', 'error');

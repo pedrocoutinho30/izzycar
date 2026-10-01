@@ -57,6 +57,17 @@ class ProposalObserver
         );
     }
 
+    /**
+     * A oportunidade que deu origem à cotação deixa de estar "selecionada"
+     * (a FK limpa o proposal_id, mas o estado ficava para trás).
+     */
+    public function deleting(Proposal $proposal): void
+    {
+        \App\Models\ImportOpportunity::where('proposal_id', $proposal->id)
+            ->where('status', \App\Enums\OpportunityStatus::Selected->value)
+            ->update(['status' => \App\Enums\OpportunityStatus::InAnalysis->value]);
+    }
+
     public function deleted(Proposal $proposal): void
     {
         $vehicle = implode(' ', array_filter([$proposal->brand, $proposal->model, $proposal->version]));

@@ -162,13 +162,31 @@ class ConvertedProposalV2Controller extends Controller
      */
     public function edit($id)
     {
-        $convertedProposal = ConvertedProposal::with(['client', 'proposal', 'documents'])->findOrFail($id);
+        $convertedProposal = ConvertedProposal::with(['client', 'proposal', 'documents', 'v3Vehicle.legalization'])->findOrFail($id);
         $clients = Client::orderBy('name')->get();
         $proposals = Proposal::orderBy('created_at', 'desc')->get();
         $angariadores = User::role('angariador')->orderBy('name')->get();
         $statusHistory = $convertedProposal->statusHistories()->orderBy('created_at', 'desc')->get();
 
         return view('admin.v2.converted-proposals.form', compact('convertedProposal', 'clients', 'proposals', 'angariadores', 'statusHistory'));
+    }
+
+    /**
+     * Cria a viatura do cliente e a legalização a partir desta cotação
+     * convertida (marca, modelo, versão, ano, km, matrícula, vendedor…).
+     */
+    public function createVehicle(Request $request, $id, \App\Services\ConvertedProposalService $service)
+    {
+        abort_unless($request->user()->can('vehicles.create'), 403, 'Não tem permissão para criar viaturas.');
+
+        $convertedProposal = ConvertedProposal::findOrFail($id);
+        $result = $service->createVehicleAndLegalization($convertedProposal);
+
+        return redirect()
+            ->route('admin.v3.vehicles.edit', $result['vehicle']->id)
+            ->with('success', $result['created']
+                ? "Viatura {$result['vehicle']->reference} e legalização criadas a partir da cotação convertida. Confirme o VIN e restantes dados."
+                : 'Esta cotação convertida já tinha viatura.');
     }
 
     /**

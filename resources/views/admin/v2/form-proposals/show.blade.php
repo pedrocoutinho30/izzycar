@@ -270,7 +270,10 @@ $clientCrumb,
                         <select name="status" class="form-select mb-3" onchange="this.form.submit()">
                             <option value="novo" {{ ($formProposal->status ?? 'novo') === 'novo' ? 'selected' : '' }}>Novo</option>
                             <option value="em_analise" {{ ($formProposal->status ?? '') === 'em_analise' ? 'selected' : '' }}>Em Análise</option>
-                            <option value="convertido" {{ ($formProposal->status ?? '') === 'convertido' ? 'selected' : '' }}>Convertido</option>
+                            {{-- "Convertido" é automático (cotação aceite): só aparece quando é o estado atual. --}}
+                            @if(($formProposal->status ?? '') === 'convertido')
+                            <option value="convertido" selected disabled>Convertido (cotação aceite)</option>
+                            @endif
                             <option value="rejeitado" {{ ($formProposal->status ?? '') === 'rejeitado' ? 'selected' : '' }}>Rejeitado</option>
                             <option value="arquivado" {{ ($formProposal->status ?? '') === 'arquivado' ? 'selected' : '' }}>Arquivado</option>
                         </select>

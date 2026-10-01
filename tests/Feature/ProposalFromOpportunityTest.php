@@ -119,7 +119,8 @@ class ProposalFromOpportunityTest extends TestCase
         $this->assertSame($proposal->id, $this->opportunity->proposal_id);
         $this->assertSame(OpportunityStatus::Selected, $this->opportunity->status);
         $this->assertSame($proposal->id, $this->formProposal->fresh()->proposal_id);
-        $this->assertSame('convertido', $this->formProposal->fresh()->status);
+        // Só passa a "convertido" quando uma cotação do pedido é aceite.
+        $this->assertSame('em_analise', $this->formProposal->fresh()->status);
 
         $note = $this->opportunity->contacts()->sole();
         $this->assertSame(ContactType::Note, $note->type);

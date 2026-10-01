@@ -22,6 +22,9 @@ use Illuminate\Http\Request;
 
 class FormProposalV2Controller extends Controller
 {
+    /** Estados que se escolhem à mão ("convertido" é automático). */
+    public const MANUAL_STATUSES = ['novo', 'em_analise', 'rejeitado', 'arquivado'];
+
     public function index(Request $request)
     {
         $query = FormProposal::withCount('opportunities')->orderBy('created_at', 'desc');
@@ -144,19 +147,14 @@ class FormProposalV2Controller extends Controller
     {
         $formProposal = FormProposal::findOrFail($id);
 
-        $request->validate([
-            'status' => 'required|in:novo,em_analise,convertido,rejeitado,arquivado',
-        ]);
+        // "convertido" não se escolhe à mão: é posto automaticamente quando uma
+        // cotação do pedido é aceite (ProposalAcceptanceService).
+        $request->validate(
+            ['status' => 'required|in:' . implode(',', self::MANUAL_STATUSES)],
+            ['status.in' => '"Convertido" é automático — fica assim quando o cliente aceita uma cotação do pedido.']
+        );
 
         $formProposal->update(['status' => $request->status]);
-
-        // Quando convertido, marcar o cliente como cliente real
-        if ($request->status === 'convertido' && $formProposal->client_id) {
-            $client = \App\Models\Client::find($formProposal->client_id);
-            if ($client && $client->is_lead) {
-                $client->convertToClient();
-            }
-        }
 
         return redirect()->back()->with('success', 'Estado atualizado!');
     }
@@ -166,21 +164,13 @@ class FormProposalV2Controller extends Controller
         $data = $request->validate([
             'ids' => 'required|array|min:1',
             'ids.*' => 'integer|exists:form_proposals,id',
-            'status' => 'required|in:novo,em_analise,convertido,rejeitado,arquivado',
+            'status' => 'required|in:' . implode(',', self::MANUAL_STATUSES),
         ]);
 
         $formProposals = FormProposal::whereIn('id', $data['ids'])->get();
 
         foreach ($formProposals as $formProposal) {
             $formProposal->update(['status' => $data['status']]);
-
-            // Quando convertido, marcar o cliente como cliente real (mesma lógica do updateStatus individual)
-            if ($data['status'] === 'convertido' && $formProposal->client_id) {
-                $client = Client::find($formProposal->client_id);
-                if ($client && $client->is_lead) {
-                    $client->convertToClient();
-                }
-            }
         }
 
         return response()->json(['success' => true, 'count' => $formProposals->count()]);

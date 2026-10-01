@@ -28,7 +28,9 @@ class ConvertedProposal extends Model
         'url',
         'client_id',
         'owner_id',
+        'angariador_commission',
         'proposal_id',
+        'v3_vehicle_id',
         'brand',
         'modelCar',
         'version',
@@ -66,6 +68,7 @@ class ConvertedProposal extends Model
     ];
 
     protected $casts = [
+        'angariador_commission' => 'decimal:2',
         'comissao_paga' => 'boolean',
         'comissao_paga_em' => 'date',
     ];
@@ -100,13 +103,28 @@ class ConvertedProposal extends Model
         return $this->belongsTo(User::class, 'owner_id');
     }
 
-    public function documents()
+    /** Viatura do cliente criada a partir desta cotação convertida. */
+    public function v3Vehicle()
+    {
+        return $this->belongsTo(V3Vehicle::class, 'v3_vehicle_id');
+    }
+
+        public function documents()
     {
         return $this->hasMany(ConvertedProposalDocument::class);
     }
 
     protected static function booted()
     {
+        // Comissão do angariador fixada quando é associado (ou trocado).
+        static::saving(function (ConvertedProposal $proposal) {
+            if ($proposal->isDirty('owner_id') && !$proposal->isDirty('angariador_commission')) {
+                $proposal->angariador_commission = $proposal->owner_id
+                    ? User::whereKey($proposal->owner_id)->value('commission_fixed_value')
+                    : null;
+            }
+        });
+
         static::updated(function ($proposal) {
             if ($proposal->wasChanged('status')) {
                 \App\Models\StatusProposalHistory::create([
@@ -131,17 +149,18 @@ class ConvertedProposal extends Model
     }
 
     /**
-     * Comissão do angariador desta cotação convertida — valor fixo definido
-     * no perfil do angariador (users.commission_fixed_value). Null se não
-     * tiver angariador associado ou se este não tiver comissão definida.
+     * Comissão do angariador desta cotação convertida — fixada quando o
+     * angariador é associado (valor de users.commission_fixed_value nesse
+     * momento), para que mudar o perfil não altere comissões passadas. Null
+     * sem angariador ou se este não tiver comissão definida.
      */
     public function angariadorCommissionAmount(): ?float
     {
-        if (!$this->owner_id || $this->owner?->commission_fixed_value === null) {
+        if (!$this->owner_id || $this->angariador_commission === null) {
             return null;
         }
 
-        return round((float) $this->owner->commission_fixed_value, 2);
+        return round((float) $this->angariador_commission, 2);
     }
 
     /**
@@ -150,7 +169,7 @@ class ConvertedProposal extends Model
      */
     public function isCommissionOverdue(): bool
     {
-        if ($this->comissao_paga) {
+        if ($this->comissao_paga || $this->isCancelled()) {
             return false;
         }
 
@@ -172,6 +191,10 @@ class ConvertedProposal extends Model
         $pendente = 0.0;
 
         foreach ($convertedProposals as $convertedProposal) {
+            // Processo cancelado: não há comissão a receber.
+            if ($convertedProposal->isCancelled()) {
+                continue;
+            }
             $amount = $convertedProposal->angariadorCommissionAmount();
             if ($amount === null) {
                 continue;
