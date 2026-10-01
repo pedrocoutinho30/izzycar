@@ -34,13 +34,13 @@
         @php
             $c  = $data['current'];
             $pq = $data['prev_quarter'];
-            function qe_email($v) { return number_format($v, 0, ',', '.') . ' €'; }
-            function qdelta($cur, $cmp) {
+            if (!function_exists('qe_email')) { function qe_email($v) { return number_format($v, 0, ',', '.') . ' €'; } }
+            if (!function_exists('qdelta')) { function qdelta($cur, $cmp) {
                 if ($cmp == 0) return '';
                 $d = round(($cur - $cmp) / abs($cmp) * 100, 1);
                 $cls = $d >= 0 ? 'delta-up' : 'delta-down';
                 return ' <span class="'.$cls.'">'.($d >= 0 ? '+' : '').$d.'%</span>';
-            }
+            } }
         @endphp
 
         <p class="greeting">Olá Pedro,</p>
@@ -62,6 +62,25 @@
                 <div class="kpi-label">Margem bruta</div>
                 <div class="kpi-value" style="font-size:1rem">{{ qe_email($c['gross_margin']) }}</div>
                 <div class="kpi-sub">vs {{ $data['prev_label'] }}{!! qdelta($c['gross_margin'], $pq['gross_margin']) !!}</div>
+            </div>
+        </div>
+
+        <div class="section-label">Importações</div>
+        <div class="kpi-row">
+            <div class="kpi">
+                <div class="kpi-label">Cotações convertidas</div>
+                <div class="kpi-value">{{ $c['imports_count'] }}</div>
+                <div class="kpi-sub">vs {{ $data['prev_label'] }}{!! qdelta($c['imports_count'], $pq['imports_count']) !!}</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-label">Comissões</div>
+                <div class="kpi-value" style="font-size:1rem">{{ qe_email($c['imports_commission']) }}</div>
+                <div class="kpi-sub">vs {{ $data['prev_label'] }}{!! qdelta($c['imports_commission'], $pq['imports_commission']) !!}</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-label">Negócios fechados</div>
+                <div class="kpi-value">{{ $c['deals_total'] }}</div>
+                <div class="kpi-sub">vendas + importações{!! qdelta($c['deals_total'], $pq['deals_total']) !!}</div>
             </div>
         </div>
 

@@ -48,15 +48,15 @@ Carbon\Carbon::setLocale('pt_PT');
 $c    = $current;
 $prev = $prev_year;
 
-function ad_badge($cur, $cmp) {
+if (!function_exists('ad_badge')) { function ad_badge($cur, $cmp) {
     $d = R::delta((float)$cur, (float)$cmp);
     if ($d === null) return '<span class="delta delta-flat">—</span>';
     $cls = $d >= 0 ? 'delta-up' : 'delta-down';
     return '<span class="delta '.$cls.'">'.($d >= 0 ? '+' : '').$d.'%</span>';
-}
-function ae($v) { return number_format($v, 0, ',', '.') . ' €'; }
-function ap($v) { return number_format($v, 1, ',', '.') . '%'; }
-function an($v) { return number_format($v, 0, ',', '.'); }
+} }
+if (!function_exists('ae')) { function ae($v) { return number_format($v, 0, ',', '.') . ' €'; } }
+if (!function_exists('ap')) { function ap($v) { return number_format($v, 1, ',', '.') . '%'; } }
+if (!function_exists('an')) { function an($v) { return number_format($v, 0, ',', '.'); } }
 
 $monthNames = [1=>'Jan',2=>'Fev',3=>'Mar',4=>'Abr',5=>'Mai',6=>'Jun',7=>'Jul',8=>'Ago',9=>'Set',10=>'Out',11=>'Nov',12=>'Dez'];
 $activityLabels = ['note'=>'Nota','call'=>'Chamada','email'=>'Email','whatsapp'=>'WhatsApp','facebook'=>'Facebook','meeting'=>'Reunião'];
@@ -110,6 +110,31 @@ $topKpis = [
 </tr>
 </table>
 
+{{-- Importações (cotações convertidas) e totais do negócio --}}
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:6px;">
+<tr>
+@php
+$importKpis = [
+    ['label'=>'Cotações convertidas','val'=>an($c['imports_count']),'prev'=>$prev['imports_count'],'cur'=>$c['imports_count']],
+    ['label'=>'Comissões de importação','val'=>ae($c['imports_commission']),'prev'=>$prev['imports_commission'],'cur'=>$c['imports_commission']],
+    ['label'=>'Negócios fechados (vendas + importações)','val'=>an($c['deals_total']),'prev'=>$prev['deals_total'],'cur'=>$c['deals_total']],
+    ['label'=>'Margem total (vendas + comissões)','val'=>ae($c['total_margin']),'prev'=>$prev['total_margin'],'cur'=>$c['total_margin']],
+];
+@endphp
+@foreach($importKpis as $i => $kpi)
+<td width="25%" style="vertical-align:top;padding-right:{{ $i < 3 ? '8px' : '0' }}">
+    <div class="kpi-card" style="margin-bottom:8px;">
+        <div class="kpi-label">{{ $kpi['label'] }}</div>
+        <div class="{{ strlen($kpi['val']) > 9 ? 'kpi-value-sm' : 'kpi-value' }}">{{ $kpi['val'] }}</div>
+        <table class="cmp-tbl">
+            <tr><td class="cmp-lbl">vs {{ $year - 1 }}</td><td class="cmp-val">{!! ad_badge($kpi['cur'], $kpi['prev']) !!}</td></tr>
+        </table>
+    </div>
+</td>
+@endforeach
+</tr>
+</table>
+
 {{-- Breakdown mensal --}}
 <div class="section-title">Evolução Mensal {{ $year }}</div>
 <table class="monthly-table">
@@ -119,6 +144,8 @@ $topKpis = [
     <th>Vendas</th>
     <th>Volume (€)</th>
     <th>Margem (€)</th>
+    <th>Import.</th>
+    <th>Comissões (€)</th>
     <th>Leads</th>
     <th>Propostas</th>
     <th>Conv.%</th>
@@ -128,7 +155,7 @@ $topKpis = [
 </tr>
 </thead>
 <tbody>
-@php $totals = array_fill_keys(['sales_count','sales_volume','gross_margin','new_leads','proposals_sent','proposals_won','mov_income','mov_expenses','mov_net'], 0); @endphp
+@php $totals = array_fill_keys(['sales_count','sales_volume','gross_margin','imports_count','imports_commission','new_leads','proposals_sent','proposals_won','mov_income','mov_expenses','mov_net'], 0); @endphp
 @foreach($monthly_breakdown as $m => $md)
 @php
     foreach(array_keys($totals) as $k) { $totals[$k] += $md[$k]; }
@@ -139,6 +166,8 @@ $topKpis = [
     <td>{{ an($md['sales_count']) }}</td>
     <td>{{ ae($md['sales_volume']) }}</td>
     <td>{{ ae($md['gross_margin']) }}</td>
+    <td>{{ an($md['imports_count']) }}</td>
+    <td>{{ ae($md['imports_commission']) }}</td>
     <td>{{ an($md['new_leads']) }}</td>
     <td>{{ an($md['proposals_sent']) }}</td>
     <td>{{ ap($md['conversion_rate']) }}</td>
@@ -152,6 +181,8 @@ $topKpis = [
     <td>{{ an($totals['sales_count']) }}</td>
     <td>{{ ae($totals['sales_volume']) }}</td>
     <td>{{ ae($totals['gross_margin']) }}</td>
+    <td>{{ an($totals['imports_count']) }}</td>
+    <td>{{ ae($totals['imports_commission']) }}</td>
     <td>{{ an($totals['new_leads']) }}</td>
     <td>{{ an($totals['proposals_sent']) }}</td>
     <td>{{ $totals['proposals_sent'] > 0 ? ap(round($totals['proposals_won']/$totals['proposals_sent']*100,1)) : '—' }}</td>
@@ -175,6 +206,12 @@ $detailRows = [
     ['label'=>'Margem bruta (€)','key'=>'gross_margin','fmt'=>'eur'],
     ['label'=>'Margem líquida (€)','key'=>'net_margin','fmt'=>'eur'],
     ['label'=>'Preço médio venda (€)','key'=>'avg_sale_price','fmt'=>'eur'],
+    ['label'=>'Cotações convertidas (importações)','key'=>'imports_count','fmt'=>'n'],
+    ['label'=>'Valor dos carros importados (€)','key'=>'imports_car_value','fmt'=>'eur'],
+    ['label'=>'Faturado em importações (€)','key'=>'imports_billed','fmt'=>'eur'],
+    ['label'=>'Comissões de importação (€)','key'=>'imports_commission','fmt'=>'eur'],
+    ['label'=>'Negócios fechados (vendas + importações)','key'=>'deals_total','fmt'=>'n'],
+    ['label'=>'Margem total (vendas + comissões) (€)','key'=>'total_margin','fmt'=>'eur'],
     ['label'=>'Propostas enviadas','key'=>'proposals_sent','fmt'=>'n'],
     ['label'=>'Propostas aprovadas','key'=>'proposals_won','fmt'=>'n'],
     ['label'=>'Taxa de conversão','key'=>'conversion_rate','fmt'=>'pct'],

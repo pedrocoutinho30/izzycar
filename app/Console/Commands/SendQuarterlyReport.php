@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SendQuarterlyReport extends Command
 {
-    protected $signature = 'reports:quarterly';
+    protected $signature = 'reports:quarterly {--date= : Um dia dentro do trimestre a gerar (AAAA-MM-DD); por defeito, ontem}';
     protected $description = 'Gera e envia o relatório trimestral (executado automaticamente no último dia de cada trimestre)';
 
     public function handle(QuarterlyReportService $service): int
@@ -21,7 +21,9 @@ class SendQuarterlyReport extends Command
         // subDay(): o cron dispara no dia 1 do mês a seguir ao fim do trimestre
         // (abril/julho/outubro), não no último dia do trimestre em si - "ontem" é
         // que está sempre dentro do trimestre a reportar.
-        $date = now()->subDay()->endOfDay();
+        $date = $this->option('date')
+            ? Carbon::parse($this->option('date'))->endOfDay()
+            : now()->subDay()->endOfDay();
         $data = $service->generate($date);
 
         $this->info("A gerar relatório: {$data['label']}...");

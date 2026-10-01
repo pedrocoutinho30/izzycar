@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Client;
+use App\Models\ConvertedProposal;
 use App\Models\CostSimulator;
 use App\Models\FinancialMovement;
 use App\Models\LeadActivity;
@@ -35,6 +36,12 @@ class ReportDataService
             ->whereBetween('created_at', [$start, $end])
             ->count();
 
+        // Importações: cotações convertidas (aceites) no período, sem as canceladas.
+        $imports = ConvertedProposal::notCancelled()
+            ->whereBetween('created_at', [$start, $end])
+            ->get(['valor_carro', 'valor_comissao', 'valor_primeira_tranche', 'valor_segunda_tranche']);
+        $importsCommission = (float) $imports->sum(fn ($i) => (float) $i->valor_comissao);
+
         $movIncome   = (float) FinancialMovement::where('type', 'income')
             ->whereBetween('movement_date', [$start->toDateString(), $end->toDateString()])
             ->sum('amount_net');
@@ -49,6 +56,13 @@ class ReportDataService
             'net_margin'        => (float) $sales->sum('net_margin'),
             'avg_sale_price'    => $sales->count() ? (float) $sales->avg('sale_price') : 0.0,
             'avg_gross_margin'  => $sales->count() ? (float) $sales->avg('gross_margin') : 0.0,
+            'imports_count'      => $imports->count(),
+            'imports_car_value'  => (float) $imports->sum(fn ($i) => (float) $i->valor_carro),
+            'imports_commission' => $importsCommission,
+            'imports_billed'     => (float) $imports->sum(fn ($i) => (float) $i->valor_primeira_tranche + (float) $i->valor_segunda_tranche),
+            // Vendas do stand + importações fechadas.
+            'deals_total'        => $sales->count() + $imports->count(),
+            'total_margin'       => (float) $sales->sum('gross_margin') + $importsCommission,
             'proposals_sent'    => $proposalsTotal,
             'proposals_won'     => $proposalsWon,
             'conversion_rate'   => $proposalsTotal > 0 ? round($proposalsWon / $proposalsTotal * 100, 1) : 0.0,

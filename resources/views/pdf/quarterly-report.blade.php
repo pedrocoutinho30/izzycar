@@ -42,15 +42,15 @@ $c   = $current;
 $pq  = $prev_quarter;
 $sly = $same_last_year;
 
-function qd_badge($cur, $cmp) {
+if (!function_exists('qd_badge')) { function qd_badge($cur, $cmp) {
     $d = R::delta((float)$cur, (float)$cmp);
     if ($d === null) return '<span class="delta delta-flat">—</span>';
     $cls = $d >= 0 ? 'delta-up' : 'delta-down';
     return '<span class="delta '.$cls.'">'.($d >= 0 ? '+' : '').$d.'%</span>';
-}
-function qe($v) { return number_format($v, 0, ',', '.') . ' €'; }
-function qp($v) { return number_format($v, 1, ',', '.') . '%'; }
-function qn($v) { return number_format($v, 0, ',', '.'); }
+} }
+if (!function_exists('qe')) { function qe($v) { return number_format($v, 0, ',', '.') . ' €'; } }
+if (!function_exists('qp')) { function qp($v) { return number_format($v, 1, ',', '.') . '%'; } }
+if (!function_exists('qn')) { function qn($v) { return number_format($v, 0, ',', '.'); } }
 
 $activityLabels = ['note'=>'Nota','call'=>'Chamada','email'=>'Email','whatsapp'=>'WhatsApp','facebook'=>'Facebook','meeting'=>'Reunião'];
 $statusLabels   = ['nova'=>'Nova','em_contacto'=>'Em Contacto','fria'=>'Fria','perdida'=>'Perdida'];
@@ -104,6 +104,32 @@ $topKpis = [
 </tr>
 </table>
 
+{{-- Importações (cotações convertidas) e totais do negócio --}}
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:6px;">
+<tr>
+@php
+$importKpis = [
+    ['label'=>'Cotações convertidas','val'=>qn($c['imports_count']),'pq'=>$pq['imports_count'],'sly'=>$sly['imports_count'],'cur'=>$c['imports_count']],
+    ['label'=>'Comissões de importação','val'=>qe($c['imports_commission']),'pq'=>$pq['imports_commission'],'sly'=>$sly['imports_commission'],'cur'=>$c['imports_commission']],
+    ['label'=>'Negócios fechados (vendas + importações)','val'=>qn($c['deals_total']),'pq'=>$pq['deals_total'],'sly'=>$sly['deals_total'],'cur'=>$c['deals_total']],
+    ['label'=>'Margem total (vendas + comissões)','val'=>qe($c['total_margin']),'pq'=>$pq['total_margin'],'sly'=>$sly['total_margin'],'cur'=>$c['total_margin']],
+];
+@endphp
+@foreach($importKpis as $i => $kpi)
+<td width="25%" style="vertical-align:top;padding-right:{{ $i < 3 ? '8px' : '0' }}">
+    <div class="kpi-card" style="margin-bottom:8px;">
+        <div class="kpi-label">{{ $kpi['label'] }}</div>
+        <div class="{{ strlen($kpi['val']) > 9 ? 'kpi-value-sm' : 'kpi-value' }}">{{ $kpi['val'] }}</div>
+        <table class="cmp-tbl">
+            <tr><td class="cmp-lbl">{{ $prev_label }}</td><td class="cmp-val">{!! qd_badge($kpi['cur'], $kpi['pq']) !!}</td></tr>
+            <tr><td class="cmp-lbl">{{ $sly_label }}</td><td class="cmp-val">{!! qd_badge($kpi['cur'], $kpi['sly']) !!}</td></tr>
+        </table>
+    </div>
+</td>
+@endforeach
+</tr>
+</table>
+
 {{-- Tabela comparativa --}}
 <div class="section-title">Análise Comparativa</div>
 @php
@@ -113,6 +139,12 @@ $detailRows = [
     ['label'=>'Margem bruta (€)','key'=>'gross_margin','fmt'=>'eur'],
     ['label'=>'Margem líquida (€)','key'=>'net_margin','fmt'=>'eur'],
     ['label'=>'Preço médio venda (€)','key'=>'avg_sale_price','fmt'=>'eur'],
+    ['label'=>'Cotações convertidas (importações)','key'=>'imports_count','fmt'=>'n'],
+    ['label'=>'Valor dos carros importados (€)','key'=>'imports_car_value','fmt'=>'eur'],
+    ['label'=>'Faturado em importações (€)','key'=>'imports_billed','fmt'=>'eur'],
+    ['label'=>'Comissões de importação (€)','key'=>'imports_commission','fmt'=>'eur'],
+    ['label'=>'Negócios fechados (vendas + importações)','key'=>'deals_total','fmt'=>'n'],
+    ['label'=>'Margem total (vendas + comissões) (€)','key'=>'total_margin','fmt'=>'eur'],
     ['label'=>'Propostas enviadas','key'=>'proposals_sent','fmt'=>'n'],
     ['label'=>'Propostas aprovadas','key'=>'proposals_won','fmt'=>'n'],
     ['label'=>'Taxa de conversão','key'=>'conversion_rate','fmt'=>'pct'],

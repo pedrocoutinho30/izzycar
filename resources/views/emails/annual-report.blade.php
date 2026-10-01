@@ -34,13 +34,13 @@
         @php
             $c    = $data['current'];
             $prev = $data['prev_year'];
-            function ae_email($v) { return number_format($v, 0, ',', '.') . ' €'; }
-            function adelta($cur, $cmp, $prevY) {
+            if (!function_exists('ae_email')) { function ae_email($v) { return number_format($v, 0, ',', '.') . ' €'; } }
+            if (!function_exists('adelta')) { function adelta($cur, $cmp, $prevY) {
                 if ($cmp == 0) return '';
                 $d = round(($cur - $cmp) / abs($cmp) * 100, 1);
                 $cls = $d >= 0 ? 'delta-up' : 'delta-down';
                 return ' <span class="'.$cls.'">vs '.$prevY.': '.($d >= 0 ? '+' : '').$d.'%</span>';
-            }
+            } }
         @endphp
 
         <p class="greeting">Olá Pedro,</p>
@@ -62,6 +62,25 @@
                 <div class="kpi-label">Margem bruta</div>
                 <div class="kpi-value" style="font-size:1rem">{{ ae_email($c['gross_margin']) }}</div>
                 <div class="kpi-sub">{!! adelta($c['gross_margin'], $prev['gross_margin'], $data['year']-1) !!}</div>
+            </div>
+        </div>
+
+        <div class="section-label">Importações</div>
+        <div class="kpi-row">
+            <div class="kpi">
+                <div class="kpi-label">Cotações convertidas</div>
+                <div class="kpi-value">{{ $c['imports_count'] }}</div>
+                <div class="kpi-sub">{!! adelta($c['imports_count'], $prev['imports_count'], $data['year']-1) !!}</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-label">Comissões</div>
+                <div class="kpi-value" style="font-size:1rem">{{ ae_email($c['imports_commission']) }}</div>
+                <div class="kpi-sub">{!! adelta($c['imports_commission'], $prev['imports_commission'], $data['year']-1) !!}</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-label">Negócios fechados</div>
+                <div class="kpi-value">{{ $c['deals_total'] }}</div>
+                <div class="kpi-sub">vendas + importações{!! adelta($c['deals_total'], $prev['deals_total'], $data['year']-1) !!}</div>
             </div>
         </div>
 

@@ -65,17 +65,17 @@ $pm  = $prev_month;
 $sly = $same_last_year;
 $avg = $ytd_avg;
 
-function delta_badge_pdf($cur, $cmp) {
+if (!function_exists('delta_badge_pdf')) { function delta_badge_pdf($cur, $cmp) {
     $d = R::delta((float)$cur, (float)$cmp);
     if ($d === null) return '<span class="delta delta-flat">—</span>';
     $cls = $d >= 0 ? 'delta-up' : 'delta-down';
     $sign = $d >= 0 ? '+' : '';
     return '<span class="delta '.$cls.'">'.$sign.$d.'%</span>';
-}
+} }
 
-function fe_pdf($v) { return number_format($v, 0, ',', '.') . ' €'; }
-function fp_pdf($v) { return number_format($v, 1, ',', '.') . '%'; }
-function fn_pdf($v) { return number_format($v, 0, ',', '.'); }
+if (!function_exists('fe_pdf')) { function fe_pdf($v) { return number_format($v, 0, ',', '.') . ' €'; } }
+if (!function_exists('fp_pdf')) { function fp_pdf($v) { return number_format($v, 1, ',', '.') . '%'; } }
+if (!function_exists('fn_pdf')) { function fn_pdf($v) { return number_format($v, 0, ',', '.'); } }
 
 $activityLabels = [
     'note'      => 'Nota',

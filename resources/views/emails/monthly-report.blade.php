@@ -44,14 +44,14 @@
             @php
                 $c = $data['current'];
                 $pm = $data['prev_month'];
-                function delta_html($cur, $cmp) {
+                if (!function_exists('delta_html')) { function delta_html($cur, $cmp) {
                     if ($cmp == 0) return '';
                     $d = round(($cur - $cmp) / abs($cmp) * 100, 1);
                     $cls = $d >= 0 ? 'delta-up' : 'delta-down';
                     $sign = $d >= 0 ? '+' : '';
                     return ' <span class="'.$cls.'">'.$sign.$d.'%</span>';
-                }
-                function fe($v) { return number_format($v, 0, ',', '.') . ' €'; }
+                } }
+                if (!function_exists('fe')) { function fe($v) { return number_format($v, 0, ',', '.') . ' €'; } }
             @endphp
 
             <div class="section-label">Vendas</div>

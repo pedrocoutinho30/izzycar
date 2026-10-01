@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SendAnnualReport extends Command
 {
-    protected $signature = 'reports:annual';
+    protected $signature = 'reports:annual {--year= : Ano a gerar; por defeito, o de ontem}';
     protected $description = 'Gera e envia o relatório anual (executado automaticamente a 31 de dezembro)';
 
     public function handle(AnnualReportService $service): int
@@ -20,7 +20,7 @@ class SendAnnualReport extends Command
 
         // subDay(): o cron dispara a 1 de janeiro (não a 31 de dezembro), por isso
         // "ontem" é que está sempre dentro do ano a reportar.
-        $year = now()->subDay()->year;
+        $year = $this->option('year') ? (int) $this->option('year') : now()->subDay()->year;
         $data = $service->generate($year);
 
         $this->info("A gerar relatório anual {$year}...");
