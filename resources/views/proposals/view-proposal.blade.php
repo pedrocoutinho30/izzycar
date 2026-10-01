@@ -20,7 +20,9 @@
                  + $proposal->imt_cost + $proposal->ipo_cost + $proposal->transport_cost;
 
   $isElectric    = in_array($proposal->fuel, ['Elétrico', 'Híbrido Plug-in/Gasolina', 'Híbrido Plug-in/Diesel']);
-  $isAccepted    = App\Models\ConvertedProposal::where('proposal_id', $proposal->id)->exists();
+  $isAccepted    = $proposal->isAccepted();
+  // Reprovada: deixa de poder ser aceite pelo cliente (o servidor também o recusa).
+  $canAccept     = !$isAccepted && !$proposal->isRejected();
   $modalId       = 'acceptModal';
 @endphp
 
@@ -42,7 +44,7 @@
       <span>{{$client->name}}</span>
     </div>
     <div class="iz-bar__vehicle">{{ $proposal->brand }} {{ $proposal->model }} · <strong>{{ number_format($totalCost, 0, ',', '.') }} €</strong></div>
-    @if(!$isAccepted)
+    @if($canAccept)
       <button class="iz-bar__cta" onclick="openModal()">Aceitar Cotação</button>
     @else
       <span class="iz-bar__accepted"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Aceite</span>
@@ -69,7 +71,7 @@
       <div class="iz-hero__price-label">Total Chave na Mão</div>
       <div class="iz-hero__price" data-count="{{ (int)$totalCost }}">{{ number_format($totalCost, 0, ',', '.') }} €</div>
     </div>
-    @if(!$isAccepted)
+    @if($canAccept)
       <button class="iz-hero__cta" onclick="openModal()">
         Aceitar Esta Cotação
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -282,12 +284,12 @@
           </div>
           @endif
 
-          @if(!$isAccepted)
+          @if($canAccept)
           <button class="iz-accept-btn" onclick="openModal()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             Aceitar Esta Cotação
           </button>
-          @else
+          @elseif($isAccepted)
           <div class="iz-accepted-pill">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             Cotação Aceite — Em Processamento
@@ -505,7 +507,7 @@
   </section>
 
   {{-- ── FINAL CTA ── --}}
-  @if(!$isAccepted)
+  @if($canAccept)
   <section class="iz-cta-section iz-reveal">
     <div class="iz-cta">
       <h2 class="iz-cta__title">Pronto para Avançar?</h2>
@@ -537,7 +539,7 @@
 {{-- ══════════════════════════════════════════════
      ACCEPT MODAL
 ══════════════════════════════════════════════ --}}
-@if(!$isAccepted)
+@if($canAccept)
 <div class="iz-modal-backdrop" id="modalBackdrop" onclick="closeModal()"></div>
 <div class="iz-modal" id="acceptModal" role="dialog" aria-labelledby="modalTitle">
   <div class="iz-modal__card">
@@ -558,7 +560,7 @@
         <span>Ao aceitar confirma que leu e concordou com todos os termos desta cotação.</span>
       </div>
 
-      <form id="acceptForm" action="{{ route('proposals.accept', $proposal->id) }}" method="POST">
+      <form id="acceptForm" action="{{ route('proposals.accept', $proposal->proposal_code) }}" method="POST">
         @csrf
 
         @php

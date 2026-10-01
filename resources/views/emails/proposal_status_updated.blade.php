@@ -62,7 +62,7 @@
         $message = "Estamos a ultimar o registo automóvel em seu nome. O carro ficará oficialmente registado como seu.";
         } elseif ($newStatus === 'Concluido') {
         $message = "Parabéns! O processo do seu carro está concluído. Desejamos-lhe muitos quilómetros de felicidade ao volante.";
-        } elseif ($newStatus === 'Cancelado') {
+        } elseif (in_array($newStatus, ['Cancelado', 'Cancelada'], true)) {
         $message = "O processo foi cancelado. Se desejar, estamos disponíveis para esclarecer dúvidas ou apresentar novas soluções para si.";
         }
         @endphp

@@ -56,7 +56,9 @@ Route::get('proposta/{proposal_code}', [ProposalController::class, 'detail'])->n
 Route::post('proposta/{proposal_code}/opcoes/{opportunity}/pedir-cotacao', [ProposalController::class, 'requestAlternativeQuote'])
     ->middleware('throttle:10,1')
     ->name('proposals.request-alternative');
-Route::post('/proposals/{proposal}/accept', [ProposalController::class, 'accept'])
+// Aceitação pública: pelo código da cotação (não pelo id), com limite de pedidos.
+Route::post('proposta/{proposal_code}/aceitar', [ProposalController::class, 'accept'])
+    ->middleware('throttle:5,1')
     ->name('proposals.accept');
 Route::get('/proposta/{brand}/{model}/{version}/{id}/timeline', [ConvertedProposalController::class, 'detailTimeline'])
     ->name('converted-proposals.timeline');
@@ -85,6 +87,7 @@ Route::get('/newsletter/unsubscribe', [App\Http\Controllers\Admin\NewsletterCont
     ->name('newsletter.unsubscribe');
 
 Route::post('/newsletter/subscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'subscribe'])
+    ->middleware(['throttle:5,1', 'antispam'])
     ->name('newsletter.subscribe');
 
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {

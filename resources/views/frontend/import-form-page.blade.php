@@ -69,6 +69,7 @@
 
     <form id="importForm">
       @csrf
+      @include('frontend.partials._honeypot')
       <input type="hidden" name="angariador" id="angariadorInput" value="">
 
       {{-- ── STEP 1: Dados pessoais ── --}}

@@ -1,6 +1,7 @@
 <div class="form-proposal-card">
     <form id="importForm" class="row g-4">
         @csrf
+        @include('frontend.partials._honeypot')
 
         <div class="col-12">
             <div class="form-section-header">

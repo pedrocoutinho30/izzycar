@@ -102,6 +102,7 @@
                     </div>
                     <form class="newsletter-form" id="footerNewsletterForm">
                         @csrf
+                        @include('frontend.partials._honeypot')
                         <input type="text" name="name" placeholder="O seu nome" class="nl-input nl-input--name" autocomplete="name">
                         <input type="email" name="email" placeholder="O seu email" class="nl-input" required autocomplete="email">
                         <button type="submit" class="nl-btn">

@@ -16,6 +16,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\Browsershot\Browsershot;
 use App\Models\ProposalAttributeValue;
 use Illuminate\Support\Facades\Mail;
+use App\Services\ProposalAcceptanceException;
+use App\Services\ProposalAcceptanceService;
 use App\Mail\ProposalAcceptedMail;
 use App\Models\Setting;
 use App\Models\StatusProposalHistory;
@@ -569,8 +571,8 @@ class ProposalController extends Controller
         $proposal = Proposal::where('proposal_code', $proposal_code)
             ->firstOrFail();
 
-        // Proposals older than 15 days are considered expired
-        if ($proposal->created_at->diffInDays(now()) > 15) {
+        // Cotações com mais de Proposal::VALIDITY_DAYS dias expiram.
+        if ($proposal->isExpired()) {
             return view('proposals.expired', compact('proposal'));
         }
 
@@ -838,111 +840,51 @@ class ProposalController extends Controller
 
 
 
-    public function accept(Proposal $proposal, Request $request)
+    /**
+     * O cliente aceita a cotação na página pública. A cotação é encontrada
+     * pelo código (o id sequencial permitia aceitar cotações de outros), e
+     * tudo é validado antes de gravar — ver ProposalAcceptanceService.
+     */
+    public function accept(string $proposalCode, Request $request, ProposalAcceptanceService $acceptance)
     {
-        $request->validate(
-            ['validate_identification_number' => 'nullable|date'],
-            ['validate_identification_number.date' => 'A validade do documento não é uma data válida.']
-        );
+        $proposal = Proposal::where('proposal_code', $proposalCode)->firstOrFail();
 
-        //0. Atualizar dados do cliente
-        $input = $request->only([
-            'email',
-            'address',
-            'postal_code',
-            'city',
-            'identification_number',
-            'validate_identification_number',
-            'phone',
-            'vat_number'
-
+        $request->validate([
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:30',
+            'address' => 'nullable|string|max:255',
+            'postal_code' => 'nullable|string|max:20',
+            'city' => 'nullable|string|max:100',
+            'vat_number' => 'nullable|string|max:20',
+            'identification_number' => 'nullable|string|max:50',
+            'validate_identification_number' => 'nullable|date',
+        ], [
+            'email.email' => 'O email não é válido.',
+            'validate_identification_number.date' => 'A validade do documento não é uma data válida.',
         ]);
 
-        // Remove valores vazios
-        $input = array_filter($input, fn($value) => !is_null($value) && $value !== '');
+        try {
+            $convertedProposal = $acceptance->accept($proposal, $request->only(ProposalAcceptanceService::CLIENT_FIELDS), byClient: true);
+        } catch (ProposalAcceptanceException $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
-        $client = Client::find($proposal->client_id);
+        // Emails depois de gravar: uma falha no envio não desfaz a aceitação
+        // nem mostra um erro ao cliente.
+        try {
+            $this->sendAcceptanceEmail($proposal->fresh(), $convertedProposal);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
-        // Se for lead, converter automaticamente em cliente ao aceitar a cotação
-        if ($client && $client->is_lead) {
-            $client->convertToClient();
-            \App\Models\LeadActivity::log(
-                $client->id,
-                'Lead convertido em cliente',
-                "Convertido automaticamente ao aceitar a cotação #{$proposal->id}.",
-                'bi-person-check-fill',
-                'success'
+        try {
+            Mail::raw(
+                "A cotação {$proposal->proposal_code} (#{$proposal->id}) foi aceite pelo cliente. " . route('admin.v2.converted-proposals.edit', $convertedProposal->id),
+                fn ($mail) => $mail->to('geral@izzycar.pt')->subject('Proposta aceite - Izzycar')
             );
+        } catch (\Throwable $e) {
+            report($e);
         }
-
-        $client->update($input);
-
-        // 1. Atualizar estado
-        $proposal->status = 'Aprovada';
-        $proposal->save();
-
-
-        // 2. Criar registo em propostas aceites
-        if (ConvertedProposal::where('proposal_id', $proposal->id)->exists()) {
-            return back()->with('error', 'A proposta já foi aceite anteriormente.');
-        }
-
-        $valor_total = $proposal->transport_cost
-            + $proposal->inspection_commission_cost
-            + $proposal->ipo_cost
-            + $proposal->imt_cost
-            + $proposal->registration_cost
-            + $proposal->license_plate_cost
-            + $proposal->commission_cost;
-
-        $valor_primeira_tranche = $valor_segunda_tranche = $valor_total * 0.5;
-
-        $convertedProposal = ConvertedProposal::create([
-            'proposal_id' => $proposal->id,
-            'client_id' => $proposal->client_id,
-            // Angariador desta cotação convertida — copiado do cliente no momento
-            // da aceitação, mas gravado aqui de forma independente: uma eventual
-            // segunda cotação/venda ao mesmo cliente pode ficar sem angariador
-            // (ou com um diferente) sem afetar esta.
-            'owner_id' => $client->owner_id,
-            'status' => 'Iniciada',
-            'brand' => $proposal->brand,
-            'modelCar' => $proposal->model,
-            'version' => $proposal->version,
-            'year' => $proposal->proposed_car_year_month,
-            'km' => $proposal->proposed_car_mileage,
-            'url' => $proposal->url,
-            'custo_inspecao_origem' => $proposal->inspection_commission_cost,
-            'custo_transporte' => $proposal->transport_cost,
-            'custo_ipo' => $proposal->ipo_cost,
-            'isv' => $proposal->isv_cost,
-            'custo_imt' => $proposal->imt_cost,
-            'custo_matricula' => $proposal->license_plate_cost,
-            'custo_registo_automovel' => $proposal->registration_cost,
-            'valor_primeira_tranche' => $valor_primeira_tranche,
-            'valor_segunda_tranche' => $valor_segunda_tranche,
-            'valor_carro' => $proposal->proposed_car_value,
-            'valor_comissao' => $proposal->commission_cost,
-        ]);
-
-        //Criar registo de historico
-        StatusProposalHistory::create([
-            'new_status' => 'Iniciada',
-            'old_status' => null,
-            'converted_proposal_id' => $convertedProposal->id,
-        ]);
-
-        // 3. Enviar notificação para o cliente
-        $this->sendAcceptanceEmail($proposal, $convertedProposal);
-
-        // 4. Enviar email para o admin
-        Mail::raw(
-            "Proposta {$proposal->id} foi aceite. " . route('converted-proposals.edit', [$convertedProposal->id]),
-            function ($mail) {
-                $mail->to('geral@izzycar.pt')
-                    ->subject('Proposta aceite - Izzycar');
-            }
-        );
 
         return back()->with('success', 'A proposta foi aceite. O cliente receberá um email com o contrato.');
     }

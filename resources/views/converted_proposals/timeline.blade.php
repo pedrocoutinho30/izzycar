@@ -32,7 +32,7 @@
             <div class="vehicle-header">
                 <div>
                     <div class="vehicle-title-badge">O SEU VEÍCULO</div>
-                    <h2 class="vehicle-title">{{ $convertedProposal->brand }} {{ $convertedProposal->model }}</h2>
+                    <h2 class="vehicle-title">{{ $convertedProposal->brand }} {{ $convertedProposal->modelCar }}</h2>
                     <p class="vehicle-subtitle">{{ $convertedProposal->version }}</p>
                 </div>
             </div>
@@ -40,18 +40,18 @@
             <div class="vehicle-content">
                 <div class="row g-4">
                     <div class="col-lg-5">
-                        @if($convertedProposal->proposal->images)
+                        @if($convertedProposal->proposal?->images)
                         <div class="vehicle-image-wrapper">
                             
                         </div>
 
                         <div class="vehicle-image-wrapper">
-                            <img src="{{ $convertedProposal->proposal->images }}" 
+                            <img src="{{ $convertedProposal->proposal?->images }}" 
                                 onerror="this.src='{{ asset('img/logo-simples.png') }}';"
-                                alt="{{ $convertedProposal->brand }} {{ $convertedProposal->model }}" 
+                                alt="{{ $convertedProposal->brand }} {{ $convertedProposal->modelCar }}" 
                                 class="vehicle-image">
                             <div class="image-overlay">
-                                <a href="{{ route('proposals.detail', ['proposal_code' => $convertedProposal->proposal->proposal_code]) }}" target="_blank" class="view-ad-btn">
+                                <a href="{{ route('proposals.detail', ['proposal_code' => $convertedProposal->proposal?->proposal_code ?? '']) }}" target="_blank" class="view-ad-btn">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
                                         <polyline points="15 3 21 3 21 9"></polyline>
@@ -83,7 +83,7 @@
                                 </svg>
                                 <div>
                                     <span class="info-label">Cliente</span>
-                                    <span class="info-value">{{ $convertedProposal->proposal->client->name }}</span>
+                                    <span class="info-value">{{ $convertedProposal->client?->name ?? $convertedProposal->proposal?->client?->name }}</span>
                                 </div>
                             </div>
                             <div class="info-item">
@@ -95,7 +95,7 @@
                                 </svg>
                                 <div>
                                     <span class="info-label">Data da Cotação</span>
-                                    <span class="info-value">{{ \Carbon\Carbon::parse($convertedProposal->proposal->created_at)->isoFormat('DD-MM-YYYY') }}</span>
+                                    <span class="info-value">{{ \Carbon\Carbon::parse($convertedProposal->proposal?->created_at ?? $convertedProposal->created_at)->isoFormat('DD-MM-YYYY') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -121,7 +121,7 @@
                         $progressPercent = min($progressPercent, 100);
                         @endphp
 
-                        @if(in_array('Cancelado', $completedStatuses))
+                        @if($convertedProposal->isCancelled() || array_intersect(\App\Models\ConvertedProposal::CANCELLED_STATUSES, $completedStatuses))
                         <!-- Processo Cancelado -->
                         <div class="process-cancelled-section">
                             <div class="cancelled-icon">

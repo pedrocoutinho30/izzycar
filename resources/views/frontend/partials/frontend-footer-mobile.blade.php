@@ -66,6 +66,7 @@
             <p class="footer-mobile-nl-sub">Receba ofertas e novidades do mercado automóvel europeu.</p>
             <form id="footerNewsletterFormMobile">
                 @csrf
+                @include('frontend.partials._honeypot')
                 <input type="text" name="name" placeholder="O seu nome" class="nl-mobile-input" autocomplete="name">
                 <input type="email" name="email" placeholder="O seu email" class="nl-mobile-input" required autocomplete="email">
                 <button type="submit" class="nl-mobile-btn">

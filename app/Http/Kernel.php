@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'restrictAngariador' => \App\Http\Middleware\RestrictAngariadorArea::class,
         'authorizeResource' => \App\Http\Middleware\AuthorizeResource::class,
+        'antispam' => \App\Http\Middleware\BlockSpamSubmissions::class,
         'verifyWhatsAppSignature' => \App\Http\Middleware\VerifyWhatsAppSignature::class,
     ];
 }

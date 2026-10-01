@@ -29,14 +29,14 @@ class ProposalAcceptanceIdentificationTest extends TestCase
     {
         $client = Client::create($client + ['name' => 'Maria Silva', 'is_lead' => false, 'lead_status' => 'nova', 'email' => 'maria@example.com']);
 
-        return Proposal::create(['client_id' => $client->id, 'brand' => 'BMW', 'model' => 'i4', 'transport_cost' => 0]);
+        return Proposal::create(['client_id' => $client->id, 'brand' => 'BMW', 'model' => 'i4', 'transport_cost' => 0, 'proposal_code' => 'BI' . $client->id . 'TEST', 'status' => 'Pendente']);
     }
 
     public function test_acceptance_saves_the_document_validity(): void
     {
         $proposal = $this->proposal();
 
-        $this->post(route('proposals.accept', $proposal->id), [
+        $this->post(route('proposals.accept', $proposal->proposal_code), [
             'identification_number' => '12345678 9 ZZ1',
             'validate_identification_number' => '2031-03-15',
         ])->assertSessionHasNoErrors();
@@ -50,7 +50,7 @@ class ProposalAcceptanceIdentificationTest extends TestCase
     {
         $proposal = $this->proposal();
 
-        $this->post(route('proposals.accept', $proposal->id), ['validate_identification_number' => 'amanhã'])
+        $this->post(route('proposals.accept', $proposal->proposal_code), ['validate_identification_number' => 'amanhã'])
             ->assertSessionHasErrors('validate_identification_number');
 
         $this->assertNull($proposal->client->fresh()->validate_identification_number);

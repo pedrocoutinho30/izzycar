@@ -88,6 +88,7 @@
 
     <form method="POST" action="{{ route('frontend.cost-simulator.calculate') }}" id="scForm">
       @csrf
+      @include('frontend.partials._honeypot')
 
       {{-- ── STEP 1: Veículo ── --}}
       <div class="sc-card sc-reveal">

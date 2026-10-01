@@ -85,19 +85,33 @@ class ConvertedProposalController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+        $request->validate(
+            ['status' => ['required', 'string', \Illuminate\Validation\Rule::in([...ConvertedProposal::PIPELINE_STATUSES, ...ConvertedProposal::CANCELLED_STATUSES])]],
+            ['status.in' => 'Estado inválido.']
+        );
+
         $convertedProposal = ConvertedProposal::findOrFail($id);
         $oldStatus = $convertedProposal->status;
         $newStatus = $request->status;
 
-        $client = Client::find($convertedProposal->client_id);
-        $client_name = $client->name;
-        $convertedProposal->status = $newStatus;
+        // Sem alteração: não grava nem envia nada ao cliente.
+        if ($oldStatus === $newStatus) {
+            return response()->json(['success' => true, 'message' => 'O estado já era este.', 'oldStatus' => $oldStatus, 'newStatus' => $newStatus]);
+        }
 
+        $convertedProposal->status = $newStatus;
         $convertedProposal->save();
-        // Enviar email para o cliente
-        Mail::to($client->email)->bcc('izzycarpt@gmail.com')->send(
-            new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $newStatus, $client_name,  $convertedProposal->matricula_destino)
-        );
+
+        $client = Client::find($convertedProposal->client_id);
+        if ($client && filled($client->email)) {
+            try {
+                Mail::to($client->email)->bcc('izzycarpt@gmail.com')->send(
+                    new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $newStatus, $client->name, $convertedProposal->matricula_destino)
+                );
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
 
         return response()->json([
             'success' => true,

@@ -541,6 +541,8 @@ $pendingValue = $totalValue - $paidValue;
                         </div>
                         <div class="cp-cost-paid">
                             <div class="form-check form-switch mb-0">
+                                {{-- Sem o 0 escondido, desmarcar não enviava nada e ficava "pago". --}}
+                                <input type="hidden" name="{{ $item['paid_key'] }}" value="0">
                                 <input class="form-check-input" type="checkbox"
                                        name="{{ $item['paid_key'] }}" value="1"
                                        id="paid_{{ $item['paid_key'] }}"
@@ -589,6 +591,8 @@ $pendingValue = $totalValue - $paidValue;
                         </div>
                         <div class="cp-cost-paid">
                             <div class="form-check form-switch mb-0">
+                                {{-- Sem o 0 escondido, desmarcar não enviava nada e ficava "pago". --}}
+                                <input type="hidden" name="{{ $tranche['paid_key'] }}" value="0">
                                 <input class="form-check-input" type="checkbox"
                                        name="{{ $tranche['paid_key'] }}" value="1"
                                        id="paid_{{ $tranche['paid_key'] }}"
@@ -631,6 +635,7 @@ $pendingValue = $totalValue - $paidValue;
                     </div>
                     <div class="col-md-6 d-flex align-items-end pb-2">
                         <div class="form-check form-switch">
+                            <input type="hidden" name="{{ $f['paid'] }}" value="0">
                             <input class="form-check-input" type="checkbox" name="{{ $f['paid'] }}" value="1">
                             <label class="form-check-label">Pago</label>
                         </div>
@@ -833,12 +838,12 @@ $pendingValue = $totalValue - $paidValue;
                     @endif
 
                     <div class="d-flex gap-2 mb-2">
-                        <form action="{{ route('admin.v2.angariadores.toggle-paid', $convertedProposal->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-sm {{ $convertedProposal->comissao_paga ? 'btn-outline-secondary' : 'btn-success' }}">
-                                {{ $convertedProposal->comissao_paga ? 'Marcar pendente' : 'Marcar pago' }}
-                            </button>
-                        </form>
+                        {{-- O formulário fica fora do <form> principal (ver commissionToggleForm,
+                             no fim da página): um <form> aninhado gravava a cotação em vez de
+                             mudar a comissão e cortava o formulário principal a meio. --}}
+                        <button type="submit" form="commissionToggleForm" class="btn btn-sm {{ $convertedProposal->comissao_paga ? 'btn-outline-secondary' : 'btn-success' }}">
+                            {{ $convertedProposal->comissao_paga ? 'Marcar pendente' : 'Marcar pago' }}
+                        </button>
 
                         <label class="btn btn-sm btn-outline-secondary mb-0">
                             <i class="bi bi-upload me-1"></i>{{ $convertedProposal->comprovativo_pagamento ? 'Substituir comprovativo' : 'Anexar comprovativo' }}
@@ -975,6 +980,12 @@ $pendingValue = $totalValue - $paidValue;
         </div>
     </div>
 </form>
+
+@if($isEdit && $convertedProposal->owner_id)
+<form id="commissionToggleForm" action="{{ route('admin.v2.angariadores.toggle-paid', $convertedProposal->id) }}" method="POST" class="d-none">
+    @csrf
+</form>
+@endif
 
 <!-- Toast de feedback -->
 <div class="cp-status-toast" id="cpToast"></div>

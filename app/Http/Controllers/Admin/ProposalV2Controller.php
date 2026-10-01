@@ -34,8 +34,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\FormProposal;
 use App\Models\Proposal;
-use App\Models\ConvertedProposal;
-use App\Models\StatusProposalHistory;
 use App\Models\Client;
 use App\Models\LeadActivity;
 use App\Models\Brand;
@@ -704,84 +702,21 @@ class ProposalV2Controller extends Controller
      * é conhecido) e sem o email/PDF de contrato automático (esse fluxo
      * fica reservado para quando é o próprio cliente a aceitar online).
      */
-    public function accept($id)
+    public function accept($id, \App\Services\ProposalAcceptanceService $acceptance)
     {
         $proposal = Proposal::findOrFail($id);
 
-        if (ConvertedProposal::where('proposal_id', $proposal->id)->exists()) {
-            return response()->json(['success' => false, 'message' => 'Esta cotação já foi aceite anteriormente.'], 422);
+        try {
+            // No backoffice pode aceitar-se mesmo expirada/reprovada (ex. cliente
+            // que aceitou por telefone); não envia emails nem contrato.
+            $convertedProposal = $acceptance->accept($proposal, byClient: false);
+        } catch (\App\Services\ProposalAcceptanceException $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
-
-        $client = $proposal->client;
-        if (!$client) {
-            return response()->json(['success' => false, 'message' => 'Esta cotação não tem cliente associado.'], 422);
-        }
-
-        $proposal->status = 'Aprovada';
-        $proposal->save();
-
-        if ($client->is_lead) {
-            $client->convertToClient();
-            LeadActivity::log(
-                $client->id,
-                'Lead convertido em cliente',
-                "Convertido automaticamente ao aceitar a cotação #{$proposal->id}.",
-                'bi-person-check-fill',
-                'success'
-            );
-        }
-
-        $valorTotal = $proposal->transport_cost
-            + $proposal->inspection_commission_cost
-            + $proposal->ipo_cost
-            + $proposal->imt_cost
-            + $proposal->registration_cost
-            + $proposal->license_plate_cost
-            + $proposal->commission_cost;
-
-        $valorPrimeiraTranche = $valorSegundaTranche = $valorTotal * 0.5;
-
-        $convertedProposal = ConvertedProposal::create([
-            'proposal_id' => $proposal->id,
-            'client_id' => $proposal->client_id,
-            'owner_id' => $client->owner_id,
-            'status' => 'Iniciada',
-            'brand' => $proposal->brand,
-            'modelCar' => $proposal->model,
-            'version' => $proposal->version,
-            'year' => $proposal->proposed_car_year_month,
-            'km' => $proposal->proposed_car_mileage,
-            'url' => $proposal->url,
-            'custo_inspecao_origem' => $proposal->inspection_commission_cost,
-            'custo_transporte' => $proposal->transport_cost,
-            'custo_ipo' => $proposal->ipo_cost,
-            'isv' => $proposal->isv_cost,
-            'custo_imt' => $proposal->imt_cost,
-            'custo_matricula' => $proposal->license_plate_cost,
-            'custo_registo_automovel' => $proposal->registration_cost,
-            'valor_primeira_tranche' => $valorPrimeiraTranche,
-            'valor_segunda_tranche' => $valorSegundaTranche,
-            'valor_carro' => $proposal->proposed_car_value,
-            'valor_comissao' => $proposal->commission_cost,
-        ]);
-
-        StatusProposalHistory::create([
-            'new_status' => 'Iniciada',
-            'old_status' => null,
-            'converted_proposal_id' => $convertedProposal->id,
-        ]);
-
-        LeadActivity::log(
-            $client->id,
-            'Cotação aceite',
-            "Cotação #{$proposal->id} aceite — cotação convertida #{$convertedProposal->id} criada.",
-            'bi-check-circle-fill',
-            'success'
-        );
 
         return response()->json([
             'success' => true,
-            'status' => $proposal->status,
+            'status' => $proposal->fresh()->status,
             'converted_proposal_id' => $convertedProposal->id,
             'redirect' => route('admin.v2.converted-proposals.edit', $convertedProposal->id),
         ]);

@@ -12,6 +12,17 @@ class ConvertedProposal extends Model
     /** "Cancelado" é o valor antigo (V1); o V2 grava "Cancelada". */
     public const CANCELLED_STATUSES = ['Cancelada', 'Cancelado'];
 
+    /** Etapas do processo, por ordem (as mesmas da timeline do cliente). */
+    public const PIPELINE_STATUSES = [
+        'Iniciada', 'Negociação Carro', 'Pagamento do Carro', 'Transporte', 'IPO', 'DAV',
+        'ISV', 'Matriculação', 'IMT', 'Entrega', 'Registo automóvel', 'Concluido',
+    ];
+
+    public function isCancelled(): bool
+    {
+        return in_array($this->status, self::CANCELLED_STATUSES, true);
+    }
+
     protected $fillable = [
         'status',
         'url',

@@ -107,7 +107,7 @@
                             <br>
                             Antes de prosseguir, por favor complete os dados necessários para dar início ao processo:
                         </p>
-                        <form id="clientDataForm" action="{{ route('proposals.accept', $proposal->id) }}" method="POST">
+                        <form id="clientDataForm" action="{{ route('proposals.accept', $proposal->proposal_code) }}" method="POST">
                             @csrf
                             @if($client->phone == null || $client->phone == '')
                             <div class="mb-3">

@@ -51,7 +51,25 @@ class Proposal extends Model
        
     ];
 
-    public function client()
+    /** Dias de validade da cotação enviada ao cliente (desde a criação). */
+    public const VALIDITY_DAYS = 15;
+
+    public function isExpired(): bool
+    {
+        return $this->created_at !== null && $this->created_at->diffInDays(now()) > self::VALIDITY_DAYS;
+    }
+
+    public function isAccepted(): bool
+    {
+        return ConvertedProposal::where('proposal_id', $this->id)->exists();
+    }
+
+    public function isRejected(): bool
+    {
+        return in_array($this->status, ['Reprovada', 'reprovada'], true);
+    }
+
+        public function client()
     {
         return $this->belongsTo(Client::class);
     }
