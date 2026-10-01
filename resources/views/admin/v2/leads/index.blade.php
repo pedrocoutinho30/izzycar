@@ -55,6 +55,9 @@
                 'importacao' => 'Formulário de Importação',
                 'retoma' => 'Retoma',
                 'manual' => 'Manual',
+                'whatsapp' => 'WhatsApp',
+                'newsletter_footer' => 'Newsletter',
+                'contacto' => 'Contacto no site',
             ]
         ],
         [
@@ -96,6 +99,9 @@
             'importacao' => ['label' => 'Importação', 'color' => 'primary'],
             'retoma'     => ['label' => 'Retoma', 'color' => 'warning'],
             'manual'     => ['label' => 'Manual', 'color' => 'secondary'],
+            'whatsapp'   => ['label' => 'WhatsApp', 'color' => 'success'],
+            'newsletter_footer' => ['label' => 'Newsletter', 'color' => 'info'],
+            'contacto'   => ['label' => 'Contacto', 'color' => 'primary'],
         ];
         $src = $sourceLabels[$lead->lead_source] ?? ['label' => 'Outro', 'color' => 'secondary'];
         $statusLabels = [

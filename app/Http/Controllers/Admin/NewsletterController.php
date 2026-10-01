@@ -72,7 +72,7 @@ class NewsletterController extends Controller
             ], 422);
         }
 
-        $client = Client::where('email', $data['email'])->first();
+        $client = app(\App\Services\ClientMatcher::class)->find($data['email'], null)?->client;
 
         if ($client) {
             $client->update(['newsletter_consent' => true]);

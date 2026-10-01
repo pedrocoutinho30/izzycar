@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Page;
 use App\Models\Brand;
 use App\Models\Client;
+use App\Models\LeadActivity;
+use App\Services\ClientMatcher;
 use Illuminate\Support\Facades\Mail;
 
 class TradeInController extends Controller
@@ -70,19 +72,26 @@ class TradeInController extends Controller
             'message' => 'nullable|string',
         ]);
 
-        // Verifica se o cliente já existe
-        $clientExist = Client::where('email', $validated['email'])
-            ->where('phone', $validated['phone'])
-            ->first();
+        // Regra única de duplicados; um pedido novo é uma lead de retoma.
+        $matcher = app(ClientMatcher::class);
+        $match = $matcher->find($validated['email'] ?? null, $validated['phone']);
 
-        if (!$clientExist) {
+        if ($match) {
+            $clientExist = $match->client;
+            $matcher->complete($clientExist, $validated);
+            $matcher->logMatch($match, $validated['name'], 'Pedido de retoma');
+        } else {
             $clientExist = Client::create([
                 'name' => $validated['name'],
                 'phone' => $validated['phone'],
-                'email' => $validated['email'],
+                'email' => $validated['email'] ?? null,
                 'origin' => 'Retomas',
+                'is_lead' => true,
+                'lead_source' => 'retoma',
             ]);
         }
+
+        LeadActivity::log($clientExist->id, 'Pedido de retoma submetido', 'Formulário de retoma preenchido em izzycar.pt.', 'bi-arrow-left-right', 'primary');
 
         // Montar corpo do email
         $body = "Novo Pedido de Retoma\n\n";

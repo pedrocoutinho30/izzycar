@@ -49,6 +49,12 @@ class AngariadorController extends Controller
             'observation' => 'nullable|string|max:2000',
         ]);
 
+        // Já existe um contacto com este email/telefone? Não se mostra de quem é
+        // (pode ser de outro angariador) — a Izzycar trata do caso.
+        if (app(\App\Services\ClientMatcher::class)->find($data['email'] ?? null, $data['phone'] ?? null)) {
+            return back()->withInput()->withErrors(['email' => 'Já existe um contacto com este email ou telefone. Fale com a Izzycar para o associar à sua conta.']);
+        }
+
         $lead = Client::create([
             ...$data,
             'is_lead'         => true,

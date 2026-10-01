@@ -39,6 +39,9 @@
 
                 <form action="{{ route('admin.v2.leads.store') }}" method="POST">
                     @csrf
+                    @unless(isset($client))
+                    @include('admin.v2.partials._duplicate-warning')
+                    @endunless
 
                     {{-- Nome --}}
                     <div class="mb-3">

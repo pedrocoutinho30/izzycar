@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Frontend\ImportSimulatorController as ImportSimulator;
 use App\Mail\CostSimulatorResultMail;
 use App\Models\Client;
+use App\Services\ClientMatcher;
 use App\Models\CostSimulator;
 use App\Models\LeadActivity;
 use App\Models\Setting;
@@ -92,23 +93,26 @@ class CostSimulatorController extends Controller
         }
         $normalizedPhone = $phone;
 
-        // Verificar se já existe cliente com este email OU telefone
-        $existingClient = Client::where('email', $request->input('email'))
-            ->orWhere('phone', $normalizedPhone)
-            ->first();
+        // Regra única de duplicados (email OU telefone) — ver ClientMatcher.
+        $matcher = app(ClientMatcher::class);
+        $match = $matcher->find($request->input('email'), $normalizedPhone);
 
         $newsletterConsent      = $request->boolean('newsletter_consent');
         $dataProcessingConsent  = true;
 
-        if ($existingClient) {
-            $existingClient->update([
-                'name'  => $request->input('name'),
+        if ($match) {
+            // Antes reescrevia nome, email e telefone de quem já existia (um
+            // telefone igual trocava o email de outra pessoa). Agora só preenche
+            // o que falta e junta consentimentos.
+            $client = $match->client;
+            $matcher->complete($client, [
+                'name' => $request->input('name'),
                 'email' => $request->input('email'),
                 'phone' => $normalizedPhone,
                 'data_processing_consent' => $dataProcessingConsent,
-                'newsletter_consent'      => $newsletterConsent || $existingClient->newsletter_consent,
+                'newsletter_consent' => $newsletterConsent,
             ]);
-            $client = $existingClient;
+            $matcher->logMatch($match, $request->input('name'), 'Simulação de custos');
         } else {
             $client = Client::create([
                 'name'                    => $request->input('name'),

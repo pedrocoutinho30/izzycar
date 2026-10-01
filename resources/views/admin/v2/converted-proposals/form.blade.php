@@ -1041,7 +1041,7 @@ function updateProposalStatus(status) {
     const label = status === 'Cancelada' ? 'Cancelar esta proposta?' : 'Avançar para "' + status + '"?';
     if (!confirm(label + '\n\nO cliente será notificado por email.')) return;
 
-    fetch('{{ route("converted-proposals.updateStatus", $convertedProposal->id) }}', {
+    fetch('{{ route("admin.v2.converted-proposals.update-status", $convertedProposal->id) }}', {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',

@@ -72,6 +72,8 @@ class Expense extends Model
             'salary'           => 'Salário',
             'rent'             => 'Renda',
             'commission'       => 'Comissão',
+            'inspection'       => 'Inspeção',
+            'import_service'   => 'Serviço de Importação',
             'tax'              => 'Imposto',
             'office'           => 'Escritório',
             'other'            => 'Outro',
@@ -213,6 +215,101 @@ class Expense extends Model
                 'observations'   => $sale->observation,
             ]
         );
+    }
+
+    // ── Auto-sync from ConvertedProposal ─────────────────────────────────────
+
+    /**
+     * Receitas e despesas automáticas de uma importação, por ordem:
+     * [tipo, categoria, etiqueta, coluna do valor, coluna "pago"].
+     * - receitas: as tranches pagas pelo cliente à Izzycar;
+     * - despesas: a comissão do angariador e os custos do processo que a
+     *   Izzycar paga. O valor do carro fica de fora (não passa pela Izzycar).
+     */
+    private const IMPORT_ENTRIES = [
+        'primeira_tranche' => ['income', 'import_service', '1.ª tranche', 'valor_primeira_tranche', 'primeira_tranche_pago'],
+        'segunda_tranche'  => ['income', 'import_service', '2.ª tranche', 'valor_segunda_tranche', 'segunda_tranche_pago'],
+        'comissao'         => ['expense', 'commission', 'comissão do angariador', 'angariador_commission', 'comissao_paga'],
+        'custo_inspecao'   => ['expense', 'inspection', 'inspeção de origem', 'custo_inspecao_origem', 'inspecao_origem_pago'],
+        'custo_transporte' => ['expense', 'transport', 'transporte', 'custo_transporte', 'transporte_pago'],
+        'custo_ipo'        => ['expense', 'legalization', 'IPO', 'custo_ipo', 'ipo_pago'],
+        'custo_isv'        => ['expense', 'tax', 'ISV', 'isv', 'isv_pago'],
+        'custo_imt'        => ['expense', 'legalization', 'IMT', 'custo_imt', 'imt_pago'],
+        'custo_matricula'  => ['expense', 'legalization', 'matrícula', 'custo_matricula', 'matricula_pago_impressa'],
+        'custo_registo'    => ['expense', 'legalization', 'registo automóvel', 'custo_registo_automovel', 'registo_pago'],
+    ];
+
+    public static function importSourceType(string $entry): string
+    {
+        return ConvertedProposal::class . ':' . $entry;
+    }
+
+    /**
+     * Lança nos movimentos o que já foi pago/recebido numa importação. Um
+     * lançamento só existe enquanto estiver pago: desmarcar apaga-o. Os
+     * valores são os da cotação convertida, sem separação de IVA. O
+     * ExpenseObserver reflete-os nos movimentos financeiros.
+     *
+     * A data do lançamento é a das tranches/comissão (datas guardadas na
+     * cotação convertida) ou, nos custos, a de quando ficou pago — mantém-se
+     * enquanto continuar pago. $defaultDate só serve para o que já estava
+     * pago antes de existirem estes lançamentos.
+     */
+    public static function syncFromConvertedProposal(ConvertedProposal $converted, ?string $defaultDate = null): void
+    {
+        $car = trim(implode(' ', array_filter([$converted->brand, $converted->modelCar])));
+        $client = $converted->client?->name;
+
+        $dates = [
+            'primeira_tranche' => $converted->primeira_tranche_paga_em,
+            'segunda_tranche'  => $converted->segunda_tranche_paga_em,
+            'comissao'         => $converted->comissao_paga_em,
+        ];
+
+        foreach (self::IMPORT_ENTRIES as $entry => [$type, $category, $label, $valueColumn, $paidColumn]) {
+            $keys = ['source_type' => self::importSourceType($entry), 'source_id' => $converted->id];
+            $amount = (float) ($converted->{$valueColumn} ?? 0);
+
+            if (!$converted->{$paidColumn} || $amount <= 0) {
+                self::where($keys)->each(fn ($expense) => $expense->delete());
+                continue;
+            }
+
+            $expense = self::firstOrNew($keys);
+            $expense->fill([
+                'movement_type'  => $type,
+                'category'       => $category,
+                'title'          => "Importação {$car} — {$label}" . ($client ? " ({$client})" : ''),
+                // Sem v3_vehicle_id de propósito: a viatura é do cliente e estes valores
+                // (serviço recebido, custos pagos, comissão) não são custo dela.
+                'client_id'      => $converted->client_id,
+                'amount'         => $amount,
+                'amount_gross'   => $amount,
+                'vat_rate'       => 0,
+                'vat_amount'     => 0,
+                'amount_net'     => $amount,
+                'payment_method' => 'other',
+                'status'         => 'paid',
+                'observations'   => "Cotação convertida #{$converted->id}",
+            ]);
+
+            // Data explícita (tranches/comissão) > a que já tinha > a do backfill > hoje.
+            $explicit = $dates[$entry] ?? null;
+            if ($explicit) {
+                $expense->expense_date = $explicit;
+            } elseif (!$expense->exists || !$expense->expense_date) {
+                $expense->expense_date = $defaultDate ?? now()->toDateString();
+            }
+
+            $expense->save();
+        }
+    }
+
+    public static function forgetConvertedProposal(ConvertedProposal $converted): void
+    {
+        foreach (array_keys(self::IMPORT_ENTRIES) as $entry) {
+            self::where(['source_type' => self::importSourceType($entry), 'source_id' => $converted->id])->each(fn ($expense) => $expense->delete());
+        }
     }
 
     // ── Auto-sync from V3Vehicle ─────────────────────────────────────────────

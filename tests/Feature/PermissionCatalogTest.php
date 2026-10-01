@@ -60,8 +60,8 @@ class PermissionCatalogTest extends TestCase
         $this->assertSame('clients.view.all', $rule('admin.v2.export.clients'));
         // O mais específico ganha.
         $this->assertSame('commissions.view.all', $rule('admin.v2.angariadores.comissoes'));
-        $this->assertSame('converted-proposals.update', $rule('converted-proposals.updateStatus', 'POST'));
-        $this->assertSame(RouteRule::ADMIN_ONLY, $rule('converted-proposals.index'));
+        $this->assertSame('converted-proposals.update', $rule('admin.v2.converted-proposals.update-status', 'PATCH'));
+        $this->assertSame(RouteRule::ADMIN_ONLY, $rule('brands.index'));
         $this->assertSame(RouteRule::ADMIN_ONLY, $rule('admin.v2.angariadores.impersonate', 'POST'));
         $this->assertSame(RouteRule::SHARED, $rule('admin.v2.dashboard'));
         // Ação que o objeto não tem: só admin.

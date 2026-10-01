@@ -46,6 +46,17 @@ class Client extends Model
         'next_followup_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        // Chaves de procura de duplicados (ver ClientMatcher): email sem
+        // maiúsculas/espaços e telefone pelos últimos 9 dígitos.
+        static::saving(function (Client $client) {
+            $matcher = app(\App\Services\ClientMatcher::class);
+            $client->email_normalized = $matcher->normalizeEmail($client->email);
+            $client->phone_key = $matcher->phoneKey($client->phone);
+        });
+    }
+
     public function convertToClient(): void
     {
         $this->update([

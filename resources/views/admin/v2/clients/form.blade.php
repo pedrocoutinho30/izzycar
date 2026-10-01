@@ -25,6 +25,9 @@
     <form action="{{ isset($client) ? route('admin.v2.clients.update', $client->id) : route('admin.v2.clients.store') }}"
         method="POST">
         @csrf
+                    @unless(isset($client))
+                    @include('admin.v2.partials._duplicate-warning')
+                    @endunless
         @if(isset($client))
         @method('PUT')
         @endif

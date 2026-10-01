@@ -29,6 +29,23 @@ class PreLeadController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
+        // O contacto pode ter passado a existir entretanto: junta-se à ficha em
+        // vez de criar um duplicado.
+        if ($match = app(\App\Services\ClientMatcher::class)->find(null, $preLead->phone)) {
+            LeadActivity::log(
+                $match->client->id,
+                'Mensagem de WhatsApp recebida',
+                'Pré-lead associado a este registo por ' . (auth()->user()->name ?? '—') . '. Mensagem: ' . ($preLead->message ?? '—'),
+                'bi-whatsapp',
+                'success'
+            );
+            $preLead->delete();
+
+            return redirect()
+                ->route($match->client->is_lead ? 'admin.v2.leads.show' : 'admin.v2.clients.show', $match->client->id)
+                ->with('success', "Este número já existia — a mensagem foi juntada à ficha de {$match->client->name}.");
+        }
+
         $lead = Client::create([
             'name' => $data['name'],
             'phone' => $preLead->phone,

@@ -60,6 +60,8 @@ class ConvertedProposal extends Model
         'carro_pago',
         'valor_comissao',
         'valor_comissao_final',
+        'primeira_tranche_paga_em',
+        'segunda_tranche_paga_em',
         'comissao_paga',
         'comissao_paga_em',
         'comprovativo_pagamento',
@@ -69,6 +71,8 @@ class ConvertedProposal extends Model
 
     protected $casts = [
         'angariador_commission' => 'decimal:2',
+        'primeira_tranche_paga_em' => 'date',
+        'segunda_tranche_paga_em' => 'date',
         'comissao_paga' => 'boolean',
         'comissao_paga_em' => 'date',
     ];
@@ -116,6 +120,22 @@ class ConvertedProposal extends Model
 
     protected static function booted()
     {
+        // Data em que cada tranche foi recebida: fixada ao marcar como paga,
+        // limpa ao desmarcar (não há campo para a escrever à mão).
+        static::saving(function (ConvertedProposal $proposal) {
+            foreach (['primeira_tranche' => 'primeira_tranche_pago', 'segunda_tranche' => 'segunda_tranche_pago'] as $prefix => $flag) {
+                $dateField = "{$prefix}_paga_em";
+                if (!$proposal->isDirty($flag)) {
+                    continue;
+                }
+                $proposal->{$dateField} = $proposal->{$flag} ? now()->toDateString() : null;
+            }
+        });
+
+        // Tranches recebidas e comissão paga entram nos movimentos financeiros.
+        static::saved(fn (ConvertedProposal $proposal) => Expense::syncFromConvertedProposal($proposal));
+        static::deleted(fn (ConvertedProposal $proposal) => Expense::forgetConvertedProposal($proposal));
+
         // Comissão do angariador fixada quando é associado (ou trocado).
         static::saving(function (ConvertedProposal $proposal) {
             if ($proposal->isDirty('owner_id') && !$proposal->isDirty('angariador_commission')) {

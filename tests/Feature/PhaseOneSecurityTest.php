@@ -177,16 +177,16 @@ class PhaseOneSecurityTest extends TestCase
         $admin = $this->backofficeUser('admin');
         $converted = $this->converted();
 
-        $this->actingAs($admin)->patchJson(route('converted-proposals.updateStatus', $converted->id), ['status' => 'Iniciada'])->assertOk();
+        $this->actingAs($admin)->patchJson(route('admin.v2.converted-proposals.update-status', $converted->id), ['status' => 'Iniciada'])->assertOk();
         Mail::assertNothingSent();
 
-        $this->actingAs($admin)->patchJson(route('converted-proposals.updateStatus', $converted->id), ['status' => 'Inventado'])->assertUnprocessable();
+        $this->actingAs($admin)->patchJson(route('admin.v2.converted-proposals.update-status', $converted->id), ['status' => 'Inventado'])->assertUnprocessable();
 
-        $this->actingAs($admin)->patchJson(route('converted-proposals.updateStatus', $converted->id), ['status' => 'Transporte'])->assertOk();
+        $this->actingAs($admin)->patchJson(route('admin.v2.converted-proposals.update-status', $converted->id), ['status' => 'Transporte'])->assertOk();
         Mail::assertSent(ProposalStatusUpdatedMail::class, 1);
 
         $this->client->update(['email' => null]);
-        $this->actingAs($admin)->patchJson(route('converted-proposals.updateStatus', $converted->id), ['status' => 'IPO'])->assertOk();
+        $this->actingAs($admin)->patchJson(route('admin.v2.converted-proposals.update-status', $converted->id), ['status' => 'IPO'])->assertOk();
         Mail::assertSent(ProposalStatusUpdatedMail::class, 1);
         $this->assertSame('IPO', $converted->fresh()->status);
     }

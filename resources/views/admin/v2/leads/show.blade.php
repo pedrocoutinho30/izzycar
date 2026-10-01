@@ -204,6 +204,9 @@
                         'importacao' => 'Formulário de Importação',
                         'retoma'     => 'Retoma',
                         'manual'     => 'Manual',
+                        'whatsapp'   => 'WhatsApp',
+                        'newsletter_footer' => 'Newsletter',
+                        'contacto'   => 'Contacto no site',
                     ];
                 @endphp
                 <div class="lil-row">

@@ -20,20 +20,6 @@ class PhoneNumberService
 
     public function findExistingClient(string $phone): ?Client
     {
-        $target = $this->last9Digits($phone);
-
-        if (strlen($target) < 9) {
-            return null;
-        }
-
-        return Client::query()
-            ->whereNotNull('phone')
-            ->get(['id', 'phone'])
-            ->first(fn (Client $client) => $this->last9Digits($client->phone) === $target);
-    }
-
-    private function last9Digits(string $raw): string
-    {
-        return substr(preg_replace('/\D/', '', $raw), -9);
+        return app(ClientMatcher::class)->find(null, $phone)?->client;
     }
 }

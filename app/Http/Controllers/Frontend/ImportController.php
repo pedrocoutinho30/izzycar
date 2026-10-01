@@ -9,6 +9,7 @@ use  \App\Models\Page;
 use App\Models\Brand;
 use App\Models\FormProposal;
 use App\Models\Client;
+use App\Services\ClientMatcher;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ImportFormConfirmationMail;
@@ -97,7 +98,10 @@ class ImportController extends Controller
         $angariadorCode = $request->filled('angariador') ? $request->input('angariador') : null;
         $angariadorOwner = $angariadorCode ? User::where('referral_code', $angariadorCode)->first() : null;
 
-        $clientExist = Client::where('email', $formPropposalData['email'])->where('phone', $formPropposalData['phone'])->first();
+        // Regra única de duplicados (email OU telefone) — ver ClientMatcher.
+        $matcher = app(ClientMatcher::class);
+        $clientMatch = $matcher->find($formPropposalData['email'], $formPropposalData['phone']);
+        $clientExist = $clientMatch?->client;
         $isDuplicateClient = (bool) $clientExist;
 
         if (!$clientExist) {
@@ -116,10 +120,17 @@ class ImportController extends Controller
             ]);
             PushNotifier::notifyStaff(new NewLeadNotification($clientExist));
         } else {
-            $updateData = [
+            // Só preenche o que falta e junta consentimentos (quem já aceitou
+            // a newsletter não a perde por não marcar a caixa outra vez).
+            $matcher->complete($clientExist, [
+                'name' => $formPropposalData['name'],
+                'email' => $formPropposalData['email'],
+                'phone' => $formPropposalData['phone'],
                 'data_processing_consent' => $dataProcessingConsent,
                 'newsletter_consent' => $newsletterConsent,
-            ];
+            ]);
+            $matcher->logMatch($clientMatch, $formPropposalData['name'], 'Pedido de importação');
+            $updateData = [];
 
             // O primeiro angariador atribuído a esta lead tem sempre prioridade — só
             // gravamos se ainda não houver nenhum código/proprietário associado.
@@ -130,12 +141,14 @@ class ImportController extends Controller
                 $updateData['owner_id'] = $angariadorOwner->id;
             }
 
-            $clientExist->update($updateData);
+            if ($updateData) {
+                $clientExist->update($updateData);
+            }
         }
         $formPropposalData['client_id'] = $clientExist->id;
         $formPropposalData['angariador_code'] = $angariadorCode;
         $formPropposalData['status'] = 'novo';
-        $formPropposalData['version'] = $formPropposalData['submodel'];
+        $formPropposalData['version'] = $formPropposalData['submodel'] ?? null;
         unset($formPropposalData['data_processing_consent'], $formPropposalData['newsletter_consent'], $formPropposalData['angariador']);
         //Guardar o formulário de proposta
         $proposal = FormProposal::create($formPropposalData);
@@ -167,8 +180,8 @@ class ImportController extends Controller
         if ($isDuplicateClient) {
             LeadActivity::log(
                 $clientExist->id,
-                'Pedido de importação duplicado — cliente já existente',
-                'Este formulário foi submetido com um email e telefone que já correspondiam a um registo existente. Reveja manualmente para decidir como associar este novo pedido.',
+                'Novo pedido de importação — cliente já existente',
+                "Este formulário foi associado a este registo pelo {$clientMatch->byLabel()}. O pedido ficou na ficha do " . ($clientExist->is_lead ? 'lead' : 'cliente') . '.',
                 'bi-exclamation-triangle-fill',
                 'warning'
             );
@@ -176,14 +189,14 @@ class ImportController extends Controller
             $adminEmail = config('mail.admin_address', env('MAIL_FROM_ADDRESS', 'geral@izzycar.pt'));
 
             Mail::raw(
-                "Foi submetido um novo pedido de importação através do formulário, mas o email e telefone já correspondem a um cliente existente.\n\n"
+                "Foi submetido um novo pedido de importação através do formulário por alguém que já existe nos registos (associado pelo {$clientMatch->byLabel()}).\n\n"
                     . "Cliente: {$clientExist->name} (#{$clientExist->id})\n"
                     . "Email: {$clientExist->email}\n"
                     . "Telefone: {$clientExist->phone}\n\n"
-                    . "Reveja manualmente para decidir como associar este novo pedido: " . route('admin.v2.leads.show', $clientExist->id),
+                    . "Abrir a ficha: " . route($clientExist->is_lead ? 'admin.v2.leads.show' : 'admin.v2.clients.show', $clientExist->id),
                 function ($message) use ($adminEmail) {
                     $message->to($adminEmail)
-                        ->subject('Pedido de Importação Duplicado — Cliente Já Existente');
+                        ->subject('Novo Pedido de Importação — Cliente Já Existente');
                 }
             );
         }

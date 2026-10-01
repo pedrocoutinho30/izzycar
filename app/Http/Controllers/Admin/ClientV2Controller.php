@@ -89,6 +89,10 @@ class ClientV2Controller extends Controller
             'newsletter_consent' => 'nullable|boolean',
         ]);
 
+        if ($warning = app(\App\Services\ClientMatcher::class)->duplicateWarning($validated['email'] ?? null, $validated['phone'] ?? null, $request->boolean('confirm_duplicate'))) {
+            return back()->withInput()->withErrors(['duplicate' => $warning['message']])->with('duplicate_url', $warning['url']);
+        }
+
         $validated['data_processing_consent'] = $validated['data_processing_consent'] ?? true;
         $validated['newsletter_consent']       = $validated['newsletter_consent'] ?? false;
 

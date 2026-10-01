@@ -39,6 +39,10 @@ class LeadV2Controller extends Controller
             'owner_id'    => 'nullable|exists:users,id',
         ]);
 
+        if ($warning = app(\App\Services\ClientMatcher::class)->duplicateWarning($data['email'] ?? null, $data['phone'] ?? null, $request->boolean('confirm_duplicate'))) {
+            return back()->withInput()->withErrors(['duplicate' => $warning['message']])->with('duplicate_url', $warning['url']);
+        }
+
         $lead = Client::create([
             ...$data,
             'is_lead'     => true,

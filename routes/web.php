@@ -148,11 +148,9 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::post('/{testimonial}/toggle', [App\Http\Controllers\Admin\TestimonialController::class, 'togglePublished'])->name('toggle');
     });
 
-    Route::resource('users', UserController::class);
-    Route::resource('roles', RoleController::class);
-    Route::resource('settings', SettingController::class);
-
-    Route::resource('permissions', PermissionController::class);
+    // Backoffice antigo (V1) de utilizadores, perfis, permissões, configurações,
+    // clientes, fornecedores, parceiros, atributos, despesas, vendas, pedidos,
+    // cotações e cotações convertidas: desligado — o V2/V3 substitui-o.
     Route::get('/', 'HomeController@index')->name('home');
 
     Route::get('/profile', 'ProfileController@index')->name('profile');
@@ -162,33 +160,9 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         return view('about');
     })->name('about');
 
-    Route::resource('clients', ClientController::class);
+    // Contrato de prestação de serviços de um cliente (PDF) — a única rota
+    // do antigo CRUD de clientes sem equivalente no V2.
     Route::get('clients/{client}/contrato_servico', [ClientController::class, 'contractService'])->name('clients.contractService');
-    Route::resource('suppliers', SupplierController::class);
-    Route::resource('partners', PartnerController::class);
-
-    // V1 veículos removido — sistema consolidado em V3
-    Route::resource('vehicle-attributes', VehicleAttributeController::class);
-    Route::patch('/vehicle-attributes/{id}/update-group', [VehicleAttributeController::class, 'updateGroup'])->name('vehicle-attributes.update-group');
-    Route::post('/vehicle-attributes/sort', [VehicleAttributeController::class, 'sort'])->name('vehicle-attributes.sort');
-
-
-
-    Route::resource('expenses', ExpenseController::class);
-
-    Route::resource('sales', SaleController::class);
-
-    Route::resource('attribute-groups', AttributeGroupController::class);
-
-    // ============================================================
-    // PROPOSALS V1 (Sistema Antigo - Manter para compatibilidade)
-    // ============================================================
-    Route::resource('proposals', ProposalController::class);
-    Route::post('/proposals/create_by_form', [ProposalController::class, 'create_by_form'])->name('proposals.create_by_form');
-    Route::get('proposals/{id}/download-pdf', [ProposalController::class, 'generatePdf'])->name('proposals.downloadPdf');
-    Route::get('proposals/{id}/sent-whatsapp', [ProposalController::class, 'sentWhatsapp'])->name('proposals.sent-whatsapp');
-    Route::post('/proposals/{proposal}/duplicate', [ProposalController::class, 'duplicate'])->name('proposals.duplicate');
-    Route::patch('proposals/{proposal}/update-status', [ProposalController::class, 'updateStatus'])->name('proposals.updateStatus');
 
     // ============================================================
     // PROPOSALS V2 (Sistema Novo - Moderno e Mobile-First)
@@ -268,7 +242,6 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::get('/create-from-form/{formProposalId}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'createFromForm'])->name('createFromForm');
         Route::get('/create-from-opportunity/{opportunity}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'createFromOpportunity'])->name('createFromOpportunity');
         Route::post('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'store'])->name('store');
-        Route::post('/match-attributes-ai', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'matchAttributesAi'])->name('matchAttributesAi');
         Route::post('/import-from-listing', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'importFromListing'])->name('importFromListing');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'update'])->name('update');
@@ -805,20 +778,8 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::delete('/{id}', [App\Http\Controllers\Admin\PermissionV2Controller::class, 'destroy'])->name('destroy');
     });
 
-    Route::resource('form_proposals', \App\Http\Controllers\FormProposalController::class)->names('form_proposals');
-
-    Route::patch('/converted-proposals/{id}/update-status', [ConvertedProposalController::class, 'updateStatus'])->name('converted-proposals.updateStatus');
-
-    // Route::get('/converted-proposals', [ConvertedProposalController::class, 'index'])
-    //     ->name('converted-proposals.index');
-
-    // Route::put('/converted-proposals/{convertedProposal}', [ConvertedProposalController::class, 'update'])
-    //     ->name('converted-proposals.update');
-
-    // Route::get('/converted-proposals/{convertedProposal}/edit', [ConvertedProposalController::class, 'edit'])
-    //     ->name('converted-proposals.edit');
-
-    Route::resource('converted-proposals', ConvertedProposalController::class);
+    // Mudança de estado de uma cotação convertida (usada pelo pipeline do V2).
+    Route::patch('/v2/converted-proposals/{id}/update-status', [ConvertedProposalController::class, 'updateStatus'])->name('admin.v2.converted-proposals.update-status');
 
 
 

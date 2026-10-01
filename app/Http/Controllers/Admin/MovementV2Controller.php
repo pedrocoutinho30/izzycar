@@ -200,7 +200,7 @@ class MovementV2Controller extends Controller
 
         if ($movement->source_type) {
             return redirect()->route('admin.v2.movements.index')
-                ->with('error', 'Este movimento foi gerado automaticamente e não pode ser editado aqui. Edite a venda ou o veículo correspondente.');
+                ->with('error', 'Este movimento foi gerado automaticamente e não pode ser editado aqui. Edite a venda, o veículo ou a cotação convertida correspondente.');
         }
 
         $vehicles      = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
