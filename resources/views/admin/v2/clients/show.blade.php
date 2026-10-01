@@ -207,6 +207,62 @@
             </form>
         </div>
 
+        {{-- Viaturas do cliente sem venda (importações) --}}
+        @if($client->vehicles->count())
+        <div class="modern-card mb-4">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title">
+                    <i class="bi bi-car-front"></i>
+                    Viaturas
+                </h5>
+                <span class="badge bg-secondary rounded-pill">{{ $client->vehicles->count() }}</span>
+            </div>
+            <div class="modern-card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Veículo</th>
+                                <th>VIN</th>
+                                <th>Legalização</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($client->vehicles as $vehicle)
+                            <tr>
+                                <td>
+                                    <strong>{{ $vehicle->brand }} {{ $vehicle->model }}</strong>
+                                    @if($vehicle->reference)
+                                        <br><small class="text-muted">Ref: {{ $vehicle->reference }}</small>
+                                    @endif
+                                    @if($vehicle->is_imported)
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle ms-1"><i class="bi bi-globe2 me-1"></i>Importação</span>
+                                    @endif
+                                </td>
+                                <td class="font-monospace small">{{ $vehicle->vin ?: '—' }}</td>
+                                <td>
+                                    @if($vehicle->legalization)
+                                        @php $pct = $vehicle->legalization->progressPercent(); @endphp
+                                        <span class="badge bg-{{ $pct === 100 ? 'success' : ($pct > 0 ? 'info' : 'secondary') }}">{{ $pct }}%</span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ route('admin.v3.vehicles.edit', $vehicle->id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @endif
+
         {{-- Vendas associadas --}}
         @if($client->sale->count())
         <div class="modern-card mb-4">

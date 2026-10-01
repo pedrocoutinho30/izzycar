@@ -22,6 +22,8 @@ class V3Vehicle extends Model
         'color', 'vin', 'registration',
         'manufacture_date', 'register_date', 'available_to_sell_date',
         'notes', 'ad_text', 'show_online', 'home_featured', 'home_featured_order', 'is_imported', 'status',
+        // Importação: o carro é do cliente (não há venda).
+        'client_id',
         // Purchase
         'supplier_id',
         'seller_id', 'seller_contact_id',
@@ -63,6 +65,11 @@ class V3Vehicle extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
     }
 
     public function seller(): BelongsTo

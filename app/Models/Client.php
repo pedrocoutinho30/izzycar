@@ -63,6 +63,12 @@ class Client extends Model
         return $this->hasMany(Sale::class, 'client_id');
     }
 
+    /** Viaturas do cliente sem venda (importações). */
+    public function vehicles()
+    {
+        return $this->hasMany(V3Vehicle::class, 'client_id');
+    }
+
     public function costSimulators()
     {
         return $this->hasMany(CostSimulator::class, 'client_id');

@@ -188,10 +188,20 @@
             </div>
         </div>
         <div class="col-md-4 d-flex align-items-end">
-            <div id="importedHint" class="small {{ $vehicle->is_imported ? '' : 'd-none' }}" style="padding-bottom:.3rem">
-                <div class="alert alert-info py-2 mb-0">
+            <div id="importedHint" class="w-100 {{ $vehicle->is_imported ? '' : 'd-none' }}" style="padding-bottom:.3rem">
+                {{-- Importação: o carro é do cliente desde o início, sem venda. --}}
+                <label class="form-label fw-semibold" for="v3ClientSelect">Cliente</label>
+                <select name="client_id" id="v3ClientSelect" class="form-select mb-2" autocomplete="off">
+                    <option value="">— Sem cliente —</option>
+                    @foreach($clients as $c)
+                        <option value="{{ $c->id }}" @selected(old('client_id', $vehicle->client_id) == $c->id)>
+                            {{ $c->name }}@if($c->vat_number) · {{ $c->vat_number }}@endif
+                        </option>
+                    @endforeach
+                </select>
+                <div class="alert alert-info py-2 mb-0 small">
                     <i class="bi bi-info-circle me-1"></i>
-                    A tab <strong>Legalização</strong> está disponível para gerir o processo de importação.
+                    A tab <strong>Legalização</strong> está disponível para gerir o processo de importação. O cliente é o requerente no Modelo 9.
                 </div>
             </div>
         </div>
@@ -288,6 +298,8 @@
 
     // Restore state on page load
     document.addEventListener('DOMContentLoaded', function () {
+        new TomSelect('#v3ClientSelect', { create: false, allowEmptyOption: true, placeholder: 'Pesquisar cliente...' });
+
         const brandTomSelect = new TomSelect('#v3BrandSelect', {
             placeholder: 'Pesquisar marca...',
             searchField: ['text'],

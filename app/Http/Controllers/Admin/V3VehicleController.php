@@ -34,6 +34,7 @@ class V3VehicleController extends Controller
     {
         $query = V3Vehicle::with([
             'photos' => fn ($q) => $q->where('is_cover', true)->limit(1),
+            'client:id,name',
         ]);
 
         if ($request->filled('search')) {
@@ -96,6 +97,7 @@ class V3VehicleController extends Controller
             'supplier',
             'seller.activeContacts',
             'sellerContact',
+            'client',
             'photos',
             'documents',
             'expenses'        => fn ($q) => $q->orderBy('expense_date', 'desc'),
@@ -188,7 +190,8 @@ class V3VehicleController extends Controller
             'notes'                  => 'nullable|string',
             'status'                 => 'nullable|in:em_stock,vendido,reservado',
             'asking_price'           => 'nullable|numeric|min:0',
-        ]);
+            'client_id'              => 'nullable|exists:clients,id',
+        ], ['client_id.exists' => 'O cliente escolhido já não existe.']);
 
         $validated['show_online'] = $request->boolean('show_online');
         $validated['home_featured'] = $request->boolean('home_featured');
@@ -199,6 +202,12 @@ class V3VehicleController extends Controller
         }
         $vehicle->update($validated);
         $this->clearVehicleCache();
+
+        // Importação: a legalização (requerente do Modelo 9) herda o cliente
+        // da viatura se ainda não tiver nenhum.
+        if ($vehicle->client_id && $vehicle->legalization && !$vehicle->legalization->client_id) {
+            $vehicle->legalization->update(['client_id' => $vehicle->client_id]);
+        }
 
         return response()->json(['success' => true, 'message' => 'Informação geral guardada.']);
     }
@@ -785,6 +794,7 @@ class V3VehicleController extends Controller
 
         Legalization::create([
             'v3_vehicle_id' => $vehicle->id,
+            'client_id'     => $vehicle->client_id,
             'marca'         => $vehicle->brand ?? '',
             'modelo'        => trim(($vehicle->model ?? '') . ' ' . ($vehicle->sub_model ?? '')),
             'combustivel'   => $vehicle->fuel ?? 'Gasolina',

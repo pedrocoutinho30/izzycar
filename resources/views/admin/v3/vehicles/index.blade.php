@@ -89,6 +89,9 @@
                         <td>
                             <div class="fw-semibold">{{ $v->brand }} {{ $v->model }}</div>
                             <small class="text-muted">{{ $v->version }} {{ $v->year ? '· ' . $v->year : '' }} {{ $v->kilometers ? '· ' . number_format($v->kilometers) . ' km' : '' }}</small>
+                            @if($v->client)
+                                <div class="small"><i class="bi bi-person text-muted"></i> {{ $v->client->name }}</div>
+                            @endif
                         </td>
                         <td>{{ $v->registration ?: '—' }}</td>
                         <td>{{ $v->fuel ?: '—' }}</td>
@@ -130,6 +133,7 @@
                 'meta' => array_filter([
                     $v->registration ? ['icon' => 'bi-upc-scan', 'text' => $v->registration] : null,
                     $v->fuel ? ['icon' => 'bi-fuel-pump', 'text' => $v->fuel] : null,
+                    $v->client ? ['icon' => 'bi-person', 'text' => $v->client->name] : null,
                 ]),
                 'actions' => [
                     ['href' => route('admin.v3.vehicles.edit', $v->id), 'icon' => 'bi-pencil', 'label' => 'Editar', 'color' => 'primary'],
