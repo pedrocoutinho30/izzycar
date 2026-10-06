@@ -128,6 +128,8 @@
                         <option value="">Selecione um combustível</option>
                         <option value="Gasolina" {{  isset($proposal) && $proposal->fuel == 'Gasolina' ? 'selected' : '' }}>Gasolina</option>
                         <option value="Diesel" {{  isset($proposal) && $proposal->fuel == 'Diesel' ? 'selected' : '' }}>Diesel</option>
+                        <option value="Gasolina (HEV)" {{  isset($proposal) && $proposal->fuel == 'Gasolina (HEV)' ? 'selected' : '' }}>Gasolina (HEV)</option>
+                        <option value="Diesel (HEV)" {{  isset($proposal) && $proposal->fuel == 'Diesel (HEV)' ? 'selected' : '' }}>Diesel (HEV)</option>
                         <option value="Híbrido Plug-in/Gasolina" {{  isset($proposal) && $proposal->fuel == 'Híbrido Plug-in/Gasolina' ? 'selected' : '' }}>Híbrido Plug-in/Gasolina</option>
                         <option value="Híbrido Plug-in/Diesel" {{ isset($proposal) && $proposal->fuel == 'Híbrido Plug-in/Diesel' ? 'selected' : '' }}>Híbrido Plug-in/Diesel</option>
                         <option value="Elétrico" {{  isset($proposal) && $proposal->fuel == 'Elétrico' ? 'selected' : '' }}>Elétrico</option>

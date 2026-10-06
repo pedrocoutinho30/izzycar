@@ -164,7 +164,7 @@ class V3Vehicle extends Model
 
     public static function fuelOptions(): array
     {
-        return ['Gasolina', 'Diesel', 'Elétrico', 'Híbrido Plug-In', 'Híbrido', 'GPL', 'Hidrogénio'];
+        return ['Gasolina', 'Diesel', 'Elétrico', 'Gasolina (HEV)', 'Diesel (HEV)', 'Híbrido Plug-In', 'Híbrido', 'GPL', 'Hidrogénio'];
     }
 
     /**

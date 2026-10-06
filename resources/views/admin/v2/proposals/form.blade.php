@@ -284,6 +284,8 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
                             <option value="Gasolina" {{ old('fuel', $proposal->fuel ?? '') == 'Gasolina' ? 'selected' : '' }}>Gasolina</option>
                             <option value="Diesel" {{ old('fuel', $proposal->fuel ?? '') == 'Diesel' ? 'selected' : '' }}>Diesel</option>
                             <option value="Elétrico" {{ old('fuel', $proposal->fuel ?? '') == 'Elétrico' ? 'selected' : '' }}>Elétrico</option>
+                            <option value="Gasolina (HEV)" {{ old('fuel', $proposal->fuel ?? '') == 'Gasolina (HEV)' ? 'selected' : '' }}>Gasolina (HEV)</option>
+                            <option value="Diesel (HEV)" {{ old('fuel', $proposal->fuel ?? '') == 'Diesel (HEV)' ? 'selected' : '' }}>Diesel (HEV)</option>
                             <option value="Híbrido Plug-in/Gasolina" {{ old('fuel', $proposal->fuel ?? '') == 'Híbrido Plug-in/Gasolina' ? 'selected' : '' }}>Híbrido Plug-in/Gasolina</option>
                             <option value="Híbrido Plug-in/Diesel" {{ old('fuel', $proposal->fuel ?? '') == 'Híbrido Plug-in/Diesel' ? 'selected' : '' }}>Híbrido Plug-in/Diesel</option>
                         </select>

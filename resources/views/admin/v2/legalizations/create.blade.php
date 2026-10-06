@@ -84,7 +84,7 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Combustível</label>
                             <select id="combustivelInput" name="combustivel" class="form-select">
-                                @foreach(['Gasolina','Diesel','Elétrico','Híbrido Plug-In','Híbrido','GPL','Hidrogénio'] as $c)
+                                @foreach(\App\Models\V3Vehicle::fuelOptions() as $c)
                                     <option value="{{ $c }}" {{ old('combustivel', 'Gasolina') === $c ? 'selected' : '' }}>{{ $c }}</option>
                                 @endforeach
                             </select>

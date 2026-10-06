@@ -16,6 +16,8 @@ enum VehicleFuel: string
 
     case Petrol = 'gasolina';
     case Diesel = 'diesel';
+    case HybridPetrol = 'hibrido_gasolina';
+    case HybridDiesel = 'hibrido_diesel';
     case PluginHybridPetrol = 'hibrido_plugin_gasolina';
     case PluginHybridDiesel = 'hibrido_plugin_diesel';
     case Electric = 'eletrico';
@@ -25,6 +27,8 @@ enum VehicleFuel: string
         return match ($this) {
             self::Petrol => 'Gasolina',
             self::Diesel => 'Diesel',
+            self::HybridPetrol => 'Gasolina (HEV)',
+            self::HybridDiesel => 'Diesel (HEV)',
             self::PluginHybridPetrol => 'Híbrido Plug-in / Gasolina',
             self::PluginHybridDiesel => 'Híbrido Plug-in / Diesel',
             self::Electric => 'Elétrico',
@@ -56,6 +60,8 @@ enum VehicleFuel: string
         return self::tryFrom($slug) ?? match ($slug) {
             'hibrido_plug_in_gasolina' => self::PluginHybridPetrol,
             'hibrido_plug_in_diesel' => self::PluginHybridDiesel,
+            'gasolina_(hev)' => self::HybridPetrol,
+            'diesel_(hev)' => self::HybridDiesel,
             default => null,
         };
     }
