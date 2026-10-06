@@ -3,18 +3,15 @@
 
         {{-- Breadcrumbs --}}
         <nav aria-label="Breadcrumbs" class="mb-3">
-            <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a href="{{ route('home') }}" itemprop="item"><span itemprop="name">Início</span></a>
-                    <meta itemprop="position" content="1" />
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('home') }}"><span>Início</span></a>
                 </li>
-                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a href="{{ route('vehicles.list') }}" itemprop="item"><span itemprop="name">Viaturas</span></a>
-                    <meta itemprop="position" content="2" />
+                <li class="breadcrumb-item">
+                    <a href="{{ route('vehicles.list') }}"><span>Viaturas</span></a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <span itemprop="name">{{ $vehicle->brand }} {{ $vehicle->model }}{{ $vehicle->version ? ' ' . $vehicle->version : '' }}</span>
-                    <meta itemprop="position" content="3" />
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span>{{ $vehicle->brand }} {{ $vehicle->model }}{{ $vehicle->version ? ' ' . $vehicle->version : '' }}</span>
                 </li>
             </ol>
         </nav>
