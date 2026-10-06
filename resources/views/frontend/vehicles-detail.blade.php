@@ -29,41 +29,40 @@
     $currentUrl = url()->current();
 
     /* ── Schema.org JSON-LD ──────────────────────────────────────────────── */
-    $schema = [
-        '@context' => 'https://schema.org',
-        '@type'    => 'Car',
-        'name'     => $vehicleFullName,
-        'brand'    => ['@type' => 'Brand', 'name' => $vehicle->brand ?? ''],
-        'model'    => $vehicle->model ?? '',
-        'image'    => $coverPhotoUrl,
-        'url'      => $currentUrl,
-        'seller'   => [
-            '@type'     => 'AutoDealer',
-            'name'      => 'Izzycar',
-            'url'       => 'https://izzycar.pt',
-            'telephone' => '+351928459346',
-        ],
-    ];
-    if ($vehicle->version)          $schema['version']             = $vehicle->version;
-    if ($vehicle->year)             $schema['vehicleModelDate']    = (string) $vehicle->year;
-    if ($vehicle->kilometers)       $schema['mileageFromOdometer'] = ['@type' => 'QuantitativeValue', 'value' => $vehicle->kilometers, 'unitCode' => 'KMT'];
-    if ($vehicle->fuel)             $schema['fuelType']            = ucfirst($vehicle->fuel);
-    if ($vehicle->color)            $schema['color']               = $vehicle->color;
-    if ($vehicle->reference)        $schema['productID']           = $vehicle->reference;
-    if ($vehicle->cylinder_capacity) $schema['engineDisplacement'] = ['@type' => 'QuantitativeValue', 'value' => $vehicle->cylinder_capacity, 'unitCode' => 'CMQ'];
-    if ($vehicle->power)            $schema['vehicleEngine']       = ['@type' => 'EngineSpecification', 'enginePower' => ['@type' => 'QuantitativeValue', 'value' => $vehicle->power, 'unitCode' => 'BHP']];
-    if ($vehicle->asking_price) {
-        $availability = match($vehicle->status) {
-            'em_stock'  => 'https://schema.org/InStock',
-            'reservado' => 'https://schema.org/PreOrder',
-            default     => 'https://schema.org/SoldOut',
-        };
+    // Só emitimos Car com oferta quando o preço é público (em_stock + preço), tal como na página.
+    // Reservadas/vendidas não mostram preço → sem marcação de produto (o Google exige offers/review/aggregateRating).
+    $publicPrice = $vehicle->status === 'em_stock' && $vehicle->asking_price > 0
+        ? (string) round($vehicle->asking_price)
+        : null;
+
+    $schema = null;
+    if ($publicPrice !== null) {
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type'    => 'Car',
+            'name'     => $vehicleFullName,
+            'brand'    => ['@type' => 'Brand', 'name' => $vehicle->brand ?? ''],
+            'model'    => $vehicle->model ?? '',
+            'image'    => $coverPhotoUrl,
+            'url'      => $currentUrl,
+            'itemCondition' => 'https://schema.org/UsedCondition',
+        ];
+        if ($vehicle->version)          $schema['vehicleConfiguration'] = $vehicle->version;
+        if ($vehicle->year)             $schema['vehicleModelDate']    = (string) $vehicle->year;
+        if ($vehicle->kilometers)       $schema['mileageFromOdometer'] = ['@type' => 'QuantitativeValue', 'value' => $vehicle->kilometers, 'unitCode' => 'KMT'];
+        if ($vehicle->fuel)             $schema['fuelType']            = ucfirst($vehicle->fuel);
+        if ($vehicle->color)            $schema['color']               = $vehicle->color;
+        if ($vehicle->reference)        $schema['productID']           = $vehicle->reference;
+        if ($vehicle->cylinder_capacity) $schema['engineDisplacement'] = ['@type' => 'QuantitativeValue', 'value' => $vehicle->cylinder_capacity, 'unitCode' => 'CMQ'];
+        if ($vehicle->power)            $schema['vehicleEngine']       = ['@type' => 'EngineSpecification', 'enginePower' => ['@type' => 'QuantitativeValue', 'value' => $vehicle->power, 'unitCode' => 'BHP']];
         $schema['offers'] = [
-            '@type'        => 'Offer',
-            'price'        => (string) $vehicle->asking_price,
-            'priceCurrency'=> 'EUR',
-            'availability' => $availability,
-            'url'          => $currentUrl,
+            '@type'         => 'Offer',
+            'url'           => $currentUrl,
+            'price'         => $publicPrice,
+            'priceCurrency' => 'EUR',
+            'itemCondition' => 'https://schema.org/UsedCondition',
+            'availability'  => 'https://schema.org/InStock',
+            'seller'        => ['@type' => 'AutoDealer', '@id' => 'https://izzycar.pt/#autodealer', 'name' => 'Izzycar'],
         ];
     }
 @endphp
@@ -95,7 +94,9 @@
 <link rel="canonical" href="{{ $currentUrl }}" />
 
 {{-- Schema.org Structured Data --}}
+@if($schema)
 <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
+@endif
 
 <script type="application/ld+json">
 {

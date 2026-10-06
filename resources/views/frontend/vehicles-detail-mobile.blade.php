@@ -1,4 +1,4 @@
-<section class="py-4 bg-light mt-4" role="main" itemscope itemtype="https://schema.org/Product">
+<section class="py-4 bg-light mt-4" role="main">
     <div class="container">
 
         {{-- Breadcrumbs para SEO Mobile --}}
@@ -56,10 +56,8 @@
 
                 <div class="vd-header mb-3">
                     <div class="vd-header-left">
-                        <p class="vd-brand" itemprop="name">{{ $vehicle->brand }}</p>
+                        <p class="vd-brand">{{ $vehicle->brand }}</p>
                         <h1 class="vd-model">{{ $vehicle->model }}@if($vehicle->version)<span class="vd-version"> {{ $vehicle->version }}</span>@endif</h1>
-                        <meta itemprop="brand" content="{{ $vehicle->brand }}" />
-                        <meta itemprop="sku" content="{{ $vehicle->reference }}" />
                     </div>
                     <div class="vd-header-right">
                         @if($vehicle->status === 'reservado')
@@ -68,11 +66,8 @@
                             <span class="vd-status-badge" style="background:#dc2626;">Vendido</span>
                         @elseif($vehicle->asking_price)
                             <p class="vd-price-label">Preço</p>
-                            <div class="vd-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                                <span itemprop="price">{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }}</span>&nbsp;€
-                                <meta itemprop="priceCurrency" content="EUR" />
-                                <meta itemprop="availability" content="https://schema.org/InStock" />
-                                <meta itemprop="url" content="{{ url()->current() }}" />
+                            <div class="vd-price">
+                                <span>{{ number_format(round($vehicle->asking_price), 0, ',', ' ') }}</span>&nbsp;€
                             </div>
                             @if($vehicle->purchase_type === 'Geral')
                             <span class="vd-iva-badge"><i class="bi bi-receipt"></i> IVA Dedutível</span>
@@ -85,7 +80,7 @@
                     <div class="vd-sbi">
                         <i class="bi bi-calendar3"></i>
                         <span class="vd-sbi-label">Ano</span>
-                        <span class="vd-sbi-value" itemprop="vehicleModelDate">{{ $vehicle->year ?? '—' }}</span>
+                        <span class="vd-sbi-value">{{ $vehicle->year ?? '—' }}</span>
                     </div>
                     <div class="vd-sbi">
                         <i class="bi bi-speedometer2"></i>
@@ -97,7 +92,7 @@
                     <div class="vd-sbi">
                         <i class="bi bi-fuel-pump"></i>
                         <span class="vd-sbi-label">Combustível</span>
-                        <span class="vd-sbi-value" itemprop="fuelType">{{ $vehicle->fuel ?? '—' }}</span>
+                        <span class="vd-sbi-value">{{ $vehicle->fuel ?? '—' }}</span>
                     </div>
                     <div class="vd-sbi">
                         <i class="bi bi-cpu-fill"></i>
@@ -207,7 +202,7 @@
 
 <style>
     /* ── Página: folga extra no fundo para o CTA fixo + barra de navegação ── */
-    section[itemtype="https://schema.org/Product"] { padding-bottom: 86px; }
+    .py-4.bg-light.mt-4[role="main"] { padding-bottom: 86px; }
 
     /* Avisa o banner de cookies de que esta página tem um CTA fixo extra
        no fundo, para ele subir e não sobrepor o botão "Pedir Informações". */

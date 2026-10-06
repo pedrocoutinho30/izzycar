@@ -20,6 +20,7 @@
     {
         "@@context": "https://schema.org",
         "@@type": "AutoDealer",
+        "@@id": "https://izzycar.pt/#autodealer",
         "name": "Izzycar",
         "url": "https://izzycar.pt",
         "logo": {
