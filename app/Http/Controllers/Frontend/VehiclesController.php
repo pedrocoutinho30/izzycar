@@ -17,7 +17,6 @@ class VehiclesController extends Controller
 
     public function index()
     {
-
         $reviews = Testimonial::where('published', true)->orderBy('review_date', 'desc')->get();
         
        // arredonda com 2 casas decimais
@@ -59,6 +58,8 @@ class VehiclesController extends Controller
 
     public function vehicles(Request $request)
     {
+
+
         // Gerar chave única de cache a partir dos filtros da querystring
         $cacheKey = 'vehicles_' . md5(json_encode($request->all()));
         $vehicles = Cache::remember($cacheKey, 600, function () use ($request) {
@@ -86,8 +87,7 @@ class VehiclesController extends Controller
             }
             return $query
                 ->orderByRaw("CASE status WHEN 'em_stock' THEN 1 WHEN 'reservado' THEN 2 WHEN 'vendido' THEN 3 ELSE 4 END")
-                ->orderByRaw('purchase_date IS NULL')
-                ->orderBy('purchase_date', 'desc')
+                ->orderBy('created_at', 'desc')
                 ->get();
         });
 
@@ -127,8 +127,8 @@ class VehiclesController extends Controller
 
             return $query
                 ->orderByRaw("CASE status WHEN 'em_stock' THEN 1 WHEN 'reservado' THEN 2 WHEN 'vendido' THEN 3 ELSE 4 END")
-                ->orderByRaw('purchase_date IS NULL')
-                ->orderBy('purchase_date', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc')
                 ->get();
         });
 
