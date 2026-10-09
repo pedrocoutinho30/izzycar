@@ -234,7 +234,7 @@
         <tr><td class="fase">Assinatura do contrato</td><td class="prazo">até 3 dias após a cotação aceite</td></tr>
         <tr><td class="fase">Compra do veículo</td><td class="prazo">até 7 dias úteis após a adjudicação</td></tr>
         <tr><td class="fase">Transporte até Portugal</td><td class="prazo">até 15 dias úteis após a compra</td></tr>
-        <tr><td class="fase">Entrega do veículo ao Cliente</td><td class="prazo">cerca de 30 dias após a adjudicação</td></tr>
+        <tr><td class="fase">Entrega do veículo ao Cliente</td><td class="prazo">cerca de 30 dias após compra do veículo</td></tr>
     </table>
     <div class="destaque">
         <b>Atrasos de transporte.</b> O prazo de transporte inclui uma margem para os atrasos que as transportadoras
@@ -331,7 +331,7 @@
             </td>
             <td>
                 <div style="height: 55px; text-align: center;">
-                    
+
                     @if($signaturePath)
                     <img src="{{ $signaturePath }}" alt="Assinatura" style="height: 50px;">
                     @endif
