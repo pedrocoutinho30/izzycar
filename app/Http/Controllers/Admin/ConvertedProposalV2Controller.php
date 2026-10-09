@@ -9,6 +9,7 @@ use App\Models\ConvertedProposalDocument;
 use App\Models\Client;
 use App\Models\Proposal;
 use App\Models\User;
+use App\Services\ContractService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -287,6 +288,24 @@ class ConvertedProposalV2Controller extends Controller
         ]);
 
         return back()->with('success', 'Documento assinado carregado com sucesso.');
+    }
+
+    /**
+     * Mostra no browser o contrato de prestação de serviços desta cotação,
+     * gerado agora com os dados atuais (o que foi enviado ao cliente fica em
+     * "Documentos Gerados/Enviados").
+     */
+    public function contract($id)
+    {
+        $convertedProposal = ConvertedProposal::with('client', 'proposal')->findOrFail($id);
+        abort_unless($convertedProposal->client, 404, 'Esta cotação não tem cliente associado.');
+
+        $pdf = ContractService::generateContractPdf($convertedProposal->client, $convertedProposal);
+
+        return response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="contrato_' . $convertedProposal->id . '.pdf"',
+        ]);
     }
 
     /**

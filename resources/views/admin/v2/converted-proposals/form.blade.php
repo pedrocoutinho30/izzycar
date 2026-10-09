@@ -923,8 +923,13 @@ $pendingValue = $totalValue - $paidValue;
             @if($isEdit)
             <!-- DOCUMENTOS GERADOS/ENVIADOS -->
             <div class="modern-card">
-                <div class="modern-card-header">
-                    <h5 class="modern-card-title"><i class="bi bi-file-earmark-check"></i> Documentos Gerados/Enviados</h5>
+                <div class="modern-card-header d-flex justify-content-between align-items-center">
+                    <h5 class="modern-card-title mb-0"><i class="bi bi-file-earmark-check"></i> Documentos Gerados/Enviados</h5>
+                    @if($convertedProposal->client_id)
+                    <a href="{{ route('admin.v2.converted-proposals.contract', $convertedProposal->id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-file-earmark-text me-1"></i> Ver contrato
+                    </a>
+                    @endif
                 </div>
                 <div class="p-3">
                     @php $generatedDocs = $convertedProposal->documents->where('tipo', 'gerado'); @endphp

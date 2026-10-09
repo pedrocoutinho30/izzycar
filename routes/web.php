@@ -656,6 +656,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::delete('/{id}', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'destroy'])->name('destroy');
         Route::post('/{id}/documents/signed', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'uploadSignedDocument'])->name('documents.uploadSigned');
         Route::get('/{id}/documents/{document}/download', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'downloadDocument'])->name('documents.download');
+        Route::get('/{id}/contract', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'contract'])->name('contract');
         Route::delete('/{id}/documents/{document}', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'deleteDocument'])->name('documents.destroy');
         Route::post('/{id}/viatura', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'createVehicle'])->name('create-vehicle');
     });
