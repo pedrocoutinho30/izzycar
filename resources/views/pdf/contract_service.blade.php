@@ -176,7 +176,7 @@
     </header>
 
     <footer>
-        {{ $prestador['nome'] }} · NIF {{ $prestador['nif'] }}
+        Izzycar · NIF {{ $prestador['nif'] }}
         @if(!empty($prestador['telefone'])) · Tel. {{ $prestador['telefone'] }}@endif
         @if(!empty($prestador['email'])) · {{ $prestador['email'] }}@endif
         — Página <span class="pagenum"></span>
@@ -273,7 +273,7 @@
             @if($pagamentoFinal)<li>{{ $pagamentoFinal }} na entrega do automóvel.</li>@endif
         </ul>
         Pagamento por transferência bancária para o IBAN: <b>{{ $iban }}</b><br>
-        Titular: {{ $prestador['nome'] }}. Deve ser enviado o comprovativo de pagamento para
+        Titular: Pedro Coutinho. Deve ser enviado o comprovativo de pagamento para
         @if(!empty($prestador['email'])){{ $prestador['email'] }}@else o Prestador @endif.
     </div>
     <p>
@@ -331,6 +331,7 @@
             </td>
             <td>
                 <div style="height: 55px; text-align: center;">
+                    
                     @if($signaturePath)
                     <img src="{{ $signaturePath }}" alt="Assinatura" style="height: 50px;">
                     @endif
