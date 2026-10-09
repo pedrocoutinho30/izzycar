@@ -366,6 +366,17 @@
         </div>
     </div>
 
+    <div class="col-12">
+        <div class="modern-card">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title"><i class="bi bi-receipt me-1"></i> Movimentos</h5>
+            </div>
+            <div class="modern-card-body">
+                @include('admin.v2.movements._linked-list', ['movements' => $legalization->expenses])
+            </div>
+        </div>
+    </div>
+
 </div>
 
 {{-- ================================================================

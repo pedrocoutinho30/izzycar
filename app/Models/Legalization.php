@@ -145,6 +145,11 @@ class Legalization extends Model
         return $this->belongsTo(Vehicle::class);
     }
 
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class)->orderByDesc('expense_date');
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(LegalizationDocument::class);

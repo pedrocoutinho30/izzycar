@@ -96,7 +96,7 @@ class LegalizationController extends Controller
     // ---------------------------------------------------------------
     public function show(Legalization $legalization)
     {
-        $legalization->load('client', 'documents');
+        $legalization->load('client', 'documents', 'expenses');
 
         $passos    = Legalization::PASSOS;
         $documentos = $legalization->allDocumentos();

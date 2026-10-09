@@ -102,6 +102,14 @@ class V3Vehicle extends Model
         return $this->hasMany(Expense::class, 'v3_vehicle_id');
     }
 
+    /** Movimentos ligados à legalização desta viatura que não estão ligados diretamente à viatura. */
+    public function legalizationExpenses(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(Expense::class, Legalization::class, 'v3_vehicle_id', 'legalization_id')
+            ->where(fn ($q) => $q->whereNull('expenses.v3_vehicle_id')->orWhere('expenses.v3_vehicle_id', '!=', $this->id))
+            ->orderByDesc('expenses.expense_date');
+    }
+
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class, 'v3_vehicle_id');

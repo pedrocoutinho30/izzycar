@@ -93,6 +93,14 @@
 <p class="text-muted small mb-4">Sem despesas registadas.</p>
 @endif
 
+{{-- ── Movimentos da legalização ───────────────────────────────────── --}}
+@if($vehicle->legalization)
+<div class="mb-4">
+    <h6 class="fw-semibold mb-2"><i class="bi bi-file-earmark-check me-1 text-primary"></i> Movimentos da legalização</h6>
+    @include('admin.v2.movements._linked-list', ['movements' => $vehicle->legalizationExpenses()->get()])
+</div>
+@endif
+
 {{-- ── Add expense form ────────────────────────────────────────────── --}}
 <div class="border rounded p-3 bg-light">
     <h6 class="fw-semibold mb-3"><i class="bi bi-plus-circle me-1 text-primary"></i> Nova Despesa</h6>
