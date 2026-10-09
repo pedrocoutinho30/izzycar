@@ -915,7 +915,7 @@ class ProposalController extends Controller
         ];
 
         // Gerar PDF em memória
-        $pdfContent = ContractService::generateContractPdf($client);
+        $pdfContent = ContractService::generateContractPdf($client, $convertedProposal);
 
         // Guardar o contrato gerado para ficar visível na página da cotação
         // convertida ("Documentos Gerados/Enviados"), já que é enviado ao
