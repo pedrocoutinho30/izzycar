@@ -155,29 +155,30 @@
                     </div>
                 </div>
 
-                {{-- Cards de equipamento/atributos (scrolláveis) --}}
-                <div class="vd-sidebar-scroll">
-                    @foreach($attributes as $group => $attrs)
-                    @php $visibleAttrs = collect($attrs)->reject(fn($v,$k) => in_array($k, ['Potência','Cilindrada','Transmissão']))->all(); @endphp
-                    @if(count($visibleAttrs))
-                    <div class="vd-attr-card">
-                        <h6 class="vd-attr-title">{{ $group }}</h6>
-                        <ul class="vd-attr-list">
-                            @foreach($visibleAttrs as $attr => $value)
-                            <li class="vd-attr-item">
-                                <i class="bi bi-check-circle-fill"></i>
-                                <span>{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-                    @endforeach
-                </div>{{-- /vd-sidebar-scroll --}}
 
             </div>{{-- /vd-sidebar --}}
 
         </div>{{-- /vd-layout --}}
+
+        {{-- Cards de equipamento/atributos --}}
+        <div class="vd-attrs-grid">
+            @foreach($attributes as $group => $attrs)
+            @php $visibleAttrs = collect($attrs)->reject(fn($v,$k) => in_array($k, ['Potência','Cilindrada','Transmissão']))->all(); @endphp
+            @if(count($visibleAttrs))
+            <div class="vd-attr-card">
+                <h6 class="vd-attr-title">{{ $group }}</h6>
+                <ul class="vd-attr-list">
+                    @foreach($visibleAttrs as $attr => $value)
+                    <li class="vd-attr-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+            @endforeach
+        </div>{{-- /vd-attrs-grid --}}
 
     </div>{{-- /container --}}
 </section>
@@ -324,8 +325,11 @@
     @keyframes vdSpecUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 
     /* ── Sidebar ────────────────────────────────────────────────────────── */
-    .vd-sidebar { position: sticky; top: 6rem; max-height: calc(100vh - 7rem); display: flex; flex-direction: column; overflow: hidden; }
-    .vd-sidebar-scroll { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(110,7,7,.2) transparent; display: flex; flex-direction: column; gap: .75rem; padding-right: 2px; padding-top: .1rem; }
+    .vd-sidebar { position: sticky; top: 6rem; display: flex; flex-direction: column; }
+    .vd-attrs-grid { display: flex; flex-direction: column; gap: .75rem; margin-top: 1.5rem; }
+    .vd-attrs-grid .vd-attr-card { padding: 1rem 1.25rem; }
+    .vd-attrs-grid .vd-attr-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem 1.5rem; }
+    @media (max-width: 991px) { .vd-attrs-grid .vd-attr-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
     /* ── Action buttons ─────────────────────────────────────────────────── */
     .vd-actions { flex-shrink: 0; padding-bottom: .85rem; margin-bottom: .75rem; border-bottom: 1.5px solid #e9ecef; }
@@ -432,30 +436,6 @@
         });
 
         swiperMain.on('slideChange', function () { syncThumbs(swiperMain.realIndex); });
-    })();
-
-    /* ── Redirecionar scroll da página para a sidebar ───────────────────── */
-    (function () {
-        var sidebarScroll = document.querySelector('.vd-sidebar-scroll');
-        var layout        = document.querySelector('.vd-layout');
-        if (!sidebarScroll || !layout) return;
-
-        document.addEventListener('wheel', function (e) {
-            var rect = layout.getBoundingClientRect();
-            if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-
-            var delta = e.deltaY;
-            var atBot = sidebarScroll.scrollTop + sidebarScroll.clientHeight >= sidebarScroll.scrollHeight - 2;
-            var atTop = sidebarScroll.scrollTop <= 0;
-
-            if (delta > 0 && !atBot) {
-                e.preventDefault();
-                sidebarScroll.scrollTop += delta;
-            } else if (delta < 0 && !atTop) {
-                e.preventDefault();
-                sidebarScroll.scrollTop += delta;
-            }
-        }, { passive: false });
     })();
 
     new Swiper(".mySwiperRelated", {
