@@ -7,6 +7,7 @@ use App\Models\V3Vehicle;
 use App\Models\VehicleAttribute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Support\VehicleCache;
 use Illuminate\Support\Facades\Cache;
 use \App\Models\Page;
 use App\Models\Testimonial;
@@ -23,7 +24,7 @@ class VehiclesController extends Controller
         $media = $reviews->count()
                                 ? round($reviews->avg('rating'), 1)
                                 : 0;
-        $vehicles = Cache::remember('v3vehicles', 600, function () {
+        $vehicles = Cache::remember(VehicleCache::key('v3vehicles'), 600, function () {
             return V3Vehicle::with(['photos' => fn ($q) => $q->where('is_cover', true)->limit(1)])
                 ->where('show_online', true)
                 ->orderByRaw("CASE status WHEN 'em_stock' THEN 1 WHEN 'reservado' THEN 2 WHEN 'vendido' THEN 3 ELSE 4 END")
@@ -32,14 +33,14 @@ class VehiclesController extends Controller
                 ->get();
         });
 
-        $vehicles_count = Cache::remember('v3vehicles_count', 600, function () use ($vehicles) {
+        $vehicles_count = Cache::remember(VehicleCache::key('v3vehicles_count'), 600, function () use ($vehicles) {
             return $vehicles->count();
         });
 
         // Mostra os veículos marcados manualmente como "Destacar na Homepage"
         // (ordenados por home_featured_order); se nenhum estiver marcado,
         // cai para os últimos 3 adicionados, para a secção nunca ficar vazia.
-        $last_vehicles = Cache::remember('v3last_vehicles', 600, function () use ($vehicles) {
+        $last_vehicles = Cache::remember(VehicleCache::key('v3last_vehicles'), 600, function () use ($vehicles) {
             $featured = $vehicles->where('home_featured', true)
                 ->sortBy(fn ($v) => $v->home_featured_order ?? PHP_INT_MAX)
                 ->values();
@@ -61,7 +62,7 @@ class VehiclesController extends Controller
 
 
         // Gerar chave única de cache a partir dos filtros da querystring
-        $cacheKey = 'vehicles_' . md5(json_encode($request->all()));
+        $cacheKey = VehicleCache::key('vehicles_' . md5(json_encode($request->all())));
         $vehicles = Cache::remember($cacheKey, 600, function () use ($request) {
             $query = V3Vehicle::query()
                 ->with('photos')
@@ -97,7 +98,7 @@ class VehiclesController extends Controller
     public function filteredVehicles(Request $request)
     {
         // Gera chave única com base nos filtros aplicados
-        $cacheKey = 'filtered_vehicles_' . md5(json_encode($request->all()));
+        $cacheKey = VehicleCache::key('filtered_vehicles_' . md5(json_encode($request->all())));
 
         // Armazena no cache por 10 minutos (600 segundos)
         $vehicles = Cache::remember($cacheKey, 600, function () use ($request) {
@@ -278,7 +279,7 @@ class VehiclesController extends Controller
     {
         $brand = $request->get('brand');
 
-        $cacheKey = "models_by_brand_" . md5($brand);
+        $cacheKey = VehicleCache::key("models_by_brand_" . md5($brand));
 
         $models = Cache::remember($cacheKey, 600, function () use ($brand) {
             return V3Vehicle::where('brand', $brand)
@@ -295,7 +296,7 @@ class VehiclesController extends Controller
     {
         $brand = $request->get('brand');
 
-        $cacheKey = "years_by_brand_" . md5($brand);
+        $cacheKey = VehicleCache::key("years_by_brand_" . md5($brand));
 
         $years = Cache::remember($cacheKey, 600, function () use ($brand) {
             return V3Vehicle::where('brand', $brand)
@@ -314,7 +315,7 @@ class VehiclesController extends Controller
         $brand = $request->get('brand');
         $model = $request->get('model');
 
-        $cacheKey = "years_by_brand_model_" . md5($brand . '_' . $model);
+        $cacheKey = VehicleCache::key("years_by_brand_model_" . md5($brand . '_' . $model));
 
         $years = Cache::remember($cacheKey, 600, function () use ($brand, $model) {
             $query = V3Vehicle::query()->where('show_online', true)->where('status', '!=', 'vendido');
@@ -339,7 +340,7 @@ class VehiclesController extends Controller
         $model = $request->get('model');
         $year = $request->get('year');
 
-        $cacheKey = "fuels_by_brand_model_year_" . md5($brand . '_' . $model . '_' . $year);
+        $cacheKey = VehicleCache::key("fuels_by_brand_model_year_" . md5($brand . '_' . $model . '_' . $year));
 
         $fuels = Cache::remember($cacheKey, 600, function () use ($brand, $model, $year) {
             $query = V3Vehicle::query()->where('show_online', true)->where('status', '!=', 'vendido');

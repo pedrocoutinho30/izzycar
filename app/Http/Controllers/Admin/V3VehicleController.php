@@ -18,6 +18,7 @@ use App\Models\VehicleAttribute;
 use App\Models\VehicleAttributeValue;
 use App\Services\SaleCalculator;
 use Illuminate\Http\Request;
+use App\Support\VehicleCache;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -384,6 +385,7 @@ class V3VehicleController extends Controller
         $vehicle = V3Vehicle::findOrFail($vehicleId);
         V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->update(['is_cover' => false]);
         V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->where('id', $photoId)->update(['is_cover' => true]);
+        $this->clearVehicleCache(); // updates em massa não passam pelos eventos do modelo
 
         return back()->with('return_tab', 'photos');
     }
@@ -491,6 +493,7 @@ class V3VehicleController extends Controller
                 ->where('id', $photoId)
                 ->update(['order_position' => (int) $position]);
         }
+        $this->clearVehicleCache();
 
         return response()->json(['success' => true]);
     }
@@ -911,8 +914,6 @@ class V3VehicleController extends Controller
 
     private function clearVehicleCache(): void
     {
-        Cache::forget('v3vehicles');
-        Cache::forget('v3vehicles_count');
-        Cache::forget('v3last_vehicles');
+        VehicleCache::flush();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Support\VehicleCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,14 @@ use App\Models\VehicleAttributeValue;
 class V3Vehicle extends Model
 {
     use HasFactory;
+
+    protected static function booted(): void
+    {
+        // O site público guarda a listagem em cache: qualquer alteração a
+        // uma viatura (estado, preço, publicação...) invalida-a.
+        static::saved(fn () => VehicleCache::flush());
+        static::deleted(fn () => VehicleCache::flush());
+    }
 
     protected $table = 'v3_vehicles';
 
