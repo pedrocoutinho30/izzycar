@@ -37,8 +37,7 @@
 'value' => request('status'),
 'options' => [
 '' => 'Todos os Estados',
-'Em Processo' => 'Em Processo',
-'Concluída' => 'Concluída',
+] + array_combine(\App\Models\ConvertedProposal::PIPELINE_STATUSES, \App\Models\ConvertedProposal::PIPELINE_STATUSES) + [
 'Cancelada' => 'Cancelada'
 ]
 ]
@@ -49,12 +48,8 @@
 <div class="content-grid">
     @forelse($convertedProposals as $converted)
     @php
-    $statusColors = [
-    'Em Processo' => 'warning',
-    'Concluída' => 'success',
-    'Cancelada' => 'danger',
-    ];
-    $currentStatus = $converted->status ?? 'Em Processo';
+    $currentStatus = $converted->status ?? 'Iniciada';
+    $statusColor = $converted->isCancelled() ? 'danger' : ($currentStatus === 'Concluido' ? 'success' : 'warning');
     @endphp
 
     @include('components.admin.item-card', [
@@ -64,7 +59,7 @@
     'badges' => array_filter([
     [
     'text' => $currentStatus,
-    'color' => $statusColors[$currentStatus] ?? 'secondary'
+    'color' => $statusColor
     ],
     $converted->matricula_origem ? [
     'text' => 'Origem: ' . $converted->matricula_origem,

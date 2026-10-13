@@ -54,7 +54,8 @@ class ConvertedProposalV2Controller extends Controller
 
         // Filtro por status
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $statuses = $request->status === 'Cancelada' ? ConvertedProposal::CANCELLED_STATUSES : [$request->status];
+            $query->whereIn('status', $statuses);
         }
 
         // Paginação
@@ -72,19 +73,19 @@ class ConvertedProposalV2Controller extends Controller
             ],
             [
                 'title' => 'Em Processo',
-                'value' => ConvertedProposal::where('status', 'Em Processo')->count(),
+                'value' => ConvertedProposal::notCancelled()->where(fn ($q) => $q->where('status', '!=', 'Concluido')->orWhereNull('status'))->count(),
                 'color' => 'warning',
                 'icon' => 'bi-hourglass-split'
             ],
             [
                 'title' => 'Concluídas',
-                'value' => ConvertedProposal::where('status', 'Concluída')->count(),
+                'value' => ConvertedProposal::where('status', 'Concluido')->count(),
                 'color' => 'success',
                 'icon' => 'bi-check-circle'
             ],
             [
                 'title' => 'Canceladas',
-                'value' => ConvertedProposal::where('status', 'Cancelada')->count(),
+                'value' => ConvertedProposal::whereIn('status', ConvertedProposal::CANCELLED_STATUSES)->count(),
                 'color' => 'danger',
                 'icon' => 'bi-x-circle'
             ]

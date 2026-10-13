@@ -52,7 +52,7 @@ No código chamam-se `Proposal` ("proposta"/"cotação"). Cotação aceite gera 
 
 ## Armadilhas
 
-1. `ConvertedProposalV2Controller::index`: os cartões "Em Processo" e "Concluídas" filtram valores que não existem nos estados (`Em Processo`, `Concluída`); tendem a 0.
+1. Na lista de convertidas, "Em Processo" conta tudo o que não está concluído nem cancelado, e o filtro de estado usa as etapas do pipeline (`Cancelada` inclui `Cancelado`).
 2. `ConvertedProposalV2Controller::update` envia o mail de estado sem proteção e sem verificar se há email.
 3. `ConvertedProposalV2Controller::store` não cria o histórico inicial `Iniciada`.
 4. A timeline pública usa o id sequencial (enumerável); a cotação usa `proposal_code`.
