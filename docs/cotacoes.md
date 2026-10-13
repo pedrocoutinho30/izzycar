@@ -53,7 +53,7 @@ No código chamam-se `Proposal` ("proposta"/"cotação"). Cotação aceite gera 
 ## Armadilhas
 
 1. Na lista de convertidas, "Em Processo" conta tudo o que não está concluído nem cancelado, e o filtro de estado usa as etapas do pipeline (`Cancelada` inclui `Cancelado`).
-2. `ConvertedProposalV2Controller::update` envia o mail de estado sem proteção e sem verificar se há email.
+2. `ConvertedProposalV2Controller::update` só envia o mail de estado se o cliente tem email, e uma falha no envio não impede a atualização (`report`).
 3. `ConvertedProposalV2Controller::store` não cria o histórico inicial `Iniciada`.
 4. A timeline pública usa o id sequencial (enumerável); a cotação usa `proposal_code`.
 5. Nomes de estado inconsistentes (`Enviado`/`Enviada`, `Cancelada`/`Cancelado`) e ENUMs antigos nas migrations: **(por confirmar o que a BD real tem)**.

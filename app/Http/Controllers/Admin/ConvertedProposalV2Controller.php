@@ -243,11 +243,17 @@ class ConvertedProposalV2Controller extends Controller
         $oldStatus = $convertedProposal->status;
         $convertedProposal->update($validated);
 
-        if ($convertedProposal->wasChanged('status') && $convertedProposal->client) {
-            $client = $convertedProposal->client;
-            Mail::to($client->email)->bcc('izzycarpt@gmail.com')->send(
-                new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $convertedProposal->status, $client->name, $convertedProposal->matricula_destino)
-            );
+        // O estado já está gravado: um cliente sem email ou uma falha no envio
+        // não pode impedir a atualização.
+        $client = $convertedProposal->client;
+        if ($convertedProposal->wasChanged('status') && $client && filled($client->email)) {
+            try {
+                Mail::to($client->email)->bcc('izzycarpt@gmail.com')->send(
+                    new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $convertedProposal->status, $client->name, $convertedProposal->matricula_destino)
+                );
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
 
         return redirect()->route('admin.v2.converted-proposals.index')
