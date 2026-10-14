@@ -47,6 +47,7 @@ abstract class ImportOpportunityRequest extends FormRequest
             'price' => 'nullable|numeric|min:0|max:10000000',
             'fuel' => ['nullable', Rule::enum(VehicleFuel::class)],
             'listing_url' => 'nullable|url|max:2048',
+            'offer_number' => 'nullable|string|max:100',
             'vin' => 'nullable|string|size:17|regex:/^[A-HJ-NPR-Z0-9]{17}$/',
             'country' => ['nullable', Rule::in(array_keys(ImportOpportunity::COUNTRIES))],
             'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',

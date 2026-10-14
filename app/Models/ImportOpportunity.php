@@ -49,6 +49,7 @@ class ImportOpportunity extends Model
         'currency',
         'fuel',
         'listing_url',
+        'offer_number',
         'vin',
         'country',
         'photo_path',

@@ -78,6 +78,7 @@
                 <div><div class="label">Próximo follow-up</div><div class="value {{ $opportunity->next_followup_at?->isPast() ? 'text-danger' : '' }}">{{ $opportunity->next_followup_at?->format('d/m/Y') ?? '—' }}</div></div>
                 <div><div class="label">País</div><div class="value">{{ \App\Models\ImportOpportunity::COUNTRIES[$opportunity->country] ?? '—' }}</div></div>
                 <div><div class="label">Combustível</div><div class="value">{{ $opportunity->fuel?->label() ?? '—' }}</div></div>
+                <div><div class="label">Número de oferta</div><div class="value">{{ $opportunity->offer_number ?: '—' }}</div></div>
                 <div><div class="label">VIN</div><div class="value font-monospace">{{ $opportunity->vin ?: '—' }}</div></div>
             </div>
 

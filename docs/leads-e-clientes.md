@@ -53,6 +53,7 @@ Carro ou anúncio em análise, sempre dentro de um pedido. Rotas aninhadas `admi
 - Transições automáticas: primeiro contacto "outreach" (`logContact`) passa `por_contactar`→`contactado`; `linkProposal` (ao criar cotação a partir dela) passa a `selecionado`; cotação `Reprovada` passa as ligadas a `rejeitado`.
 - `contact_status`: `nao_contactado`, `contactado`, `respondeu`, `negociacao_iniciada`.
 - Checklists (`OpportunityChecklist` com `applies_to_fuels`; itens e entradas `pending|confirmed|not_applicable`): filtradas pelo combustível da oportunidade (`VehicleFuel`); o progresso não bloqueia nada.
+- Dados do anúncio: `listing_url`, `offer_number` (número de oferta, texto até 100 caracteres, migration `2026_10_14_100000`), `vin`, `country`, foto.
 - Uma cotação por oportunidade (`createFromOpportunity` redireciona se já existe).
 
 ## Armadilhas

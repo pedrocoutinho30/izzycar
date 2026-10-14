@@ -46,6 +46,11 @@
         <input type="url" name="listing_url" class="form-control {{ $err('listing_url') }}" value="{{ $val('listing_url') }}" placeholder="https://...">
         @error('listing_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
+    <div class="col-md-6">
+        <label class="form-label">Número de oferta</label>
+        <input type="text" name="offer_number" class="form-control {{ $err('offer_number') }}" value="{{ $val('offer_number') }}" maxlength="100" placeholder="Referência do anúncio">
+        @error('offer_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
     <div class="col-12">
         @include('admin.v2.sellers._picker', ['seller' => $pickerSeller, 'contact' => $pickerContact])
     </div>

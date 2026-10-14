@@ -189,6 +189,31 @@ class ImportOpportunityTest extends TestCase
             ->assertSee('data-current="01"', false);
     }
 
+    public function test_offer_number_is_saved_validated_and_shown(): void
+    {
+        $this->actingAs($this->user)
+            ->post($this->route('store'), ['brand' => 'Tesla', 'model' => 'Model 3', 'offer_number' => str_repeat('9', 101)])
+            ->assertSessionHasErrors('offer_number');
+
+        $this->actingAs($this->user)
+            ->post($this->route('store'), ['brand' => 'Tesla', 'model' => 'Model 3', 'offer_number' => 'AB-12345'])
+            ->assertSessionHasNoErrors();
+
+        $opportunity = ImportOpportunity::firstOrFail();
+        $this->assertSame('AB-12345', $opportunity->offer_number);
+
+        $this->actingAs($this->user)
+            ->get($this->route('show', $opportunity->id))
+            ->assertOk()
+            ->assertSee('Número de oferta')
+            ->assertSee('AB-12345');
+
+        $this->actingAs($this->user)
+            ->put($this->route('update', $opportunity->id), ['brand' => 'Tesla', 'model' => 'Model 3', 'offer_number' => 'ZZ-9'])
+            ->assertSessionHasNoErrors();
+        $this->assertSame('ZZ-9', $opportunity->fresh()->offer_number);
+    }
+
     public function test_create_validates_input(): void
     {
         $this->actingAs($this->user)
