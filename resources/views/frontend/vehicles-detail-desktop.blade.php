@@ -93,6 +93,8 @@
                         <span class="vd-sbi-label">Combustível</span>
                         <span class="vd-sbi-value">{{ $vehicle->fuel ?? '—' }}</span>
                     </div>
+                    {{-- Elétricos não têm cilindrada --}}
+                    @if($vehicle->fuel !== 'Elétrico')
                     <div class="vd-sbi">
                         <i class="bi bi-cpu-fill"></i>
                         <span class="vd-sbi-label">Cilindrada</span>
@@ -100,6 +102,7 @@
                             @if($cilindrada) {{ $cilindrada }} cc @else — @endif
                         </span>
                     </div>
+                    @endif
                     <div class="vd-sbi">
                         <i class="bi bi-lightning-charge"></i>
                         <span class="vd-sbi-label">Potência</span>
