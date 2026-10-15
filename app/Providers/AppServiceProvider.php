@@ -31,7 +31,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Mapa nome da marca → logo, partilhado durante o pedido (sem N+1).
+        $this->app->scoped(\App\Support\BrandLogos::class);
     }
 
     /**

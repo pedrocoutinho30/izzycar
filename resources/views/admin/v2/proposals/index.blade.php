@@ -211,6 +211,7 @@ return [$client->id => $client->name];
             @include('components.admin.item-card', [
             'item'     => $proposal,
             'title'    => $proposal->brand . ' ' . $proposal->model,
+            'titleBrand' => $proposal->brand,
             'subtitle' => $proposal->version,
             'image'    => $proposalImage,
             'badges'   => [

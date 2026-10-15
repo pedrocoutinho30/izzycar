@@ -81,6 +81,17 @@
                     </li>
                     @endif
                     <li class="mb-3 d-flex align-items-start gap-2">
+                        <i class="bi bi-car-front text-muted mt-1"></i>
+                        <div>
+                            <small class="text-muted d-block mb-1">Marcas</small>
+                            @if($seller->brands->isNotEmpty())
+                                @include('admin.v2.sellers._brand-badges', ['brands' => $seller->brands, 'size' => 28])
+                            @else
+                                —
+                            @endif
+                        </div>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start gap-2">
                         <i class="bi bi-at text-muted mt-1"></i>
                         <div>
                             <small class="text-muted d-block">Domínio(s) de email</small>
@@ -270,7 +281,7 @@
                             @foreach($seller->vehicles as $vehicle)
                             <tr>
                                 <td>
-                                    <strong>{{ $vehicle->brand }} {{ $vehicle->model }}</strong>
+                                    <strong><x-admin.brand-logo :brand="$vehicle->brand" :size="20" class="me-1" />{{ $vehicle->brand }} {{ $vehicle->model }}</strong>
                                     @if($vehicle->reference)<br><small class="text-muted">Ref: {{ $vehicle->reference }}</small>@endif
                                     @if($vehicle->sellerContact)<br><small class="text-muted"><i class="bi bi-person"></i> {{ $vehicle->sellerContact->name }}</small>@endif
                                 </td>

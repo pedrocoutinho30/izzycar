@@ -1,6 +1,9 @@
 {{--
     COMPONENTE: Item Card
     
+    Opcional: 'extraHtml' (HTML já escapado, antes do meta).
+    Opcional: 'titleBrand' => $proposal->brand mostra o logo da marca antes do título.
+
     USO:
     @include('components.admin.item-card', [
         'item' => $proposal,
@@ -31,6 +34,8 @@
     'title' => '',
     'subtitle' => '',
     'image' => null,
+    'titleBrand' => null,
+    'extraHtml' => null,
     'badges' => [],
     'meta' => [],
     'actions' => []
@@ -51,7 +56,7 @@
         <div class="col">
             <!-- Título e subtitle -->
             <div class="item-header">
-                <h5 class="item-title">{{ $title }}</h5>
+                <h5 class="item-title">@if($titleBrand)<x-admin.brand-logo :brand="$titleBrand" :size="26" class="me-2" />@endif{{ $title }}</h5>
                 @if($subtitle)
                 <p class="item-subtitle">{{ $subtitle }}</p>
                 @endif
@@ -69,6 +74,10 @@
                 </span>
                 @endforeach
             </div>
+            @endif
+
+            @if($extraHtml)
+            <div class="mb-2">{!! $extraHtml !!}</div>
             @endif
 
             <!-- Meta informações -->

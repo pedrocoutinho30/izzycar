@@ -34,6 +34,7 @@ $existAction = isset($proposal->id) ? 'Editar' : 'Criar';
 ['icon' => '', 'label' => $existAction]
 ],
 'title' => $existAction . ' Cotação',
+'titleBrandLogo' => $proposal->brand ?? null,
 'subtitle' => "",
 'actionHref' => "",
 'actionLabel' => ''

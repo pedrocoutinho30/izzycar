@@ -123,7 +123,7 @@
                     @foreach($cotacoesSemResposta->take(3) as $proposal)
                     <a href="{{ route('admin.v2.proposals.edit', $proposal->id) }}" class="d-block small text-truncate text-dark mb-1">
                         <i class="bi bi-file-earmark-text me-1 text-info"></i>
-                        {{ $proposal->brand }} {{ $proposal->model }}
+                        <x-admin.brand-logo :brand="$proposal->brand" :size="20" class="me-1" />{{ $proposal->brand }} {{ $proposal->model }}
                         @if($proposal->client) · {{ $proposal->client->name }} @endif
                     </a>
                     @endforeach
@@ -548,7 +548,7 @@
                         </div>
                         <div class="activity-content">
                             <h6 class="activity-title">
-                                {{ $proposal->brand }} {{ $proposal->model }}
+                                <x-admin.brand-logo :brand="$proposal->brand" :size="20" class="me-1" />{{ $proposal->brand }} {{ $proposal->model }}
                             </h6>
                             <p class="activity-meta">
                                 {{ $proposal->client ? $proposal->client->name : 'Sem cliente' }} • 

@@ -35,6 +35,7 @@ O formulário de importação do site só aceita telemóveis portugueses (`9[123
 - `ClientMatcher` (`app/Services/ClientMatcher.php`) é a regra única: **mesmo email OU mesmo telefone**; o nome nunca conta. Email normalizado (minúsculas); `phone_key` = últimos 9 dígitos (menos de 9 não identifica ninguém). `find()` devolve o registo mais antigo e `conflict` quando email e telefone apontam para registos diferentes.
 - `complete()` só preenche `name`, `email`, `phone` vazios e os consentimentos só passam a `true`. `logMatch()` avisa na timeline se o nome difere.
 - `ContactNormalizer` **não é para clientes**: só para vendedores (`Seller*`).
+- Marcas do vendedor (pivot `brand_seller`): editáveis no formulário; o trait `AssociatesSellerBrand` (em `ImportOpportunity` e `V3Vehicle`) junta a marca ao vendedor ao guardar com `seller_id` (nunca remove; marca fora do catálogo ignora-se). Updates em massa não passam pelo hook.
 - Comando `clients:duplicates` (só leitura): agrupa por email e telefone, sugere qual manter (prefere cliente a lead).
 - Comando `clients:merge {keep} {remove*} {--apply}`: simula por omissão. `ClientMergeService` descobre por reflexão todas as tabelas com coluna `client_id` e redireciona-as; preenche só campos vazios; consentimentos em OR; continua lead só se todos eram leads; apaga o duplicado com `deleteQuietly`; não funde `lead_status`, `lead_source` nem follow-up; **sem desfazer**. Uma tabela nova com `client_id` entra automaticamente na fusão.
 

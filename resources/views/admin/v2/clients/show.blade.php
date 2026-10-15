@@ -390,7 +390,7 @@
                                 @endif
                             </td>
                             <td>
-                                <strong>{{ $proposal->brand }} {{ $proposal->model }}</strong>
+                                <strong><x-admin.brand-logo :brand="$proposal->brand" :size="24" class="me-1" />{{ $proposal->brand }} {{ $proposal->model }}</strong>
                                 @if($proposal->version)
                                     <br><small class="text-muted">{{ $proposal->version }}</small>
                                 @endif
@@ -523,6 +523,7 @@
             'icon'        => 'bi-file-earmark-text',
             'color'       => 'primary',
             'badge'       => 'Cotação',
+            'brand'       => $proposal->brand,
             'title'       => trim(($proposal->brand ?? '') . ' ' . ($proposal->model ?? '')),
             'sub'         => $proposal->value ? number_format($proposal->value, 0, ',', '.') . ' €' : null,
             'status_label'=> $st['label'],
@@ -594,7 +595,7 @@
                             <span class="iz-timeline-date">{{ $event['date']->format('d/m/Y') }}</span>
                         </div>
                         @if($isLink)
-                            <a href="{{ $event['link'] }}" class="iz-timeline-title">{{ $event['title'] ?: '—' }}</a>
+                            <a href="{{ $event['link'] }}" class="iz-timeline-title">@if(!empty($event['brand']))<x-admin.brand-logo :brand="$event['brand']" :size="22" class="me-1" />@endif{{ $event['title'] ?: '—' }}</a>
                         @else
                             <div class="iz-timeline-title iz-timeline-title--plain">{{ $event['title'] ?: '—' }}</div>
                         @endif

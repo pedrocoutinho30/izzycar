@@ -447,6 +447,7 @@ $pendingValue = $totalValue - $paidValue;
     'title'    => $isEdit
         ? (($convertedProposal->brand ?? '') . ' ' . ($convertedProposal->modelCar ?? '') . ($convertedProposal->year ? ' · ' . $convertedProposal->year : ''))
         : 'Nova Cotação Convertida',
+    'titleBrandLogo' => $isEdit ? ($convertedProposal->brand ?? null) : null,
     'subtitle' => $isEdit
         ? 'Cliente: ' . ($convertedProposal->client->name ?? 'N/A') . ' · Gestão do processo de importação'
         : 'Preencha os dados da nova proposta convertida',

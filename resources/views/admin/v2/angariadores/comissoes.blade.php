@@ -63,7 +63,7 @@
                 <tr class="{{ $overdue ? 'table-danger' : '' }}">
                     <td>{{ $proposal->owner->name ?? '—' }}</td>
                     <td>{{ $proposal->client->name ?? '—' }}</td>
-                    <td>{{ trim(($proposal->brand ?? '') . ' ' . ($proposal->modelCar ?? '')) }}</td>
+                    <td><x-admin.brand-logo :brand="$proposal->brand" :size="22" class="me-1" />{{ trim(($proposal->brand ?? '') . ' ' . ($proposal->modelCar ?? '')) }}</td>
                     <td>{{ $amount !== null ? number_format($amount, 2, ',', '.') . ' €' : '—' }}</td>
                     <td>
                         <a href="{{ route('admin.v2.converted-proposals.edit', $proposal->id) }}" class="badge bg-{{ $statusColor }} text-decoration-none">

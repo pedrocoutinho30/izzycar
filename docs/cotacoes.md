@@ -12,6 +12,7 @@ No código chamam-se `Proposal` ("proposta"/"cotação"). Cotação aceite gera 
 - **Estados** (strings): `Pendente`, `Enviado`, `Aprovada`, `Reprovada`, `Sem resposta`. A migration original define `Enviada`; o código usa `Enviado` **(por confirmar o que a BD real tem)**.
 - **Mudar de estado**: usar sempre `ProposalAcceptanceService::changeStatus`. Qualquer estado pode ir a qualquer outro, exceto: uma cotação já aceite só admite `Aprovada` (para anular, cancelar a convertida). `Aprovada` passa sempre por `accept()`; `Reprovada` marca as oportunidades ligadas como `rejeitado`. `ProposalController::updateStatus` (V1) não cria convertida; updates em massa ignoram o observer.
 - `ProposalObserver`: `created`/`updated` gravam `AuditLog`; passar a `Enviado` dispara `notifyProposalSent` (`ProposalSentMail` ao cliente e, ao dono, versão `forAngariador`; agenda follow-up a +2 dias se vazio); passar a `Aprovada` converte a lead. Os mails saem de forma síncrona dentro do observer. `deleting` repõe oportunidades `selecionado` a `em_analise`.
+- **Logo da marca**: `<x-admin.brand-logo :brand="$proposal->brand" />` (mapa nome→logo em `App\Support\BrandLogos`, uma query por pedido); `item-card` aceita `titleBrand` e `page-header` `titleBrandLogo`.
 
 ## Criar e editar
 

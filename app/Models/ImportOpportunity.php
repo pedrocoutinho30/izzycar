@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ContactMethod;
+use App\Models\Concerns\AssociatesSellerBrand;
 use App\Enums\ContactStatus;
 use App\Enums\OpportunityStatus;
 use App\Enums\VehicleFuel;
@@ -17,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class ImportOpportunity extends Model
 {
+    use AssociatesSellerBrand;
+
     /** Países de origem mais comuns nas importações (ISO 3166-1 alpha-2). */
     public const COUNTRIES = [
         'DE' => 'Alemanha',

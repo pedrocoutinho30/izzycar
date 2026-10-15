@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SellerRequest;
+use App\Models\Brand;
 use App\Models\Seller;
 use App\Services\SellerDuplicateDetector;
 use App\Services\SellerService;
@@ -24,9 +25,10 @@ class SellerController extends Controller
     public function index(Request $request)
     {
         $sellers = Seller::query()
-            ->with('primaryContact')
+            ->with(['primaryContact', 'brands'])
             ->withCount(['contacts', 'vehicles', 'opportunities'])
             ->search($request->input('search'))
+            ->worksBrand($request->input('brand'))
             ->when($request->input('status') === 'ativos', fn ($q) => $q->where('is_active', true))
             ->when($request->input('status') === 'inativos', fn ($q) => $q->where('is_active', false))
             ->orderByDesc('is_active')
@@ -40,12 +42,12 @@ class SellerController extends Controller
             ['title' => 'Com veículos vendidos', 'value' => Seller::has('vehicles')->count(), 'color' => 'info', 'icon' => 'bi-car-front'],
         ];
 
-        return view('admin.v2.sellers.index', compact('sellers', 'stats'));
+        return view('admin.v2.sellers.index', ['sellers' => $sellers, 'stats' => $stats, 'brandOptions' => Brand::orderBy('name')->pluck('name', 'id')->all()]);
     }
 
     public function create()
     {
-        return view('admin.v2.sellers.form', ['seller' => null]);
+        return view('admin.v2.sellers.form', ['seller' => null, 'brands' => Brand::orderBy('name')->get(['id', 'name', 'logo_path'])]);
     }
 
     /**
@@ -88,6 +90,7 @@ class SellerController extends Controller
     {
         $seller->load([
             'domains',
+            'brands',
             'contacts',
             'creator',
             'vehicles' => fn ($q) => $q->with('sellerContact')->orderByDesc('purchase_date')->orderByDesc('id'),
@@ -102,9 +105,12 @@ class SellerController extends Controller
 
     public function edit(Seller $seller)
     {
-        $seller->load('domains');
+        $seller->load(['domains', 'brands']);
 
-        return view('admin.v2.sellers.form', compact('seller'));
+        return view('admin.v2.sellers.form', [
+            'seller' => $seller,
+            'brands' => Brand::orderBy('name')->get(['id', 'name', 'logo_path']),
+        ]);
     }
 
     public function update(SellerRequest $request, Seller $seller)

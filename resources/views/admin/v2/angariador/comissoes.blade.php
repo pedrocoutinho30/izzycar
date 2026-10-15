@@ -40,7 +40,7 @@
                 @php $amount = $proposal->angariadorCommissionAmount(); @endphp
                 <tr>
                     <td>{{ $proposal->client->name ?? '—' }}</td>
-                    <td>{{ trim(($proposal->brand ?? '') . ' ' . ($proposal->modelCar ?? '')) }}</td>
+                    <td><x-admin.brand-logo :brand="$proposal->brand" :size="22" class="me-1" />{{ trim(($proposal->brand ?? '') . ' ' . ($proposal->modelCar ?? '')) }}</td>
                     <td>{{ $amount !== null ? number_format($amount, 2, ',', '.') . ' €' : '—' }}</td>
                     <td>
                         @if($proposal->comissao_paga)

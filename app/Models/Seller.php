@@ -6,6 +6,7 @@ use App\Services\ContactNormalizer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -57,6 +58,12 @@ class Seller extends Model
         return $this->hasOne(SellerContact::class)->where('is_primary', true)->where('is_active', true);
     }
 
+    /** Marcas com que o vendedor trabalha (catálogo `brands`). */
+    public function brands(): BelongsToMany
+    {
+        return $this->belongsToMany(Brand::class, 'brand_seller')->withTimestamps()->orderBy('name');
+    }
+
     public function vehicles(): HasMany
     {
         return $this->hasMany(V3Vehicle::class);
@@ -75,6 +82,14 @@ class Seller extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    /** Vendedores que trabalham a marca (id do catálogo). */
+    public function scopeWorksBrand(Builder $query, int|string|null $brandId): Builder
+    {
+        return blank($brandId)
+            ? $query
+            : $query->whereHas('brands', fn (Builder $b) => $b->where('brands.id', $brandId));
     }
 
     /**

@@ -39,6 +39,24 @@
         @if($useOld) @error('domains')<div class="invalid-feedback">{{ $message }}</div>@enderror @endif
     </div>
     @unless($compact)
+    @isset($brands)
+    @php
+        $selectedBrandIds = collect($useOld ? old('brand_ids', $s?->brands?->pluck('id')->all() ?? []) : [])->map(fn ($id) => (int) $id)->all();
+    @endphp
+    <div class="col-12">
+        <label class="form-label" for="{{ $idPrefix }}Brands">Marcas com que trabalha</label>
+        <input type="hidden" name="brands_submitted" value="1">
+        <select name="brand_ids[]" id="{{ $idPrefix }}Brands" class="form-select {{ $err('brand_ids.*') }}" multiple data-brand-select
+                data-logos="{{ json_encode($brands->mapWithKeys(fn ($b) => [$b->id => $b->logo_url])->filter()->all()) }}"
+                placeholder="Pesquisar marcas...">
+            @foreach($brands as $brand)
+            <option value="{{ $brand->id }}" @selected(in_array($brand->id, $selectedBrandIds, true))>{{ $brand->name }}</option>
+            @endforeach
+        </select>
+        <div class="form-text">Também são adicionadas automaticamente quando uma oportunidade ou veículo deste vendedor é guardado.</div>
+        @if($useOld) @error('brand_ids.*')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror @endif
+    </div>
+    @endisset
     <div class="col-12">
         <label class="form-label" for="{{ $idPrefix }}Address">Morada</label>
         <textarea name="address" id="{{ $idPrefix }}Address" rows="2" class="form-control {{ $err('address') }}">{{ $val('address', $s?->address) }}</textarea>
@@ -51,3 +69,40 @@
     </div>
     @endunless
 </div>
+
+@once
+@isset($brands)
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const selects = document.querySelectorAll('[data-brand-select]');
+    if (!selects.length) return;
+
+    const ready = window.TomSelect ? Promise.resolve() : new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/tom-select@2/dist/js/tom-select.complete.min.js';
+        script.onload = resolve;
+        document.head.appendChild(script);
+    });
+
+    ready.then(() => selects.forEach((select) => {
+        const logos = JSON.parse(select.dataset.logos || '{}');
+        const logo = (value, e) => logos[value]
+            ? `<img src="${e(logos[value])}" alt="" style="height:20px;width:auto;max-width:40px;object-fit:contain;margin-right:.5rem;vertical-align:middle;">`
+            : '';
+
+        new TomSelect(select, {
+            plugins: ['remove_button', 'checkbox_options'],
+            maxOptions: null,
+            closeAfterSelect: false,
+            render: {
+                option: (d, e) => `<div>${logo(d.value, e)}${e(d.text)}</div>`,
+                item: (d, e) => `<div>${logo(d.value, e)}${e(d.text)}</div>`,
+            },
+        });
+    }));
+});
+</script>
+@endpush
+@endisset
+@endonce

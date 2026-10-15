@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Brand;
 use App\Models\Seller;
 use App\Models\SellerContact;
 use App\Models\User;
@@ -59,10 +60,15 @@ class SellerService
     {
         return DB::transaction(function () use ($sellerData, $contactData, $user) {
             $domains = $sellerData['domains'] ?? null;
-            unset($sellerData['domains']);
+            $brandIds = $sellerData['brand_ids'] ?? null;
+            unset($sellerData['domains'], $sellerData['brand_ids']);
 
             $seller = Seller::create($sellerData + ['created_by' => $user?->id]);
             $seller->syncDomains($domains);
+
+            if ($brandIds !== null) {
+                $seller->brands()->sync($brandIds);
+            }
 
             if ($contactData) {
                 $this->addContact($seller, $contactData);
@@ -82,6 +88,11 @@ class SellerService
                 unset($data['domains']);
             }
 
+            if (array_key_exists('brand_ids', $data)) {
+                $seller->brands()->sync($data['brand_ids'] ?? []);
+                unset($data['brand_ids']);
+            }
+
             $seller->update($data);
 
             // O indicativo dos números nacionais depende do país.
@@ -91,6 +102,30 @@ class SellerService
 
             return $seller;
         });
+    }
+
+    /**
+     * Junta a marca (pelo nome, sem maiúsculas) às marcas do vendedor, sem
+     * nunca remover nenhuma. Marcas fora do catálogo ignoram-se e qualquer
+     * falha é só registada: não pode impedir guardar o veículo/oportunidade.
+     */
+    public function attachBrandByName(int $sellerId, ?string $brandName): void
+    {
+        $name = mb_strtolower(trim((string) $brandName));
+
+        if ($name === '') {
+            return;
+        }
+
+        try {
+            $brandId = Brand::query()->whereRaw('LOWER(name) = ?', [$name])->value('id');
+
+            if ($brandId) {
+                Seller::query()->find($sellerId)?->brands()->syncWithoutDetaching([$brandId]);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     public function addContact(Seller $seller, array $data): SellerContact

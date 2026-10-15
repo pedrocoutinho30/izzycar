@@ -39,6 +39,8 @@ class SellerRequest extends FormRequest
             'address' => 'nullable|string|max:2000',
             'domains' => 'nullable|string|max:1000',
             'notes' => 'nullable|string|max:20000',
+            'brand_ids' => 'nullable|array',
+            'brand_ids.*' => 'integer|distinct|exists:brands,id',
         ] + $this->contactRules($this->filled('existing_seller_id')
             ? 'required'
             : 'required_with:contact.role,contact.email,contact.phone,contact.whatsapp,contact.notes');
@@ -49,6 +51,7 @@ class SellerRequest extends FormRequest
         return [
             'name.required_without' => 'O nome do vendedor é obrigatório.',
             'country.in' => 'País inválido.',
+            'brand_ids.*.exists' => 'Marca inválida.',
             'existing_seller_id.exists' => 'O vendedor escolhido já não existe.',
         ] + $this->contactMessages();
     }
@@ -64,11 +67,31 @@ class SellerRequest extends FormRequest
         return app(ContactNormalizer::class)->domains($this->validated('domains'));
     }
 
+    /**
+     * Marcas escolhidas no formulário; null se o formulário não as enviou
+     * (ex.: modal rápido), para não apagar as existentes.
+     *
+     * @return list<int>|null
+     */
+    public function brandIds(): ?array
+    {
+        if (!$this->has('brands_submitted')) {
+            return null;
+        }
+
+        return array_values(array_map('intval', $this->validated('brand_ids') ?? []));
+    }
+
     public function sellerData(): array
     {
-        return collect($this->validated())
+        $data = collect($this->validated())
             ->only(['name', 'website', 'country', 'address', 'notes'])
-            ->put('domains', $this->domainList())
-            ->all();
+            ->put('domains', $this->domainList());
+
+        if (($brandIds = $this->brandIds()) !== null) {
+            $data->put('brand_ids', $brandIds);
+        }
+
+        return $data->all();
     }
 }

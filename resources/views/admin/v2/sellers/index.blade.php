@@ -34,7 +34,7 @@
             'label' => 'Pesquisar',
             'placeholder' => 'Empresa, contacto, email, telefone, WhatsApp ou domínio...',
             'value' => request('search'),
-            'col' => 8,
+            'col' => 5,
         ],
         [
             'type' => 'select',
@@ -42,6 +42,15 @@
             'label' => 'Estado',
             'value' => request('status'),
             'options' => ['ativos' => 'Ativos', 'inativos' => 'Inativos'],
+            'col' => 3,
+        ],
+        [
+            'type' => 'select',
+            'name' => 'brand',
+            'label' => 'Marca',
+            'value' => request('brand'),
+            'options' => $brandOptions,
+            'col' => 4,
         ],
     ],
 ])
@@ -75,6 +84,9 @@
                 $primary?->email ? ['icon' => 'bi-envelope', 'text' => $primary->email, 'href' => 'mailto:' . $primary->email] : null,
                 $primary?->phone ? ['icon' => 'bi-telephone', 'text' => $primary->phone] : null,
             ])),
+            'extraHtml' => $seller->brands->isNotEmpty()
+                ? view('admin.v2.sellers._brand-badges', ['brands' => $seller->brands, 'size' => 24])->render()
+                : null,
             'actions' => [
                 ['href' => route('admin.v2.sellers.show', $seller->id), 'icon' => 'bi-eye', 'label' => 'Abrir', 'color' => 'secondary'],
                 ['href' => route('admin.v2.sellers.edit', $seller->id), 'icon' => 'bi-pencil', 'label' => 'Editar', 'color' => 'primary'],
@@ -84,7 +96,7 @@
         @include('components.admin.empty-state', [
             'icon' => 'bi-shop',
             'title' => 'Nenhum vendedor encontrado',
-            'message' => request()->hasAny(['search', 'status'])
+            'message' => request()->hasAny(['search', 'status', 'brand'])
                 ? 'Não há vendedores para os filtros aplicados.'
                 : 'Ainda não existem vendedores registados.',
             'action' => ['text' => 'Novo vendedor', 'href' => route('admin.v2.sellers.create'), 'icon' => 'bi-plus-lg'],

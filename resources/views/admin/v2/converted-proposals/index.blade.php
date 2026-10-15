@@ -55,6 +55,7 @@
     @include('components.admin.item-card', [
     'image' => 'https://ui-avatars.com/api/?name=' . urlencode($converted->brand ?? 'Veículo') . '&background=6e0707&color=fff&bold=true',
     'title' => ($converted->brand ?? '') . ' ' . ($converted->modelCar ?? ''),
+    'titleBrand' => $converted->brand ?? null,
     'subtitle' => 'Cliente: ' . ($converted->client->name ?? 'N/A'),
     'badges' => array_filter([
     [

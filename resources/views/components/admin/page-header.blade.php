@@ -7,6 +7,7 @@
     $extraActions = $extraActions ?? [];
     $subtitle     = $subtitle     ?? null;
     $breadcrumbs  = $breadcrumbs  ?? [];
+    $titleBrandLogo = $titleBrandLogo ?? null; // nome da marca, para mostrar o logo antes do título
 
     // Botões para páginas a que o utilizador não tem acesso não aparecem
     // (a rota continua protegida no backend — isto é só consequência).
@@ -35,7 +36,7 @@
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
-            <h1 class="page-title">{{ $title }}</h1>
+            <h1 class="page-title">@if($titleBrandLogo)<x-admin.brand-logo :brand="$titleBrandLogo" :size="28" class="me-2" />@endif{{ $title }}</h1>
             @if($subtitle)
             <p class="page-subtitle">{{ $subtitle }}</p>
             @endif

@@ -38,7 +38,7 @@
                         <i class="bi bi-file-earmark-text"></i>
                     </div>
                     <div class="lad-body">
-                        <div class="lad-title">{{ trim(($proposal->brand ?? '') . ' ' . ($proposal->model ?? '—')) }}</div>
+                        <div class="lad-title"><x-admin.brand-logo :brand="$proposal->brand" :size="24" class="me-1" />{{ trim(($proposal->brand ?? '') . ' ' . ($proposal->model ?? '—')) }}</div>
                         <div class="lad-meta">Enviada em {{ $proposal->created_at->format('d/m/Y') }}</div>
                         <div class="lad-tags">
                             <span class="lad-tag badge bg-{{ $pColor }}">{{ $proposal->status ?? 'Pendente' }}</span>
