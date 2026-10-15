@@ -4,10 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Brand extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'logo_path'];
+
+    /** URL público do logo, ou null se a marca não tiver. */
+    public function getLogoUrlAttribute(): ?string
+    {
+        return $this->logo_path ? Storage::disk('public')->url($this->logo_path) : null;
+    }
 
     public function models(): HasMany
     {

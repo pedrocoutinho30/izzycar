@@ -156,6 +156,7 @@ return [
             'resources' => [
                 'attribute-groups' => ['label' => 'Grupos de atributos', 'routes' => ['admin.v2.attribute-groups.*']],
                 'vehicle-attributes' => ['label' => 'Atributos de veículos', 'routes' => ['admin.v2.vehicle-attributes.*']],
+                'brands' => ['label' => 'Marcas e logos', 'routes' => ['admin.v2.brands.*']],
                 'settings' => ['label' => 'Configurações', 'routes' => ['admin.v2.settings.*']],
             ],
         ],

@@ -687,6 +687,15 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     });
 
     // ============================================================
+    // MARCAS (logos)
+    // ============================================================
+    Route::prefix('v2/brands')->name('admin.v2.brands.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\BrandLogoController::class, 'index'])->name('index');
+        Route::post('/{brand}/logo', [App\Http\Controllers\Admin\BrandLogoController::class, 'update'])->name('logo.update');
+        Route::delete('/{brand}/logo', [App\Http\Controllers\Admin\BrandLogoController::class, 'destroy'])->name('logo.destroy');
+    });
+
+    // ============================================================
     // RELATÓRIOS V2
     // ============================================================
     Route::prefix('v2/reports')->name('admin.v2.reports.')->group(function () {

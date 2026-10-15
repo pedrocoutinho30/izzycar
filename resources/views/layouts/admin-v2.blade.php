@@ -975,7 +975,7 @@
                     'rede' => ['admin.v2.angariadores.*', 'admin.v2.sellers.*', 'admin.v2.suppliers.*', 'admin.v2.partners.*'],
                     'analise' => ['admin.v2.reports.*', 'calculator.profit', 'admin.v2.comparator.*', 'car-analysis.*', 'admin.v2.radar.*'],
                     'conteudo' => ['admin.news.*', 'admin.testimonials.*', 'admin.v2.newsletter-management.*', 'admin.v2.menus.*', 'admin.v2.social-posts.*'],
-                    'config' => ['admin.v2.attribute-groups.*', 'admin.v2.vehicle-attributes.*', 'admin.v2.settings.*'],
+                    'config' => ['admin.v2.attribute-groups.*', 'admin.v2.vehicle-attributes.*', 'admin.v2.brands.*', 'admin.v2.settings.*'],
                     'sistema' => ['admin.v2.users.*', 'admin.v2.audit-log', 'admin.v2.roles.*', 'admin.v2.permissions.*', 'admin.v2.manual'],
                 ];
                 $activeGroup = null;
@@ -1267,7 +1267,7 @@
             </div>
             @endcanroutes
 
-            @canroutes(['admin.v2.attribute-groups.index', 'admin.v2.vehicle-attributes.index', 'admin.v2.settings.index'])
+            @canroutes(['admin.v2.attribute-groups.index', 'admin.v2.vehicle-attributes.index', 'admin.v2.brands.index', 'admin.v2.settings.index'])
             {{-- ═══════ CONFIGURAÇÕES ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupConfig" aria-expanded="{{ $activeGroup === 'config' ? 'true' : 'false' }}">
                 <span>Configurações</span>
@@ -1287,6 +1287,14 @@
                     <a href="{{ route('admin.v2.vehicle-attributes.index') }}" class="nav-link {{ request()->routeIs('admin.v2.vehicle-attributes.*') ? 'active' : '' }}">
                         <i class="bi bi-tags"></i>
                         <span>Atributos de Veículos</span>
+                    </a>
+                </div>
+                @endcanroute
+                @canroute('admin.v2.brands.index')
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.brands.index') }}" class="nav-link {{ request()->routeIs('admin.v2.brands.*') ? 'active' : '' }}">
+                        <i class="bi bi-patch-check"></i>
+                        <span>Marcas</span>
                     </a>
                 </div>
                 @endcanroute
@@ -1641,7 +1649,7 @@
                 @endcanroute
                 @endcanroutes
 
-                @canroutes(['admin.v2.attribute-groups.index', 'admin.v2.vehicle-attributes.index', 'admin.v2.settings.index'])
+                @canroutes(['admin.v2.attribute-groups.index', 'admin.v2.vehicle-attributes.index', 'admin.v2.brands.index', 'admin.v2.settings.index'])
                 <div class="abn-sheet-section-title">Configurações</div>
                 @canroute('admin.v2.attribute-groups.index')
                 <a href="{{ route('admin.v2.attribute-groups.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.attribute-groups.*') ? 'active' : '' }}">
@@ -1653,6 +1661,12 @@
                 <a href="{{ route('admin.v2.vehicle-attributes.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.vehicle-attributes.*') ? 'active' : '' }}">
                     <i class="bi bi-tags"></i>
                     <span>Atributos de Veículos</span>
+                </a>
+                @endcanroute
+                @canroute('admin.v2.brands.index')
+                <a href="{{ route('admin.v2.brands.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.brands.*') ? 'active' : '' }}">
+                    <i class="bi bi-patch-check"></i>
+                    <span>Marcas</span>
                 </a>
                 @endcanroute
                 @canroute('admin.v2.settings.index')
