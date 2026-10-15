@@ -1,7 +1,7 @@
 <footer class="footer-modern-mobile">
     <div class="container">
         @php
-        $settings = \App\Models\Setting::all();
+        $settings = \App\Models\Setting::cached();
         @endphp
         
         <!-- Brand -->

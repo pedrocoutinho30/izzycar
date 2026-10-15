@@ -3,7 +3,7 @@
 
 <head>
     @php
-        $s = App\Models\Setting::get();
+        $s = App\Models\Setting::cached();
         $iz_phone   = $s->where('label','phone')->first()?->value   ?? '';
         $iz_email   = $s->where('label','email')->first()?->value   ?? '';
         $iz_address = $s->where('label','address')->first()?->value ?? '';
@@ -11,9 +11,7 @@
         $iz_ig      = $s->where('label','insta')->first()?->value   ?? 'https://www.instagram.com/izzycarpt/';
     @endphp
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0NT5HLTZ2J"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0NT5HLTZ2J');</script>
+    {{-- Google Analytics e Hotjar só carregam após consentimento (ver partials/cookies.blade.php) --}}
 
     <!-- Schema.org — AutoDealer -->
     <script type="application/ld+json">
@@ -323,11 +321,12 @@
     </script>
 
     <!-- JAVASCRIPT FILES -->
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/jquery.sticky.js') }}"></script>
-    <script src="{{ asset('js/click-scroll.js') }}"></script>
-    <script src="{{ asset('js/custom.js') }}"></script>
+    {{-- defer: executam por ordem, após o parse e antes de DOMContentLoaded.
+         Scripts inline em @push('scripts') que usem $ / bootstrap têm de esperar por DOMContentLoaded.
+         jquery.sticky.js e click-scroll.js removidos: sem uso (nenhum .sticky() nem #section_N / .click-scroll nas páginas públicas). --}}
+    <script src="{{ asset('js/jquery.min.js') }}" defer></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}" defer></script>
+    <script src="{{ asset('js/custom.js') }}" defer></script>
 
     @stack('scripts')
 </body>

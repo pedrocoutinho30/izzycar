@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-$settings = \App\Models\Setting::all();
+$settings = \App\Models\Setting::cached();
 $email    = $settings->where('label', 'email')->first()->value ?? 'geral@izzycar.pt';
 $phone    = $settings->where('label', 'phone')->first()->value ?? '';
 $address  = $settings->where('label', 'address')->first()->value != 0 ? $settings->where('label', 'address')->first()->value :  'Rua Bento Landureza, 245 3720-261 Oliveira de Azeméis, Portugal';

@@ -541,6 +541,8 @@
     window.brands = @json($brands);
 </script>
 <script>
+    // jQuery é carregado com defer: só está disponível a partir de DOMContentLoaded
+    document.addEventListener("DOMContentLoaded", function() {
     $(document).on("submit", "#importForm", function(e) {
         e.preventDefault();
 
@@ -572,6 +574,7 @@
                 );
             }
         });
+    });
     });
 
     // Script para carregar modelos conforme a marca

@@ -2,7 +2,7 @@
     <div class="footer-main">
         <div class="container">
             @php
-            $settings = \App\Models\Setting::all();
+            $settings = \App\Models\Setting::cached();
             @endphp
             
             <div class="row g-4">

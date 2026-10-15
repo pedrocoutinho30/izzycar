@@ -57,7 +57,9 @@ class AppServiceProvider extends ServiceProvider
                 AuditLog::record('logout', "Logout: {$event->user->name} ({$event->user->email})");
             }
         });
-        View::composer('*', function ($view) {
+        // Só as views do site público (layout, parciais e páginas que o estendem) usam $menus/$logotipo.
+        // Antes corria em '*' (backoffice, PDFs, e-mails…) e sobrepunha o $menus do MenuController.
+        View::composer(['frontend.*'], function ($view) {
             $menus = Cache::remember('frontend_menus', 300, fn () =>
                 Menu::orderBy('order')
                     ->where('show_online', 1)
@@ -67,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
             );
 
             $logo = Cache::remember('site_logo', 3600, fn () =>
-                optional(\App\Models\Setting::where('label', 'logo')->first())->value
+                \App\Models\Setting::cachedValue('logo')
             );
 
             $view->with('menus', $menus);

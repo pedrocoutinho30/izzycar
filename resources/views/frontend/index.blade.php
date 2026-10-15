@@ -4,13 +4,22 @@
 'seo' => $page->seo
 ])
 
+@push('head')
+{{-- Pré-carrega a imagem LCP (mesmo srcset/sizes do <picture> do hero) --}}
+<link rel="preload" as="image" type="image/webp" fetchpriority="high"
+      imagesrcset="{{ asset('img/hero-640.webp') }} 640w, {{ asset('img/hero-1024.webp') }} 1024w"
+      imagesizes="100vw">
+@endpush
+
 @section('content')
 
 <!-- Hero Section -->
 <section class="hero-homepage">
     <picture class="hero-bg">
-        <source srcset="{{ asset('img/hero.webp') }}" type="image/webp">
-        <img src="{{ asset('img/2.jpg') }}" alt="Importação automóvel Izzycar" loading="eager" fetchpriority="high">
+        <source type="image/webp"
+                srcset="{{ asset('img/hero-640.webp') }} 640w, {{ asset('img/hero-1024.webp') }} 1024w"
+                sizes="100vw">
+        <img src="{{ asset('img/2-800.jpg') }}" alt="Importação automóvel Izzycar" width="1024" height="1536" loading="eager" fetchpriority="high" decoding="async">
     </picture>
     <div class="hero-bg-gradient"></div>
     <div class="container">
@@ -66,7 +75,7 @@
                 <a href="{{ route('frontend.import') }}" class="service-bento fade-in-up">
                     <picture>
                         <source srcset="{{ asset('img/2.webp') }}" type="image/webp">
-                        <img src="{{ asset('img/2.jpg') }}" alt="Importação Chave na Mão" loading="lazy">
+                        <img src="{{ asset('img/2-800.jpg') }}" alt="Importação Chave na Mão" loading="lazy">
                     </picture>
                     <div class="service-bento-overlay"></div>
                     <div class="service-bento-content">
@@ -84,7 +93,7 @@
                 <a href="{{ route('frontend.legalization') }}" class="service-bento fade-in-up" data-delay="100">
                     <picture>
                         <source srcset="{{ asset('img/1.webp') }}" type="image/webp">
-                        <img src="{{ asset('img/1.jpg') }}" alt="Legalização de Veículos" loading="lazy">
+                        <img src="{{ asset('img/1-900.jpg') }}" alt="Legalização de Veículos" loading="lazy">
                     </picture>
                     <div class="service-bento-overlay"></div>
                     <div class="service-bento-content">
@@ -102,7 +111,7 @@
                 <a href="{{ route('vehicles.list') }}" class="service-bento fade-in-up" data-delay="200">
                     <picture>
                         <source srcset="{{ asset('img/3.webp') }}" type="image/webp">
-                        <img src="{{ asset('img/3.jpg') }}" alt="Veículos Usados" loading="lazy">
+                        <img src="{{ asset('img/3-900.jpg') }}" alt="Veículos Usados" loading="lazy">
                     </picture>
                     <div class="service-bento-overlay"></div>
                     <div class="service-bento-content">
