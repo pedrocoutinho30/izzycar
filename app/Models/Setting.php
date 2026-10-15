@@ -41,5 +41,6 @@ class Setting extends Model
     {
         Cache::forget(self::CACHE_KEY);
         Cache::forget('site_logo');
+        Cache::forget('site_logo_small');
     }
 }

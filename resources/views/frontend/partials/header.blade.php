@@ -8,7 +8,11 @@
   <nav class="mobile-topbar-slim">
     <a href="{{ route('frontend.home') }}" class="mobile-topbar-slim-brand">
       <picture>
+        @if(!empty($logotipo_small))
+        <source srcset="{{ asset($logotipo_small) }} 240w, {{ asset(preg_replace('/\.(png|jpe?g)$/i', '.webp', $logotipo)) }} 400w" sizes="121px" type="image/webp">
+        @else
         <source srcset="{{ asset(preg_replace('/\.(png|jpe?g)$/i', '.webp', $logotipo)) }}" type="image/webp">
+        @endif
         <img src="{{ asset($logotipo) }}" alt="Izzycar" width="121" height="80" fetchpriority="high">
       </picture>
     </a>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Services\ThumbnailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -86,6 +87,10 @@ class SettingV2Controller extends Controller
             $filename = $request->label . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('settings', $filename, 'public');
             $data['value'] = $path;
+
+            if ($request->label === 'logo') {
+                app(ThumbnailService::class)->generateForLogo($path);
+            }
         }
 
         Setting::create($data);
@@ -129,6 +134,10 @@ class SettingV2Controller extends Controller
             $filename = $setting->label . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('settings', $filename, 'public');
             $data['value'] = $path;
+
+            if ($setting->label === 'logo') {
+                app(ThumbnailService::class)->generateForLogo($path);
+            }
         }
 
         $setting->update($data);

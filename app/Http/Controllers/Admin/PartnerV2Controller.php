@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Partner;
+use App\Services\ThumbnailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -90,6 +91,7 @@ class PartnerV2Controller extends Controller
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('partners', 'public');
+            app(ThumbnailService::class)->generate($validated['image'], ThumbnailService::PARTNER_WIDTH);
         }
 
         Partner::create($validated);
@@ -134,8 +136,10 @@ class PartnerV2Controller extends Controller
         if ($request->hasFile('image')) {
             if ($partner->image) {
                 Storage::disk('public')->delete($partner->image);
+                app(ThumbnailService::class)->delete($partner->image, ThumbnailService::PARTNER_WIDTH);
             }
             $validated['image'] = $request->file('image')->store('partners', 'public');
+            app(ThumbnailService::class)->generate($validated['image'], ThumbnailService::PARTNER_WIDTH);
         }
 
         $partner->update($validated);
@@ -153,6 +157,7 @@ class PartnerV2Controller extends Controller
 
         if ($partner->image) {
             Storage::disk('public')->delete($partner->image);
+            app(ThumbnailService::class)->delete($partner->image, ThumbnailService::PARTNER_WIDTH);
         }
 
         $partner->delete();

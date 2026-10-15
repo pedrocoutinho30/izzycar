@@ -1,5 +1,9 @@
 @extends('frontend.partials.layout')
 
+@push('head')
+@include('frontend.partials.swiper-css')
+@endpush
+
 @php
     /* ── Cover photo ─────────────────────────────────────────────────────── */
     $coverPhoto     = $vehicle->photos->where('is_cover', true)->first()

@@ -3,7 +3,11 @@
         {{-- Logo --}}
         <a class="navbar-brand-modern" href="{{ route('frontend.home') }}">
             <picture>
+                @if(!empty($logotipo_small))
+                <source srcset="{{ asset($logotipo_small) }} 240w, {{ asset(preg_replace('/\.(png|jpe?g)$/i', '.webp', $logotipo)) }} 400w" sizes="97px" type="image/webp">
+                @else
                 <source srcset="{{ asset(preg_replace('/\.(png|jpe?g)$/i', '.webp', $logotipo)) }}" type="image/webp">
+                @endif
                 <img src="{{ asset($logotipo) }}" alt="Izzycar" class="navbar-logo-modern" width="160" height="106" fetchpriority="high">
             </picture>
         </a>

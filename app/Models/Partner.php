@@ -25,6 +25,13 @@ class Partner extends Model
         'show_on_site',
     ];
 
+    /** Miniatura WebP (se existir no disco), senão o original — caminho relativo ao disco public. */
+    public function getImageThumbAttribute(): ?string
+    {
+        return \App\Services\ThumbnailService::existing($this->image, \App\Services\ThumbnailService::PARTNER_WIDTH)
+            ?? $this->image;
+    }
+
     protected $casts = [
         'show_on_site' => 'boolean',
     ];

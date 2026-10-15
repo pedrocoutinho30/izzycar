@@ -1,5 +1,9 @@
 @extends('frontend.partials.layout')
 
+@push('head')
+@include('frontend.partials.swiper-css')
+@endpush
+
 @include('frontend.partials.seo', [
 'seo' => $data->seo
 ])

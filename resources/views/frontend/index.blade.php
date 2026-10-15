@@ -216,7 +216,7 @@
                             <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                     </div>
-                    <h4>Processo Transparente</h4>
+                    <h3>Processo Transparente</h3>
                     <p>Acompanhamento em tempo real de todas as etapas da importação.</p>
                 </div>
             </div>
@@ -229,7 +229,7 @@
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                     </div>
-                    <h4>Inspeção Rigorosa</h4>
+                    <h3>Inspeção Rigorosa</h3>
                     <p>Todos os veículos são inspecionados antes da compra.</p>
                 </div>
             </div>
@@ -244,7 +244,7 @@
                             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                         </svg>
                     </div>
-                    <h4>Apoio Personalizado</h4>
+                    <h3>Apoio Personalizado</h3>
                     <p>Equipa dedicada disponível para esclarecer todas as suas dúvidas.</p>
                 </div>
             </div>
@@ -400,11 +400,11 @@
                 @if($partner->url)
                 <a href="{{ $partner->url }}" target="_blank" rel="noopener noreferrer"
                    class="partner-logo" title="{{ $partner->name }}">
-                    <img src="{{ asset('storage/' . $partner->image) }}" alt="{{ $partner->name }}">
+                    <img src="{{ asset('storage/' . $partner->image_thumb) }}" alt="{{ $partner->name }}" width="107" height="70" loading="lazy" decoding="async">
                 </a>
                 @else
                 <div class="partner-logo" title="{{ $partner->name }}">
-                    <img src="{{ asset('storage/' . $partner->image) }}" alt="{{ $partner->name }}">
+                    <img src="{{ asset('storage/' . $partner->image_thumb) }}" alt="{{ $partner->name }}" width="107" height="70" loading="lazy" decoding="async">
                 </div>
                 @endif
             @endforeach
@@ -438,7 +438,7 @@
                 </div>
                 <div class="cta-contact fade-in-up" data-delay="300">
                     <p>Ou contacte-nos diretamente:</p>
-                    <a href="tel:+351912345678" class="cta-phone">
+                    <a href="tel:+351928459346" class="cta-phone">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                         </svg>
@@ -782,9 +782,15 @@
         left: 0; right: 0; top: 50%;
         height: 2px;
         transform: translateY(-50%);
+        overflow: hidden;
+    }
+    /* Traço animado com transform (composto) em vez de background-position: desloca 1 período (28px). */
+    .road-divider-line::before {
+        content: '';
+        position: absolute;
+        top: 0; bottom: 0; left: -28px; right: 0;
         background-image: repeating-linear-gradient(90deg, rgba(255,128,128,0.4) 0 16px, transparent 16px 28px);
-        background-size: 200% 100%;
-        animation: roadMove 9s linear infinite;
+        animation: roadMove 0.2s linear infinite;
     }
     .road-divider-car {
         position: relative;
@@ -795,15 +801,15 @@
         animation: roadDrive 3.5s ease-in-out infinite;
     }
     @keyframes roadMove {
-        from { background-position: 0 0; }
-        to   { background-position: -200% 0; }
+        from { transform: translateX(0); }
+        to   { transform: translateX(28px); }
     }
     @keyframes roadDrive {
         0%, 100% { transform: translateX(-6px); }
         50%      { transform: translateX(6px); }
     }
     @media (prefers-reduced-motion: reduce) {
-        .road-divider-line, .road-divider-car { animation: none; }
+        .road-divider-line::before, .road-divider-car { animation: none; }
     }
 
     /* ── Os Nossos Veículos ── */
@@ -980,7 +986,7 @@
         transform: scale(1.08);
     }
 
-    .why-mini-card h4 {
+    .why-mini-card h3 {
         font-size: 1.1rem;
         font-weight: 700;
         color: #111;

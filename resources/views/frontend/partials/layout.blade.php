@@ -158,12 +158,9 @@
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/layout.css') }}?v={{ filemtime(public_path('css/layout.css')) }}" rel="stylesheet">
 
-    {{-- Ícones e Swiper: não-críticos, carregam após render inicial --}}
+    {{-- Ícones: não-críticos, carregam após render inicial. O CSS do Swiper só entra nas páginas com carrossel (@push('head') + partials.swiper-css). --}}
     <link href="{{ asset('css/bootstrap-icons.css') }}" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="{{ asset('css/bootstrap-icons.css') }}" rel="stylesheet"></noscript>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"></noscript>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"></noscript>
