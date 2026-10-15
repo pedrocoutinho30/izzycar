@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Brand;
+use Illuminate\Support\Str;
 
 /**
  * Resolve o logo de uma marca a partir do nome (as cotações, veículos e
@@ -16,7 +17,7 @@ class BrandLogos
 
     public function urlFor(?string $brand): ?string
     {
-        $key = $this->key($brand);
+        $key = self::normalize($brand);
 
         return $key === '' ? null : ($this->map()[$key] ?? null);
     }
@@ -35,7 +36,7 @@ class BrandLogos
 
             foreach (Brand::query()->whereNotNull('logo_path')->where('logo_path', '!=', '')->get(['id', 'name', 'logo_path']) as $brand) {
                 if ($url = $brand->logo_url) {
-                    $this->map[$this->key($brand->name)] = $url;
+                    $this->map[self::normalize($brand->name)] = $url;
                 }
             }
         }
@@ -43,8 +44,12 @@ class BrandLogos
         return $this->map;
     }
 
-    private function key(?string $brand): string
+    /**
+     * Chave única para comparar nomes de marca: sem acentos, minúsculas e só
+     * letras/dígitos ("Citroën" = "citroen", "Mercedes-Benz" = "mercedesbenz").
+     */
+    public static function normalize(?string $value): string
     {
-        return mb_strtolower(trim((string) $brand));
+        return preg_replace('/[^a-z0-9]/', '', Str::lower(Str::ascii((string) $value)));
     }
 }

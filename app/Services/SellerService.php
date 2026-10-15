@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Seller;
 use App\Models\SellerContact;
 use App\Models\User;
+use App\Support\BrandLogos;
 use App\Support\SellerMatches;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -105,20 +106,22 @@ class SellerService
     }
 
     /**
-     * Junta a marca (pelo nome, sem maiúsculas) às marcas do vendedor, sem
+     * Junta a marca (pelo nome normalizado, sem acentos nem maiúsculas) às marcas do vendedor, sem
      * nunca remover nenhuma. Marcas fora do catálogo ignoram-se e qualquer
      * falha é só registada: não pode impedir guardar o veículo/oportunidade.
      */
     public function attachBrandByName(int $sellerId, ?string $brandName): void
     {
-        $name = mb_strtolower(trim((string) $brandName));
+        $key = BrandLogos::normalize($brandName);
 
-        if ($name === '') {
+        if ($key === '') {
             return;
         }
 
         try {
-            $brandId = Brand::query()->whereRaw('LOWER(name) = ?', [$name])->value('id');
+            // Compara a chave normalizada em memória (não depende da collation da BD).
+            $brandId = Brand::query()->get(['id', 'name'])
+                ->first(fn (Brand $brand) => BrandLogos::normalize($brand->name) === $key)?->id;
 
             if ($brandId) {
                 Seller::query()->find($sellerId)?->brands()->syncWithoutDetaching([$brandId]);

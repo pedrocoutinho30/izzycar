@@ -65,4 +65,27 @@ class BrandLogoAdminTest extends TestCase
             ->assertSessionHasErrors('logo');
         $this->assertNull($brand->fresh()->logo_path);
     }
+
+    public function test_shared_file_is_kept_when_another_brand_uses_it(): void
+    {
+        Storage::disk('public')->put('brands/volkswagen.png', 'x');
+        $vw = Brand::create(['name' => 'VW', 'logo_path' => 'brands/volkswagen.png']);
+        $other = Brand::create(['name' => 'Volkswagen', 'logo_path' => 'brands/volkswagen.png']);
+        $admin = $this->backofficeUser('admin');
+
+        $this->actingAs($admin)->post(route('admin.v2.brands.logo.update', $vw), ['logo' => UploadedFile::fake()->image('a.png')]);
+        $this->assertNotSame('brands/volkswagen.png', $vw->fresh()->logo_path);
+        Storage::disk('public')->assertExists('brands/volkswagen.png');
+
+        $this->actingAs($admin)->delete(route('admin.v2.brands.logo.destroy', $other));
+        $this->assertNull($other->fresh()->logo_path);
+        // Já ninguém usa o ficheiro: este remove-se.
+        Storage::disk('public')->assertMissing('brands/volkswagen.png');
+
+        $this->actingAs($admin)->post(route('admin.v2.brands.logo.update', $other), ['logo' => UploadedFile::fake()->image('b.png')]);
+        $shared = $other->fresh()->logo_path;
+        $vw->update(['logo_path' => $shared]);
+        $this->actingAs($admin)->delete(route('admin.v2.brands.logo.destroy', $other));
+        Storage::disk('public')->assertExists($shared);
+    }
 }

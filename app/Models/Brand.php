@@ -5,16 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
 
 class Brand extends Model
 {
     protected $fillable = ['name', 'logo_path'];
 
-    /** URL público do logo, ou null se a marca não tiver. */
+    /**
+     * URL público do logo, ou null se a marca não tiver. Usa asset() (como no
+     * resto da app) e não Storage::url(): este parte do APP_URL e o logo
+     * deixa de carregar quando o BO é aberto por outro host.
+     */
     public function getLogoUrlAttribute(): ?string
     {
-        return $this->logo_path ? Storage::disk('public')->url($this->logo_path) : null;
+        return $this->logo_path ? asset('storage/'.$this->logo_path) : null;
     }
 
     /** Vendedores que trabalham esta marca. */

@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\V3Vehicle;
 use App\Support\BrandLogos;
 use Illuminate\Support\Facades\Cache;
+use App\Models\FormProposal;
+use App\Models\ImportOpportunity;
 use Tests\RefreshesDatabaseWithoutMysqlOnlyMigrations;
 use Tests\TestCase;
 
@@ -81,5 +83,49 @@ class SellerBrandsTest extends TestCase
         $this->assertNull($logos->urlFor('Sem Logo'));
         $this->assertNull($logos->urlFor(null));
         $this->assertSame(1, $queries);
+    }
+
+    public function test_brand_names_match_ignoring_accents_and_punctuation(): void
+    {
+        Brand::create(['name' => 'Citroën', 'logo_path' => 'brands/citroen.png']);
+        Brand::create(['name' => 'Mercedes-Benz', 'logo_path' => 'brands/mb.png']);
+
+        $logos = app(BrandLogos::class);
+        $this->assertStringContainsString('brands/citroen.png', $logos->urlFor('Citroen'));
+        $this->assertStringContainsString('brands/mb.png', $logos->urlFor('Mercedes Benz'));
+    }
+
+    public function test_auto_association_matches_accents_and_punctuation(): void
+    {
+        $citroen = Brand::create(['name' => 'Citroën']);
+        $mb = Brand::create(['name' => 'Mercedes-Benz']);
+        $seller = Seller::create(['name' => 'Stand']);
+
+        V3Vehicle::create(['reference' => V3Vehicle::generateReference(), 'brand' => 'Citroen', 'seller_id' => $seller->id]);
+        V3Vehicle::create(['reference' => V3Vehicle::generateReference(), 'brand' => 'mercedes benz', 'seller_id' => $seller->id]);
+
+        $this->assertEqualsCanonicalizing([$citroen->id, $mb->id], $seller->brands()->pluck('brands.id')->all());
+    }
+
+    public function test_import_opportunity_associates_brand_on_create_and_when_seller_or_brand_changes(): void
+    {
+        $bmw = Brand::create(['name' => 'BMW']);
+        $audi = Brand::create(['name' => 'Audi']);
+        $first = Seller::create(['name' => 'Stand 1']);
+        $second = Seller::create(['name' => 'Stand 2']);
+        $request = FormProposal::create(['name' => 'Maria', 'email' => 'm@example.com', 'phone' => '912345678']);
+
+        $opportunity = ImportOpportunity::create([
+            'form_proposal_id' => $request->id, 'brand' => 'bmw', 'model' => 'i4', 'seller_id' => $first->id,
+        ]);
+        $this->assertSame([$bmw->id], $first->brands()->pluck('brands.id')->all());
+
+        $opportunity->update(['seller_id' => $second->id]);
+        $this->assertSame([$bmw->id], $second->brands()->pluck('brands.id')->all());
+
+        $opportunity->update(['brand' => 'Audi']);
+        $this->assertEqualsCanonicalizing([$bmw->id, $audi->id], $second->brands()->pluck('brands.id')->all());
+        // Nunca remove: o vendedor anterior mantém a marca.
+        $this->assertSame([$bmw->id], $first->brands()->pluck('brands.id')->all());
     }
 }
