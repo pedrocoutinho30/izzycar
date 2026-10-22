@@ -53,7 +53,7 @@ if (!function_exists('qp')) { function qp($v) { return number_format($v, 1, ',',
 if (!function_exists('qn')) { function qn($v) { return number_format($v, 0, ',', '.'); } }
 
 $activityLabels = ['note'=>'Nota','call'=>'Chamada','email'=>'Email','whatsapp'=>'WhatsApp','facebook'=>'Facebook','meeting'=>'Reunião'];
-$statusLabels   = ['nova'=>'Nova','em_contacto'=>'Em Contacto','fria'=>'Fria','perdida'=>'Perdida'];
+$statusLabels   = ['nova'=>'Nova','em_contacto'=>'Em Contacto','qualificada'=>'Qualificada','fria'=>'Fria','perdida'=>'Perdida'];
 $originLabels   = ['simulador'=>'Simulador','importacao'=>'Formulário Importação','retoma'=>'Retoma','manual'=>'Manual (BO)','outro'=>'Outro'];
 $funnelColors   = ['Aprovada'=>'#198754','aprovada'=>'#198754','Pendente'=>'#fd7e14','pendente'=>'#fd7e14','Reprovada'=>'#dc3545','reprovada'=>'#dc3545'];
 @endphp
@@ -270,7 +270,7 @@ $fmt = fn($v) => $f === 'eur' ? qe($v) : ($f === 'pct' ? qp($v) : qn($v));
         @foreach($lead_statuses as $status => $count)
         @php
             $pct = $statusTotal > 0 ? round($count/$statusTotal*100) : 0; $pb = max(1,$pct);
-            $sc = match($status) { 'nova'=>'#0d6efd','em_contacto'=>'#198754','fria'=>'#6c757d','perdida'=>'#dc3545',default=>'#8B0000' };
+            $sc = match($status) { 'nova'=>'#0d6efd','em_contacto'=>'#198754','qualificada'=>'#0d6efd','fria'=>'#6c757d','perdida'=>'#dc3545',default=>'#8B0000' };
         @endphp
         <div style="margin-bottom:7px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:3px;"><tr>

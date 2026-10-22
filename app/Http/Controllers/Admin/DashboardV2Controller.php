@@ -110,7 +110,7 @@ class DashboardV2Controller extends Controller
 
         // Leads activas sem qualquer actividade registada há mais de 3 dias
         $leadsAtivas = Client::where('is_lead', true)
-            ->whereIn('lead_status', ['nova', 'em_contacto'])
+            ->whereIn('lead_status', ['nova', 'em_contacto', 'qualificada'])
             ->pluck('id');
 
         $leadsComActividadeRecente = \App\Models\LeadActivity::whereIn('client_id', $leadsAtivas)
@@ -159,7 +159,7 @@ class DashboardV2Controller extends Controller
 
         // Leads activas hoje (para o badge do menu)
         $totalLeadsActivas = Client::where('is_lead', true)
-            ->whereIn('lead_status', ['nova', 'em_contacto'])
+            ->whereIn('lead_status', ['nova', 'em_contacto', 'qualificada'])
             ->count();
 
         // Leads sem actividade — lista para mostrar (máx 10)

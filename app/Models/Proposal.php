@@ -61,6 +61,18 @@ class Proposal extends Model
      */
     public bool $skipSentEmails = false;
 
+    /**
+     * Valor final da cotação: a mesma soma que o cliente vê na página dele
+     * (resources/views/proposals/view-proposal.blade.php).
+     */
+    public function totalCost(): float
+    {
+        return (float) $this->commission_cost + (float) $this->inspection_commission_cost
+            + (float) $this->license_plate_cost + (float) $this->isv_cost
+            + (float) $this->registration_cost + (float) $this->imt_cost + (float) $this->ipo_cost
+            + (float) $this->transport_cost + (float) $this->proposed_car_value;
+    }
+
     public function isExpired(): bool
     {
         return $this->created_at !== null && $this->created_at->diffInDays(now()) > self::VALIDITY_DAYS;

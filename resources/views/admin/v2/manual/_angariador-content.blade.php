@@ -24,10 +24,11 @@
                         ['id' => 'leads',          'icon' => 'bi-funnel',            'label' => 'As Minhas Leads'],
                         ['id' => 'contactos',      'icon' => 'bi-clock-history',     'label' => 'Contactos e Follow-ups'],
                     ],
-                    'Propostas & Comissões' => [
-                        ['id' => 'propostas',      'icon' => 'bi-file-earmark-text', 'label' => 'Propostas'],
+                    'Cotações & Comissões' => [
+                        ['id' => 'propostas',      'icon' => 'bi-file-earmark-text', 'label' => 'Cotações'],
+                        ['id' => 'convertidas',    'icon' => 'bi-check2-circle',     'label' => 'Cotações convertidas'],
                         ['id' => 'comissoes',      'icon' => 'bi-cash-coin',         'label' => 'Comissões'],
-                        ['id' => 'formularios',    'icon' => 'bi-envelope-open',     'label' => 'Formulários'],
+                        ['id' => 'formularios',    'icon' => 'bi-envelope-open',     'label' => 'Pedidos de importação'],
                     ],
                     'Regras' => [
                         ['id' => 'visibilidade',   'icon' => 'bi-eye',               'label' => 'O Que Podes Ver'],
@@ -251,18 +252,34 @@
         {{-- ── PROPOSTAS ── --}}
         <div class="manual-section modern-card mb-4" id="propostas">
             <div class="modern-card-header manual-section__header">
-                <h4 class="manual-section__title"><i class="bi bi-file-earmark-text"></i> Propostas</h4>
+                <h4 class="manual-section__title"><i class="bi bi-file-earmark-text"></i> Cotações</h4>
                 @if(!$publicView)
-                <a href="{{ route('admin.angariador.propostas') }}" class="btn btn-sm btn-primary-modern">
+                <a href="{{ route('admin.angariador.cotacoes') }}" class="btn btn-sm btn-primary-modern">
                     <i class="bi bi-box-arrow-up-right me-1"></i> Ir para o módulo
                 </a>
                 @endif
             </div>
             <div class="manual-section__body">
-                <p>Quando a equipa Izzycar envia uma proposta a uma das tuas leads, ela aparece aqui — com o mesmo documento/link que o cliente recebeu, e o estado (enviada, aceite, etc.).</p>
-                <p>Podes abrir a proposta para ver exatamente o que o cliente está a ver, mas <strong>não vês valores internos</strong> como margens ou custos de compra — apenas o que já está no documento entregue ao cliente.</p>
+                <p>Quando a equipa Izzycar envia uma cotação a uma das tuas leads, ela aparece aqui — com o mesmo documento/link que o cliente recebeu, o valor total e o estado (enviada, aceite, etc.).</p>
+                <p>Podes abrir a cotação para ver exatamente o que o cliente está a ver, mas <strong>não vês valores internos</strong> como margens ou custos de compra — apenas o que já está no documento entregue ao cliente.</p>
 
                 
+            </div>
+        </div>
+
+        {{-- ── COTAÇÕES CONVERTIDAS ── --}}
+        <div class="manual-section modern-card mb-4" id="convertidas">
+            <div class="modern-card-header manual-section__header">
+                <h4 class="manual-section__title"><i class="bi bi-check2-circle"></i> Cotações convertidas</h4>
+                @if(!$publicView)
+                <a href="{{ route('admin.angariador.convertidas') }}" class="btn btn-sm btn-primary-modern">
+                    <i class="bi bi-box-arrow-up-right me-1"></i> Ir para o módulo
+                </a>
+                @endif
+            </div>
+            <div class="manual-section__body">
+                <p>Quando o cliente aceita a cotação, ela passa a cotação convertida. Aqui vês o <strong>estado do processo</strong> (negociação, transporte, IPO, entrega…) com as datas, e o <strong>valor final</strong>, quase como o cliente — sem a divisão dos custos (transporte, ISV, IPO, etc.).</p>
+                <p>Só vês as cotações convertidas dos clientes das tuas leads.</p>
             </div>
         </div>
 
@@ -299,20 +316,10 @@
         {{-- ── FORMULÁRIOS ── --}}
         <div class="manual-section modern-card mb-4" id="formularios">
             <div class="modern-card-header manual-section__header">
-                <h4 class="manual-section__title"><i class="bi bi-envelope-open"></i> Formulários</h4>
-                @if(!$publicView)
-                <a href="{{ route('admin.angariador.formularios') }}" class="btn btn-sm btn-primary-modern">
-                    <i class="bi bi-box-arrow-up-right me-1"></i> Ir para o módulo
-                </a>
-                @endif
+                <h4 class="manual-section__title"><i class="bi bi-envelope-open"></i> Pedidos de importação</h4>
             </div>
             <div class="manual-section__body">
-                <p>Lista todos os pedidos de importação submetidos através do teu link — o registo em bruto de cada formulário preenchido, incluindo os detalhes do veículo pretendido.</p>
-
-                <figure class="manual-screenshot">
-                    <img src="{{ asset('img/manual/formularios.png') }}" alt="Lista de formulários recebidos através do link de angariador">
-                    <figcaption>Cada formulário submetido através do teu link fica registado aqui.</figcaption>
-                </figure>
+                <p>Os pedidos de importação (formulários) submetidos através do teu link ficam dentro de cada lead, na página dessa lead, juntamente com as cotações e as cotações convertidas dela. Vês o carro pretendido, o orçamento, a data e o estado do pedido.</p>
             </div>
         </div>
 
@@ -325,16 +332,17 @@
                 <h6 class="manual-topic">Podes ver</h6>
                 <ul>
                     <li>Todas as leads geradas através do teu link, os dados de contacto delas e o histórico que tu próprio registaste.</li>
-                    <li>As propostas enviadas às tuas leads — o documento final, igual ao que o cliente recebe.</li>
+                    <li>As cotações enviadas às tuas leads — o documento final, igual ao que o cliente recebe.</li>
+                    <li>As cotações convertidas dos teus clientes — estado do processo e valor final.</li>
                     <li>O estado geral do processo (enviado, aceite, etc.) das tuas leads.</li>
                     <li>As tuas comissões — valor, estado (pendente/paga) e comprovativo, quando existir.</li>
                 </ul>
 
                 <h6 class="manual-topic">Não podes ver</h6>
                 <ul>
-                    <li>Margens, custos de compra ou qualquer valor interno da Izzycar.</li>
-                    <li>Detalhes do processo interno de uma lead antes de existir proposta enviada.</li>
-                    <li>Leads, propostas ou comissões de outros angariadores.</li>
+                    <li>Margens, custos de compra, a divisão dos custos (transporte, ISV, IPO…) ou qualquer valor interno da Izzycar.</li>
+                    <li>Detalhes do processo interno de uma lead antes de existir cotação enviada.</li>
+                    <li>Leads, cotações ou comissões de outros angariadores.</li>
                     <li>Qualquer módulo do backoffice fora da tua área — o acesso está limitado apenas ao que está descrito neste manual.</li>
                 </ul>
             </div>

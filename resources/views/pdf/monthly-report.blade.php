@@ -89,6 +89,7 @@ $activityLabels = [
 $statusLabels = [
     'nova'          => 'Nova',
     'em_contacto'   => 'Em Contacto',
+    'qualificada'   => 'Qualificada',
     'fria'          => 'Fria',
     'perdida'       => 'Perdida',
 ];
@@ -348,6 +349,7 @@ $detailRows = [
                 $statusColor = match($status) {
                     'nova'        => '#0d6efd',
                     'em_contacto' => '#198754',
+                    'qualificada' => '#0d6efd',
                     'fria'        => '#6c757d',
                     'perdida'     => '#dc3545',
                     default       => '#8B0000',

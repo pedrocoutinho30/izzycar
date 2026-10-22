@@ -122,7 +122,7 @@
 /* ── Board ───────────────────────────────────────────────────────────────── */
 .kanban-board {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 1rem;
     align-items: start;
     padding-bottom: 2rem;
@@ -265,7 +265,10 @@
     });
 
     document.querySelectorAll('.kanban-col__body').forEach(col => {
+        // "Qualificada" é decidida pela equipa Izzycar: o angariador não pode largar aqui.
+        const bloqueada = col.closest('.kanban-col').dataset.status === 'qualificada';
         col.addEventListener('dragover', e => {
+            if (bloqueada) return;
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
             col.classList.add('drag-over');
@@ -275,7 +278,7 @@
             e.preventDefault();
             col.classList.remove('drag-over');
 
-            if (!draggedCard) return;
+            if (!draggedCard || bloqueada) return;
 
             const newStatus = col.closest('.kanban-col').dataset.status;
             const leadId    = draggedCard.dataset.id;

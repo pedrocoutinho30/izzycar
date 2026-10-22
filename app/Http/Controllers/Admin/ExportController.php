@@ -39,6 +39,7 @@ class ExportController extends Controller
         $statusLabels = [
             'nova'        => 'Nova',
             'em_contacto' => 'Em Contacto',
+            'qualificada' => 'Qualificada',
             'fria'        => 'Fria',
             'perdida'     => 'Perdida',
         ];

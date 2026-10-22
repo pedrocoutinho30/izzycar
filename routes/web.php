@@ -756,11 +756,16 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::post('/leads/{client}/activity', [App\Http\Controllers\Admin\AngariadorController::class, 'storeActivity'])->name('leads.activity');
         Route::post('/leads/{client}/followup', [App\Http\Controllers\Admin\AngariadorController::class, 'saveFollowup'])->name('leads.followup');
         Route::post('/leads/{client}/status', [App\Http\Controllers\Admin\AngariadorController::class, 'updateStatus'])->name('leads.status');
-        Route::get('/propostas', [App\Http\Controllers\Admin\AngariadorController::class, 'propostas'])->name('propostas');
+        Route::get('/cotacoes', [App\Http\Controllers\Admin\AngariadorController::class, 'cotacoes'])->name('cotacoes');
+        Route::redirect('/propostas', '/gestao/angariador/cotacoes')->name('propostas');
+        Route::get('/cotacoes-convertidas', [App\Http\Controllers\Admin\AngariadorController::class, 'convertidas'])->name('convertidas');
+        Route::get('/cotacoes-convertidas/{convertedProposal}', [App\Http\Controllers\Admin\AngariadorController::class, 'convertidaShow'])->name('convertidas.show');
         Route::get('/comissoes', [App\Http\Controllers\Admin\AngariadorController::class, 'comissoes'])->name('comissoes');
-        Route::get('/formularios', [App\Http\Controllers\Admin\AngariadorController::class, 'formularios'])->name('formularios');
+        // Os pedidos de importação passaram para dentro de cada lead.
+        Route::redirect('/formularios', '/gestao/angariador/leads')->name('formularios');
         Route::get('/manual', [App\Http\Controllers\Admin\ManualController::class, 'angariador'])->name('manual');
         Route::get('/faq', [App\Http\Controllers\Admin\ManualController::class, 'angariadorFaq'])->name('faq');
+        Route::get('/contrato', [App\Http\Controllers\Admin\AngariadorController::class, 'contrato'])->name('contrato');
         Route::post('/stop-impersonating', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'stopImpersonating'])->name('stop-impersonating');
     });
 
@@ -777,6 +782,10 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::post('/{user}/rejeitar', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'reject'])->name('reject');
         Route::delete('/{user}', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'destroy'])->name('destroy');
         Route::get('/{user}', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'show'])->name('show');
+        Route::get('/{user}/contrato', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'contract'])->name('contract');
+        Route::get('/{user}/contrato-assinado', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'signedContract'])->name('contract.signed');
+        Route::post('/{user}/contrato-assinado', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'uploadSignedContract'])->name('contract.signed.store');
+        Route::delete('/{user}/contrato-assinado', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'destroySignedContract'])->name('contract.signed.destroy');
         Route::post('/{user}/impersonate', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'impersonate'])->name('impersonate');
     });
 

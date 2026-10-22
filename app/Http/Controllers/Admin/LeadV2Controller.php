@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class LeadV2Controller extends Controller
 {
-    // Leads activas = nova + em_contacto (excluindo fria e perdida)
+    // Leads activas = nova + em_contacto + qualificada (excluindo fria e perdida)
     private static function activeLeadsQuery()
     {
         return Client::where('is_lead', true)
@@ -34,7 +34,7 @@ class LeadV2Controller extends Controller
             'phone'       => 'nullable|string|max:50',
             'origin'      => 'nullable|string|max:255',
             'lead_source' => 'nullable|string|max:255',
-            'lead_status' => 'nullable|in:nova,em_contacto,fria,perdida',
+            'lead_status' => 'nullable|in:nova,em_contacto,qualificada,fria,perdida',
             'observation' => 'nullable|string|max:2000',
             'owner_id'    => 'nullable|exists:users,id',
         ]);
@@ -121,6 +121,7 @@ class LeadV2Controller extends Controller
         $columns = [
             'nova'        => ['label' => 'Nova',        'color' => 'success',   'icon' => 'bi-circle-fill'],
             'em_contacto' => ['label' => 'Em Contacto', 'color' => 'info',      'icon' => 'bi-telephone-fill'],
+            'qualificada' => ['label' => 'Qualificada', 'color' => 'primary',   'icon' => 'bi-patch-check-fill'],
             'fria'        => ['label' => 'Fria',        'color' => 'secondary', 'icon' => 'bi-snow'],
             'perdida'     => ['label' => 'Perdida',     'color' => 'danger',    'icon' => 'bi-x-circle-fill'],
         ];
@@ -155,7 +156,7 @@ class LeadV2Controller extends Controller
     public function updateStatus(Request $request, $id)
     {
         $lead = Client::where('is_lead', true)->findOrFail($id);
-        $request->validate(['status' => 'required|in:nova,em_contacto,fria,perdida']);
+        $request->validate(['status' => 'required|in:nova,em_contacto,qualificada,fria,perdida']);
 
         $oldStatus = $lead->lead_status ?? 'nova';
         $lead->update(['lead_status' => $request->status]);
@@ -163,10 +164,11 @@ class LeadV2Controller extends Controller
         $statusLabels = [
             'nova'        => 'Nova',
             'em_contacto' => 'Em Contacto',
+            'qualificada' => 'Qualificada',
             'fria'        => 'Fria',
             'perdida'     => 'Perdida',
         ];
-        $statusColors = ['nova' => 'success', 'em_contacto' => 'info', 'fria' => 'secondary', 'perdida' => 'danger'];
+        $statusColors = ['nova' => 'success', 'em_contacto' => 'info', 'qualificada' => 'primary', 'fria' => 'secondary', 'perdida' => 'danger'];
 
         LeadActivity::log(
             $lead->id,

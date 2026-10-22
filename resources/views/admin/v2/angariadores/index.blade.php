@@ -116,6 +116,10 @@
                                class="btn btn-icon btn-primary-modern" title="Ver detalhe">
                                 <i class="bi bi-eye"></i>
                             </a>
+                            <a href="{{ route('admin.v2.angariadores.contract', $row['angariador']->id) }}"
+                               class="btn btn-icon btn-secondary-modern" title="Descarregar contrato">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </a>
                             <form action="{{ route('admin.v2.angariadores.impersonate', $row['angariador']->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-icon btn-secondary-modern" title="Ver como este angariador">

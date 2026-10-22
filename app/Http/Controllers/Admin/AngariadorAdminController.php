@@ -9,12 +9,14 @@ use App\Models\Client;
 use App\Models\ConvertedProposal;
 use App\Models\LeadActivity;
 use App\Models\User;
+use App\Services\AngariadorContractService;
 use App\Services\AngariadorMetricsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * Administração de angariadores: listagem+métricas, detalhe (sem
@@ -107,6 +109,55 @@ class AngariadorAdminController extends Controller
             'leads' => $leads,
             'activity' => $this->buildActivityTimeline($user),
         ]));
+    }
+
+    /**
+     * Descarrega o contrato de angariação deste angariador (PDF gerado na hora).
+     */
+    public function contract(User $user)
+    {
+        abort_unless($user->hasRole('angariador'), 404);
+
+        $pdf = AngariadorContractService::generatePdf($user);
+
+        return response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="contrato_angariador_' . Str::slug($user->full_name) . '.pdf"',
+        ]);
+    }
+
+    /** Abre o contrato assinado carregado para este angariador. */
+    public function signedContract(User $user)
+    {
+        abort_unless($user->hasRole('angariador'), 404);
+
+        return AngariadorContractService::respostaAssinado($user);
+    }
+
+    public function uploadSignedContract(Request $request, User $user)
+    {
+        abort_unless($user->hasRole('angariador'), 404);
+
+        $request->validate([
+            'contrato_assinado' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ], [
+            'contrato_assinado.required' => 'Escolha o ficheiro do contrato assinado.',
+            'contrato_assinado.mimes' => 'O contrato assinado tem de ser PDF, JPG ou PNG.',
+            'contrato_assinado.max' => 'O ficheiro não pode ter mais de 10 MB.',
+        ]);
+
+        AngariadorContractService::guardarAssinado($user, $request->file('contrato_assinado'));
+
+        return back()->with('success', 'Contrato assinado carregado. O angariador já o pode ver.');
+    }
+
+    public function destroySignedContract(User $user)
+    {
+        abort_unless($user->hasRole('angariador'), 404);
+
+        AngariadorContractService::removerAssinado($user);
+
+        return back()->with('success', 'Contrato assinado removido.');
     }
 
     /**

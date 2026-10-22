@@ -144,23 +144,28 @@
             {{-- ═══════════ PROPOSTAS & COMISSÕES ═══════════ --}}
             <details class="manual-group">
                 <summary class="manual-group__summary">
-                    <h2 class="manual-group__title">Propostas &amp; Comissões</h2>
+                    <h2 class="manual-group__title">Cotações &amp; Comissões</h2>
                     <span class="material-symbols-outlined manual-group__chevron">expand_more</span>
                 </summary>
                 <div class="manual-group__body">
 
                     <section class="manual-topic-block">
-                        <h3 class="manual-topic-block__title">Propostas</h3>
-                        <p>Quando a equipa Izzycar envia uma proposta a uma das tuas leads, ela aparece aqui — com o mesmo documento/link que o cliente recebeu. Não vês valores internos como margens ou custos de compra.</p>
+                        <h3 class="manual-topic-block__title">Cotações</h3>
+                        <p>Quando a equipa Izzycar envia uma cotação a uma das tuas leads, ela aparece aqui — com o mesmo documento/link que o cliente recebeu e o valor total. Não vês valores internos como margens ou custos de compra.</p>
+                    </section>
+
+                    <section class="manual-topic-block">
+                        <h3 class="manual-topic-block__title">Cotações convertidas</h3>
+                        <p>Quando o cliente aceita a cotação, ela passa a cotação convertida. Vês o <strong>estado do processo</strong> (negociação, transporte, IPO, entrega…) e o <strong>valor final</strong>, quase como o cliente — sem a divisão dos custos (transporte, ISV, IPO, etc.). Só vês as dos clientes das tuas leads.</p>
                     </section>
 
                     <section class="manual-topic-block">
                         <h3 class="manual-topic-block__title">Comissões</h3>
-                        <p>A tua comissão tem um <strong>valor fixo</strong> (referência de 100 € por proposta convertida, ajustável caso a caso). É gerada automaticamente quando uma lead aceita a proposta.</p>
+                        <p>A tua comissão tem um <strong>valor fixo</strong> (referência de 100 € por cotação convertida, ajustável caso a caso). É gerada automaticamente quando uma lead aceita a cotação.</p>
                         <div class="manual-info-box">
                             <h4 class="manual-info-box__title">Quando é Paga</h4>
                             <ul>
-                                <li>Fica <strong>pendente</strong> desde a aceitação da proposta.</li>
+                                <li>Fica <strong>pendente</strong> desde a aceitação da cotação.</li>
                                 <li>É paga quando o processo chega ao estado <strong>"Entrega"</strong>.</li>
                                 <li>Pagamento efetuado até <strong>48 horas</strong> após a entrega.</li>
                             </ul>
@@ -171,11 +176,8 @@
                     </section>
 
                     <section class="manual-topic-block">
-                        <h3 class="manual-topic-block__title">Formulários</h3>
-                        <p>Lista todos os pedidos de importação submetidos através do teu link — o registo em bruto de cada formulário preenchido.</p>
-                        <figure class="manual-screenshot">
-                            <img src="{{ asset('img/manual/formularios.png') }}" alt="Formulários recebidos através do link">
-                        </figure>
+                        <h3 class="manual-topic-block__title">Pedidos de importação</h3>
+                        <p>Os pedidos de importação (formulários) submetidos através do teu link ficam dentro de cada lead, na página dessa lead, juntamente com as cotações e as cotações convertidas dela.</p>
                     </section>
 
                 </div>

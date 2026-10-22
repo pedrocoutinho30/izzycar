@@ -8,6 +8,7 @@ use App\Models\ConvertedProposal;
 use App\Models\FormProposal;
 use App\Models\LeadActivity;
 use App\Models\Proposal;
+use App\Services\AngariadorContractService;
 use App\Services\AngariadorMetricsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,12 @@ class AngariadorController extends Controller
         $metrics = (new AngariadorMetricsService())->forUser(Auth::id());
 
         return view('admin.v2.angariador.dashboard', $metrics);
+    }
+
+    /** O próprio angariador abre o seu contrato assinado, se já foi carregado. */
+    public function contrato()
+    {
+        return AngariadorContractService::respostaAssinado(Auth::user());
     }
 
     public function leads()
@@ -81,9 +88,13 @@ class AngariadorController extends Controller
     {
         abort_if($client->owner_id !== Auth::id(), 403);
 
-        $client->load(['proposals', 'activities.user']);
+        $client->load(['proposals', 'convertedProposals.proposal', 'activities.user']);
 
-        return view('admin.v2.angariador.lead-show', compact('client'));
+        // Pedidos de importação (formulários) desta lead; sem as oportunidades,
+        // que levam a análise interna de margens.
+        $formProposals = FormProposal::where('client_id', $client->id)->latest()->get();
+
+        return view('admin.v2.angariador.lead-show', compact('client', 'formProposals'));
     }
 
     public function kanban()
@@ -91,6 +102,7 @@ class AngariadorController extends Controller
         $columns = [
             'nova'        => ['label' => 'Nova',        'color' => 'success',   'icon' => 'bi-circle-fill'],
             'em_contacto' => ['label' => 'Em Contacto', 'color' => 'info',      'icon' => 'bi-telephone-fill'],
+            'qualificada' => ['label' => 'Qualificada', 'color' => 'primary',   'icon' => 'bi-patch-check-fill'],
             'fria'        => ['label' => 'Fria',        'color' => 'secondary', 'icon' => 'bi-snow'],
             'perdida'     => ['label' => 'Perdida',     'color' => 'danger',    'icon' => 'bi-x-circle-fill'],
         ];
@@ -116,10 +128,11 @@ class AngariadorController extends Controller
         $statusLabels = [
             'nova'        => 'Nova',
             'em_contacto' => 'Em Contacto',
+            'qualificada' => 'Qualificada',
             'fria'        => 'Fria',
             'perdida'     => 'Perdida',
         ];
-        $statusColors = ['nova' => 'success', 'em_contacto' => 'info', 'fria' => 'secondary', 'perdida' => 'danger'];
+        $statusColors = ['nova' => 'success', 'em_contacto' => 'info', 'qualificada' => 'primary', 'fria' => 'secondary', 'perdida' => 'danger'];
 
         LeadActivity::log(
             $client->id,
@@ -176,14 +189,46 @@ class AngariadorController extends Controller
         return back()->with('success', 'Follow-up agendado.');
     }
 
-    public function propostas()
+    public function cotacoes()
     {
-        $propostas = Proposal::whereHas('client', fn ($q) => $q->where('owner_id', Auth::id()))
+        $cotacoes = Proposal::whereHas('client', fn ($q) => $q->where('owner_id', Auth::id()))
             ->with('client')
             ->latest()
             ->get();
 
-        return view('admin.v2.angariador.propostas', compact('propostas'));
+        return view('admin.v2.angariador.cotacoes', compact('cotacoes'));
+    }
+
+    /** Cotações convertidas dos clientes deste angariador (só valores finais e estados). */
+    public function convertidas()
+    {
+        $convertidas = ConvertedProposal::whereHas('client', fn ($q) => $q->where('owner_id', Auth::id()))
+            ->with(['client', 'proposal'])
+            ->latest()
+            ->get();
+
+        return view('admin.v2.angariador.convertidas', compact('convertidas'));
+    }
+
+    public function convertidaShow(ConvertedProposal $convertedProposal)
+    {
+        $convertedProposal->load(['client', 'proposal', 'statusHistories']);
+
+        // 404 (e não 403) para não revelar que o registo existe.
+        abort_unless($convertedProposal->client && $convertedProposal->client->owner_id === Auth::id(), 404);
+
+        // Data em que cada etapa foi atingida (a primeira vez que entrou nela).
+        $datas = $convertedProposal->statusHistories
+            ->sortBy('created_at')
+            ->groupBy('new_status')
+            ->map(fn ($h) => $h->first()->created_at);
+        $datas['Iniciada'] = $convertedProposal->created_at;
+
+        return view('admin.v2.angariador.convertida-show', [
+            'converted' => $convertedProposal,
+            'etapas' => ConvertedProposal::PIPELINE_STATUSES,
+            'datas' => $datas,
+        ]);
     }
 
     public function comissoes()
@@ -200,16 +245,5 @@ class AngariadorController extends Controller
             'comissaoRecebida' => $recebido,
             'comissaoPendente' => $pendente,
         ]);
-    }
-
-    public function formularios()
-    {
-        $ownedClientIds = Client::where('owner_id', Auth::id())->pluck('id');
-
-        $formularios = FormProposal::whereIn('client_id', $ownedClientIds)
-            ->orderByDesc('created_at')
-            ->get();
-
-        return view('admin.v2.angariador.formularios', compact('formularios'));
     }
 }

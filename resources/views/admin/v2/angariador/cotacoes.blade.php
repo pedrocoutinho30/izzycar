@@ -1,25 +1,25 @@
 @extends('layouts.admin-v2')
 
-@section('title', 'As Minhas Propostas')
+@section('title', 'As Minhas Cotações')
 
 @section('content')
 
 @include('components.admin.page-header', [
     'breadcrumbs' => [
         ['icon' => 'bi bi-house-door', 'label' => 'Início', 'href' => route('admin.angariador.dashboard')],
-        ['icon' => '', 'label' => 'Propostas'],
+        ['icon' => '', 'label' => 'Cotações'],
     ],
-    'title' => 'Propostas Enviadas',
-    'subtitle' => 'Propostas enviadas aos clientes das suas leads — o mesmo documento que o cliente recebeu',
+    'title' => 'Cotações Enviadas',
+    'subtitle' => 'Cotações enviadas aos clientes das suas leads — o mesmo documento que o cliente recebeu',
 ])
 
 <div class="modern-card">
     <div class="modern-card-header">
-        <h5 class="modern-card-title"><i class="bi bi-file-earmark-text"></i> Propostas</h5>
-        <span class="badge bg-secondary rounded-pill">{{ $propostas->count() }} total</span>
+        <h5 class="modern-card-title"><i class="bi bi-file-earmark-text"></i> Cotações</h5>
+        <span class="badge bg-secondary rounded-pill">{{ $cotacoes->count() }} total</span>
     </div>
 
-    @forelse($propostas as $proposal)
+    @forelse($cotacoes as $proposal)
     @php
         $pStatusColors = ['Pendente' => 'warning', 'Aprovada' => 'success', 'Reprovada' => 'danger', 'Enviado' => 'info', 'Sem resposta' => 'secondary'];
         $pColor = $pStatusColors[$proposal->status] ?? 'secondary';
@@ -30,14 +30,14 @@
         </div>
         <div class="lad-body">
             <div class="lad-title"><x-admin.brand-logo :brand="$proposal->brand" :size="24" class="me-1" />{{ $proposal->client->name ?? '—' }} — {{ trim(($proposal->brand ?? '') . ' ' . ($proposal->model ?? '')) }}</div>
-            <div class="lad-meta">{{ $proposal->created_at->format('d/m/Y') }}</div>
+            <div class="lad-meta">{{ $proposal->created_at->format('d/m/Y') }}@if($proposal->totalCost() > 0) · <strong>{{ number_format($proposal->totalCost(), 0, ',', '.') }} €</strong>@endif</div>
             <div class="lad-tags">
                 <span class="lad-tag badge bg-{{ $pColor }}">{{ $proposal->status ?? 'Pendente' }}</span>
             </div>
         </div>
         @if($proposal->proposal_code)
         <a href="{{ route('proposals.detail', $proposal->proposal_code) }}" target="_blank"
-           class="btn btn-icon btn-primary-modern ms-auto flex-shrink-0" title="Ver proposta">
+           class="btn btn-icon btn-primary-modern ms-auto flex-shrink-0" title="Ver cotação (igual à que o cliente recebeu)">
             <i class="bi bi-arrow-up-right-square"></i>
         </a>
         @endif
@@ -45,8 +45,8 @@
     @empty
     @include('components.admin.empty-state', [
         'icon' => 'bi-file-earmark-text',
-        'title' => 'Ainda sem propostas',
-        'message' => 'Quando a equipa enviar uma proposta a uma das suas leads, aparecerá aqui.',
+        'title' => 'Ainda sem cotações',
+        'message' => 'Quando a equipa enviar uma cotação a uma das suas leads, aparecerá aqui.',
     ])
     @endforelse
 </div>

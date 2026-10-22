@@ -14,6 +14,8 @@ enum LeadStatus: string
 
     case Nova = 'nova';
     case EmContacto = 'em_contacto';
+    /** Já está a receber cotações. */
+    case Qualificada = 'qualificada';
     case Fria = 'fria';
     case Perdida = 'perdida';
 
@@ -22,6 +24,7 @@ enum LeadStatus: string
         return match ($this) {
             self::Nova => 'Nova',
             self::EmContacto => 'Em contacto',
+            self::Qualificada => 'Qualificada',
             self::Fria => 'Fria',
             self::Perdida => 'Perdida',
         };

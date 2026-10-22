@@ -77,7 +77,7 @@ return [
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'client.owner_id',
                     'routes' => ['admin.v2.proposals.*', 'admin.v2.car-candidates.*', 'admin.v2.export.proposals', 'isv.*'],
-                    'own_routes' => ['admin.angariador.propostas'],
+                    'own_routes' => ['admin.angariador.propostas', 'admin.angariador.cotacoes'],
                 ],
                 'converted-proposals' => [
                     'label' => 'Cotações convertidas',
@@ -201,6 +201,11 @@ return [
         'admin.v2.search.results',
         'admin.angariador.manual',
         'admin.angariador.faq',
+        // Cada utilizador só vê o seu próprio contrato assinado.
+        'admin.angariador.contrato',
+        // Cotações convertidas do angariador: só as dos seus clientes (filtradas no controller).
+        'admin.angariador.convertidas',
+        'admin.angariador.convertidas.show',
         'admin.angariador.stop-impersonating',
     ],
 

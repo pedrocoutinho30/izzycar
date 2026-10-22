@@ -44,7 +44,7 @@
         </div>
         <div class="lead-card__badges">
             @if($lead->proposals_count > 0)
-                <span class="badge bg-info">Proposta enviada</span>
+                <span class="badge bg-info">Cotação enviada</span>
             @else
                 <span class="badge bg-secondary">Em tratamento pela equipa</span>
             @endif

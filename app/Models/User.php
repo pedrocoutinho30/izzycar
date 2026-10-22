@@ -22,6 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'last_name', 'email', 'password', 'referral_code', 'commission_fixed_value',
         'phone', 'location', 'nif', 'iban', 'status',
+        'contrato_assinado_path', 'contrato_assinado_em',
     ];
 
     /**
@@ -71,6 +72,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'commission_fixed_value' => 'decimal:2',
+            'contrato_assinado_em' => 'datetime',
         ];
     }
 

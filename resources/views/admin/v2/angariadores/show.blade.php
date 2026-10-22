@@ -13,9 +13,18 @@
     'title' => $angariador->name . ' ' . $angariador->last_name,
     'subtitle' => 'Detalhe de leads, propostas e comissões — sem impersonation',
     'extraActions' => [
+        ['href' => route('admin.v2.angariadores.contract', $angariador->id), 'label' => 'Descarregar contrato', 'icon' => 'bi-file-earmark-pdf', 'class' => 'btn-primary-modern'],
         ['href' => route('admin.v2.users.edit', $angariador->id), 'label' => 'Editar Utilizador', 'icon' => 'bi-pencil'],
     ],
 ])
+
+@php $emFaltaContrato = \App\Services\AngariadorContractService::camposEmFalta($angariador); @endphp
+@if($emFaltaContrato)
+<div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+    <i class="bi bi-exclamation-triangle"></i>
+    <span>Ao perfil deste angariador faltam {{ implode(', ', $emFaltaContrato) }}: o contrato é gerado com linhas em branco para preencher à mão.</span>
+</div>
+@endif
 
 @include('components.admin.stats-cards', [
     'stats' => [
@@ -25,6 +34,47 @@
         ['title' => 'Comissão (paga / pendente)', 'value' => number_format($comissaoRecebida, 2, ',', '.') . ' € / ' . number_format($comissaoPendente, 2, ',', '.') . ' €', 'icon' => 'bi-cash-coin', 'color' => 'warning'],
     ]
 ])
+
+<div class="modern-card mb-4">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title"><i class="bi bi-file-earmark-check"></i> Contrato assinado</h5>
+        @if($angariador->contrato_assinado_path)
+        <span class="badge bg-success rounded-pill">Carregado em {{ $angariador->contrato_assinado_em?->format('d/m/Y') }}</span>
+        @else
+        <span class="badge bg-secondary rounded-pill">Por carregar</span>
+        @endif
+    </div>
+    <div class="p-3">
+        <p class="text-muted small mb-3">
+            Depois de o contrato ser assinado pelas duas partes, carregue-o aqui. O angariador passa a vê-lo no seu painel.
+        </p>
+        @if($errors->has('contrato_assinado'))
+        <div class="alert alert-danger py-2">{{ $errors->first('contrato_assinado') }}</div>
+        @endif
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <form action="{{ route('admin.v2.angariadores.contract.signed.store', $angariador->id) }}" method="POST" enctype="multipart/form-data" class="d-flex flex-wrap gap-2 align-items-center">
+                @csrf
+                <input type="file" name="contrato_assinado" accept=".pdf,.jpg,.jpeg,.png" class="form-control form-control-sm" style="max-width: 320px;" required>
+                <button type="submit" class="btn btn-primary-modern btn-sm">
+                    <i class="bi bi-upload me-1"></i> {{ $angariador->contrato_assinado_path ? 'Substituir' : 'Carregar' }}
+                </button>
+            </form>
+            @if($angariador->contrato_assinado_path)
+            <a href="{{ route('admin.v2.angariadores.contract.signed', $angariador->id) }}" target="_blank" class="btn btn-secondary-modern btn-sm">
+                <i class="bi bi-eye me-1"></i> Ver contrato assinado
+            </a>
+            <form action="{{ route('admin.v2.angariadores.contract.signed.destroy', $angariador->id) }}" method="POST"
+                  onsubmit="return confirm('Remover o contrato assinado? O angariador deixa de o ver.')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger-modern btn-sm">
+                    <i class="bi bi-trash me-1"></i> Remover
+                </button>
+            </form>
+            @endif
+        </div>
+    </div>
+</div>
 
 <div class="modern-card">
     <div class="modern-card-header">

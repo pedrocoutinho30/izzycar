@@ -49,6 +49,24 @@
     </div>
 </div>
 
+<div class="modern-card mb-4">
+    <div class="modern-card-header">
+        <h5 class="modern-card-title"><i class="bi bi-file-earmark-check"></i> O Meu Contrato</h5>
+    </div>
+    <div class="p-4">
+        @if(auth()->user()->contrato_assinado_path)
+        <p class="text-muted small mb-2">
+            Contrato de angariação assinado, carregado a {{ auth()->user()->contrato_assinado_em?->format('d/m/Y') }}.
+        </p>
+        <a href="{{ route('admin.angariador.contrato') }}" target="_blank" class="btn btn-primary-modern">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Ver o meu contrato
+        </a>
+        @else
+        <p class="text-muted mb-0">O seu contrato assinado ainda não foi carregado. Assim que estiver disponível, aparece aqui.</p>
+        @endif
+    </div>
+</div>
+
 <div class="row g-4">
     <div class="col-lg-6">
         <div class="modern-card">

@@ -16,16 +16,41 @@
 
 <div class="row g-4">
     <div class="col-lg-8">
-        {{-- Propostas — apenas visível depois de a equipa criar uma proposta --}}
+        {{-- Pedidos de importação (formulários) desta lead, só de leitura --}}
+        @php
+            $reqStatusLabels = ['novo' => 'Novo', 'em_analise' => 'Em análise', 'convertido' => 'Convertido', 'rejeitado' => 'Rejeitado', 'arquivado' => 'Arquivado'];
+            $reqStatusColors = ['novo' => 'warning', 'em_analise' => 'info', 'convertido' => 'success', 'rejeitado' => 'danger', 'arquivado' => 'secondary'];
+        @endphp
         <div class="modern-card mb-4">
             <div class="modern-card-header">
-                <h5 class="modern-card-title"><i class="bi bi-file-earmark-text"></i> Proposta enviada ao cliente</h5>
+                <h5 class="modern-card-title"><i class="bi bi-envelope-open"></i> Pedidos de importação</h5>
+                <span class="badge bg-secondary rounded-pill">{{ $formProposals->count() }}</span>
+            </div>
+            @forelse($formProposals as $fp)
+            @php $wanted = trim(implode(' ', array_filter([$fp->brand, $fp->model, $fp->version]))); @endphp
+            <div class="lead-activity-item align-items-center">
+                <div class="lad-icon" style="background:rgba(13,110,253,.1);color:#0d6efd;"><i class="bi bi-envelope-open"></i></div>
+                <div class="lad-body">
+                    <div class="lad-title">{{ $fp->label }}</div>
+                    <div class="lad-meta">{{ $fp->created_at->format('d/m/Y') }}@if($wanted !== '' && filled($fp->title)) · {{ $wanted }}@endif @if($fp->budget) · Orçamento: {{ number_format((float) $fp->budget, 0, ',', '.') }} €@endif</div>
+                    <div class="lad-tags"><span class="lad-tag badge bg-{{ $reqStatusColors[$fp->status] ?? 'secondary' }}">{{ $reqStatusLabels[$fp->status] ?? ($fp->status ?? 'Novo') }}</span></div>
+                </div>
+            </div>
+            @empty
+            <div class="p-4 text-center text-muted">Ainda sem pedidos de importação desta lead.</div>
+            @endforelse
+        </div>
+
+        {{-- Cotações — apenas visível depois de a equipa criar uma cotação --}}
+        <div class="modern-card mb-4">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title"><i class="bi bi-file-earmark-text"></i> Cotações enviadas ao cliente</h5>
             </div>
 
             @if($client->proposals->isEmpty())
                 <div class="p-4 text-center text-muted">
                     <i class="bi bi-hourglass-split fs-2 d-block mb-2"></i>
-                    Esta lead ainda está a ser tratada pela nossa equipa. Quando for enviada uma proposta ao cliente, verá aqui o respetivo estado e link.
+                    Esta lead ainda está a ser tratada pela nossa equipa. Quando for enviada uma cotação ao cliente, verá aqui o respetivo estado e link.
                 </div>
             @else
                 @foreach($client->proposals->sortByDesc('created_at') as $proposal)
@@ -46,7 +71,7 @@
                     </div>
                     @if($proposal->proposal_code)
                     <a href="{{ route('proposals.detail', $proposal->proposal_code) }}" target="_blank"
-                       class="btn btn-icon btn-primary-modern ms-auto flex-shrink-0" title="Ver proposta (igual à que o cliente recebeu)">
+                       class="btn btn-icon btn-primary-modern ms-auto flex-shrink-0" title="Ver cotação (igual à que o cliente recebeu)">
                         <i class="bi bi-arrow-up-right-square"></i>
                     </a>
                     @endif
@@ -54,6 +79,30 @@
                 @endforeach
             @endif
         </div>
+
+        {{-- Cotações convertidas: só estado e valor final --}}
+        @if($client->convertedProposals->isNotEmpty())
+        <div class="modern-card mb-4">
+            <div class="modern-card-header">
+                <h5 class="modern-card-title"><i class="bi bi-check2-circle"></i> Cotações convertidas</h5>
+                <span class="badge bg-secondary rounded-pill">{{ $client->convertedProposals->count() }}</span>
+            </div>
+            @foreach($client->convertedProposals->sortByDesc('created_at') as $cp)
+            @php $cpTotal = $cp->proposal?->totalCost(); @endphp
+            <div class="lead-activity-item align-items-center">
+                <div class="lad-icon" style="background:rgba(25,135,84,.1);color:#198754;"><i class="bi bi-check2-circle"></i></div>
+                <div class="lad-body">
+                    <div class="lad-title"><x-admin.brand-logo :brand="$cp->brand" :size="24" class="me-1" />{{ trim(($cp->brand ?? '') . ' ' . ($cp->modelCar ?? '')) }}</div>
+                    <div class="lad-meta">@if($cpTotal) <strong>{{ number_format($cpTotal, 0, ',', '.') }} €</strong> · @endif{{ $cp->created_at->format('d/m/Y') }}</div>
+                    <div class="lad-tags"><span class="lad-tag badge bg-{{ $cp->isCancelled() ? 'danger' : ($cp->status === 'Concluido' ? 'success' : 'info') }}">{{ $cp->status ?: 'Iniciada' }}</span></div>
+                </div>
+                <a href="{{ route('admin.angariador.convertidas.show', $cp->id) }}" class="btn btn-icon btn-primary-modern ms-auto flex-shrink-0" title="Ver cotação convertida">
+                    <i class="bi bi-arrow-up-right-square"></i>
+                </a>
+            </div>
+            @endforeach
+        </div>
+        @endif
 
         {{-- Timeline & Notas ─────────────────────────────────────────── --}}
         <div class="modern-card mb-4">

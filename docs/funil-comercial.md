@@ -6,7 +6,7 @@ Do primeiro contacto à venda ou legalização. Detalhes em [leads-e-clientes.md
 Entrada (site, WhatsApp, BO, angariador)
    │  ClientMatcher: mesmo email OU telefone → reaproveita o registo
    ▼
-LEAD (Client, is_lead=true)   lead_status: nova → em_contacto → fria | perdida
+LEAD (Client, is_lead=true)   lead_status: nova → em_contacto → qualificada → fria | perdida
    │  pedido de importação
    ▼
 PEDIDO DE FORMULÁRIO (FormProposal)   novo → em_analise → … → convertido

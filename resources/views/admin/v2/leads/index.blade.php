@@ -74,6 +74,7 @@
                 '' => 'Todos os estados',
                 'nova' => 'Nova',
                 'em_contacto' => 'Em Contacto',
+                'qualificada' => 'Qualificada',
                 'fria' => 'Fria',
                 'perdida' => 'Perdida',
             ]
@@ -112,6 +113,7 @@
         $statusLabels = [
             'nova'        => ['label' => 'Nova', 'color' => 'success'],
             'em_contacto' => ['label' => 'Em Contacto', 'color' => 'info'],
+            'qualificada' => ['label' => 'Qualificada', 'color' => 'primary'],
             'fria'        => ['label' => 'Fria', 'color' => 'secondary'],
             'perdida'     => ['label' => 'Perdida', 'color' => 'danger'],
         ];

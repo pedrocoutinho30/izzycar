@@ -174,6 +174,7 @@
             $statusConfig = [
                 'nova'        => ['label' => 'Nova',        'color' => 'success',   'icon' => 'bi-circle-fill'],
                 'em_contacto' => ['label' => 'Em Contacto', 'color' => 'info',      'icon' => 'bi-telephone-fill'],
+                'qualificada' => ['label' => 'Qualificada', 'color' => 'primary',   'icon' => 'bi-patch-check-fill'],
                 'fria'        => ['label' => 'Fria',        'color' => 'secondary', 'icon' => 'bi-snow'],
                 'perdida'     => ['label' => 'Perdida',     'color' => 'danger',    'icon' => 'bi-x-circle-fill'],
             ];

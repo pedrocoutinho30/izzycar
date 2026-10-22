@@ -1374,21 +1374,21 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="{{ route('admin.angariador.propostas') }}" class="nav-link {{ request()->routeIs('admin.angariador.propostas') ? 'active' : '' }}">
+                <a href="{{ route('admin.angariador.cotacoes') }}" class="nav-link {{ request()->routeIs('admin.angariador.cotacoes') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text"></i>
-                    <span>Propostas</span>
+                    <span>Cotações</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.angariador.convertidas') }}" class="nav-link {{ request()->routeIs('admin.angariador.convertidas*') ? 'active' : '' }}">
+                    <i class="bi bi-check2-circle"></i>
+                    <span>Cotações convertidas</span>
                 </a>
             </div>
             <div class="nav-item">
                 <a href="{{ route('admin.angariador.comissoes') }}" class="nav-link {{ request()->routeIs('admin.angariador.comissoes') ? 'active' : '' }}">
                     <i class="bi bi-cash-coin"></i>
                     <span>Comissões</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="{{ route('admin.angariador.formularios') }}" class="nav-link {{ request()->routeIs('admin.angariador.formularios') ? 'active' : '' }}">
-                    <i class="bi bi-envelope-open"></i>
-                    <span>Formulários</span>
                 </a>
             </div>
             <div class="nav-item">
