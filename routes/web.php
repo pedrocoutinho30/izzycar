@@ -72,7 +72,9 @@ Route::get('/definir-password/{token}', [App\Http\Controllers\Auth\SetPasswordCo
 Route::post('/definir-password', [App\Http\Controllers\Auth\SetPasswordController::class, 'store'])
     ->name('password.setup.store');
 
+// O manual é só para quem tem conta: sem sessão, redireciona para o login.
 Route::get('/manual-angariador', [App\Http\Controllers\Frontend\AngariadorManualController::class, 'index'])
+    ->middleware('auth')
     ->name('public.manual.angariador');
 
 Route::get('/seja-angariador', [App\Http\Controllers\Frontend\AngariadorManualController::class, 'landing'])

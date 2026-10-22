@@ -162,7 +162,7 @@
                 </form>
 
                 <div class="manual-link">
-                    Ainda não sabe como funciona? <a href="{{ route('public.manual.angariador') }}">Leia o manual do angariador</a>
+                    Ainda não sabe como funciona? <a href="{{ route('public.angariador.landing') }}">Conheça o programa de angariadores</a>
                 </div>
             </div>
         </div>
