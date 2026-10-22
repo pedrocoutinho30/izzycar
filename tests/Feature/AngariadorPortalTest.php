@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Client;
 use App\Models\ConvertedProposal;
 use App\Models\FormProposal;
+use App\Models\LeadActivity;
 use App\Models\Proposal;
 use App\Models\StatusProposalHistory;
 use Illuminate\Support\Facades\Cache;
@@ -132,5 +133,39 @@ class AngariadorPortalTest extends TestCase
             ->assertSee('Cotações convertidas')
             ->assertSee('/gestao/angariador/cotacoes', false)
             ->assertDontSee('/gestao/angariador/formularios', false);
+    }
+
+    public function test_timeline_shows_only_the_angariadors_own_entries(): void
+    {
+        $lead = Client::create(['name' => 'Lead Dela', 'is_lead' => true, 'lead_status' => 'nova', 'owner_id' => $this->angariador->id]);
+
+        // Eventos que o angariador não deve ver: sistema e equipa.
+        LeadActivity::log($lead->id, 'Proprietário da lead alterado para: Josué');
+        LeadActivity::create(['client_id' => $lead->id, 'user_id' => $this->outro->id, 'type' => 'note', 'title' => 'Nota da equipa', 'icon' => 'bi-sticky-fill', 'color' => 'warning']);
+
+        // O que ele próprio faz.
+        $this->actingAs($this->angariador)->post(route('admin.angariador.leads.activity', $lead->id), ['type' => 'call', 'title' => 'Liguei ao cliente'])->assertRedirect();
+        $this->actingAs($this->angariador)->postJson(route('admin.angariador.leads.status', $lead->id), ['status' => 'em_contacto'])->assertOk();
+        $this->actingAs($this->angariador)->post(route('admin.angariador.leads.followup', $lead->id), ['next_followup_at' => now()->addDay()->format('Y-m-d H:i')])->assertRedirect();
+
+        $this->actingAs($this->angariador)->get(route('admin.angariador.leads.show', $lead->id))
+            ->assertOk()
+            ->assertSee('Liguei ao cliente')
+            ->assertSee('Estado alterado: Nova → Em Contacto')
+            ->assertSee('Follow-up agendado para')
+            ->assertDontSee('Proprietário da lead alterado')
+            ->assertDontSee('Nota da equipa');
+    }
+
+    public function test_kanban_card_shows_only_the_angariadors_last_activity(): void
+    {
+        $lead = Client::create(['name' => 'Lead Dela', 'is_lead' => true, 'lead_status' => 'nova', 'owner_id' => $this->angariador->id]);
+        LeadActivity::create(['client_id' => $lead->id, 'user_id' => $this->angariador->id, 'type' => 'note', 'title' => 'Minha nota', 'icon' => 'bi-sticky-fill', 'color' => 'warning']);
+        LeadActivity::log($lead->id, 'Evento interno da equipa');
+
+        $this->actingAs($this->angariador)->get(route('admin.angariador.leads.kanban'))
+            ->assertOk()
+            ->assertSee('Minha nota')
+            ->assertDontSee('Evento interno da equipa');
     }
 }

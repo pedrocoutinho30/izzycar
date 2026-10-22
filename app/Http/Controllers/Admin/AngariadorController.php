@@ -77,7 +77,8 @@ class AngariadorController extends Controller
             'Lead criada manualmente',
             'Criada pelo angariador ' . (Auth::user()->name ?? '—') . '.',
             'bi-plus-circle-fill',
-            'success'
+            'success',
+            Auth::id()
         );
 
         return redirect()->route('admin.angariador.leads.show', $lead->id)
@@ -88,7 +89,14 @@ class AngariadorController extends Controller
     {
         abort_if($client->owner_id !== Auth::id(), 403);
 
-        $client->load(['proposals', 'convertedProposals.proposal', 'activities.user']);
+        // A timeline mostra só o que o próprio angariador registou: notas, contactos,
+        // follow-ups e mudanças de estado feitas por ele. Eventos da equipa ou do
+        // sistema (ex.: mudança de proprietário) não são para ele.
+        $client->load([
+            'proposals',
+            'convertedProposals.proposal',
+            'activities' => fn ($q) => $q->where('user_id', Auth::id())->with('user')->latest(),
+        ]);
 
         // Pedidos de importação (formulários) desta lead; sem as oportunidades,
         // que levam a análise interna de margens.
@@ -108,7 +116,7 @@ class AngariadorController extends Controller
         ];
 
         $leads = Client::where('owner_id', Auth::id())
-            ->with(['activities' => fn ($q) => $q->latest()->limit(1)])
+            ->with(['activities' => fn ($q) => $q->where('user_id', Auth::id())->latest()->limit(1)])
             ->orderBy('created_at', 'desc')
             ->get()
             ->groupBy(fn ($l) => $l->lead_status ?? 'nova');
@@ -139,7 +147,8 @@ class AngariadorController extends Controller
             'Estado alterado: ' . ($statusLabels[$oldStatus] ?? $oldStatus) . ' → ' . ($statusLabels[$request->status] ?? $request->status),
             '',
             'bi-arrow-repeat',
-            $statusColors[$request->status] ?? 'secondary'
+            $statusColors[$request->status] ?? 'secondary',
+            Auth::id()
         );
 
         if ($request->expectsJson()) {
@@ -183,7 +192,8 @@ class AngariadorController extends Controller
             'Follow-up agendado para ' . \Carbon\Carbon::parse($request->next_followup_at)->format('d/m/Y H:i'),
             $request->followup_note ?? '',
             'bi-alarm-fill',
-            'warning'
+            'warning',
+            Auth::id()
         );
 
         return back()->with('success', 'Follow-up agendado.');

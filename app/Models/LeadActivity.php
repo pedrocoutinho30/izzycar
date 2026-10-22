@@ -42,12 +42,13 @@ class LeadActivity extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Regista evento automático do sistema (sem utilizador associado)
-    public static function log(int $clientId, string $title, string $body = '', string $icon = 'bi-circle-fill', string $color = 'secondary'): self
+    // Regista evento automático do sistema (sem utilizador associado, salvo se
+    // $userId for indicado: ações do angariador ficam na timeline dele)
+    public static function log(int $clientId, string $title, string $body = '', string $icon = 'bi-circle-fill', string $color = 'secondary', ?int $userId = null): self
     {
         return self::create([
             'client_id' => $clientId,
-            'user_id'   => null,
+            'user_id'   => $userId,
             'type'      => 'system',
             'title'     => $title,
             'body'      => $body,
