@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -55,6 +56,59 @@ class Client extends Model
             $client->email_normalized = $matcher->normalizeEmail($client->email);
             $client->phone_key = $matcher->phoneKey($client->phone);
         });
+    }
+
+    /**
+     * Filtros da listagem de clientes (search, client_type). Partilhado pela
+     * listagem e pela exportação XLSX para darem sempre os mesmos resultados.
+     * O tipo compara-se sem distinguir maiúsculas (a BD gravou "empresa" e
+     * "Empresa"; no MySQL o "=" já ignorava, o sqlite não).
+     *
+     * @param  array{search?: mixed, client_type?: mixed}  $filtros
+     */
+    public function scopeFiltrarClientes(Builder $query, array $filtros): Builder
+    {
+        if (filled($filtros['search'] ?? null)) {
+            $search = $filtros['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('vat_number', 'like', "%{$search}%");
+            });
+        }
+
+        if (filled($filtros['client_type'] ?? null)) {
+            $query->whereRaw('LOWER(client_type) = ?', [mb_strtolower($filtros['client_type'])]);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Filtros da listagem de leads (search, lead_source, lead_status, owner_id).
+     * Partilhado pela listagem e pela exportação XLSX.
+     *
+     * @param  array{search?: mixed, lead_source?: mixed, lead_status?: mixed, owner_id?: mixed}  $filtros
+     */
+    public function scopeFiltrarLeads(Builder $query, array $filtros): Builder
+    {
+        if (filled($filtros['search'] ?? null)) {
+            $search = $filtros['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        foreach (['lead_source', 'lead_status', 'owner_id'] as $campo) {
+            if (filled($filtros[$campo] ?? null)) {
+                $query->where($campo, $filtros[$campo]);
+            }
+        }
+
+        return $query;
     }
 
     public function convertToClient(): void

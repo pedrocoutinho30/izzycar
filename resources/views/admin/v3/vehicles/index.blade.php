@@ -20,6 +20,15 @@
     <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-1"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
 
+{{-- Exporta com os filtros ativos --}}
+<div class="d-flex justify-content-end mb-3">
+    @include('components.admin.export-button', [
+        'type' => 'vehicles',
+        'action' => route('admin.v3.vehicles.export'),
+        'filters' => request()->only(['search', 'status', 'fuel']),
+    ])
+</div>
+
 {{-- Filters --}}
 <div class="modern-card mb-3">
     <div class="modern-card-body">
@@ -57,8 +66,13 @@
         @if($vehicles->isEmpty())
             <div class="text-center py-5 text-muted">
                 <i class="bi bi-car-front fs-1 d-block mb-2"></i>
-                Nenhum veículo encontrado.
-                <a href="{{ route('admin.v3.vehicles.create') }}" class="d-block mt-2">Criar primeiro veículo</a>
+                @if(request()->filled('search') || request()->filled('status') || request()->filled('fuel'))
+                    Sem resultados para os filtros aplicados.
+                    <a href="{{ route('admin.v3.vehicles.index') }}" class="btn btn-outline-secondary btn-sm d-block mx-auto mt-2" style="width:fit-content">Limpar filtros</a>
+                @else
+                    Nenhum veículo encontrado.
+                    <a href="{{ route('admin.v3.vehicles.create') }}" class="d-block mt-2">Criar primeiro veículo</a>
+                @endif
             </div>
         @else
         {{-- Desktop: tabela (inalterada) --}}

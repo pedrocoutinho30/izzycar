@@ -22,6 +22,7 @@
         "laravel/tinker": "^2.10.1",
         "laravel/ui": "^4.0",
         "mpdf/mpdf": "^8.2",
+        "openspout/openspout": "^4.28",
         "spatie/browsershot": "^5.0",
         "spatie/laravel-permission": "^6.21",
         "spatie/laravel-sitemap": "^7.3",

@@ -38,23 +38,7 @@ class V3VehicleController extends Controller
             'client:id,name',
         ]);
 
-        if ($request->filled('search')) {
-            $s = $request->search;
-            $query->where(function ($q) use ($s) {
-                $q->where('reference', 'like', "%$s%")
-                  ->orWhere('brand', 'like', "%$s%")
-                  ->orWhere('model', 'like', "%$s%")
-                  ->orWhere('registration', 'like', "%$s%");
-            });
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('fuel')) {
-            $query->where('fuel', $request->fuel);
-        }
+        $query->filtrar($request->only(['search', 'status', 'fuel']));
 
         $vehicles = $query->latest()->paginate(20)->withQueryString();
 

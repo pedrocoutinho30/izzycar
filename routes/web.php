@@ -117,12 +117,16 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     // ============================================================
     Route::prefix('legalizacoes')->name('admin.legalizations.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\LegalizationController::class, 'index'])->name('index');
+        Route::get('/kanban', [App\Http\Controllers\Admin\LegalizationController::class, 'kanban'])->name('kanban');
+        // Exportação XLSX (antes de /{legalization}); a ação "export" conta como ver.
+        Route::get('/export', [App\Http\Controllers\Admin\ExportXlsxController::class, 'download'])->name('export')->defaults('tipo', 'legalizations');
         Route::get('/criar', [App\Http\Controllers\Admin\LegalizationController::class, 'create'])->name('create');
         Route::post('/', [App\Http\Controllers\Admin\LegalizationController::class, 'store'])->name('store');
         Route::get('/{legalization}', [App\Http\Controllers\Admin\LegalizationController::class, 'show'])->name('show');
         Route::get('/{legalization}/editar', [App\Http\Controllers\Admin\LegalizationController::class, 'edit'])->name('edit');
         Route::put('/{legalization}', [App\Http\Controllers\Admin\LegalizationController::class, 'update'])->name('update');
         Route::delete('/{legalization}', [App\Http\Controllers\Admin\LegalizationController::class, 'destroy'])->name('destroy');
+        Route::post('/{legalization}/mover', [App\Http\Controllers\Admin\LegalizationController::class, 'move'])->name('move');
         Route::post('/{legalization}/passo', [App\Http\Controllers\Admin\LegalizationController::class, 'toggleStep'])->name('toggle-step');
         Route::post('/{legalization}/documentos', [App\Http\Controllers\Admin\LegalizationController::class, 'uploadDocument'])->name('upload-document');
         Route::get('/{legalization}/documentos/{document}/download', [App\Http\Controllers\Admin\LegalizationController::class, 'downloadDocument'])->name('download-document');
@@ -240,6 +244,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
 
     Route::prefix('v2/proposals')->name('admin.v2.proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'index'])->name('index');
+        Route::get('/kanban', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'kanban'])->name('kanban');
         Route::get('/create', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'create'])->name('create');
         Route::get('/create-from-form/{formProposalId}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'createFromForm'])->name('createFromForm');
         Route::get('/create-from-opportunity/{opportunity}', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'createFromOpportunity'])->name('createFromOpportunity');
@@ -276,6 +281,8 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::get('/create', [App\Http\Controllers\Admin\LeadV2Controller::class, 'create'])->name('create');
         Route::post('/', [App\Http\Controllers\Admin\LeadV2Controller::class, 'store'])->name('store');
         Route::get('/kanban', [App\Http\Controllers\Admin\LeadV2Controller::class, 'kanban'])->name('kanban');
+        // Exportação XLSX (antes de /{id}); a ação "export" conta como ver.
+        Route::get('/export', [App\Http\Controllers\Admin\ExportXlsxController::class, 'download'])->name('export')->defaults('tipo', 'leads');
         Route::get('/{id}', [App\Http\Controllers\Admin\LeadV2Controller::class, 'show'])->name('show');
         Route::post('/{id}/convert', [App\Http\Controllers\Admin\LeadV2Controller::class, 'convert'])->name('convert');
         Route::post('/{id}/status', [App\Http\Controllers\Admin\LeadV2Controller::class, 'updateStatus'])->name('status');
@@ -294,6 +301,8 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     Route::prefix('v2/clients')->name('admin.v2.clients.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ClientV2Controller::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\ClientV2Controller::class, 'create'])->name('create');
+        // Exportação XLSX (antes de /{id}); a ação "export" conta como ver.
+        Route::get('/export', [App\Http\Controllers\Admin\ExportXlsxController::class, 'download'])->name('export')->defaults('tipo', 'clients');
         Route::post('/', [App\Http\Controllers\Admin\ClientV2Controller::class, 'store'])->name('store');
         Route::get('/{id}', [App\Http\Controllers\Admin\ClientV2Controller::class, 'show'])->name('show');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\ClientV2Controller::class, 'edit'])->name('edit');
@@ -469,6 +478,8 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     Route::prefix('v3/vehicles')->name('admin.v3.vehicles.')->group(function () {
         Route::get('/',       [App\Http\Controllers\Admin\V3VehicleController::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\V3VehicleController::class, 'create'])->name('create');
+        // Exportação XLSX (antes das rotas com {id}); a ação "export" conta como ver.
+        Route::get('/export', [App\Http\Controllers\Admin\ExportXlsxController::class, 'download'])->name('export')->defaults('tipo', 'vehicles');
         Route::post('/',      [App\Http\Controllers\Admin\V3VehicleController::class, 'store'])->name('store');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\V3VehicleController::class, 'edit'])->name('edit');
         Route::delete('/{id}',   [App\Http\Controllers\Admin\V3VehicleController::class, 'destroy'])->name('destroy');
@@ -571,6 +582,8 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     // ============================================================
     Route::prefix('v2/movements')->name('admin.v2.movements.')->group(function () {
         Route::get('/',           [App\Http\Controllers\Admin\MovementV2Controller::class, 'index'])->name('index');
+        // Exportação XLSX; a ação "export" conta como ver.
+        Route::get('/export',     [App\Http\Controllers\Admin\ExportXlsxController::class, 'download'])->name('export')->defaults('tipo', 'movements');
         Route::get('/create',     [App\Http\Controllers\Admin\MovementV2Controller::class, 'create'])->name('create');
         Route::post('/',          [App\Http\Controllers\Admin\MovementV2Controller::class, 'store'])->name('store');
         Route::get('/{id}/edit',  [App\Http\Controllers\Admin\MovementV2Controller::class, 'edit'])->name('edit');
@@ -651,6 +664,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     // ============================================================
     Route::prefix('v2/converted-proposals')->name('admin.v2.converted-proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'index'])->name('index');
+        Route::get('/kanban', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'kanban'])->name('kanban');
         Route::get('/create', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'create'])->name('create');
         Route::post('/', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'store'])->name('store');
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\ConvertedProposalV2Controller::class, 'edit'])->name('edit');

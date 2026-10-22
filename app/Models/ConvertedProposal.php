@@ -18,6 +18,26 @@ class ConvertedProposal extends Model
         'ISV', 'Matriculação', 'IMT', 'Entrega', 'Registo automóvel', 'Concluido',
     ];
 
+    /**
+     * Etapas em que, por omissão, não se propõe avisar o cliente por email
+     * (são burocracia interna e geravam emails a mais). O utilizador decide
+     * sempre ao mudar o estado.
+     */
+    public const SILENT_BY_DEFAULT = ['IPO', 'DAV', 'ISV', 'Matriculação'];
+
+    /** Coluna do kanban: etapa do pipeline, ou 'done' / 'cancelled'. Estados desconhecidos contam como Iniciada. */
+    public function boardColumn(): string
+    {
+        $status = $this->status ?: 'Iniciada';
+
+        return match (true) {
+            $this->isCancelled() => 'cancelled',
+            $status === 'Concluido' => 'done',
+            in_array($status, self::PIPELINE_STATUSES, true) => $status,
+            default => 'Iniciada',
+        };
+    }
+
     public function isCancelled(): bool
     {
         return in_array($this->status, self::CANCELLED_STATUSES, true);

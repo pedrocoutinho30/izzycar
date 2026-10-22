@@ -135,19 +135,39 @@
             <i class="bi bi-journal-text me-2"></i>Lista de Movimentos
             <span class="badge bg-secondary ms-2">{{ $movements->total() }} total</span>
         </h5>
-        <a href="{{ route('admin.v2.movements.create') }}" class="btn btn-primary-modern btn-sm">
-            <i class="bi bi-plus-lg me-1"></i> Novo Movimento
-        </a>
+        <div class="d-flex gap-2">
+            {{-- Exporta com os filtros ativos, incluindo o ano --}}
+            @include('components.admin.export-button', [
+                'type' => 'movements',
+                'action' => route('admin.v2.movements.export'),
+                'filters' => request()->only(['search', 'movement_type', 'category', 'status', 'v3_vehicle_id', 'client_id', 'date_from', 'date_to']) + ['year' => $year],
+            ])
+            <a href="{{ route('admin.v2.movements.create') }}" class="btn btn-primary-modern btn-sm">
+                <i class="bi bi-plus-lg me-1"></i> Novo Movimento
+            </a>
+        </div>
     </div>
 
     @if($movements->isEmpty())
-        @include('components.admin.empty-state', [
-            'icon'        => 'bi-journal-text',
-            'title'       => 'Nenhum movimento encontrado',
-            'description' => 'Ainda não existem movimentos registados ou não há resultados para os filtros aplicados.',
-            'actionUrl'   => route('admin.v2.movements.create'),
-            'actionText'  => 'Registar Primeiro Movimento',
-        ])
+        @php
+            // O ano (corrente por omissão) também é um filtro: só "desde o início" sem mais filtros é a lista realmente vazia.
+            $hasFilters = $year !== 'all' || collect(request()->only(['search', 'movement_type', 'category', 'status', 'v3_vehicle_id', 'client_id', 'date_from', 'date_to']))->filter(fn ($v) => $v !== null && $v !== '')->isNotEmpty();
+        @endphp
+        @if($hasFilters)
+            @include('components.admin.empty-state', [
+                'icon'    => 'bi-journal-text',
+                'title'   => 'Sem resultados para os filtros aplicados',
+                'message' => 'Não há movimentos com estes filtros' . ($year !== 'all' && !request()->filled('date_from') && !request()->filled('date_to') ? ' no ano ' . $year : '') . '. Experimente alargar o ano ou limpar os filtros.',
+                'action'  => ['text' => 'Limpar filtros', 'href' => route('admin.v2.movements.index', ['year' => 'all']), 'icon' => 'bi-x-lg'],
+            ])
+        @else
+            @include('components.admin.empty-state', [
+                'icon'    => 'bi-journal-text',
+                'title'   => 'Nenhum movimento encontrado',
+                'message' => 'Ainda não existem movimentos registados.',
+                'action'  => ['text' => 'Registar Primeiro Movimento', 'href' => route('admin.v2.movements.create'), 'icon' => 'bi-plus-lg'],
+            ])
+        @endif
     @else
         {{-- Desktop: tabela (inalterada) --}}
         <div class="table-responsive d-none d-lg-block">

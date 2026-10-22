@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -118,6 +120,17 @@ class Legalization extends Model
         ],
     ];
 
+    /** Nomes curtos dos passos, para colunas e etiquetas pequenas (ex.: kanban). */
+    const PASSOS_CURTOS = [
+        1 => 'Homologação IMT',
+        2 => 'Inspeção B',
+        3 => 'DAV',
+        4 => 'Pagar ISV',
+        5 => 'Chapas e seguro',
+        6 => 'Modelo 9',
+        7 => 'Registo',
+    ];
+
     // ---------------------------------------------------------------
     // Boot — gera automaticamente o token público de acompanhamento
     // ---------------------------------------------------------------
@@ -145,6 +158,12 @@ class Legalization extends Model
         return $this->belongsTo(Vehicle::class);
     }
 
+    /** Viatura V3 ligada (a fonte de verdade); `vehicle()` é o legado V1. */
+    public function v3Vehicle(): BelongsTo
+    {
+        return $this->belongsTo(V3Vehicle::class, 'v3_vehicle_id');
+    }
+
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class)->orderByDesc('expense_date');
@@ -153,6 +172,50 @@ class Legalization extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(LegalizationDocument::class);
+    }
+
+    // ---------------------------------------------------------------
+    // Filtros da listagem (partilhados com a exportação XLSX)
+    // ---------------------------------------------------------------
+
+    /** Estados da listagem, pelo nº de passos concluídos (como as estatísticas). */
+    const ESTADOS = [
+        'nova'      => 'Nova (0 passos)',
+        'em_curso'  => 'Em curso (1 a 6 passos)',
+        'concluida' => 'Concluída (7 passos)',
+    ];
+
+    /**
+     * Intervalo de datas (sobre created_at, inclusivo) e/ou estado. Chaves
+     * vazias ou desconhecidas são ignoradas. O estado conta os elementos do
+     * JSON em SQL (JSON_LENGTH no MySQL, json_array_length no sqlite).
+     *
+     * @param  array{date_from?: ?string, date_to?: ?string, estado?: ?string}  $filters
+     */
+    public function scopeFiltrar(Builder $query, array $filters): Builder
+    {
+        if (! empty($filters['date_from'])) {
+            $query->where('created_at', '>=', Carbon::parse($filters['date_from'])->startOfDay());
+        }
+        if (! empty($filters['date_to'])) {
+            $query->where('created_at', '<=', Carbon::parse($filters['date_to'])->endOfDay());
+        }
+
+        return $query->when($filters['estado'] ?? null, fn (Builder $q, string $estado) => $q->estado($estado));
+    }
+
+    /** Só o filtro de estado (nova, em_curso, concluida); outro valor não filtra. */
+    public function scopeEstado(Builder $query, string $estado): Builder
+    {
+        $total = count(self::PASSOS);
+
+        return match ($estado) {
+            // sem passos: coluna nula ou lista vazia
+            'nova' => $query->where(fn (Builder $q) => $q->whereNull('steps_completed')->orWhereJsonLength('steps_completed', 0)),
+            'em_curso' => $query->whereJsonLength('steps_completed', '>', 0)->whereJsonLength('steps_completed', '<', $total),
+            'concluida' => $query->whereJsonLength('steps_completed', '>=', $total),
+            default => $query,
+        };
     }
 
     // ---------------------------------------------------------------
@@ -182,6 +245,21 @@ class Legalization extends Model
     {
         $completed = count($this->steps_completed ?? []);
         return (int) round($completed / count(self::PASSOS) * 100);
+    }
+
+    /**
+     * Passo em que o processo está: o primeiro por concluir (os passos fazem-se
+     * por ordem). Null quando os 7 estão concluídos.
+     */
+    public function currentStep(): ?int
+    {
+        foreach (array_keys(self::PASSOS) as $step) {
+            if (! $this->isStepCompleted($step)) {
+                return $step;
+            }
+        }
+
+        return null;
     }
 
     public function trackingUrl(): string

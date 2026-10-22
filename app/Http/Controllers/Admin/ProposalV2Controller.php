@@ -749,19 +749,53 @@ class ProposalV2Controller extends Controller
         ]);
     }
 
+    /**
+     * Pipeline kanban. Pendente e Enviado mostram tudo (trabalho em aberto);
+     * Aprovada, Reprovada e Sem resposta só as mais recentes, porque crescem
+     * sem parar (a lista tem o resto).
+     */
+    public function kanban()
+    {
+        $open = ['Pendente', 'Enviado'];
+        $closedLimit = 30;
+        $columns = [];
+
+        foreach (['Pendente', 'Enviado', 'Aprovada', 'Reprovada', 'Sem resposta'] as $status) {
+            $query = Proposal::with('client:id,name,email')->where('status', $status);
+            $total = (clone $query)->count();
+            $query = in_array($status, $open, true)
+                ? $query->orderByDesc('created_at')
+                : $query->orderByDesc('updated_at')->limit($closedLimit);
+
+            $columns[$status] = ['items' => $query->get(), 'total' => $total];
+        }
+
+        return view('admin.v2.proposals.kanban', compact('columns', 'closedLimit'));
+    }
+
     public function updateStatus(Request $request, $id, ProposalAcceptanceService $statuses)
     {
-        $request->validate(['status' => 'required|string|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta']);
+        $request->validate([
+            'status' => 'required|string|in:Pendente,Aprovada,Reprovada,Enviado,Sem resposta',
+            // Só conta ao passar a "Enviado"; sem o campo, avisa-se como sempre.
+            'notify' => 'nullable|boolean',
+        ]);
 
-        $proposal = Proposal::findOrFail($id);
+        $proposal = Proposal::with('client')->findOrFail($id);
+        $changed = $proposal->status !== $request->status;
+        $notify = $request->boolean('notify', true);
 
         try {
-            $statuses->changeStatus($proposal, $request->status);
+            $statuses->changeStatus($proposal, $request->status, $notify);
         } catch (ProposalAcceptanceException $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
 
-        return response()->json(['success' => true, 'status' => $proposal->fresh()->status]);
+        return response()->json([
+            'success' => true,
+            'status' => $proposal->fresh()->status,
+            'notified' => $changed && $notify && $request->status === 'Enviado' && filled($proposal->client?->email),
+        ]);
     }
 
     /**

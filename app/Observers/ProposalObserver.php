@@ -89,19 +89,24 @@ class ProposalObserver
 
         $url = route('proposals.detail', $proposal->proposal_code);
 
-        if ($client->email) {
-            Mail::to($client->email)->send(new ProposalSentMail($proposal, $url, false, self::FOLLOWUP_DAYS));
-        }
-
         $owner = $client->owner;
-        if ($owner && $owner->email) {
-            Mail::to($owner->email)->send(new ProposalSentMail($proposal, $url, true, self::FOLLOWUP_DAYS));
+
+        if (! $proposal->skipSentEmails) {
+            if ($client->email) {
+                Mail::to($client->email)->send(new ProposalSentMail($proposal, $url, false, self::FOLLOWUP_DAYS));
+            }
+
+            if ($owner && $owner->email) {
+                Mail::to($owner->email)->send(new ProposalSentMail($proposal, $url, true, self::FOLLOWUP_DAYS));
+            }
         }
 
         LeadActivity::log(
             $client->id,
             "Cotação #{$proposal->id} enviada ao cliente",
-            'Email enviado com o link de acesso.' . ($owner ? ' Angariador notificado.' : ''),
+            $proposal->skipSentEmails
+                ? 'Marcada como enviada sem email (partilhada por outro canal).'
+                : 'Email enviado com o link de acesso.' . ($owner ? ' Angariador notificado.' : ''),
             'bi-envelope-fill',
             'primary'
         );

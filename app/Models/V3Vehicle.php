@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Support\VehicleCache;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -107,6 +108,17 @@ class V3Vehicle extends Model
         return $this->hasOne(Legalization::class, 'v3_vehicle_id');
     }
 
+    /**
+     * Legalização usada na exportação. A BD permite várias por viatura (não há
+     * índice único em v3_vehicle_id) e hasOne() sem ordem não é determinista:
+     * aqui fica sempre a mais antiga (menor id), que é a que o MySQL devolve
+     * na prática no ecrã da viatura.
+     */
+    public function exportLegalization(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Legalization::class, 'v3_vehicle_id')->orderBy('id');
+    }
+
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class, 'v3_vehicle_id');
@@ -133,6 +145,39 @@ class V3Vehicle extends Model
     public function attributeValues(): HasMany
     {
         return $this->hasMany(VehicleAttributeValue::class, 'v3_vehicle_id');
+    }
+
+    // ── Scopes ──────────────────────────────────────────────────────────────
+
+    /**
+     * Filtros da listagem do backoffice (search, status, fuel), partilhados com a
+     * exportação XLSX. Chaves vazias ou ausentes não filtram.
+     *
+     * @param  array{search?: mixed, status?: mixed, fuel?: mixed}  $filters
+     */
+    public function scopeFiltrar(Builder $query, array $filters): Builder
+    {
+        $filled = fn (string $key) => isset($filters[$key]) && trim((string) $filters[$key]) !== '';
+
+        if ($filled('search')) {
+            $s = $filters['search'];
+            $query->where(function ($q) use ($s) {
+                $q->where('reference', 'like', "%$s%")
+                  ->orWhere('brand', 'like', "%$s%")
+                  ->orWhere('model', 'like', "%$s%")
+                  ->orWhere('registration', 'like', "%$s%");
+            });
+        }
+
+        if ($filled('status')) {
+            $query->where('status', $filters['status']);
+        }
+
+        if ($filled('fuel')) {
+            $query->where('fuel', $filters['fuel']);
+        }
+
+        return $query;
     }
 
     // ── Computed attributes ─────────────────────────────────────────────────

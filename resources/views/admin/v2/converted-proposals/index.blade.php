@@ -44,6 +44,8 @@
 ]
 ])
 
+@include('admin.v2.converted-proposals._view-toggle')
+
 <!-- LISTA DE PROPOSTAS CONVERTIDAS -->
 <div class="content-grid">
     @forelse($convertedProposals as $converted)

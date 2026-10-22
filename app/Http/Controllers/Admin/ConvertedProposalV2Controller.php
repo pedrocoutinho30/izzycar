@@ -95,6 +95,26 @@ class ConvertedProposalV2Controller extends Controller
     }
 
     /**
+     * Pipeline kanban: uma coluna por etapa em curso; concluídas e canceladas
+     * só têm uma zona onde largar. A mudança de estado vai pela rota
+     * update-status (que decide se avisa o cliente por email).
+     */
+    public function kanban()
+    {
+        $proposals = ConvertedProposal::with('client:id,name,email')->orderByDesc('created_at')->get();
+
+        $columns = array_values(array_diff(ConvertedProposal::PIPELINE_STATUSES, ['Concluido']));
+        $grouped = $proposals->groupBy(fn (ConvertedProposal $p) => $p->boardColumn());
+
+        return view('admin.v2.converted-proposals.kanban', [
+            'columns' => $columns,
+            'grouped' => $grouped,
+            'doneCount' => $grouped->get('done', collect())->count(),
+            'cancelledCount' => $grouped->get('cancelled', collect())->count(),
+        ]);
+    }
+
+    /**
      * Formulário de criação
      */
     public function create()

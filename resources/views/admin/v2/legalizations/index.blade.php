@@ -15,6 +15,25 @@
     'actionLabel' => 'Nova Legalização',
 ])
 
+@include('admin.v2.legalizations._view-toggle')
+
+<div class="d-flex justify-content-end mb-3 gap-2">
+    @include('components.admin.export-button', [
+        'type' => 'legalizations',
+        'action' => route('admin.legalizations.export'),
+        'filters' => $filters,
+    ])
+</div>
+
+@include('components.admin.filter-bar', [
+    'action' => route('admin.legalizations.index'),
+    'filters' => [
+        ['type' => 'date', 'name' => 'date_from', 'label' => 'Criada desde', 'col' => 3, 'value' => $filters['date_from'] ?? ''],
+        ['type' => 'date', 'name' => 'date_to', 'label' => 'Criada até', 'col' => 3, 'value' => $filters['date_to'] ?? ''],
+        ['type' => 'select', 'name' => 'estado', 'label' => 'Estado', 'col' => 3, 'options' => \App\Models\Legalization::ESTADOS, 'value' => $filters['estado'] ?? ''],
+    ],
+])
+
 @include('components.admin.stats-cards', [
     'stats' => [
         ['icon' => 'file-earmark-check', 'title' => 'Total',       'value' => $stats['total'],      'color' => 'primary'],
@@ -36,12 +55,21 @@
         @if($legalizations->isEmpty())
             <div class="text-center py-5 text-muted">
                 <i class="bi bi-inbox display-4 d-block mb-2"></i>
-                Ainda não há legalizações registadas.
-                <div class="mt-3">
-                    <a href="{{ route('admin.legalizations.create') }}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus me-1"></i> Criar primeira legalização
-                    </a>
-                </div>
+                @if(!empty($filters))
+                    Sem resultados para os filtros aplicados.
+                    <div class="mt-3">
+                        <a href="{{ route('admin.legalizations.index') }}" class="btn btn-outline-secondary btn-sm">
+                            Limpar filtros
+                        </a>
+                    </div>
+                @else
+                    Ainda não há legalizações registadas.
+                    <div class="mt-3">
+                        <a href="{{ route('admin.legalizations.create') }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus me-1"></i> Criar primeira legalização
+                        </a>
+                    </div>
+                @endif
             </div>
         @else
         {{-- Desktop: tabela (inalterada) --}}

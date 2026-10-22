@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -47,6 +48,50 @@ class Expense extends Model
         'vat_amount'    => 'float',
         'amount_net'    => 'float',
     ];
+
+    // ── Filtros partilhados (listagem e exportação) ─────────────────────────
+
+    /**
+     * Filtros da listagem de movimentos, usados também pela exportação XLSX.
+     * Valores vazios não filtram. "year": omisso = ano corrente, "all" = sem
+     * limite; só se aplica quando não há date_from/date_to.
+     *
+     * @param  array{search?: ?string, movement_type?: ?string, category?: ?string, status?: ?string, v3_vehicle_id?: mixed, client_id?: mixed, year?: ?string, date_from?: ?string, date_to?: ?string}  $filters
+     */
+    public function scopeFiltrar(Builder $query, array $filters): Builder
+    {
+        $has = fn (string $key) => isset($filters[$key]) && is_scalar($filters[$key]) && $filters[$key] !== '';
+
+        if (!$has('date_from') && !$has('date_to')) {
+            $year = $has('year') ? (string) $filters['year'] : (string) now()->year;
+            if ($year !== 'all') {
+                $query->whereYear('expense_date', $year);
+            }
+        }
+
+        if ($has('search')) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('observations', 'like', "%{$search}%");
+            });
+        }
+
+        foreach (['movement_type', 'category', 'status', 'v3_vehicle_id', 'client_id'] as $column) {
+            if ($has($column)) {
+                $query->where($column, $filters[$column]);
+            }
+        }
+
+        if ($has('date_from')) {
+            $query->where('expense_date', '>=', $filters['date_from']);
+        }
+        if ($has('date_to')) {
+            $query->where('expense_date', '<=', $filters['date_to']);
+        }
+
+        return $query;
+    }
 
     // ── Type helpers ────────────────────────────────────────────────────────
 

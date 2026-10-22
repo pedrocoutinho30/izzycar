@@ -54,6 +54,13 @@ class Proposal extends Model
     /** Dias de validade da cotação enviada ao cliente (desde a criação). */
     public const VALIDITY_DAYS = 15;
 
+    /**
+     * Só em memória, não é coluna: ao guardar com "Enviado", o observer não
+     * envia os emails (cliente e angariador). Usado quando a cotação já foi
+     * partilhada por outro canal (ex.: WhatsApp).
+     */
+    public bool $skipSentEmails = false;
+
     public function isExpired(): bool
     {
         return $this->created_at !== null && $this->created_at->diffInDays(now()) > self::VALIDITY_DAYS;

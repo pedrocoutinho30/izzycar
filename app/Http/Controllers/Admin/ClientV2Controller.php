@@ -28,20 +28,8 @@ class ClientV2Controller extends Controller
     {
         $query = Client::where('is_lead', false)->orderBy('created_at', 'desc');
 
-        // Filtros
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('vat_number', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('client_type')) {
-            $query->where('client_type', $request->client_type);
-        }
+        // Filtros (partilhados com a exportação XLSX)
+        $query->filtrarClientes($request->only(['search', 'client_type']));
 
         $clients = $query->paginate(10)->withQueryString();
 
