@@ -38,6 +38,29 @@ class ConvertedProposal extends Model
         };
     }
 
+    /**
+     * Total do serviço Izzycar: custos do processo + comissão. Fora ficam o ISV
+     * e o valor do carro, que não passam pela Izzycar.
+     */
+    public function serviceTotal(): float
+    {
+        return (float) $this->custo_inspecao_origem
+            + (float) $this->custo_transporte
+            + (float) $this->custo_ipo
+            + (float) $this->custo_imt
+            + (float) $this->custo_matricula
+            + (float) $this->custo_registo_automovel
+            + (float) $this->valor_comissao;
+    }
+
+    /** VIN em maiúsculas e sem espaços; vazio fica null. */
+    public function setVinAttribute($value): void
+    {
+        $vin = strtoupper(preg_replace('/\s+/', '', (string) $value));
+
+        $this->attributes['vin'] = $vin !== '' ? $vin : null;
+    }
+
     public function isCancelled(): bool
     {
         return in_array($this->status, self::CANCELLED_STATUSES, true);
@@ -57,6 +80,7 @@ class ConvertedProposal extends Model
         'year',
         'km',
         'matricula_origem',
+        'vin',
         'matricula_destino',
         'custo_inspecao_origem',
         'inspecao_origem_pago',

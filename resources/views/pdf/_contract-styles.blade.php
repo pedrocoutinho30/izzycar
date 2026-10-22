@@ -77,7 +77,8 @@
             text-align: justify;
         }
 
-        ul {
+        ul,
+        ol {
             margin: 4px 0 4px 0;
             padding-left: 16px;
         }
@@ -136,6 +137,50 @@
             padding: 6px 10px;
             margin: 6px 0;
             page-break-inside: avoid;
+        }
+
+        .cotacao {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 6px 0;
+            page-break-inside: avoid;
+        }
+
+        .cotacao td,
+        .cotacao th {
+            border: 1px solid #ddd;
+            padding: 5px 8px;
+            text-align: left;
+        }
+
+        .cotacao th {
+            background: #fbf6e9;
+            color: #7a5c14;
+            font-size: 9.5px;
+            text-transform: uppercase;
+        }
+
+        .cotacao td.valor {
+            width: 25%;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .cotacao tr.total td {
+            background: #f3ead2;
+            font-weight: bold;
+        }
+
+        .cotacao tr.info td {
+            color: #555;
+            background: #fafafa;
+        }
+
+        .cotacao .nota {
+            display: block;
+            font-size: 8.5px;
+            font-weight: normal;
+            color: #777;
         }
 
         .clausula {

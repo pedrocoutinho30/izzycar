@@ -172,8 +172,9 @@ class ProposalAcceptanceService
 
     private function convertedData(Proposal $proposal, Client $client): array
     {
-        // Tranches: serviço Izzycar (custos do processo + comissão), 50/50.
-        // O ISV e o valor do carro não passam pela Izzycar.
+        // Tranches: serviço Izzycar (custos do processo + comissão), divididas pelas
+        // percentagens das Definições (50/50 por omissão). O ISV e o valor do carro
+        // não passam pela Izzycar.
         $serviceTotal = $proposal->transport_cost
             + $proposal->inspection_commission_cost
             + $proposal->ipo_cost
@@ -181,6 +182,8 @@ class ProposalAcceptanceService
             + $proposal->registration_cost
             + $proposal->license_plate_cost
             + $proposal->commission_cost;
+
+        $tranches = ServiceTranches::split((float) $serviceTotal);
 
         return [
             'proposal_id' => $proposal->id,
@@ -202,8 +205,8 @@ class ProposalAcceptanceService
             'custo_imt' => $proposal->imt_cost,
             'custo_matricula' => $proposal->license_plate_cost,
             'custo_registo_automovel' => $proposal->registration_cost,
-            'valor_primeira_tranche' => $serviceTotal * 0.5,
-            'valor_segunda_tranche' => $serviceTotal * 0.5,
+            'valor_primeira_tranche' => $tranches['tranche1'],
+            'valor_segunda_tranche' => $tranches['tranche2'],
             'valor_carro' => $proposal->proposed_car_value,
             'valor_comissao' => $proposal->commission_cost,
         ];

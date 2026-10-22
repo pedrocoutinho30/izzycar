@@ -145,6 +145,7 @@ class ConvertedProposalV2Controller extends Controller
             'matricula_origem' => 'nullable|string|max:50',
             'matricula_destino' => 'nullable|string|max:50',
             // Custos e pagamentos
+            'vin' => 'nullable|string|max:17',
             'custo_inspecao_origem' => 'nullable|numeric',
             'inspecao_origem_pago' => 'nullable|boolean',
             'custo_transporte' => 'nullable|numeric',
@@ -232,6 +233,7 @@ class ConvertedProposalV2Controller extends Controller
             'matricula_origem' => 'nullable|string|max:50',
             'matricula_destino' => 'nullable|string|max:50',
             // Custos e pagamentos
+            'vin' => 'nullable|string|max:17',
             'custo_inspecao_origem' => 'nullable|numeric',
             'inspecao_origem_pago' => 'nullable|boolean',
             'custo_transporte' => 'nullable|numeric',

@@ -701,6 +701,14 @@ $pendingValue = $totalValue - $paidValue;
                             <input type="text" name="matricula_destino" class="form-control"
                                    value="{{ old('matricula_destino', $convertedProposal->matricula_destino ?? '') }}">
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label">VIN (nº de chassis)</label>
+                            <input type="text" name="vin" class="form-control text-uppercase @error('vin') is-invalid @enderror"
+                                   maxlength="17" placeholder="17 caracteres"
+                                   value="{{ old('vin', $convertedProposal->vin ?? '') }}">
+                            <div class="form-text">Aparece no contrato de prestação de serviços quando preenchido.</div>
+                            @error('vin')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
                     </div>
                 </div>
             </div>
