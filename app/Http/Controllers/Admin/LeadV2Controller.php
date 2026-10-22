@@ -70,26 +70,8 @@ class LeadV2Controller extends Controller
             ->orderByRaw("lead_status = 'perdida' ASC")
             ->orderBy('created_at', 'desc');
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('lead_source')) {
-            $query->where('lead_source', $request->lead_source);
-        }
-
-        if ($request->filled('lead_status')) {
-            $query->where('lead_status', $request->lead_status);
-        }
-
-        if ($request->filled('owner_id')) {
-            $query->where('owner_id', $request->owner_id);
-        }
+        // Filtros (partilhados com a exportação XLSX)
+        $query->filtrarLeads($request->only(['search', 'lead_source', 'lead_status', 'owner_id']));
 
         $query->with('owner');
 

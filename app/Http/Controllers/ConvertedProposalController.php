@@ -86,7 +86,11 @@ class ConvertedProposalController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate(
-            ['status' => ['required', 'string', \Illuminate\Validation\Rule::in([...ConvertedProposal::PIPELINE_STATUSES, ...ConvertedProposal::CANCELLED_STATUSES])]],
+            [
+                'status' => ['required', 'string', \Illuminate\Validation\Rule::in([...ConvertedProposal::PIPELINE_STATUSES, ...ConvertedProposal::CANCELLED_STATUSES])],
+                // Sem o campo mantém-se o comportamento antigo: avisar o cliente.
+                'notify' => ['nullable', 'boolean'],
+            ],
             ['status.in' => 'Estado inválido.']
         );
 
@@ -102,12 +106,14 @@ class ConvertedProposalController extends Controller
         $convertedProposal->status = $newStatus;
         $convertedProposal->save();
 
+        $notified = false;
         $client = Client::find($convertedProposal->client_id);
-        if ($client && filled($client->email)) {
+        if ($request->boolean('notify', true) && $client && filled($client->email)) {
             try {
                 Mail::to($client->email)->bcc('izzycarpt@gmail.com')->send(
                     new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $newStatus, $client->name, $convertedProposal->matricula_destino)
                 );
+                $notified = true;
             } catch (\Throwable $e) {
                 report($e);
             }
@@ -116,6 +122,7 @@ class ConvertedProposalController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Estado atualizado com sucesso!',
+            'notified' => $notified,
             'oldStatus' => $oldStatus,
             'newStatus' => $newStatus,
         ]);

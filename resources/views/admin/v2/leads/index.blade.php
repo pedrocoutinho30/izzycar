@@ -33,6 +33,11 @@
        class="btn btn-outline-success btn-sm" title="Exportar leads visíveis para CSV (abre no Excel)">
         <i class="bi bi-download me-1"></i> Exportar CSV
     </a>
+    @include('components.admin.export-button', [
+        'type' => 'leads',
+        'action' => route('admin.v2.leads.export'),
+        'filters' => request()->only(['search', 'lead_source', 'lead_status', 'owner_id']),
+    ])
 </div>
 
 @include('components.admin.filter-bar', [

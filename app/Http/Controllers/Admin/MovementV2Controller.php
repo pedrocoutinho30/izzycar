@@ -18,52 +18,13 @@ class MovementV2Controller extends Controller
     public function index(Request $request)
     {
         // Year filter: default = current year, 'all' = no restriction
-        $year = $request->input('year', (string) now()->year);
+        $year = $request->input('year') ?: (string) now()->year;
 
-        $query = Expense::with(['v3Vehicle', 'partner', 'client']);
-
-        // Only apply year filter when date_from/date_to are not set
-        if (!$request->filled('date_from') && !$request->filled('date_to')) {
-            if ($year !== 'all') {
-                $query->whereYear('expense_date', $year);
-            }
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('observations', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('movement_type')) {
-            $query->where('movement_type', $request->movement_type);
-        }
-
-        if ($request->filled('category')) {
-            $query->where('category', $request->category);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('v3_vehicle_id')) {
-            $query->where('v3_vehicle_id', $request->v3_vehicle_id);
-        }
-
-        if ($request->filled('client_id')) {
-            $query->where('client_id', $request->client_id);
-        }
-
-        if ($request->filled('date_from')) {
-            $query->where('expense_date', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->where('expense_date', '<=', $request->date_to);
-        }
+        // Filtros partilhados com a exportação XLSX (Expense::scopeFiltrar)
+        $query = Expense::with(['v3Vehicle', 'partner', 'client'])
+            ->filtrar($request->only([
+                'search', 'movement_type', 'category', 'status', 'v3_vehicle_id', 'client_id', 'date_from', 'date_to',
+            ]) + ['year' => $year]);
 
         $movements = $query->orderBy('expense_date', 'desc')
             ->orderBy('created_at', 'desc')

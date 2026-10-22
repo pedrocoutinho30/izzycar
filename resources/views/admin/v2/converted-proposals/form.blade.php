@@ -465,7 +465,7 @@ $pendingValue = $totalValue - $paidValue;
         @if($isCancelled)
             <span class="cp-pipeline-badge cancelled"><i class="bi bi-x-circle"></i> Cancelada</span>
         @endif
-        <span class="cp-pipeline-hint">Clique numa fase para atualizar o estado e notificar o cliente</span>
+        <span class="cp-pipeline-hint">Clique numa fase para atualizar o estado (escolhe se o cliente é avisado por email)</span>
     </div>
     <div class="cp-pipeline-steps">
         @foreach($allStatusSteps as $i => $step)
@@ -1032,6 +1032,10 @@ $pendingValue = $totalValue - $paidValue;
 </form>
 @endif
 
+@if($isEdit)
+@include('admin.v2.converted-proposals._status-modal')
+@endif
+
 <!-- Toast de feedback -->
 <div class="cp-status-toast" id="cpToast"></div>
 
@@ -1040,12 +1044,16 @@ $pendingValue = $totalValue - $paidValue;
 @push('scripts')
 <script>
 @if($isEdit)
-function updateProposalStatus(status) {
+async function updateProposalStatus(status) {
     const current = '{{ $currentStatus }}';
     if (status === current) return;
 
-    const label = status === 'Cancelada' ? 'Cancelar esta proposta?' : 'Avançar para "' + status + '"?';
-    if (!confirm(label + '\n\nO cliente será notificado por email.')) return;
+    const answer = await window.askStatusChange({
+        status,
+        from: current,
+        hasEmail: {{ filled($convertedProposal->client?->email) ? 'true' : 'false' }},
+    });
+    if (!answer.confirmed) return;
 
     fetch('{{ route("admin.v2.converted-proposals.update-status", $convertedProposal->id) }}', {
         method: 'PATCH',
@@ -1053,12 +1061,12 @@ function updateProposalStatus(status) {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
         },
-        body: JSON.stringify({ status: status })
+        body: JSON.stringify({ status: status, notify: answer.notify })
     })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showToast('Estado atualizado: ' + status + ' · Email enviado ao cliente', 'success');
+            showToast('Estado atualizado: ' + status + (data.notified ? ' · Email enviado ao cliente' : ' · Cliente não notificado'), 'success');
             setTimeout(() => window.location.reload(), 1200);
         } else {
             showToast('Erro ao atualizar o estado.', 'error');

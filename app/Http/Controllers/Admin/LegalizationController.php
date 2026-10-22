@@ -12,27 +12,62 @@ use App\Services\Modelo1460PdfService;
 use App\Services\Modelo1RaPdfService;
 use App\Services\Modelo9PdfService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class LegalizationController extends Controller
 {
     // ---------------------------------------------------------------
     // Index — lista de legalizações
     // ---------------------------------------------------------------
-    public function index()
+    public function index(Request $request)
     {
+        // Filtros no servidor (datas sobre created_at e estado), os mesmos da exportação XLSX.
+        // Um valor inválido é ignorado em vez de partir a listagem.
+        $filters = array_filter(Validator::make($request->query(), [
+            'date_from' => ['nullable', 'date_format:Y-m-d'],
+            'date_to'   => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
+            'estado'    => ['nullable', Rule::in(array_keys(Legalization::ESTADOS))],
+        ])->valid());
+
         $legalizations = Legalization::with(['client', 'documents'])
+            ->filtrar($filters)
             ->latest()
             ->get();
 
+        // As estatísticas respeitam o intervalo de datas mas não o estado: com o
+        // filtro de estado ativo continuam a repartir o mesmo período pelos estados.
+        $period = Arr::only($filters, ['date_from', 'date_to']);
         $stats = [
-            'total'      => $legalizations->count(),
-            'concluidas' => $legalizations->filter(fn ($l) => $l->progressPercent() === 100)->count(),
-            'em_curso'   => $legalizations->filter(fn ($l) => $l->progressPercent() > 0 && $l->progressPercent() < 100)->count(),
-            'novas'      => $legalizations->filter(fn ($l) => $l->progressPercent() === 0)->count(),
+            'total'      => Legalization::filtrar($period)->count(),
+            'concluidas' => Legalization::filtrar($period + ['estado' => 'concluida'])->count(),
+            'em_curso'   => Legalization::filtrar($period + ['estado' => 'em_curso'])->count(),
+            'novas'      => Legalization::filtrar($period + ['estado' => 'nova'])->count(),
         ];
 
-        return view('admin.v2.legalizations.index', compact('legalizations', 'stats'));
+        return view('admin.v2.legalizations.index', compact('legalizations', 'stats', 'filters'));
+    }
+
+    // ---------------------------------------------------------------
+    // Kanban — uma coluna por passo em curso; arrastar muda os passos
+    // concluídos (ver move()). As concluídas só têm uma zona onde largar.
+    // ---------------------------------------------------------------
+    public function kanban()
+    {
+        $legalizations = Legalization::with(['client'])->withCount('documents')->latest()->get();
+
+        $columns = [];
+        foreach (Legalization::PASSOS_CURTOS as $step => $label) {
+            $columns[$step] = ['label' => $label, 'title' => Legalization::PASSOS[$step]['titulo']];
+        }
+
+        // As concluídas não têm coluna: só a zona de largar (e a contagem).
+        $grouped   = $legalizations->groupBy(fn (Legalization $l) => $l->currentStep() ?? 'done');
+        $doneCount = $grouped->get('done', collect())->count();
+
+        return view('admin.v2.legalizations.kanban', compact('columns', 'grouped', 'doneCount'));
     }
 
     // ---------------------------------------------------------------
@@ -131,24 +166,10 @@ class LegalizationController extends Controller
 
         $legalization->update(['steps_completed' => $completed]);
 
-        $taskCreated = false;
-
         // Ao concluir o passo 5 cria automaticamente a tarefa de entrega do Modelo 9 IMT
+        $taskCreated = false;
         if ($step === 5 && !$wasCompleted) {
-            $legalization->load('client');
-
-            $clienteNome = $legalization->client?->name ?? 'Cliente sem nome';
-            $matricula   = $legalization->matricula ?: 'matrícula não registada';
-            $veiculo     = trim($legalization->marca . ' ' . $legalization->modelo);
-
-            \App\Models\Task::create([
-                'title'         => 'Entregar Modelo 9 IMT — ' . $veiculo,
-                'description'   => "Entregar o Modelo 9 no IMT referente ao processo de legalização #{$legalization->id} do veículo {$veiculo} ({$matricula}), do cliente {$clienteNome}.",
-                'due_date'      => now()->addDays(30)->toDateString(),
-                'reminder_date' => now()->addDays(15)->toDateString(),
-                'status'        => 'pendente',
-            ]);
-
+            $this->createModelo9Task($legalization);
             $taskCreated = true;
         }
 
@@ -156,6 +177,52 @@ class LegalizationController extends Controller
             'completed'    => $completed,
             'progress'     => $legalization->progressPercent(),
             'task_created' => $taskCreated,
+        ]);
+    }
+
+    // ---------------------------------------------------------------
+    // Mover (kanban) — arrastar para a coluna de um passo ou para "Concluídas"
+    // ---------------------------------------------------------------
+    public function move(Request $request, Legalization $legalization)
+    {
+        $request->validate(['column' => 'required|in:1,2,3,4,5,6,7,done']);
+
+        // Coluna N = passo N em curso: passos 1..N-1 concluídos, o resto por fazer.
+        $target    = $request->input('column') === 'done' ? count(Legalization::PASSOS) + 1 : (int) $request->input('column');
+        $before    = $legalization->steps_completed ?? [];
+        $completed = $target > 1 ? range(1, $target - 1) : [];
+
+        $legalization->update(['steps_completed' => $completed]);
+
+        // Avançar para além do passo 5 conclui-o: mesma tarefa que ao marcá-lo à mão.
+        $taskCreated = false;
+        if (in_array(5, $completed) && !in_array(5, $before)) {
+            $this->createModelo9Task($legalization);
+            $taskCreated = true;
+        }
+
+        return response()->json([
+            'steps'        => count($completed),
+            'progress'     => $legalization->progressPercent(),
+            'done'         => $legalization->currentStep() === null,
+            'task_created' => $taskCreated,
+        ]);
+    }
+
+    private function createModelo9Task(Legalization $legalization): void
+    {
+        $legalization->loadMissing('client');
+
+        $clienteNome = $legalization->client?->name ?? 'Cliente sem nome';
+        $matricula   = $legalization->matricula ?: 'matrícula não registada';
+        $veiculo     = trim($legalization->marca . ' ' . $legalization->modelo);
+
+        \App\Models\Task::create([
+            'title'         => 'Entregar Modelo 9 IMT — ' . $veiculo,
+            'description'   => "Entregar o Modelo 9 no IMT referente ao processo de legalização #{$legalization->id} do veículo {$veiculo} ({$matricula}), do cliente {$clienteNome}.",
+            'due_date'      => now()->addDays(30)->toDateString(),
+            'reminder_date' => now()->addDays(15)->toDateString(),
+            'status'        => 'pendente',
         ]);
     }
 

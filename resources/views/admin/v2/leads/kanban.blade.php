@@ -70,48 +70,34 @@
                     elseif ($fu->isToday())  $fuBadge = ['label' => 'Hoje',   'color' => 'warning'];
                 }
             @endphp
-            <div class="kanban-card {{ $fuBadge ? 'kanban-card--alert' : '' }}" data-id="{{ $lead->id }}" draggable="true">
+            <div class="kanban-card {{ $fuBadge ? 'kanban-card--alert' : '' }}" data-id="{{ $lead->id }}" draggable="true"
+                 title="{{ $lead->name }}{{ $lead->phone ? ' · ' . $lead->phone : '' }}{{ $lead->email ? ' · ' . $lead->email : '' }}">
                 <div class="kanban-card__top">
-                    <div class="kanban-card__avatar">{{ strtoupper(substr($lead->name, 0, 1)) }}</div>
-                    <div class="kanban-card__info">
-                        <div class="kanban-card__name">{{ $lead->name }}</div>
-                        <span class="badge bg-{{ $src['color'] }} badge-sm">{{ $src['label'] }}</span>
-                    </div>
+                    <div class="kanban-card__name">{{ $lead->name }}</div>
                     <a href="{{ route('admin.v2.leads.show', $lead->id) }}"
                        class="kanban-card__link" title="Abrir lead">
                         <i class="bi bi-arrow-up-right-square"></i>
                     </a>
                 </div>
 
-                @if($lead->phone || $lead->email)
-                <div class="kanban-card__contact">
-                    @if($lead->phone)
-                    <span><i class="bi bi-telephone"></i> {{ $lead->phone }}</span>
-                    @endif
-                    @if($lead->email)
-                    <span class="text-truncate"><i class="bi bi-envelope"></i> {{ $lead->email }}</span>
-                    @endif
-                </div>
-                @endif
-
-                @if($lastActivity)
-                <div class="kanban-card__last">
-                    <i class="bi bi-clock text-muted"></i>
-                    {{ $lastActivity->title }} · {{ $lastActivity->created_at->diffForHumans() }}
-                </div>
-                @endif
-
-                <div class="kanban-card__footer">
-                    <span class="text-muted" style="font-size:.7rem">
-                        <i class="bi bi-calendar3"></i> {{ $lead->created_at->format('d/m/Y') }}
+                <div class="kanban-card__meta">
+                    <span class="kanban-card__contact">
+                        @if($lead->phone)<i class="bi bi-telephone"></i> {{ $lead->phone }}
+                        @elseif($lead->email)<i class="bi bi-envelope"></i> {{ $lead->email }}
+                        @else<i class="bi bi-calendar3"></i> {{ $lead->created_at->format('d/m/Y') }}@endif
                     </span>
                     @if($fuBadge)
-                    <span class="badge bg-{{ $fuBadge['color'] }}" style="font-size:.65rem">
-                        <i class="bi bi-alarm me-1"></i>{{ $fuBadge['label'] }}
-                    </span>
+                    <span class="badge bg-{{ $fuBadge['color'] }} badge-sm"><i class="bi bi-alarm"></i> {{ $fuBadge['label'] }}</span>
                     @elseif($fu)
-                    <span class="text-muted" style="font-size:.7rem">
-                        <i class="bi bi-alarm"></i> {{ $fu->format('d/m') }}
+                    <span class="kanban-card__fu"><i class="bi bi-alarm"></i> {{ $fu->format('d/m') }}</span>
+                    @endif
+                </div>
+
+                <div class="kanban-card__meta">
+                    <span class="badge bg-{{ $src['color'] }} badge-sm">{{ $src['label'] }}</span>
+                    @if($lastActivity)
+                    <span class="kanban-card__last" title="{{ $lastActivity->title }} · {{ $lastActivity->created_at->diffForHumans() }}">
+                        {{ $lastActivity->created_at->diffForHumans(null, true) }}
                     </span>
                     @endif
                 </div>
@@ -137,106 +123,77 @@
 
 @push('styles')
 <style>
-/* ── Board ───────────────────────────────────────────────────────────────── */
+/* ── Board: colunas estreitas lado a lado (kanban normal) ────────────────── */
 .kanban-board {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    align-items: start;
-    padding-bottom: 2rem;
+    display: flex;
+    gap: .6rem;
+    align-items: flex-start;
+    overflow-x: auto;
+    padding-bottom: 1.5rem;
 }
-@media (max-width: 1100px) { .kanban-board { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px)  { .kanban-board { grid-template-columns: 1fr; } }
 
 /* ── Coluna ──────────────────────────────────────────────────────────────── */
 .kanban-col {
     background: #f5f6f8;
-    border-radius: 12px;
-    min-height: 300px;
+    border-radius: 10px;
+    min-height: 240px;
     display: flex;
     flex-direction: column;
+    flex: 0 0 220px;
+    width: 220px;
 }
 .kanban-col__header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: .75rem 1rem;
+    padding: .5rem .7rem;
     border-bottom: 1px solid #e8e8e8;
 }
 .kanban-col__title {
-    display: flex; align-items: center; gap: .5rem;
-    font-size: .85rem; font-weight: 700; color: #333;
+    display: flex; align-items: center; gap: .4rem;
+    font-size: .82rem; font-weight: 700; color: #333;
 }
-.kanban-col__dot {
-    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-}
+.kanban-col__dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 .kanban-col__count {
     background: #e0e0e0; color: #555;
-    font-size: .72rem; font-weight: 700;
-    padding: .1rem .45rem; border-radius: 20px;
+    font-size: .7rem; font-weight: 700;
+    padding: .05rem .42rem; border-radius: 20px;
 }
 .kanban-col__body {
-    padding: .75rem;
-    display: flex; flex-direction: column; gap: .6rem;
+    padding: .45rem;
+    display: flex; flex-direction: column; gap: .35rem;
     flex: 1;
     min-height: 100px;
     transition: background .15s;
 }
-.kanban-col__body.drag-over {
-    background: rgba(13,110,253,.06);
-    border-radius: 8px;
-}
+.kanban-col__body.drag-over { background: rgba(13,110,253,.06); border-radius: 8px; }
 .kanban-col__empty {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: .4rem; padding: 2rem 1rem;
-    color: #bbb; font-size: .8rem;
+    gap: .3rem; padding: 1.2rem 1rem;
+    color: #bbb; font-size: .75rem;
 }
-.kanban-col__empty i { font-size: 1.5rem; }
+.kanban-col__empty i { font-size: 1.2rem; }
 
-/* ── Cartão ──────────────────────────────────────────────────────────────── */
+/* ── Cartão compacto (~metade da altura anterior) ─────────────────────────── */
 .kanban-card {
     background: #fff;
-    border-radius: 10px;
-    padding: .9rem 1rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    border-radius: 7px;
+    padding: .4rem .55rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.07);
     cursor: grab;
     transition: box-shadow .15s, transform .15s;
     border: 1px solid #eee;
 }
 .kanban-card:active { cursor: grabbing; }
-.kanban-card.dragging {
-    opacity: .45;
-    transform: scale(.97);
-}
-.kanban-card__top {
-    display: flex; align-items: center; gap: .6rem; margin-bottom: .6rem;
-}
-.kanban-card__avatar {
-    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-    background: linear-gradient(135deg, var(--admin-primary), #990000);
-    color: #fff; font-size: .85rem; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-}
-.kanban-card__info { flex: 1; min-width: 0; }
-.kanban-card__name { font-weight: 700; font-size: .88rem; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kanban-card__link {
-    color: #aaa; font-size: 1rem; text-decoration: none; flex-shrink: 0;
-    transition: color .15s;
-}
+.kanban-card.dragging { opacity: .45; transform: scale(.97); }
+.kanban-card__top { display: flex; align-items: center; gap: .35rem; }
+.kanban-card__name { flex: 1; min-width: 0; font-weight: 700; font-size: .8rem; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kanban-card__link { color: #aaa; font-size: .85rem; text-decoration: none; flex-shrink: 0; transition: color .15s; }
 .kanban-card__link:hover { color: var(--admin-primary); }
-.kanban-card__contact {
-    display: flex; flex-direction: column; gap: .15rem;
-    font-size: .75rem; color: #666; margin-bottom: .5rem;
-}
-.kanban-card__contact span { display: flex; align-items: center; gap: .3rem; overflow: hidden; }
-.kanban-card__last {
-    font-size: .72rem; color: #888; background: #f8f8f8;
-    border-radius: 6px; padding: .3rem .5rem;
-    margin-bottom: .5rem;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.kanban-card__footer {
-    display: flex; justify-content: flex-end;
-}
-.badge-sm { font-size: .65rem; padding: .2rem .45rem; }
+.kanban-card__meta { display: flex; align-items: center; justify-content: space-between; gap: .4rem; font-size: .7rem; color: #666; margin-top: .1rem; }
+.kanban-card__contact { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kanban-card__fu { flex-shrink: 0; color: #888; }
+.kanban-card__last { font-size: .66rem; color: #888; white-space: nowrap; }
+.kanban-card__meta:last-child { margin-top: .2rem; }
+.badge-sm { font-size: .6rem; padding: .15rem .35rem; flex-shrink: 0; }
 
 /* ── Indicador de loading no card ────────────────────────────────────────── */
 .kanban-card.moving { opacity: .6; pointer-events: none; }

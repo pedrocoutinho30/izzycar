@@ -89,10 +89,11 @@ class ProposalAcceptanceService
      * - uma cotação aceite não volta a outro estado (cancela-se a convertida);
      * - "Reprovada" marca como rejeitada a oportunidade que lhe deu origem.
      * Grava pelo model, para o observer correr (emails "Enviado", log).
+     * $notify = false evita os emails ao passar a "Enviado" (cliente e angariador).
      *
      * @throws ProposalAcceptanceException
      */
-    public function changeStatus(Proposal $proposal, string $status): void
+    public function changeStatus(Proposal $proposal, string $status, bool $notify = true): void
     {
         if ($proposal->status === $status) {
             return;
@@ -108,6 +109,8 @@ class ProposalAcceptanceService
             return;
         }
 
+        // $notify = false: "Enviado" não envia os emails (ver ProposalObserver).
+        $proposal->skipSentEmails = ! $notify;
         $proposal->status = $status;
         $proposal->save();
 
