@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 
 /**
- * Versão pública do manual do angariador — sem necessidade de login,
- * para poder ser partilhada livremente com quem se pretenda angariar.
+ * Manual do angariador fora do backoffice. A rota exige login (`auth`),
+ * só a página de apresentação do programa (`landing`) é pública.
  */
 class AngariadorManualController extends Controller
 {
