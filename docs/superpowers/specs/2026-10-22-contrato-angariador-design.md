@@ -51,6 +51,16 @@ Vista nova `pdf/contract_angariador` e serviço `AngariadorContractService`, ao 
 10. Lei aplicável e resolução de litígios.
 11. Assinaturas (angariador e IzzyCar, com a assinatura digital do prestador).
 
+## Integração da adenda (2026-10-26)
+
+A adenda de 25/10/2026 (marca, prospeção, responsabilidade, despesas) foi incorporada no contrato base, para os contratos novos não precisarem dela. As secções 1 a 9 mantêm a numeração, porque a adenda dos contratos já assinados remete para as secções 3, 6 e 9.
+
+- Secção 3: apresentação como "angariador independente da Izzycar".
+- Secção 6: sem comissão nas leads obtidas em violação das secções 10 e 11.
+- Secção 9: incumprimento das secções 10, 11 ou 12 permite resolução imediata; deixar de usar o nome Izzycar ao cessar; a cessação não afeta comissões já devidas, salvo as excluídas pela secção 6.
+- Novas secções: 10 Uso do Nome, Marca e Domínio; 11 Prospeção e Comunicações Comerciais; 12 Responsabilidade; 13 Despesas (inclui a "única remuneração"). Lei aplicável passa a 14 e Assinaturas a 15.
+- Não transposto: identificação das partes, objeto e disposições finais da adenda (já cobertos pelo contrato); o prazo de 3 dias para remover contas existentes foi adaptado para "à data da assinatura".
+
 ## Testes
 
 - Admin descarrega o PDF de um angariador (resposta `application/pdf`, começa por `%PDF`).

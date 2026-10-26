@@ -179,4 +179,29 @@ class AngariadorContractTest extends TestCase
 
         $this->assertGreaterThan($semAssinatura, $comAssinatura);
     }
+
+    public function test_contract_includes_the_brand_prospecting_liability_and_expenses_rules(): void
+    {
+        $angariador = $this->backofficeUser('angariador', ['commission_fixed_value' => 100]);
+
+        $html = view('pdf.contract_angariador', AngariadorContractService::viewData($angariador))->render();
+        $texto = preg_replace('/\s+/', ' ', strip_tags($html));
+
+        // As secções 1 a 9 mantêm a numeração (a adenda dos contratos antigos remete para as secções 3, 6 e 9).
+        foreach ([
+            '3. Natureza da Relação', '6. Comissão', '9. Duração e Cessação',
+            '10. Uso do Nome, Marca e Domínio Izzycar', '11. Prospeção e Comunicações Comerciais',
+            '12. Responsabilidade', '13. Despesas', '14. Lei Aplicável e Resolução de Litígios', '15. Assinaturas',
+        ] as $titulo) {
+            $this->assertStringContainsString($titulo, $texto);
+        }
+
+        $this->assertStringContainsString('angariador independente da Izzycar', $texto);
+        $this->assertStringContainsString('Lei n.º 41/2004', $texto);
+        $this->assertStringContainsString('não são reembolsadas', $texto);
+        $this->assertStringContainsString('única remuneração', $texto);
+        $this->assertStringContainsString('Não conferem direito a comissão as leads obtidas através de comunicações ou meios que violem as secções 10 e 11', $texto);
+        $this->assertStringContainsString('O incumprimento das secções 10, 11 ou 12 constitui incumprimento grave', $texto);
+        $this->assertStringContainsString('deixa de imediato de usar o nome Izzycar', $texto);
+    }
 }

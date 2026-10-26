@@ -68,6 +68,7 @@
     <ul>
         <li>O Angariador atua como prestador de serviços autónomo, sem qualquer vínculo laboral com a Izzycar, sem horário nem obrigação de resultados, e sem exclusividade para nenhuma das Partes.</li>
         <li>O Angariador não tem poderes para representar a Izzycar, celebrar contratos, assumir compromissos em seu nome nem receber pagamentos dos clientes.</li>
+        <li>Nos contactos com potenciais clientes, o Angariador apresenta-se sempre como <b>angariador independente da Izzycar</b>, nunca como seu colaborador, funcionário ou representante.</li>
     </ul>
 
     <h2>4. Obrigações do Angariador</h2>
@@ -76,6 +77,7 @@
         <li>Prestar aos potenciais clientes informação verdadeira sobre o serviço, sem prometer preços, prazos ou condições diferentes dos que constam da cotação emitida pela Izzycar.</li>
         <li>Não praticar atos que prejudiquem a imagem ou o bom nome da Izzycar.</li>
         <li>Cumprir a legislação aplicável à sua atividade, incluindo as obrigações fiscais associadas à comissão que recebe.</li>
+        <li>Respeitar as regras sobre o uso da marca, a prospeção e as comunicações comerciais, e a responsabilidade, previstas nas secções 10, 11 e 12.</li>
     </ul>
 
     <h2>5. Obrigações da Izzycar</h2>
@@ -97,6 +99,7 @@
         <li>A comissão só é devida se a viatura for entregue ao cliente. Se o cliente cancelar o serviço ou a entrega não se realizar, não há lugar a comissão.</li>
         <li>O valor da comissão fica fixado no momento em que o Angariador é associado à cotação, e uma alteração posterior do valor aplica-se apenas às cotações seguintes.</li>
         <li>Quando legalmente aplicável, o Angariador emite o respetivo recibo ou fatura.</li>
+        <li>Não conferem direito a comissão as leads obtidas através de comunicações ou meios que violem as secções 10 e 11.</li>
     </ul>
 
     <h2>7. Atribuição de Leads</h2>
@@ -119,16 +122,51 @@
         <li>O contrato é celebrado por tempo indeterminado.</li>
         <li>Qualquer das Partes pode fazê-lo cessar, por comunicação escrita à outra com a antecedência mínima de {{ $preAvisoDias }} dias.</li>
         <li>Qualquer das Partes pode resolvê-lo em caso de incumprimento grave da outra, após aviso por escrito e prazo razoável para o corrigir.</li>
-        <li>A cessação não afeta as comissões já devidas nos termos da secção 6.</li>
+        <li>O incumprimento das secções 10, 11 ou 12 constitui incumprimento grave e permite à Izzycar resolver o contrato de imediato, por comunicação escrita, sem necessidade do aviso prévio nem do prazo de correção previstos nesta secção.</li>
+        <li>Cessando o contrato por qualquer motivo, o Angariador deixa de imediato de usar o nome Izzycar e elimina as contas, materiais e campanhas que lhe façam referência.</li>
+        <li>A cessação não afeta as comissões já devidas nos termos da secção 6, com exceção das excluídas pela própria secção 6.</li>
     </ul>
 
-    <h2>10. Lei Aplicável e Resolução de Litígios</h2>
+    <h2>10. Uso do Nome, Marca e Domínio Izzycar</h2>
+    <ul>
+        <li>O Angariador não pode usar o nome Izzycar, o logótipo, a imagem gráfica ou o domínio izzycar.pt sem autorização prévia e escrita da Izzycar.</li>
+        <li>Sem essa autorização, o Angariador não pode criar contas, perfis, páginas, endereços de email, nomes de remetente ou campanhas que contenham o nome ou o domínio Izzycar, em qualquer plataforma.</li>
+        <li>Nos contactos com potenciais clientes, aplica-se o disposto na secção 3: o Angariador apresenta-se sempre como angariador independente da Izzycar.</li>
+        <li>As contas, perfis e configurações já existentes à data da assinatura que contrariem esta secção são removidos ou alterados no prazo de 3 dias, salvo autorização escrita da Izzycar, e o Angariador confirma-o por escrito.</li>
+    </ul>
+
+    <h2>11. Prospeção e Comunicações Comerciais</h2>
+    <ul>
+        <li>É proibido o envio de comunicações em massa ou automatizadas que mencionem a Izzycar ou os seus serviços, por qualquer meio (email, SMS, LinkedIn ou outras redes sociais, mensagens de voz ou sequências automáticas), sem aprovação prévia e escrita da Izzycar quanto ao conteúdo, ao canal e ao público-alvo.</li>
+        <li>Qualquer texto, áudio, imagem ou outro material que refira a Izzycar deve ser aprovado pela Izzycar antes de ser utilizado.</li>
+        <li>O Angariador não envia comunicações comerciais não solicitadas a pessoas singulares sem o seu consentimento prévio e expresso, nos termos do Regulamento Geral sobre a Proteção de Dados (RGPD) e da Lei n.º 41/2004, de 18 de agosto.</li>
+        <li>O Angariador nunca envia comunicações a partir do domínio izzycar.pt nem de endereços que se façam passar pela Izzycar.</li>
+    </ul>
+
+    <h2>12. Responsabilidade</h2>
+    <p>
+        O Angariador é o único responsável pelos dados pessoais que recolhe e pelas comunicações que envia no âmbito da
+        sua atividade, incluindo o cumprimento do RGPD e da legislação sobre comunicações eletrónicas. O Angariador
+        responde perante a Izzycar por quaisquer coimas, indemnizações, custos ou danos, incluindo danos à imagem e
+        reputação, que resultem do incumprimento deste contrato ou da legislação aplicável.
+    </p>
+
+    <h2>13. Despesas</h2>
+    <div class="pagamento">
+        <b>Despesas da atividade de angariação</b>
+        <ul>
+            <li>Todas as despesas do Angariador (ferramentas, subscrições, campanhas, publicidade, deslocações ou outras) são <b>suportadas exclusivamente por si</b> e <b>não são reembolsadas</b> pela Izzycar.</li>
+            <li>A <b>única remuneração</b> do Angariador é a comissão por cotação convertida prevista na secção 6. Não há lugar a adiantamentos, ajudas de custo ou outros pagamentos.</li>
+        </ul>
+    </div>
+
+    <h2>14. Lei Aplicável e Resolução de Litígios</h2>
     <p>
         O contrato rege-se pela lei portuguesa. Para a resolução de litígios é competente o tribunal da comarca do
         domicílio do Angariador, sem prejuízo do recurso a entidades de resolução alternativa de litígios.
     </p>
 
-    <h2>11. Assinaturas</h2>
+    <h2>15. Assinaturas</h2>
     <table class="assinaturas" width="100%">
         <tr>
             <td>

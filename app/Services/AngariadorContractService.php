@@ -75,6 +75,12 @@ class AngariadorContractService
 
     public static function generatePdf(User $angariador): string
     {
+        return Pdf::loadView('pdf.contract_angariador', self::viewData($angariador))->output();
+    }
+
+    /** Dados da vista do contrato (separados para se poderem testar sem gerar o PDF). */
+    public static function viewData(User $angariador): array
+    {
         $settings = Setting::all()->pluck('value', 'label')->toArray();
 
         // Assinatura digital do prestador (Definições → assinatura_prestador, disco "public").
@@ -117,6 +123,6 @@ class AngariadorContractService
             'signaturePath' => $src,
         ];
 
-        return Pdf::loadView('pdf.contract_angariador', $data)->output();
+        return $data;
     }
 }
