@@ -72,8 +72,8 @@
             Os prazos são meramente indicativos e podem variar por dependência de terceiros:
             <br>• Assinatura do contrato: até 3 dias após cotação aceite.
             <br>• Compra do veículo: até 15 dias após adjudicação.
-            <br>• Transporte: cerca de 10 dias após compra.
-            <br>• Entrega do veículo: até 30 dias após adjudicação.
+            <br>• Transporte: até 21 dias úteis após a compra.
+            <br>• Entrega do veículo: cerca de 27 dias úteis após a compra.
         </p>
     </div>
 

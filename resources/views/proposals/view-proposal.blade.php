@@ -404,7 +404,7 @@
       </div>
       <div>
         <h2 class="iz-section-title iz-section-title--light">Da Escolha à Entrega</h2>
-        <p class="iz-section-sub iz-section-sub--light">O seu veículo em 5 etapas · ~22 dias no total</p>
+        <p class="iz-section-sub iz-section-sub--light">O seu veículo em 5 etapas · ~31 dias no total</p>
       </div>
     </div>
 
@@ -413,7 +413,7 @@
         $steps = [
           ['num'=>1, 'title'=>'Aprovação',      'desc'=>'Análise da cotação e confirmação de disponibilidade do veículo no stand',              'days'=>'~3 dias'],
           ['num'=>2, 'title'=>'Pagamento',       'desc'=>'Processamento seguro do pagamento e aquisição formal do veículo',                     'days'=>'~4 dias'],
-          ['num'=>3, 'title'=>'Transporte',      'desc'=>'Transporte seguro e segurado do veículo desde o país de origem até Portugal',          'days'=>'~21 dias'],
+          ['num'=>3, 'title'=>'Transporte',      'desc'=>'Transporte seguro e segurado do veículo desde o país de origem até Portugal',          'days'=>'21 dias úteis'],
           ['num'=>4, 'title'=>'Legalização ISV', 'desc'=>'Inspeção técnica, cálculo e pagamento do Imposto Sobre Veículos (ISV)',                'days'=>'~3 dias'],
           ['num'=>5, 'title'=>'Entrega',         'desc'=>'Emissão de matrícula portuguesa, documentação final e entrega do veículo',            'days'=>null],
         ];

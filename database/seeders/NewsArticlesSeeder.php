@@ -161,7 +161,7 @@ class NewsArticlesSeeder extends Seeder
 <p>Antes do transporte, é realizada uma inspecção técnica ao veículo no país de origem. Esta inspecção verifica o estado mecânico, elétrico e de carroçaria, e é obrigatória para o processo de ISV em Portugal.</p>
 
 <h2>Etapa 4 — Transporte até Portugal</h2>
-<p>O transporte é feito por camião transportador especializado. O tempo médio desde a Alemanha é de <strong>7 a 12 dias úteis</strong>. O veículo viaja segurado e o cliente recebe actualizações do percurso.</p>
+<p>O transporte é feito por camião transportador especializado. O tempo médio desde a Alemanha é de <strong>21 dias úteis</strong>. O veículo viaja segurado e o cliente recebe actualizações do percurso.</p>
 
 <h2>Etapa 5 — Legalização em Portugal</h2>
 <p>Depois de chegar a Portugal, começa o processo de legalização que inclui:</p>
@@ -174,7 +174,7 @@ class NewsArticlesSeeder extends Seeder
 </ol>
 
 <h2>Quanto tempo demora o processo completo?</h2>
-<p>Da aprovação da proposta à entrega do veículo, o processo demora tipicamente <strong>20 a 25 dias úteis</strong>. O maior factor de variação é o calendário da AT para o processamento do ISV.</p>
+<p>Da aprovação da proposta à entrega do veículo, o processo demora tipicamente <strong>30 a 35 dias úteis</strong>. O maior factor de variação é o calendário da AT para o processamento do ISV.</p>
 
 <h2>Quanto custa no total?</h2>
 <p>Além do preço do veículo, os custos a contar são:</p>
@@ -193,7 +193,7 @@ class NewsArticlesSeeder extends Seeder
 <p>Tecnicamente sim, mas a maioria dos clientes que tentam sozinhos deparam-se com barreiras linguísticas na comunicação com os stands alemães, dificuldade em verificar o estado real dos carros à distância e burocracia na legalização portuguesa. Um erro num destes pontos pode custar muito mais do que o serviço de um especialista.</p>
 <p>Na Izzycar gerimos todo o processo, com comunicação constante e preço fechado desde o início. <a href="/formulario-importacao"><strong>Peça já a sua proposta gratuita.</strong></a></p>
 ',
-                    'summary'  => '<p>Importar da Alemanha pode poupar 15 a 30% face ao mercado português. O processo tem 5 etapas principais — pesquisa, aquisição, inspecção, transporte e legalização — e demora em média 20 a 25 dias úteis. A Izzycar trata de tudo, com preço fechado e transparente desde o primeiro dia.</p>',
+                    'summary'  => '<p>Importar da Alemanha pode poupar 15 a 30% face ao mercado português. O processo tem 5 etapas principais — pesquisa, aquisição, inspecção, transporte e legalização — e demora em média 30 a 35 dias úteis. A Izzycar trata de tudo, com preço fechado e transparente desde o primeiro dia.</p>',
                 ],
             ],
 
@@ -344,7 +344,7 @@ class NewsArticlesSeeder extends Seeder
   <li><strong>ISV:</strong> um motor menor ou híbrido plug-in pode poupar 3 000 a 8 000 € só neste imposto</li>
   <li><strong>Historial do veículo:</strong> TÜV recente e livrete de serviço completo valem mais do que alguns quilómetros extra</li>
   <li><strong>Disponibilidade:</strong> a Alemanha tem stocks de determinadas configurações que não existem no mercado português</li>
-  <li><strong>Prazo de entrega:</strong> ao contrário de encomenda de novo, um usado alemão chega em 3-4 semanas</li>
+  <li><strong>Prazo de entrega:</strong> ao contrário de encomenda de novo, um usado alemão chega em 4 a 6 semanas</li>
 </ul>
 
 <h2>Quer importar um destes modelos?</h2>

@@ -562,7 +562,7 @@
             <div class="feature">
                 <div class="feature-icon">⚡</div>
                 <div class="feature-title">Entrega Rápida</div>
-                <div class="feature-text">3-6 semanas em média</div>
+                <div class="feature-text">4-6 semanas em média</div>
             </div>
             <div class="feature">
                 <div class="feature-icon">💶</div>

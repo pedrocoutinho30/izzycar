@@ -151,7 +151,7 @@
                             <span class="hero-stat-label">Poupança média</span>
                         </div>
                         <div class="hero-stat-item">
-                            <span class="hero-stat-value">3–6</span>
+                            <span class="hero-stat-value">4–6</span>
                             <span class="hero-stat-label">Semanas entrega</span>
                         </div>
                         <div class="hero-stat-item">
