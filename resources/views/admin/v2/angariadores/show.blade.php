@@ -37,6 +37,33 @@
 
 <div class="modern-card mb-4">
     <div class="modern-card-header">
+        <h5 class="modern-card-title"><i class="bi bi-person-vcard"></i> Documento de identificação</h5>
+        @if(\App\Services\AngariadorIdentityDocuments::tem($angariador))
+        <span class="badge bg-success rounded-pill">Submetido</span>
+        @else
+        <span class="badge bg-secondary rounded-pill">Não submetido</span>
+        @endif
+    </div>
+    <div class="p-3">
+        @if(\App\Services\AngariadorIdentityDocuments::tem($angariador))
+        <div class="d-flex flex-wrap gap-2">
+            @foreach(['frente' => 'Ver frente', 'verso' => 'Ver verso'] as $lado => $label)
+            @if($angariador->{'documento_' . $lado . '_path'})
+            <a href="{{ route('admin.v2.angariadores.identity-document', [$angariador->id, $lado]) }}" target="_blank" class="btn btn-secondary-modern btn-sm">
+                <i class="bi bi-eye me-1"></i> {{ $label }}
+            </a>
+            @endif
+            @endforeach
+        </div>
+        <p class="text-muted small mt-2 mb-0">Dado pessoal sensível: guardado em disco privado e apagado se a candidatura for rejeitada ou a conta apagada.</p>
+        @else
+        <p class="text-muted mb-0">Este angariador não enviou o documento de identificação.</p>
+        @endif
+    </div>
+</div>
+
+<div class="modern-card mb-4">
+    <div class="modern-card-header">
         <h5 class="modern-card-title"><i class="bi bi-file-earmark-check"></i> Contrato assinado</h5>
         @if($angariador->contrato_assinado_path)
         <span class="badge bg-success rounded-pill">Carregado em {{ $angariador->contrato_assinado_em?->format('d/m/Y') }}</span>

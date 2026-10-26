@@ -83,6 +83,7 @@ Route::get('/seja-angariador', [App\Http\Controllers\Frontend\AngariadorManualCo
 Route::get('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'create'])
     ->name('public.angariador.register');
 Route::post('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'store'])
+    ->middleware('throttle:5,1')
     ->name('public.angariador.register.store');
 
 Route::get('/newsletter/unsubscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'unsubscribe'])
@@ -782,6 +783,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::post('/{user}/rejeitar', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'reject'])->name('reject');
         Route::delete('/{user}', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'destroy'])->name('destroy');
         Route::get('/{user}', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'show'])->name('show');
+        Route::get('/{user}/documento/{lado}', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'identityDocument'])->whereIn('lado', ['frente', 'verso'])->name('identity-document');
         Route::get('/{user}/contrato', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'contract'])->name('contract');
         Route::get('/{user}/contrato-assinado', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'signedContract'])->name('contract.signed');
         Route::post('/{user}/contrato-assinado', [App\Http\Controllers\Admin\AngariadorAdminController::class, 'uploadSignedContract'])->name('contract.signed.store');

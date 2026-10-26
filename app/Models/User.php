@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name', 'last_name', 'email', 'password', 'referral_code', 'commission_fixed_value',
         'phone', 'location', 'nif', 'iban', 'status',
         'contrato_assinado_path', 'contrato_assinado_em',
+        'documento_frente_path', 'documento_verso_path',
     ];
 
     /**

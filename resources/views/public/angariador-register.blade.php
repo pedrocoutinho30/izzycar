@@ -110,7 +110,7 @@
                 </div>
                 @endif
 
-                <form method="POST" action="{{ route('public.angariador.register.store') }}">
+                <form method="POST" action="{{ route('public.angariador.register.store') }}" enctype="multipart/form-data">
                     @csrf
 
                     <div class="row g-3 mb-3">
@@ -148,6 +148,24 @@
                         <div class="col-md-6">
                             <label class="form-label">IBAN <span class="text-muted">(opcional)</span></label>
                             <input type="text" name="iban" class="form-control" value="{{ old('iban') }}" placeholder="PT50...">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Documento de identificação</label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted mb-1" for="documento_frente">Frente</label>
+                                <input type="file" id="documento_frente" name="documento_frente" class="form-control" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted mb-1" for="documento_verso">Verso</label>
+                                <input type="file" id="documento_verso" name="documento_verso" class="form-control" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" required>
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            Cartão de cidadão, passaporte ou carta de condução. JPG, PNG ou PDF, até 5 MB cada.
+                            Usamos o documento apenas para confirmar a sua identidade; fica guardado de forma privada e só a administração o consulta.
                         </div>
                     </div>
 

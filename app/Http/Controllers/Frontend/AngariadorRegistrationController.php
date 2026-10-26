@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AngariadorIdentityDocuments;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -33,6 +34,18 @@ class AngariadorRegistrationController extends Controller
             'nif' => 'nullable|string|max:20',
             'iban' => 'nullable|string|max:40',
             'message' => 'nullable|string|max:2000',
+            // Documento de identificação: ficheiros privados, só o admin os vê.
+            'documento_frente' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'documento_verso' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ], [
+            'documento_frente.required' => 'Envie a frente do documento de identificação.',
+            'documento_verso.required' => 'Envie o verso do documento de identificação.',
+            'documento_frente.mimes' => 'A frente do documento tem de ser JPG, PNG ou PDF.',
+            'documento_verso.mimes' => 'O verso do documento tem de ser JPG, PNG ou PDF.',
+            'documento_frente.max' => 'A frente do documento não pode ter mais de 5 MB.',
+            'documento_verso.max' => 'O verso do documento não pode ter mais de 5 MB.',
+            'documento_frente.uploaded' => 'Não foi possível carregar a frente do documento. Tente um ficheiro mais pequeno.',
+            'documento_verso.uploaded' => 'Não foi possível carregar o verso do documento. Tente um ficheiro mais pequeno.',
         ]);
 
         $user = User::create([
@@ -49,6 +62,8 @@ class AngariadorRegistrationController extends Controller
 
         $user->assignRole('angariador');
 
+        AngariadorIdentityDocuments::guardar($user, $request->file('documento_frente'), $request->file('documento_verso'));
+
         Mail::raw(
             "Nova candidatura a angariador submetida através do site.\n\n"
                 . "Nome: {$user->name} {$user->last_name}\n"
@@ -57,6 +72,7 @@ class AngariadorRegistrationController extends Controller
                 . ($user->location ? "Localização: {$user->location}\n" : '')
                 . ($user->nif ? "NIF: {$user->nif}\n" : '')
                 . ($user->iban ? "IBAN: {$user->iban}\n" : '')
+                . "Documento de identificação: frente e verso submetidos (ver na ficha do angariador)\n"
                 . ($validated['message'] ?? '' ? "\nMensagem:\n{$validated['message']}\n" : '')
                 . "\nReveja e aprove (ou rejeite) esta candidatura em: " . route('admin.v2.angariadores.index'),
             function ($message) {

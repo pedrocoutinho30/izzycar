@@ -10,6 +10,7 @@ use App\Models\ConvertedProposal;
 use App\Models\LeadActivity;
 use App\Models\User;
 use App\Services\AngariadorContractService;
+use App\Services\AngariadorIdentityDocuments;
 use App\Services\AngariadorMetricsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -70,6 +71,9 @@ class AngariadorAdminController extends Controller
 
         $user->update(['status' => 'rejeitado']);
 
+        // Candidatura rejeitada: não há razão para guardar o documento de identificação.
+        AngariadorIdentityDocuments::apagar($user);
+
         return back()->with('success', 'Candidatura rejeitada.');
     }
 
@@ -86,6 +90,8 @@ class AngariadorAdminController extends Controller
         if ($user->id === Auth::id()) {
             return back()->with('error', 'Não pode apagar a sua própria conta.');
         }
+
+        AngariadorIdentityDocuments::apagar($user);
 
         $user->delete();
 
@@ -109,6 +115,14 @@ class AngariadorAdminController extends Controller
             'leads' => $leads,
             'activity' => $this->buildActivityTimeline($user),
         ]));
+    }
+
+    /** Abre a frente ou o verso do documento de identificação enviado na candidatura. */
+    public function identityDocument(User $user, string $lado)
+    {
+        abort_unless($user->hasRole('angariador'), 404);
+
+        return AngariadorIdentityDocuments::resposta($user, $lado);
     }
 
     /**
