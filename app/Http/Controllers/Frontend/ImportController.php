@@ -43,6 +43,7 @@ class ImportController extends Controller
             'email'                   => 'required|email:rfc',
             'source'                  => 'nullable|string|max:100',
             'message'                 => 'nullable|string|max:2000',
+            'buyer_type'              => 'required|in:particular,empresa',
             'payment_type'            => 'required|in:pronto_pagamento,financiamento',
             'estimated_purchase_date' => 'required|in:imediato,1_3_meses,3_6_meses,pesquisar',
             'data_processing_consent' => 'accepted',
@@ -113,6 +114,7 @@ class ImportController extends Controller
                 'origin' => $formPropposalData['source'] ?? null,
                 'data_processing_consent' => $dataProcessingConsent,
                 'newsletter_consent' => $newsletterConsent,
+                'client_type' => $formPropposalData['buyer_type'],
                 'is_lead' => true,
                 'lead_source' => 'importacao',
                 'angariador_code' => $angariadorCode,
@@ -131,6 +133,11 @@ class ImportController extends Controller
             ]);
             $matcher->logMatch($clientMatch, $formPropposalData['name'], 'Pedido de importação');
             $updateData = [];
+
+            // O tipo de cliente só se preenche se ainda não estiver definido.
+            if (blank($clientExist->client_type)) {
+                $updateData['client_type'] = $formPropposalData['buyer_type'];
+            }
 
             // O primeiro angariador atribuído a esta lead tem sempre prioridade — só
             // gravamos se ainda não houver nenhum código/proprietário associado.
@@ -210,6 +217,7 @@ class ImportController extends Controller
         Como conheceu: {$proposal->source} \n
         Mensagem: {$proposal->message} \n
 
+        Particular ou Empresa: {$proposal->buyer_type} \n
         Tipo de Pagamento: {$proposal->payment_type} \n
         Data Estimada da Compra: {$proposal->estimated_purchase_date} \n
         ";

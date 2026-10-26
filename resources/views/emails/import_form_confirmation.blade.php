@@ -128,6 +128,13 @@
                     'value' => $purchaseLabels[$proposal->estimated_purchase_date] ?? $proposal->estimated_purchase_date,
                 ];
             }
+            if ($proposal->buyer_type) {
+                $summaryRows[] = [
+                    'icon' => '👤',
+                    'label' => 'Comprador',
+                    'value' => ['particular' => 'Particular', 'empresa' => 'Empresa'][$proposal->buyer_type] ?? $proposal->buyer_type,
+                ];
+            }
             if ($proposal->payment_type) {
                 $summaryRows[] = [
                     'icon' => '💳',

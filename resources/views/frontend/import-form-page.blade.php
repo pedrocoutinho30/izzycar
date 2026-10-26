@@ -126,6 +126,14 @@
 
         <div class="if-grid if-grid--2">
           <div class="if-field">
+            <label class="if-label" for="buyer_type">Particular ou Empresa <span class="if-req">*</span></label>
+            <select name="buyer_type" id="buyer_type" class="if-select" required>
+              <option value="">Escolha uma opção</option>
+              <option value="particular" @selected(old('buyer_type') === 'particular')>Particular</option>
+              <option value="empresa" @selected(old('buyer_type') === 'empresa')>Empresa</option>
+            </select>
+          </div>
+          <div class="if-field">
             <label class="if-label" for="payment_type">Tipo de Pagamento <span class="if-req">*</span></label>
             <select name="payment_type" id="payment_type" class="if-select" required>
               <option value="">Escolha uma opção</option>

@@ -68,6 +68,15 @@
         </div>
 
         <div class="col-md-6">
+            <label for="buyer_type" class="form-label">Particular ou Empresa<span class="required-star">*</span></label>
+            <select name="buyer_type" id="buyer_type" class="form-control" required>
+                <option value="">Escolha uma opção</option>
+                <option value="particular" @selected(old('buyer_type') === 'particular')>Particular</option>
+                <option value="empresa" @selected(old('buyer_type') === 'empresa')>Empresa</option>
+            </select>
+        </div>
+
+        <div class="col-md-6">
             <label for="payment_type" class="form-label">Tipo de Pagamento<span class="required-star">*</span></label>
             <select name="payment_type" id="payment_type" class="form-control" required>
                 <option value="">Escolha uma opção</option>

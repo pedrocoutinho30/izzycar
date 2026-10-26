@@ -12,6 +12,7 @@ class FormProposal extends Model
         'email',
         'source',
         'message',
+        'buyer_type',
         'payment_type',
         'estimated_purchase_date',
         'data_processing_consent',

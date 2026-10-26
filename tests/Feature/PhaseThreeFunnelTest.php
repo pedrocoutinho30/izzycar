@@ -49,7 +49,7 @@ class PhaseThreeFunnelTest extends TestCase
     {
         return $overrides + [
             'name' => 'Maria Silva', 'phone' => '912 345 678', 'email' => 'maria@example.com',
-            'payment_type' => 'pronto_pagamento', 'estimated_purchase_date' => 'imediato',
+            'buyer_type' => 'particular', 'payment_type' => 'pronto_pagamento', 'estimated_purchase_date' => 'imediato',
             'data_processing_consent' => '1', 'brand' => 'BMW', 'model' => 'i4',
         ];
     }

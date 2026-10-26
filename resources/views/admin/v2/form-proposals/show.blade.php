@@ -78,6 +78,10 @@ $clientCrumb,
                             </span>
                         </div>
                         <div class="detail-item">
+                            <span class="detail-label">Particular ou Empresa</span>
+                            <span class="detail-value">{{ ['particular' => 'Particular', 'empresa' => 'Empresa'][$formProposal->buyer_type] ?? '-' }}</span>
+                        </div>
+                        <div class="detail-item">
                             <span class="detail-label">Tipo de Pagamento</span>
                             <span class="detail-value">
                                 @php
