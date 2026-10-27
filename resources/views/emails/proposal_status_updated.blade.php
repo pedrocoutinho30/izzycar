@@ -89,6 +89,12 @@
 
         <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Iremos mantê-lo informado sobre os próximos passos do processo.</p>
 
+        @if($convertedProposal->tracking_code)
+        <div style="text-align: center; margin: 25px 0;">
+            <a href="{{ $convertedProposal->trackingUrl() }}" style="display: inline-block; background: #990000; color: #fff; text-decoration: none; font-weight: bold; padding: 12px 28px; border-radius: 6px;">Acompanhar o Processo</a>
+        </div>
+        @endif
+
         <div class="footer" style="font-size: 16px; text-align: center; margin-bottom: 20px; color: #fff; margin-top: 30px;">
             <p>Equipa Izzycar</p>
             <p><i>Este é um email automático, por favor não responda diretamente a esta mensagem.</i></p>

@@ -213,6 +213,16 @@ class PhaseOneSecurityTest extends TestCase
             ->assertSee('Maria Silva');
     }
 
+    public function test_email_de_estado_inclui_o_link_de_acompanhamento(): void
+    {
+        $converted = $this->converted()->fresh();
+
+        $html = (new ProposalStatusUpdatedMail($converted, 'Iniciada', 'Transporte', 'Maria', null))->render();
+
+        $this->assertStringContainsString($converted->trackingUrl(), $html);
+        $this->assertStringContainsString('Acompanhar o Processo', $html);
+    }
+
     public function test_timeline_nao_abre_com_o_id_sequencial(): void
     {
         $converted = $this->converted();
