@@ -15,10 +15,7 @@
     $fichaCliente = match (true) {
         ! $canViewClient => null,
         (bool) $cliente->is_lead => route('admin.mobile.leads.show', $cliente->id),
-        \Illuminate\Support\Facades\Route::has('admin.mobile.clients.show') => route('admin.mobile.clients.show', $cliente->id),
-        // Sem ficha de cliente no mobile: a do desktop.
-        app(\App\Permissions\PermissionService::class)->canAccessRoute(auth()->user(), 'admin.v2.clients.show') => route('admin.v2.clients.show', $cliente->id),
-        default => null,
+        default => route('admin.mobile.clients.show', $cliente->id),
     };
     // Custos do processo: [nome, valor, pago].
     $custos = [

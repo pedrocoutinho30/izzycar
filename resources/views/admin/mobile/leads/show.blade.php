@@ -16,7 +16,6 @@
     @endif
 
     @php
-        $rota = fn (string $nome) => \Illuminate\Support\Facades\Route::has($nome);
         $estado = \App\Enums\LeadStatus::tryFrom($lead->lead_status ?? 'nova');
         $tel = $phones->telUrl($lead->phone);
         $whatsapp = $phones->whatsappUrl($lead->phone);
@@ -111,7 +110,7 @@
                         <div class="text-muted small">Sem follow-up agendado.</div>
                     @endif
 
-                    @if($canUpdate && $rota('admin.mobile.leads.followup'))
+                    @if($canUpdate)
                         <form action="{{ route('admin.mobile.leads.followup', $lead->id) }}" method="POST" class="d-grid gap-2">
                             @csrf
                             <input type="datetime-local" name="next_followup_at" class="form-control" required
@@ -271,7 +270,7 @@
             </h2>
             <div id="sec-timeline" class="accordion-collapse collapse">
                 <div class="accordion-body">
-                    @if($canUpdate && $rota('admin.mobile.leads.activity'))
+                    @if($canUpdate)
                         <form action="{{ route('admin.mobile.leads.activity', $lead->id) }}" method="POST" class="d-grid gap-2 mb-3">
                             @csrf
                             <select name="type" class="form-select" aria-label="Tipo de atividade">
@@ -308,7 +307,7 @@
     </div>
 
     <div class="d-grid gap-2 mt-3">
-        @if($canAssignOwner && $rota('admin.mobile.leads.owner'))
+        @if($canAssignOwner)
             <form action="{{ route('admin.mobile.leads.owner', $lead->id) }}" method="POST" class="d-grid gap-2 m-card mb-0">
                 @csrf
                 <label class="fw-semibold" for="lead-owner"><i class="bi bi-person-badge me-1"></i> Proprietário</label>
@@ -321,7 +320,7 @@
                 <button type="submit" class="btn btn-outline-primary">Guardar proprietário</button>
             </form>
         @endif
-        @if($canUpdate && $rota('admin.mobile.leads.convert'))
+        @if($canUpdate)
             <form action="{{ route('admin.mobile.leads.convert', $lead->id) }}" method="POST" class="d-grid">
                 @csrf
                 <button type="submit" class="btn btn-success" onclick="return confirm('Converter esta lead em cliente?')">
@@ -329,7 +328,7 @@
                 </button>
             </form>
         @endif
-        @if($canDelete && $rota('admin.mobile.leads.destroy'))
+        @if($canDelete)
             <form action="{{ route('admin.mobile.leads.destroy', $lead->id) }}" method="POST" class="d-grid">
                 @csrf
                 @method('DELETE')

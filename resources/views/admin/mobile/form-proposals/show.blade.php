@@ -9,7 +9,7 @@
     $cliente = $formProposal->client;
     $voltar = match (true) {
         $cliente !== null && (bool) $cliente->is_lead => route('admin.mobile.leads.show', $cliente->id),
-        $cliente !== null && \Illuminate\Support\Facades\Route::has('admin.mobile.clients.show') => route('admin.mobile.clients.show', $cliente->id),
+        $cliente !== null => route('admin.mobile.clients.show', $cliente->id),
         default => route('admin.mobile.form-proposals.index'),
     };
     $estadoAtual = $formProposal->status ?? 'novo';
@@ -27,7 +27,12 @@
             <div class="min-w-0">
                 <div class="fw-semibold fs-5 text-break">{{ $formProposal->label }}</div>
                 <div class="text-muted small">
-                    {{ $cliente?->name ?? $formProposal->name }} · {{ $formProposal->isManual() ? 'Pedido criado no backoffice' : 'Pedido do site' }}
+                    @if($canViewClient)
+                        <a href="{{ $voltar }}" class="d-inline-flex align-items-center" style="min-height:44px">{{ $cliente->name }}</a>
+                    @else
+                        {{ $cliente?->name ?? $formProposal->name }}
+                    @endif
+                    · {{ $formProposal->isManual() ? 'Pedido criado no backoffice' : 'Pedido do site' }}
                 </div>
             </div>
             <span class="badge bg-{{ $estadoCores[$estadoAtual] ?? 'secondary' }} flex-shrink-0">{{ $statuses[$estadoAtual] ?? $estadoAtual }}</span>

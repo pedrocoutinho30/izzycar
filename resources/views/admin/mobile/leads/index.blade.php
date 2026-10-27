@@ -49,7 +49,7 @@
         <a href="{{ $leads->nextPageUrl() }}" class="btn btn-outline-secondary w-100" id="m-load-more">Carregar mais</a>
     @endif
 
-    @if($canCreate && \Illuminate\Support\Facades\Route::has('admin.mobile.leads.create'))
+    @if($canCreate)
         <a href="{{ route('admin.mobile.leads.create') }}" class="m-fab" aria-label="Nova lead"><i class="bi bi-plus-lg"></i></a>
     @endif
 @endsection

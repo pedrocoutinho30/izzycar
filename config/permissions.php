@@ -66,7 +66,12 @@ return [
                     'label' => 'Clientes',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'owner_id',
-                    'routes' => ['admin.v2.clients.*', 'admin.v2.export.clients', 'admin.mobile.clients.*'],
+                    // Mobile: criar (create/store) exige "criar"; sem filtro por dono.
+                    'routes' => ['admin.v2.clients.*', 'admin.v2.export.clients', 'admin.mobile.clients.create', 'admin.mobile.clients.store'],
+                    // Rotas mobile que verificam o dono registo a registo (applyScope/allows). Nomes explícitos:
+                    // uma rota nova não herda o acesso "próprios" sem ser listada aqui.
+                    'own_routes' => ['admin.mobile.clients.index', 'admin.mobile.clients.show', 'admin.mobile.clients.edit',
+                        'admin.mobile.clients.update', 'admin.mobile.clients.followup', 'admin.mobile.clients.activity'],
                 ],
                 'form-proposals' => [
                     'label' => 'Formulários',

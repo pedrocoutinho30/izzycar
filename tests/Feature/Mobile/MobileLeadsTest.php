@@ -210,7 +210,7 @@ class MobileLeadsTest extends TestCase
         $lead = Client::create(['name' => 'Ana', 'is_lead' => true, 'lead_status' => 'nova']);
 
         $this->actingAs($this->mobileUser())->post(route('admin.mobile.leads.convert', $lead->id))
-            ->assertRedirect(route('admin.mobile.leads.show', $lead->id));
+            ->assertRedirect(route('admin.mobile.clients.show', $lead->id));
 
         $this->assertFalse((bool) $lead->refresh()->is_lead);
         $this->assertDatabaseHas('lead_activities', ['client_id' => $lead->id, 'title' => 'Lead convertido em cliente']);

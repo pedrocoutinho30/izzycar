@@ -196,16 +196,18 @@
     </main>
 
     @php
-        // Os destinos ainda por criar não podem rebentar a página.
+        // Os destinos ainda por criar (pesquisa) não podem rebentar a página.
         $href = fn (string $rota) => \Illuminate\Support\Facades\Route::has($rota) ? route($rota) : '#';
     @endphp
     <nav class="m-bottomnav" aria-label="Navegação principal">
         <a href="{{ route('admin.mobile.leads.index') }}" class="{{ request()->routeIs('admin.mobile.leads.*') ? 'active' : '' }}">
             <i class="bi bi-people"></i><span>Leads</span>
         </a>
-        <a href="{{ $href('admin.mobile.clients.index') }}" class="{{ request()->routeIs('admin.mobile.clients.*') ? 'active' : '' }}">
+        @canroute('admin.mobile.clients.index')
+        <a href="{{ route('admin.mobile.clients.index') }}" class="{{ request()->routeIs('admin.mobile.clients.*') ? 'active' : '' }}">
             <i class="bi bi-person-lines-fill"></i><span>Clientes</span>
         </a>
+        @endcanroute
         <a href="{{ $href('admin.mobile.search') }}" class="{{ request()->routeIs('admin.mobile.search') ? 'active' : '' }}">
             <i class="bi bi-search"></i><span>Pesquisa</span>
         </a>

@@ -702,6 +702,16 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::post('/leads/{id}/dono', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'owner'])->name('leads.owner')->whereNumber('id');
         Route::delete('/leads/{id}', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'destroy'])->name('leads.destroy')->whereNumber('id');
 
+        // Clientes ("/clientes/novo" tem de ficar antes de "/clientes/{id}").
+        Route::get('/clientes', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'index'])->name('clients.index');
+        Route::get('/clientes/novo', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'create'])->name('clients.create');
+        Route::post('/clientes', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'store'])->name('clients.store');
+        Route::get('/clientes/{id}', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'show'])->name('clients.show')->whereNumber('id');
+        Route::get('/clientes/{id}/editar', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'edit'])->name('clients.edit')->whereNumber('id');
+        Route::put('/clientes/{id}', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'update'])->name('clients.update')->whereNumber('id');
+        Route::post('/clientes/{id}/followup', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'followup'])->name('clients.followup')->whereNumber('id');
+        Route::post('/clientes/{id}/atividade', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'activity'])->name('clients.activity')->whereNumber('id');
+
         // Pedidos de formulário ("/formularios/novo" tem de ficar antes de "/formularios/{id}").
         Route::get('/formularios', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'index'])->name('form-proposals.index');
         Route::get('/formularios/novo', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'create'])->name('form-proposals.create');

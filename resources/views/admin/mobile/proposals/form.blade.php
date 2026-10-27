@@ -5,12 +5,10 @@
     $aceite = $accepted ?? false;
     $voltar = match (true) {
         $editar => route('admin.mobile.proposals.show', $proposal->id),
-        $importOpportunity !== null && \Illuminate\Support\Facades\Route::has('admin.mobile.form-proposals.opportunities.show')
-            => route('admin.mobile.form-proposals.opportunities.show', [$importOpportunity->form_proposal_id, $importOpportunity->id]),
+        $importOpportunity !== null => route('admin.mobile.form-proposals.opportunities.show', [$importOpportunity->form_proposal_id, $importOpportunity->id]),
         $formProposal !== null => route('admin.mobile.form-proposals.show', $formProposal->id),
         (bool) $client->is_lead => route('admin.mobile.leads.show', $client->id),
-        \Illuminate\Support\Facades\Route::has('admin.mobile.clients.show') => route('admin.mobile.clients.show', $client->id),
-        default => route('admin.mobile.proposals.index'),
+        default => route('admin.mobile.clients.show', $client->id),
     };
     $valor = fn (string $campo) => old($campo, $proposal->{$campo} ?? null);
     // Dinheiro com a vírgula como separador decimal ("1,500", "20000,00"): nunca fica no

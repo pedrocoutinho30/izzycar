@@ -14,7 +14,6 @@ use App\Permissions\PermissionService;
 use App\Services\ClientMatcher;
 use App\Services\ConvertedProposalService;
 use App\Services\LeadService;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 /**
@@ -153,11 +152,14 @@ class LeadController extends Controller
 
         $this->leads->convert($lead, $request->user());
 
-        $destino = Route::has('admin.mobile.clients.show')
-            ? route('admin.mobile.clients.show', $id)
-            : route('admin.mobile.leads.show', $id);
+        // Já é cliente: segue para a ficha de cliente, se a puder ver.
+        if ($this->permissions->allows($request->user(), 'clients', 'view', $lead)) {
+            return redirect()->route('admin.mobile.clients.show', $lead->id)
+                ->with('success', 'Lead convertido em cliente! Complete os dados em falta.');
+        }
 
-        return redirect($destino)->with('success', 'Lead convertido em cliente! Complete os dados em falta.');
+        return redirect()->route('admin.mobile.leads.index')
+            ->with('success', 'Lead convertido em cliente. A ficha de cliente não está disponível para o seu perfil.');
     }
 
     public function followup(Request $request, $id)

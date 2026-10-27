@@ -3,14 +3,12 @@
 @section('title', trim($proposal->brand . ' ' . $proposal->model))
 
 @php
-    $rota = fn (string $nome) => \Illuminate\Support\Facades\Route::has($nome);
     $cliente = $proposal->client;
     // A cotação vive dentro da lead/cliente: voltar para lá.
     $fichaCliente = match (true) {
         ! $canViewClient => null,
         (bool) $cliente->is_lead => route('admin.mobile.leads.show', $cliente->id),
-        $rota('admin.mobile.clients.show') => route('admin.mobile.clients.show', $cliente->id),
-        default => null,
+        default => route('admin.mobile.clients.show', $cliente->id),
     };
     $estado = $proposal->status ?? 'Pendente';
     $estadoCores = ['Pendente' => 'warning', 'Enviado' => 'info', 'Aprovada' => 'success', 'Reprovada' => 'danger', 'Sem resposta' => 'secondary'];

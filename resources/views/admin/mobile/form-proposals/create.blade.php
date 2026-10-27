@@ -5,8 +5,7 @@
 @php
     $voltar = match (true) {
         (bool) $client->is_lead => route('admin.mobile.leads.show', $client->id),
-        \Illuminate\Support\Facades\Route::has('admin.mobile.clients.show') => route('admin.mobile.clients.show', $client->id),
-        default => route('admin.mobile.form-proposals.index'),
+        default => route('admin.mobile.clients.show', $client->id),
     };
 @endphp
 

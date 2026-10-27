@@ -250,11 +250,11 @@ class MobileConvertedProposalsTest extends TestCase
         $this->actingAs($user)->get(route('admin.v2.converted-proposals.index'))->assertOk()->assertSee('Beatriz');
         $this->actingAs($user)->get(route('admin.mobile.proposals.show', $proposal->id))
             ->assertSee('href="' . route('admin.mobile.converted-proposals.show', $converted->id) . '"', false);
-        // A lead passou a cliente: a ficha liga à cotação de origem e ao cliente (desktop).
+        // A lead passou a cliente: a ficha liga à cotação de origem e à ficha de cliente mobile.
         $this->actingAs($user)->get(route('admin.mobile.converted-proposals.show', $converted->id))
             ->assertOk()->assertSee('Iniciada')
             ->assertSee('href="' . route('admin.mobile.proposals.show', $proposal->id) . '"', false)
-            ->assertSee('href="' . route('admin.v2.clients.show', $lead->id) . '"', false);
+            ->assertSee('href="' . route('admin.mobile.clients.show', $lead->id) . '"', false);
     }
 
     public function test_ficha_da_lead_liga_as_convertidas_e_menu_mais(): void

@@ -54,6 +54,9 @@ class FormProposalController extends Controller
             'statuses' => $this->statusLabels(),
             'manualStatuses' => FormProposalService::MANUAL_STATUSES,
             'canUpdate' => $canUpdate,
+            // Ligação ao nome do cliente: só se puder abrir a ficha (lead ou cliente).
+            'canViewClient' => $formProposal->client !== null
+                && $this->permissions->allows($request->user(), $formProposal->client->is_lead ? 'leads' : 'clients', 'view', $formProposal->client),
             'canViewOpportunities' => $canViewOpportunities,
             // Criar cotação a partir do pedido: só com cliente e quem pode criar cotações.
             'canCreateProposal' => $formProposal->client_id !== null && $this->permissions->allows($request->user(), 'proposals', 'create'),
