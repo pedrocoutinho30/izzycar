@@ -48,6 +48,11 @@ use App\Http\Controllers\AttributeGroupController;
 
 
 
+// Relatórios de violação da Content-Security-Policy (sem auth/CSRF; ver docs/seguranca-csp.md).
+Route::post('csp-report', \App\Http\Controllers\CspReportController::class)
+    ->middleware('throttle:30,1')
+    ->name('csp.report');
+
 // Route::get('simulador-importacao', [ImportSimulatorController::class, 'importSimulator'])->name('import-simulator');
 
 // Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');

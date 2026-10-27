@@ -56,6 +56,14 @@ return [
             'formatter' => Monolog\Formatter\JsonFormatter::class,
         ],
 
+        // Violações da Content-Security-Policy (ver docs/seguranca-csp.md).
+        'csp' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/csp.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
