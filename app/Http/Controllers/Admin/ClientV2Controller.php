@@ -16,11 +16,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
-use App\Models\LeadActivity;
+use App\Services\ClientService;
+use App\Services\LeadService;
 use Illuminate\Http\Request;
 
 class ClientV2Controller extends Controller
 {
+    public function __construct(private ClientService $clients, private LeadService $leads)
+    {
+    }
+
     /**
      * INDEX - Listagem de clientes
      */
@@ -57,34 +62,13 @@ class ClientV2Controller extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'language' => 'nullable|string|in:pt,en',
-            'vat_number' => 'nullable|string|max:50',
-            'birth_date' => 'nullable|date',
-            'gender' => 'nullable',
-            'identification_number' => 'nullable|string|max:50',
-            'validate_identification_number' => 'nullable|date',
-            'address' => 'nullable|string',
-            'postal_code' => 'nullable|string|max:20',
-            'city' => 'nullable|string|max:100',
-            'client_type' => 'nullable',
-            'origin' => 'nullable|string|max:100',
-            'observation' => 'nullable|string',
-            'data_processing_consent' => 'nullable|boolean',
-            'newsletter_consent' => 'nullable|boolean',
-        ]);
+        $validated = $request->validate($this->clients->rules());
 
-        if ($warning = app(\App\Services\ClientMatcher::class)->duplicateWarning($validated['email'] ?? null, $validated['phone'] ?? null, $request->boolean('confirm_duplicate'))) {
+        if ($warning = $this->clients->duplicateWarning($validated, $request->boolean('confirm_duplicate'))) {
             return back()->withInput()->withErrors(['duplicate' => $warning['message']])->with('duplicate_url', $warning['url']);
         }
 
-        $validated['data_processing_consent'] = $validated['data_processing_consent'] ?? true;
-        $validated['newsletter_consent']       = $validated['newsletter_consent'] ?? false;
-
-        Client::create($validated);
+        $this->clients->create($validated);
 
         return redirect()->route('admin.v2.clients.index')
             ->with('success', 'Cliente criado com sucesso!');
@@ -117,18 +101,7 @@ class ClientV2Controller extends Controller
             'followup_note'    => 'nullable|string|max:255',
         ]);
 
-        $client->update([
-            'next_followup_at' => $request->next_followup_at,
-            'followup_note'    => $request->followup_note,
-        ]);
-
-        LeadActivity::log(
-            $client->id,
-            'Follow-up agendado para ' . \Carbon\Carbon::parse($request->next_followup_at)->format('d/m/Y H:i'),
-            $request->followup_note ?? '',
-            'bi-alarm-fill',
-            'warning'
-        );
+        $this->leads->scheduleFollowup($client, $request->next_followup_at, $request->followup_note);
 
         return back()->with('success', 'Follow-up agendado.');
     }
@@ -142,7 +115,7 @@ class ClientV2Controller extends Controller
             'body'  => 'nullable|string|max:2000',
         ]);
 
-        LeadActivity::logManual($client->id, $request->type, $request->title, $request->body ?? '');
+        $this->leads->logActivity($client, $request->type, $request->title, $request->body);
 
         return back()->with('success', 'Atividade registada.');
     }
@@ -163,27 +136,9 @@ class ClientV2Controller extends Controller
     {
         $client = Client::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'language' => 'nullable|string|in:pt,en',
-            'vat_number' => 'nullable|string|max:50',
-            'birth_date' => 'nullable|date',
-            'gender' => 'nullable',
-            'identification_number' => 'nullable|string|max:50',
-            'validate_identification_number' => 'nullable|date',
-            'address' => 'nullable|string',
-            'postal_code' => 'nullable|string|max:20',
-            'city' => 'nullable|string|max:100',
-            'client_type' => 'nullable',
-            'origin' => 'nullable|string|max:100',
-            'observation' => 'nullable|string',
-            'data_processing_consent' => 'nullable|boolean',
-            'newsletter_consent' => 'nullable|boolean',
-        ]);
+        $validated = $request->validate($this->clients->rules());
 
-        $client->update($validated);
+        $this->clients->update($client, $validated);
 
         return redirect()->route('admin.v2.clients.show', $client->id)
             ->with('success', 'Cliente atualizado com sucesso!');
