@@ -10,9 +10,9 @@ use App\Models\LeadActivity;
 use App\Models\Proposal;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
-use Tests\RefreshesDatabaseWithoutMysqlOnlyMigrations;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Tests\RefreshesDatabaseWithoutMysqlOnlyMigrations;
 use Tests\TestCase;
 
 class MobileLeadsTest extends TestCase
@@ -164,18 +164,41 @@ class MobileLeadsTest extends TestCase
         $this->assertDatabaseHas('lead_activities', ['client_id' => $lead->id, 'title' => 'Lead criado manualmente']);
     }
 
-    public function test_criar_lead_duplicada_pede_confirmacao(): void
+    public function test_criar_lead_com_email_repetido_nao_se_pode_forcar(): void
     {
         Client::create(['name' => 'Existente', 'email' => 'dup@example.com', 'phone' => '911000111', 'is_lead' => true, 'lead_status' => 'nova']);
         $user = $this->mobileUser();
 
-        foreach ([['email' => 'dup@example.com'], ['phone' => '911000111']] as $campo) {
-            $this->actingAs($user)->post(route('admin.mobile.leads.store'), ['name' => 'Outra'] + $campo)
-                ->assertSessionHasErrors('duplicate');
+        // Com e sem confirm_duplicate (POST forjado), e com maiúsculas: erro, sem 500 nem nova linha.
+        foreach ([[], ['confirm_duplicate' => '1']] as $extra) {
+            $this->actingAs($user)->post(route('admin.mobile.leads.store'), ['name' => 'Outra', 'email' => 'DUP@example.com'] + $extra)
+                ->assertRedirect()
+                ->assertSessionHasErrors('duplicate')
+                ->assertSessionHas('duplicate_email', true);
         }
         $this->assertSame(1, Client::count());
 
-        // clients.email é único na BD (igual no desktop): a confirmação só se aplica a telefones repetidos.
+        // O formulário reaparece sem a opção "Criar mesmo assim".
+        $this->actingAs($user)->from(route('admin.mobile.leads.create'))
+            ->post(route('admin.mobile.leads.store'), ['name' => 'Outra', 'email' => 'dup@example.com']);
+        $this->actingAs($user)->get(route('admin.mobile.leads.create'))
+            ->assertOk()->assertSee('mesmo email')->assertDontSee('confirm_duplicate');
+    }
+
+    public function test_criar_lead_com_telefone_repetido_pede_confirmacao(): void
+    {
+        Client::create(['name' => 'Existente', 'email' => 'dup@example.com', 'phone' => '911000111', 'is_lead' => true, 'lead_status' => 'nova']);
+        $user = $this->mobileUser();
+
+        $this->actingAs($user)->from(route('admin.mobile.leads.create'))
+            ->post(route('admin.mobile.leads.store'), ['name' => 'Outra', 'phone' => '911000111'])
+            ->assertSessionHasErrors('duplicate')
+            ->assertSessionMissing('duplicate_email');
+        $this->assertSame(1, Client::count());
+
+        $this->actingAs($user)->get(route('admin.mobile.leads.create'))
+            ->assertOk()->assertSee('name="confirm_duplicate"', false);
+
         $this->actingAs($user)->post(route('admin.mobile.leads.store'), ['name' => 'Outra', 'phone' => '911000111', 'confirm_duplicate' => '1'])
             ->assertSessionHasNoErrors();
         $this->assertSame(2, Client::count());

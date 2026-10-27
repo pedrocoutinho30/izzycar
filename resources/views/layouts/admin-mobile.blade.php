@@ -54,6 +54,10 @@
         /* Evita o zoom automático do iOS ao focar campos */
         input, select, textarea, .form-control, .form-select { font-size: 16px !important; }
         .btn { min-height: 44px; }
+        .form-control:not(textarea), .form-select { min-height: 44px; }
+        .m-form-check { min-height: 44px; display: flex; align-items: center; gap: 10px; padding-left: 0; }
+        .m-form-check .form-check-input { margin: 0; width: 1.5em; height: 1.5em; float: none; }
+        .m-form-check .form-check-label { flex: 1; min-height: 44px; display: flex; align-items: center; }
 
         .m-topbar {
             position: fixed;

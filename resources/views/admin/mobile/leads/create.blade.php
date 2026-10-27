@@ -69,8 +69,8 @@
             <textarea id="lead-observation" name="observation" rows="3" maxlength="2000" class="form-control">{{ old('observation') }}</textarea>
         </div>
 
-        @if($errors->has('duplicate'))
-            <div class="form-check">
+        @if($errors->has('duplicate') && !session('duplicate_email'))
+            <div class="form-check m-form-check">
                 <input class="form-check-input" type="checkbox" name="confirm_duplicate" value="1" id="confirm-duplicate">
                 <label class="form-check-label" for="confirm-duplicate">Criar mesmo assim</label>
             </div>

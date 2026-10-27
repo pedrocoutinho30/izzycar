@@ -57,6 +57,8 @@ class LeadController extends Controller
         // Para marcar as cotações que já deram origem a uma convertida.
         $convertedByProposal = $lead->convertedProposals->whereNotNull('proposal_id')->keyBy('proposal_id');
 
+        $canAssignOwner = $this->canAssignOwner($request);
+
         return view('admin.mobile.leads.show', [
             'lead' => $lead,
             'formProposals' => $formProposals,
@@ -65,9 +67,9 @@ class LeadController extends Controller
             'convertedByProposal' => $convertedByProposal,
             'statuses' => $this->allowedStatuses($request),
             'canUpdate' => $this->permissions->allows($request->user(), 'leads', 'update', $lead),
-            'canAssignOwner' => $this->canAssignOwner($request),
+            'canAssignOwner' => $canAssignOwner,
             'canDelete' => $this->permissions->allows($request->user(), 'leads', 'delete'),
-            'owners' => $this->canAssignOwner($request) ? $this->owners() : collect(),
+            'owners' => $canAssignOwner ? $this->owners() : collect(),
         ]);
     }
 
@@ -87,8 +89,20 @@ class LeadController extends Controller
             unset($data['owner_id']);
         }
 
-        // Mesmo aviso de duplicados do desktop (LeadV2Controller::store).
-        if ($warning = app(ClientMatcher::class)->duplicateWarning($data['email'] ?? null, $data['phone'] ?? null, $request->boolean('confirm_duplicate'))) {
+        // clients.email é único na BD: um email repetido nunca se pode forçar
+        // (nem com confirm_duplicate), senão o insert rebentava com 500.
+        $matcher = app(ClientMatcher::class);
+        if ($email = $matcher->normalizeEmail($data['email'] ?? null)) {
+            $existente = Client::where('email_normalized', $email)->orWhereRaw('LOWER(email) = ?', [$email])->first();
+            if ($existente) {
+                return back()->withInput()
+                    ->withErrors(['duplicate' => "Já existe «{$existente->name}» com o mesmo email."])
+                    ->with('duplicate_email', true);
+            }
+        }
+
+        // Mesmo aviso de duplicados do desktop (LeadV2Controller::store): só telefone, confirmável.
+        if ($warning = $matcher->duplicateWarning($data['email'] ?? null, $data['phone'] ?? null, $request->boolean('confirm_duplicate'))) {
             return back()->withInput()->withErrors(['duplicate' => $warning['message']]);
         }
 
