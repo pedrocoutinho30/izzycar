@@ -365,7 +365,7 @@ $sections = [
 /* ── Sections ─────────────────────────────────────────────── */
 .lp-intro {
     display: flex; gap: 1.5rem; align-items: flex-start;
-    background: linear-gradient(135deg, #92642D, #900);
+    background: linear-gradient(135deg, #B59151, #92642D);
     border-radius: 18px; padding: 2rem; margin-bottom: 2rem; color: #fff;
 }
 .lp-intro__icon {
@@ -382,7 +382,7 @@ $sections = [
 }
 .lp-section__num {
     position: absolute; top: -16px; left: 2rem;
-    background: linear-gradient(135deg, #92642D, #900);
+    background: linear-gradient(135deg, #B59151, #92642D);
     color: #fff; width: 48px; height: 48px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     font-weight: 800; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(146,100,45,.3);
