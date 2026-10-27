@@ -223,8 +223,9 @@ class ProposalService
         $importOpportunity = $opportunityId ? ImportOpportunity::find($opportunityId) : null;
 
         // Gerar código único para a proposta
-        $data['proposal_code'] = strtoupper(substr($data['brand'], 0, 1) .
-            substr($data['model'], 0, 1) .
+        // (mb_*: uma inicial acentuada, ex. "Élan", não pode ficar cortada a meio do byte)
+        $data['proposal_code'] = mb_strtoupper(mb_substr($data['brand'], 0, 1) .
+            mb_substr($data['model'], 0, 1) .
             Str::random(8));
 
         // Converter array de links para JSON
