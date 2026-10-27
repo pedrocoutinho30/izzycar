@@ -36,3 +36,14 @@ Viaturas **de stock** (venda a clientes) seguem outro ramo: nascem em stock (man
 - **Identificadores públicos**: cotação por `proposal_code`; legalização por token; timeline da convertida só por id (enumerável).
 - **Angariadores**: `owner_id`/`angariador_code` no cliente; só vêm a sua área (`admin.angariador.*`); a comissão da convertida é um instantâneo.
 - **Produção**: o funil escreve em muitas tabelas; testar sempre em sqlite, nunca contra o `.env` remoto.
+
+## Versão mobile
+
+Backoffice simplificado para iPhone em `/gestao/mobile` (rotas `admin.mobile.*`, layout `layouts.admin-mobile`, instalável como PWA). Cobre o funil até à cotação convertida: leads, clientes, pedidos de formulário e oportunidades, cotações, convertidas (consulta e estado) e uma pesquisa (`/gestao/mobile/pesquisa`) por leads, clientes, cotações e pedidos.
+
+- **Acesso**: só quem tem `users.access_mobile = true`; sem ele, qualquer rota mobile volta ao dashboard desktop com aviso (middleware `mobile.access`, depois de `auth` e `restrictAngariador` — o angariador puro continua barrado). O campo altera-se na ficha do utilizador por quem tem `users.update`, nunca no próprio (exceto admin) nem pelo perfil; cada mudança fica no log de auditoria. **Falta `php artisan migrate` em produção (coluna `users.access_mobile`).**
+- **Mesma lógica do desktop**: os controllers de `Admin\Mobile` usam `LeadService`, `ClientService`, `FormProposalService`, `ProposalService`, `ConvertedProposalService` e `GlobalSearchService` (consultas da pesquisa global). Uma regra de negócio nova vai para o service, não para o controller mobile.
+- **Permissões**: as rotas mobile estão em `config/permissions.php` com nomes explícitos; as que filtram registo a registo (`applyScope`/`allows`) estão em `own_routes` e aceitam "próprios". O filtro é feito no controller, por isso vale mesmo com `PERMISSIONS_ENFORCE` desligado. A pesquisa é partilhada e só mostra as secções que o utilizador pode abrir, no seu âmbito (no mobile, `%` e `_` contam como texto).
+- **Convertidas**: quem tem permissão de convertidas vê todas; quem só vê cotações vê as dos seus clientes (`ConvertedProposalService::viewScope`). Mudar o estado exige editar convertidas.
+- **Clientes criados no mobile ficam sem dono** (`owner_id` nulo), mesmo por quem só vê os "próprios".
+- **Fica no desktop**: kanban, exportações XLSX, importar cotação a partir do link do anúncio, contrato em PDF, uploads de documentos e fotos, edição de pagamentos da convertida, criar/editar candidatos (carros) e editar atributos da cotação.

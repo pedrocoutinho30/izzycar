@@ -690,6 +690,9 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     Route::prefix('mobile')->name('admin.mobile.')->middleware('mobile.access')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\Mobile\DashboardController::class, 'index'])->name('dashboard');
 
+        // Pesquisa: cada secção é filtrada pelas permissões do utilizador no controller.
+        Route::get('/pesquisa', [App\Http\Controllers\Admin\Mobile\SearchController::class, 'index'])->name('search');
+
         // Leads ("/leads/nova" tem de ficar antes de "/leads/{id}").
         Route::get('/leads', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'index'])->name('leads.index');
         Route::get('/leads/nova', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'create'])->name('leads.create');

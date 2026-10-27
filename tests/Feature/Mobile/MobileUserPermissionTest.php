@@ -81,6 +81,37 @@ class MobileUserPermissionTest extends TestCase
         $this->assertFalse($ator->refresh()->access_mobile);
     }
 
+    public function test_sem_autorizacao_um_acesso_ja_dado_fica_intacto_ao_gravar_outro_utilizador(): void
+    {
+        // Perfil sem users.update (regras desligadas: a rota passa e o controller decide).
+        $ator = $this->backofficeUser('semusers');
+        $alvo = $this->backofficeUser('semusers');
+        $alvo->forceFill(['access_mobile' => true])->save();
+
+        // O formulário não traz o campo (a checkbox nem aparece a este ator): não pode desligar.
+        $this->actingAs($ator)->put(route('admin.v2.users.update', $alvo->id), $this->payload($alvo, ['roles' => ['semusers'], 'name' => 'Nome Novo']))
+            ->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertSame('Nome Novo', $alvo->refresh()->name);
+        $this->assertTrue($alvo->refresh()->access_mobile);
+
+        $this->actingAs($ator)->put(route('admin.v2.users.update', $alvo->id), $this->payload($alvo, ['roles' => ['semusers'], 'access_mobile' => '0']));
+        $this->assertTrue($alvo->refresh()->access_mobile);
+        $this->assertSame(0, AuditLog::where('action', 'user_mobile_access_updated')->count());
+    }
+
+    public function test_quem_nao_pode_gerir_o_proprio_acesso_nao_o_perde_ao_gravar_o_perfil(): void
+    {
+        $rh = Role::findOrCreate('RH', 'web');
+        app(PermissionSynchronizer::class)->syncRolePermissions($rh, ['users.view', 'users.update']);
+        $ator = $this->backofficeUser('RH');
+        $ator->forceFill(['access_mobile' => true])->save();
+
+        // Gere utilizadores, mas não o próprio acesso: gravar-se sem o campo mantém-no.
+        $this->actingAs($ator)->put(route('admin.v2.users.update', $ator->id), $this->payload($ator, ['roles' => ['RH']]))->assertRedirect();
+        $this->assertTrue($ator->refresh()->access_mobile);
+        $this->assertSame(0, AuditLog::where('action', 'user_mobile_access_updated')->count());
+    }
+
     public function test_checkbox_aparece_so_a_quem_pode_geri_la(): void
     {
         $admin = $this->backofficeUser('admin');

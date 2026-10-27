@@ -195,10 +195,6 @@
         @yield('content')
     </main>
 
-    @php
-        // Os destinos ainda por criar (pesquisa) não podem rebentar a página.
-        $href = fn (string $rota) => \Illuminate\Support\Facades\Route::has($rota) ? route($rota) : '#';
-    @endphp
     <nav class="m-bottomnav" aria-label="Navegação principal">
         <a href="{{ route('admin.mobile.leads.index') }}" class="{{ request()->routeIs('admin.mobile.leads.*') ? 'active' : '' }}">
             <i class="bi bi-people"></i><span>Leads</span>
@@ -208,7 +204,7 @@
             <i class="bi bi-person-lines-fill"></i><span>Clientes</span>
         </a>
         @endcanroute
-        <a href="{{ $href('admin.mobile.search') }}" class="{{ request()->routeIs('admin.mobile.search') ? 'active' : '' }}">
+        <a href="{{ route('admin.mobile.search') }}" class="{{ request()->routeIs('admin.mobile.search') ? 'active' : '' }}">
             <i class="bi bi-search"></i><span>Pesquisa</span>
         </a>
         <button type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMais" aria-controls="mobileMais">
