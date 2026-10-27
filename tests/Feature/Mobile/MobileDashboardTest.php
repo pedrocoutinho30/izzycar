@@ -5,7 +5,9 @@ namespace Tests\Feature\Mobile;
 use App\Models\Client;
 use App\Models\ConvertedProposal;
 use App\Models\FormProposal;
+use App\Models\CostSimulator;
 use App\Models\Proposal;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -97,6 +99,29 @@ class MobileDashboardTest extends TestCase
         return (int) $m[1];
     }
 
+    /** Valor do cartão da faixa "Para tratar" com este rótulo. */
+    private function topo(string $html, string $rotulo): int
+    {
+        $ok = preg_match('/m-todo__value">(\d+)<\/span>\s*<i[^>]*><\/i>\s*<\/span>\s*<span class="m-todo__label">' . preg_quote($rotulo, '/') . '<\/span>/', $html, $m);
+        $this->assertSame(1, $ok, "Cartão '{$rotulo}' não encontrado na faixa Para tratar");
+
+        return (int) $m[1];
+    }
+
+    private function simulacao(bool $lida, ?Client $client = null): CostSimulator
+    {
+        return CostSimulator::create([
+            'client_id' => ($client ?? $this->cliente(['email' => uniqid() . '@example.com']))->id, 'brand' => 'Audi', 'model' => 'A3',
+            'car_value' => 20000, 'commission_cost' => 1000, 'inspection_commission_cost' => 150, 'transport' => 600, 'ipo_cost' => 40,
+            'imt_cost' => 65, 'registration_cost' => 55, 'plates_cost' => 30, 'isv_cost' => 1500, 'total_cost' => 23440, 'read' => $lida,
+        ]);
+    }
+
+    private function tarefa(array $attributes = []): Task
+    {
+        return Task::create($attributes + ['title' => 'Tarefa', 'due_date' => '2026-03-15', 'status' => 'pendente']);
+    }
+
     public function test_logo_no_topo_do_inicio_e_de_outra_pagina_ligado_ao_inicio(): void
     {
         $user = $this->mobileUser();
@@ -140,17 +165,116 @@ class MobileDashboardTest extends TestCase
 
         $html = $this->actingAs($this->mobileUser())->get(route('admin.mobile.dashboard'))->assertOk()->getContent();
 
-        $this->assertSame(1, $this->valor($html, 'Novas'));
+        $this->assertSame(1, $this->topo($html, 'Leads novas'));
         $this->assertSame(3, $this->valor($html, 'A tratar'));
-        $this->assertSame(1, $this->valor($html, 'Follow-ups hoje'));
+        $this->assertSame(1, $this->topo($html, 'Follow-ups hoje'));
         $this->assertSame(2, $this->valor($html, 'Follow-ups em atraso'));
-        $this->assertSame(2, $this->valor($html, 'Pedidos novos'));
+        $this->assertSame(2, $this->topo($html, 'Formulários novos'));
         $this->assertSame(1, $this->valor($html, 'Pendentes'));
         $this->assertSame(2, $this->valor($html, 'Enviadas (a aguardar)'));
         $this->assertSame(2, $this->valor($html, 'Em processo'));
         $this->assertSame(2, $this->valor($html, 'Total'));      // $c e o cliente com is_lead falso
         $this->assertSame(2, $this->valor($html, 'Novos este mês'));
-        
+    }
+
+    public function test_faixa_para_tratar_cinco_numeros_para_admin(): void
+    {
+        $admin = $this->mobileUser();
+        $outro = $this->backofficeUser('admin', ['email' => 'outro@example.com']);
+        $this->lead(['next_followup_at' => now()->setTime(9, 0)]);
+        $this->pedido($this->cliente(['email' => 'a@example.com']));
+
+        $this->simulacao(false);
+        $this->simulacao(false);
+        $this->simulacao(true);
+
+        $this->tarefa(['user_id' => $admin->id, 'due_date' => '2026-03-15']);                      // hoje
+        $this->tarefa(['user_id' => $admin->id, 'due_date' => '2026-03-10', 'status' => 'em_progresso']); // atraso
+        $this->tarefa(['user_id' => $admin->id, 'due_date' => '2026-03-16']);                      // amanhã: fora
+        $this->tarefa(['user_id' => $admin->id, 'due_date' => '2026-03-01', 'status' => 'concluida']);
+        $this->tarefa(['user_id' => $admin->id, 'due_date' => '2026-03-01', 'status' => 'cancelada']);
+        $this->tarefa(['user_id' => $outro->id, 'due_date' => '2026-03-01']);                      // de outro
+        $this->tarefa(['user_id' => null, 'due_date' => '2026-03-01']);                            // sem dono
+
+        $html = $this->actingAs($admin)->get(route('admin.mobile.dashboard'))->assertOk()->getContent();
+
+        $this->assertSame(1, $this->topo($html, 'Leads novas'));
+        $this->assertSame(1, $this->topo($html, 'Follow-ups hoje'));
+        $this->assertSame(1, $this->topo($html, 'Formulários novos'));
+        $this->assertSame(2, $this->topo($html, 'Simulações novas'));
+        $this->assertSame(2, $this->topo($html, 'Tarefas'));
+        $this->assertStringContainsString('1 em atraso', $html);
+        $this->assertStringContainsString('m-todo is-alert', $html);
+        $this->assertStringContainsString(route('admin.mobile.tasks.index', ['filtro' => 'para_tratar']), html_entity_decode($html));
+        $this->assertStringContainsString(route('admin.mobile.cost-simulators.index'), html_entity_decode($html));
+    }
+
+    public function test_simulacoes_novas_usam_a_mesma_definicao_da_lista(): void
+    {
+        $this->simulacao(true);
+        $this->simulacao(false);
+        $this->simulacao(false);
+
+        $user = $this->mobileUser();
+        $html = $this->actingAs($user)->get(route('admin.mobile.dashboard'))->getContent();
+        $this->assertSame(2, $this->topo($html, 'Simulações novas'));
+
+        // A lista mostra exatamente 2 badges "Nova".
+        $lista = $this->actingAs($user)->get(route('admin.mobile.cost-simulators.index'))->getContent();
+        $this->assertSame(2, substr_count($lista, '>Nova</span>'));
+
+        // Abrir a lista não as marca como lidas; o contador mantém-se.
+        $this->assertSame(2, $this->topo($this->actingAs($user)->get(route('admin.mobile.dashboard'))->getContent(), 'Simulações novas'));
+    }
+
+    public function test_tarefas_sem_atraso_nao_realcam(): void
+    {
+        $admin = $this->mobileUser();
+        $this->tarefa(['user_id' => $admin->id, 'due_date' => '2026-03-15']);
+
+        $html = $this->actingAs($admin)->get(route('admin.mobile.dashboard'))->getContent();
+
+        $this->assertSame(1, $this->topo($html, 'Tarefas'));
+        $this->assertStringNotContainsString('em atraso</span>', str_replace('Follow-ups em atraso', '', $html));
+        $this->assertStringNotContainsString('m-todo is-alert', $html);
+    }
+
+    public function test_faixa_esconde_cartoes_sem_permissao(): void
+    {
+        config(['permissions.enforce' => true]);
+        $this->lead();
+        $this->simulacao(false);
+        $user = $this->userWith(['cost-simulators.view']);
+
+        $html = $this->actingAs($user)->get(route('admin.mobile.dashboard'))->assertOk()
+            ->assertDontSee('Leads novas')->assertDontSee('Follow-ups hoje')->assertDontSee('Formulários novos')->assertDontSee('Tarefas')
+            ->getContent();
+        $this->assertSame(1, $this->topo($html, 'Simulações novas'));
+
+        $user = $this->userWith(['tasks.view']);
+        $this->tarefa(['user_id' => $user->id]);
+        $html = $this->actingAs($user)->get(route('admin.mobile.dashboard'))->assertOk()
+            ->assertDontSee('Simulações novas')->assertDontSee('Leads novas')
+            ->getContent();
+        $this->assertSame(1, $this->topo($html, 'Tarefas'));
+    }
+
+    public function test_faixa_com_so_proprias_conta_formularios_e_leads_do_utilizador(): void
+    {
+        config(['permissions.enforce' => true]);
+        $user = $this->userWith(['leads.view.own', 'form-proposals.view.own']);
+        $outro = $this->backofficeUser('admin', ['email' => 'outro@example.com']);
+
+        $minha = $this->lead(['owner_id' => $user->id, 'next_followup_at' => now()->setTime(10, 0)]);
+        $this->lead(['owner_id' => $outro->id, 'next_followup_at' => now()->setTime(10, 0)]);
+        $this->pedido($minha);
+        $this->pedido($this->lead(['owner_id' => $outro->id]));
+
+        $html = $this->actingAs($user)->get(route('admin.mobile.dashboard'))->assertOk()->getContent();
+
+        $this->assertSame(1, $this->topo($html, 'Leads novas'));
+        $this->assertSame(1, $this->topo($html, 'Follow-ups hoje'));
+        $this->assertSame(1, $this->topo($html, 'Formulários novos'));
     }
 
 
@@ -175,7 +299,7 @@ class MobileDashboardTest extends TestCase
 
         $this->actingAs($user)->get(route('admin.mobile.dashboard'))
             ->assertOk()->assertSee('Follow-ups hoje')
-            ->assertDontSee('Pedidos novos')->assertDontSee('Pendentes')->assertDontSee('Em processo')->assertDontSee('Novos este mês');
+            ->assertDontSee('Formulários novos')->assertDontSee('Pendentes')->assertDontSee('Em processo')->assertDontSee('Novos este mês');
     }
 
     public function test_so_proprias_conta_apenas_os_registos_do_utilizador(): void
@@ -201,10 +325,10 @@ class MobileDashboardTest extends TestCase
 
         $html = $this->actingAs($user)->get(route('admin.mobile.dashboard'))->assertOk()->getContent();
 
-        $this->assertSame(1, $this->valor($html, 'Novas'));
+        $this->assertSame(1, $this->topo($html, 'Leads novas'));
         $this->assertSame(1, $this->valor($html, 'A tratar'));
-        $this->assertSame(1, $this->valor($html, 'Follow-ups hoje'));
-        $this->assertSame(1, $this->valor($html, 'Pedidos novos'));
+        $this->assertSame(1, $this->topo($html, 'Follow-ups hoje'));
+        $this->assertSame(1, $this->topo($html, 'Formulários novos'));
         $this->assertSame(1, $this->valor($html, 'Pendentes'));
         $this->assertSame(0, $this->valor($html, 'Enviadas (a aguardar)'));
         $this->assertSame(1, $this->valor($html, 'Em processo'));
@@ -219,7 +343,7 @@ class MobileDashboardTest extends TestCase
         $this->convertida($meu);
         $this->convertida($this->cliente(['email' => 'o@example.com']));
 
-        $html = $this->actingAs($user)->get(route('admin.mobile.dashboard'))->assertOk()->assertDontSee('Novas')->getContent();
+        $html = $this->actingAs($user)->get(route('admin.mobile.dashboard'))->assertOk()->assertDontSee('Leads novas')->getContent();
 
         $this->assertSame(1, $this->valor($html, 'Em processo'));
     }
@@ -228,7 +352,7 @@ class MobileDashboardTest extends TestCase
     {
         config(['permissions.enforce' => true]);
         $this->lead();
-        $user = $this->userWith(['cost-simulators.view']);
+        $user = $this->userWith(['movements.view']);
 
         $this->actingAs($user)->get(route('admin.mobile.dashboard'))
             ->assertOk()->assertSee('Ainda não tem números para mostrar')
@@ -240,8 +364,8 @@ class MobileDashboardTest extends TestCase
         $user = $this->mobileUser();
         $html = $this->actingAs($user)->get(route('admin.mobile.dashboard'))->getContent();
 
-        preg_match_all('/<a href="([^"]+)" class="m-stat">/', $html, $m);
-        $this->assertCount(10, $m[1]);
+        preg_match_all('/<a href="([^"]+)" class="m-(?:stat|todo)(?: is-alert)?">/', $html, $m);
+        $this->assertCount(12, $m[1]); // 5 da faixa + 7 dos grupos (sem os duplicados)
         foreach (array_unique($m[1]) as $href) {
             $this->actingAs($user)->get(html_entity_decode($href))->assertOk();
         }

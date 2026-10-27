@@ -94,6 +94,21 @@
         .m-stat__icon { font-size: 1.3rem; color: #adb5bd; }
         .m-stat__label { font-size: 0.82rem; color: #6c757d; line-height: 1.2; }
 
+        /* Faixa "Para tratar" do início: cartões grandes, com realce quando há atraso. */
+        .m-todo {
+            display: flex; flex-direction: column; justify-content: space-between; gap: 4px; min-height: 104px; height: 100%;
+            padding: 14px; background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--admin-primary); color: inherit; text-decoration: none;
+        }
+        .m-todo:active { background: var(--admin-hover); }
+        .m-todo.is-alert { border-left-color: var(--admin-danger); }
+        .m-todo__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+        .m-todo__value { font-size: 2.4rem; line-height: 1; font-weight: 700; color: var(--admin-primary); }
+        .m-todo.is-alert .m-todo__value { color: var(--admin-danger); }
+        .m-todo__icon { font-size: 1.5rem; color: #adb5bd; }
+        .m-todo__label { font-size: 0.95rem; font-weight: 600; line-height: 1.2; }
+        .m-todo__detail { font-size: 0.8rem; font-weight: 600; color: var(--admin-danger); }
+
         .m-card {
             background: #fff;
             border-radius: var(--border-radius);
@@ -257,6 +272,11 @@
             @canroute('admin.mobile.cost-simulators.index')
             <a class="m-sheet-item" href="{{ route('admin.mobile.cost-simulators.index') }}">
                 <i class="bi bi-calculator"></i> Simulador de custos
+            </a>
+            @endcanroute
+            @canroute('admin.mobile.tasks.index')
+            <a class="m-sheet-item" href="{{ route('admin.mobile.tasks.index') }}">
+                <i class="bi bi-check2-square"></i> Tarefas
             </a>
             @endcanroute
             @canroute('admin.mobile.movements.index')

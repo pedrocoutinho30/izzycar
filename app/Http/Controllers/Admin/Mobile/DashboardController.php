@@ -10,6 +10,7 @@ class DashboardController extends Controller
     public function index(MobileDashboardService $dashboard)
     {
         return view('admin.mobile.dashboard', [
+            'paraTratar' => $dashboard->paraTratar(auth()->user()),
             'grupos' => $dashboard->grupos(auth()->user()),
         ]);
     }

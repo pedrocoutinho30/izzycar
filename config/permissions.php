@@ -124,7 +124,11 @@ return [
             'resources' => [
                 'legalizations' => ['label' => 'Legalizações', 'routes' => ['admin.legalizations.*']],
                 'vehicles' => ['label' => 'Viaturas', 'routes' => ['admin.v3.vehicles.*', 'admin.v2.vehicles.*']],
-                'tasks' => ['label' => 'Tarefas', 'routes' => ['admin.tasks.*']],
+                'tasks' => ['label' => 'Tarefas', 'routes' => ['admin.tasks.*',
+                    // Mobile: nomes explícitos. O objeto não tem âmbito "próprios" (como no desktop, quem pode
+                    // ver, vê todas); o controller verifica cada ação, com enforce ligado ou não.
+                    'admin.mobile.tasks.index', 'admin.mobile.tasks.create', 'admin.mobile.tasks.store',
+                    'admin.mobile.tasks.edit', 'admin.mobile.tasks.update', 'admin.mobile.tasks.complete']],
                 'movements' => ['label' => 'Movimentos', 'routes' => ['admin.v2.movements.*', 'admin.v2.expenses.*',
                     // Mobile: nomes explícitos (sem âmbito "próprios"; o controller verifica cada ação).
                     'admin.mobile.movements.index', 'admin.mobile.movements.show', 'admin.mobile.movements.create', 'admin.mobile.movements.store',

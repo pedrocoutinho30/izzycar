@@ -741,6 +741,14 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::get('/simulador-custos', [App\Http\Controllers\Admin\Mobile\CostSimulatorController::class, 'index'])->name('cost-simulators.index');
         Route::get('/simulador-custos/{id}', [App\Http\Controllers\Admin\Mobile\CostSimulatorController::class, 'show'])->name('cost-simulators.show')->whereNumber('id');
 
+        // Tarefas ("/tarefas/nova" tem de ficar antes de "/tarefas/{id}"). Sem calendário, anexos nem eliminar: ficam no desktop.
+        Route::get('/tarefas', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'index'])->name('tasks.index');
+        Route::get('/tarefas/nova', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tarefas', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'store'])->name('tasks.store');
+        Route::get('/tarefas/{id}/editar', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'edit'])->name('tasks.edit')->whereNumber('id');
+        Route::put('/tarefas/{id}', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'update'])->name('tasks.update')->whereNumber('id');
+        Route::post('/tarefas/{id}/concluir', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'complete'])->name('tasks.complete')->whereNumber('id');
+
         // Movimentos financeiros ("/movimentos/novo" tem de ficar antes de "/movimentos/{id}").
         // Os automáticos (venda, viatura, convertida) são só de consulta; exportações e comprovativos no desktop.
         Route::get('/movimentos', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'index'])->name('movements.index');
