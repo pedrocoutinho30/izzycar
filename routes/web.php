@@ -737,6 +737,10 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::get('/convertidas/{id}', [App\Http\Controllers\Admin\Mobile\ConvertedProposalController::class, 'show'])->name('converted-proposals.show')->whereNumber('id');
         Route::patch('/convertidas/{id}/estado', [App\Http\Controllers\Admin\Mobile\ConvertedProposalController::class, 'status'])->name('converted-proposals.status')->whereNumber('id');
 
+        // Simulador de custos: consulta das simulações feitas no site (eliminar no desktop).
+        Route::get('/simulador-custos', [App\Http\Controllers\Admin\Mobile\CostSimulatorController::class, 'index'])->name('cost-simulators.index');
+        Route::get('/simulador-custos/{id}', [App\Http\Controllers\Admin\Mobile\CostSimulatorController::class, 'show'])->name('cost-simulators.show')->whereNumber('id');
+
         // Oportunidades de um pedido (scopeBindings: a oportunidade tem de ser do pedido).
         Route::prefix('/formularios/{formProposal}/oportunidades')->name('form-proposals.opportunities.')->scopeBindings()->group(function () {
             Route::post('/', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'store'])->name('store');

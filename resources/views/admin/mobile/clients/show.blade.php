@@ -257,6 +257,35 @@
             </div>
         </div>
 
+        {{-- Simulações de custos (feitas no site): só a quem pode ver o simulador --}}
+        @if($canOpenSimulators)
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-simuladores" aria-expanded="false" aria-controls="sec-simuladores">
+                    <i class="bi bi-calculator me-2"></i> Simuladores
+                    <span class="badge bg-secondary rounded-pill ms-2">{{ $simulators->count() }}</span>
+                </button>
+            </h2>
+            <div id="sec-simuladores" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    @forelse($simulators as $sim)
+                        <div class="m-list-item position-relative">
+                            <div class="fw-semibold">{{ trim(($sim->brand ?? '') . ' ' . ($sim->model ?? '')) ?: 'Simulação' }}</div>
+                            <div class="small text-muted">
+                                {{ $sim->created_at->format('d/m/Y H:i') }}
+                                @if($sim->car_value) · Carro: {{ number_format($sim->car_value, 0, ',', '.') }} € @endif
+                                @if($sim->total_cost) · Total: {{ number_format($sim->total_cost, 0, ',', '.') }} € @endif
+                            </div>
+                            <a href="{{ route('admin.mobile.cost-simulators.show', $sim->id) }}" class="stretched-link" aria-label="Abrir simulação #{{ $sim->id }}"></a>
+                        </div>
+                    @empty
+                        <div class="text-muted small">Sem simulações.</div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+        @endif
+
         {{-- Carros em análise: consulta (criar, editar e ordenar no desktop) --}}
         <div class="accordion-item">
             <h2 class="accordion-header">

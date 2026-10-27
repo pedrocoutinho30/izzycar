@@ -245,13 +245,16 @@
             <div id="sec-simuladores" class="accordion-collapse collapse">
                 <div class="accordion-body">
                     @forelse($simulators as $sim)
-                        <div class="m-list-item">
+                        <div class="m-list-item position-relative">
                             <div class="fw-semibold">{{ trim(($sim->brand ?? '') . ' ' . ($sim->model ?? '')) ?: 'Simulação' }}</div>
                             <div class="small text-muted">
                                 {{ $sim->created_at->format('d/m/Y H:i') }}
                                 @if($sim->car_value) · Carro: {{ number_format($sim->car_value, 0, ',', '.') }} € @endif
                                 @if($sim->total_cost) · Total: {{ number_format($sim->total_cost, 0, ',', '.') }} € @endif
                             </div>
+                            @if($canOpenSimulators)
+                                <a href="{{ route('admin.mobile.cost-simulators.show', $sim->id) }}" class="stretched-link" aria-label="Abrir simulação #{{ $sim->id }}"></a>
+                            @endif
                         </div>
                     @empty
                         <div class="text-muted small">Sem simulações.</div>

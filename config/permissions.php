@@ -112,7 +112,9 @@ return [
                     'label' => 'Simulador de custos',
                     // As simulações são feitas no site.
                     'actions' => ['view' => [], 'delete' => []],
-                    'routes' => ['admin.v2.cost-simulators.*'],
+                    // Mobile: só consulta (index/show), nomes explícitos. O objeto não tem âmbito
+                    // "próprios": o controller exige "ver" registo a registo, com enforce ligado ou não.
+                    'routes' => ['admin.v2.cost-simulators.*', 'admin.mobile.cost-simulators.index', 'admin.mobile.cost-simulators.show'],
                 ],
             ],
         ],

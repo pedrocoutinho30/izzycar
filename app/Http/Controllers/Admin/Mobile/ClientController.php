@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Mobile;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\ConvertedProposal;
+use App\Models\CostSimulator;
 use App\Models\FormProposal;
 use App\Models\LeadActivity;
 use App\Models\Proposal;
@@ -70,6 +71,7 @@ class ClientController extends Controller
 
         $user = $request->user();
         $canUpdate = $this->canUpdate($request, $client);
+        $canOpenSimulators = $this->permissions->allows($user, 'cost-simulators', 'view');
 
         return view('admin.mobile.clients.show', [
             'client' => $client,
@@ -84,6 +86,9 @@ class ClientController extends Controller
             'canOpenProposals' => $this->permissions->allows($user, 'proposals', 'view', (new Proposal)->setRelation('client', $client)),
             'canCreateProposal' => $this->permissions->allows($user, 'proposals', 'create'),
             'canOpenConverted' => app(ConvertedProposalService::class)->canView($user, (new ConvertedProposal)->setRelation('client', $client)),
+            // Simulações de custos do cliente: sem âmbito "próprios", basta poder ver o objeto.
+            'simulators' => $canOpenSimulators ? CostSimulator::where('client_id', $client->id)->orderBy('created_at', 'desc')->get() : collect(),
+            'canOpenSimulators' => $canOpenSimulators,
         ]);
     }
 

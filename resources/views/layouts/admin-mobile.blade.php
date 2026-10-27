@@ -234,6 +234,11 @@
                 <i class="bi bi-arrow-repeat"></i> Convertidas
             </a>
             @endif
+            @canroute('admin.mobile.cost-simulators.index')
+            <a class="m-sheet-item" href="{{ route('admin.mobile.cost-simulators.index') }}">
+                <i class="bi bi-calculator"></i> Simulador de custos
+            </a>
+            @endcanroute
             <a class="m-sheet-item" href="{{ route('admin.v2.dashboard') }}">
                 <i class="bi bi-display"></i> Ir para a versão desktop
             </a>

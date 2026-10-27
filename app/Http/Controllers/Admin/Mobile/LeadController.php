@@ -80,6 +80,8 @@ class LeadController extends Controller
             'canCreateProposal' => $this->permissions->allows($request->user(), 'proposals', 'create'),
             // Convertidas: todas são deste cliente, o acesso confere-se uma vez.
             'canOpenConverted' => app(ConvertedProposalService::class)->canView($request->user(), (new ConvertedProposal)->setRelation('client', $lead)),
+            // Simulações: sem âmbito "próprios", basta poder ver o objeto.
+            'canOpenSimulators' => $this->permissions->allows($request->user(), 'cost-simulators', 'view'),
         ]);
     }
 
