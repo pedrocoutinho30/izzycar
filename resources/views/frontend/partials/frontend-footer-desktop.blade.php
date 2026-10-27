@@ -331,7 +331,7 @@
         transition: background .2s, transform .2s;
         white-space: nowrap;
     }
-    .nl-btn:hover { background: #7a0000; transform: translateY(-1px); }
+    .nl-btn:hover { background: #92642D; transform: translateY(-1px); }
     .nl-feedback { font-size: .82rem; margin-top: .5rem; width: 100%; }
     .nl-feedback.success { color: #4ade80; }
     .nl-feedback.error   { color: #f87171; }

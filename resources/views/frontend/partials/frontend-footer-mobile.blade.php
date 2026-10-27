@@ -302,6 +302,7 @@
         padding: .6rem 1.2rem; border-radius: var(--radius-sharp-sm); border: none; cursor: pointer;
         background: #B59151; color: white; font-weight: 700; font-size: .88rem;
     }
+    .nl-mobile-btn:hover, .nl-mobile-btn:active { background: #92642D; }
     .nl-mobile-feedback { font-size: .8rem; margin-top: .5rem; }
     .nl-mobile-feedback.success { color: #4ade80; }
     .nl-mobile-feedback.error   { color: #f87171; }
