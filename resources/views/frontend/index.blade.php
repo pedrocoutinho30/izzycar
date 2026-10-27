@@ -541,7 +541,7 @@
 
     .hero-badge .material-symbols-outlined {
         font-size: 18px;
-        color: #cf1c1c;
+        color: #c9c9c9;
     }
 
     .hero-title {
@@ -681,7 +681,7 @@
 
     .services-section .section-badge {
         background: rgba(181,145,81,0.2);
-        color: #ff8080;
+        color: #B59151;
     }
 
     .service-bento {
@@ -751,7 +751,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: #ff8080;
+        color: #B59151;
         font-weight: 700;
         text-transform: uppercase;
         font-size: 0.85rem;
@@ -766,7 +766,7 @@
 
     .service-bento:hover .service-bento-link {
         gap: 12px;
-        color: #ff6060;
+        color: #D1B06F;
     }
 
     .road-divider {
@@ -789,13 +789,13 @@
         content: '';
         position: absolute;
         top: 0; bottom: 0; left: -28px; right: 0;
-        background-image: repeating-linear-gradient(90deg, rgba(255,128,128,0.4) 0 16px, transparent 16px 28px);
+        background-image: repeating-linear-gradient(90deg, rgba(181,145,81,0.45) 0 16px, transparent 16px 28px);
         animation: roadMove 0.2s linear infinite;
     }
     .road-divider-car {
         position: relative;
         z-index: 1;
-        color: #ff8080;
+        color: #B59151;
         background: #161616;
         padding: 0 6px;
         animation: roadDrive 3.5s ease-in-out infinite;
