@@ -8,8 +8,11 @@ namespace App\Support;
  * ficam como estão, para a validação os recusar.
  *
  * Regra: com '.' e ',' ao mesmo tempo, '.' é milhares e ',' decimal; só com uma
- * vírgula, é decimal; com um só ponto mantém-se (é o formato que a BD devolve);
- * com vários pontos, são milhares.
+ * vírgula, é decimal; com vários pontos, são milhares. Com um só ponto, "N.NNN"
+ * (1 a 3 dígitos, não zero, antes do ponto e exactamente 3 depois) é milhares
+ * ("20.000" = 20000, nunca 20.0); nos restantes casos ("1.5", "20000.00", "0.125")
+ * mantém-se decimal. Quem pré-preenche campos com valores da BD deve usar a
+ * vírgula como separador decimal, para nunca produzir "N.NNN".
  */
 final class DecimalInput
 {
@@ -31,6 +34,9 @@ final class DecimalInput
             $limpo = str_replace(',', '.', $limpo);
         } elseif (substr_count($limpo, '.') > 1 && ! str_contains($limpo, ',')) {
             // "1.200.500": vários pontos só podem ser milhares.
+            $limpo = str_replace('.', '', $limpo);
+        } elseif (preg_match('/^[1-9]\d{0,2}\.\d{3}$/', $limpo) === 1) {
+            // "20.000": um ponto seguido de três dígitos é milhares.
             $limpo = str_replace('.', '', $limpo);
         }
 

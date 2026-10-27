@@ -13,6 +13,13 @@
         default => route('admin.mobile.proposals.index'),
     };
     $valor = fn (string $campo) => old($campo, $proposal->{$campo} ?? null);
+    // Dinheiro com a vírgula como separador decimal ("1,500", "20000,00"): nunca fica no
+    // formato "N.NNN", que o DecimalInput leria como milhares.
+    $dinheiro = function (string $campo) use ($valor) {
+        $v = $valor($campo);
+
+        return is_numeric($v) ? str_replace('.', ',', (string) $v) : $v;
+    };
     $links = old('other_links', json_decode((string) ($proposal->other_links ?? ''), true) ?: []);
     $links = array_pad(array_slice(array_values((array) $links), 0, 5), 3, null);
     $custos = [
@@ -105,7 +112,7 @@
                         </div>
                         <div>
                             <label class="form-label fw-semibold" for="mp-value">Valor do carro (€)</label>
-                            <input type="text" id="mp-value" name="proposed_car_value" value="{{ $valor('proposed_car_value') }}" class="form-control @error('proposed_car_value') is-invalid @enderror" inputmode="decimal" autocomplete="off">
+                            <input type="text" id="mp-value" name="proposed_car_value" value="{{ $dinheiro('proposed_car_value') }}" class="form-control @error('proposed_car_value') is-invalid @enderror" inputmode="decimal" autocomplete="off">
                         </div>
                         <div>
                             <label class="form-label fw-semibold" for="mp-image">Foto</label>
@@ -132,7 +139,7 @@
                         @foreach($custos as $campo => [$rotulo, $obrigatorio])
                             <div>
                                 <label class="form-label fw-semibold" for="mp-{{ $campo }}">{{ $rotulo }} @if($obrigatorio)<span class="text-danger">*</span>@endif</label>
-                                <input type="text" id="mp-{{ $campo }}" name="{{ $campo }}" value="{{ $valor($campo) }}"
+                                <input type="text" id="mp-{{ $campo }}" name="{{ $campo }}" value="{{ $dinheiro($campo) }}"
                                        class="form-control @error($campo) is-invalid @enderror" inputmode="decimal" autocomplete="off" @required($obrigatorio)>
                             </div>
                         @endforeach

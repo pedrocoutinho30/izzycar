@@ -329,6 +329,19 @@ class MobileProposalsTest extends TestCase
         $this->assertNull($proposal->imt_cost);
     }
 
+    public function test_vinte_ponto_zero_zero_zero_e_vinte_mil_e_nao_vinte(): void
+    {
+        $lead = $this->lead();
+
+        $this->actingAs($this->mobileUser())->post(route('admin.mobile.proposals.store'), $this->payload($lead, [
+            'transport_cost' => '20.000', 'proposed_car_value' => '20.000',
+        ]))->assertSessionHasNoErrors();
+
+        $proposal = Proposal::firstOrFail();
+        $this->assertSame(20000.0, (float) $proposal->transport_cost);
+        $this->assertSame(20000.0, (float) $proposal->proposed_car_value);
+    }
+
     public function test_texto_invalido_num_valor_da_erro_de_validacao(): void
     {
         $lead = $this->lead();
