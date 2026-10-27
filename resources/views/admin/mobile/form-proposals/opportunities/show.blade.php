@@ -49,10 +49,10 @@
             <dt>VIN</dt><dd class="font-monospace text-break">{{ $opportunity->vin ?: '—' }}</dd>
         </dl>
 
-        @if($opportunity->listing_url || $sellerContact?->whatsapp_digits || $sellerContact?->phone_normalized || $sellerContact?->email)
+        @if(\App\Support\SafeUrl::isHttp($opportunity->listing_url) || $sellerContact?->whatsapp_digits || $sellerContact?->phone_normalized || $sellerContact?->email)
             <div class="m-contact-actions">
-                @if($opportunity->listing_url)
-                    <a href="{{ $opportunity->listing_url }}" target="_blank" rel="noopener" class="btn btn-outline-secondary" aria-label="Ver anúncio"><i class="bi bi-box-arrow-up-right"></i></a>
+                @if(\App\Support\SafeUrl::isHttp($opportunity->listing_url))
+                    <a href="{{ trim($opportunity->listing_url) }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary" aria-label="Ver anúncio"><i class="bi bi-box-arrow-up-right"></i></a>
                 @endif
                 @if($sellerContact?->whatsapp_digits)
                     <a href="https://wa.me/{{ $sellerContact->whatsapp_digits }}" target="_blank" rel="noopener" class="btn btn-outline-success" aria-label="WhatsApp do vendedor"><i class="bi bi-whatsapp"></i></a>

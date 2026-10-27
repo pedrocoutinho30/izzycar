@@ -110,6 +110,25 @@ class MobileFormProposalsTest extends TestCase
             ->assertDontSee('<table', false);
     }
 
+    public function test_links_do_anuncio_so_sao_ligacoes_se_forem_http_ou_https(): void
+    {
+        $request = $this->siteRequest(['ad_links' => "javascript:alert(1)\n  JAVASCRIPT:alert(2)\nhttps://anuncio.example/seguro"]);
+        $opportunity = $this->opportunity($request, ['listing_url' => 'javascript:alert(3)']);
+
+        $response = $this->actingAs($this->mobileUser())->get(route('admin.mobile.form-proposals.show', $request->id))->assertOk();
+
+        $response->assertSee('href="https://anuncio.example/seguro"', false)
+            ->assertSee('rel="noopener noreferrer"', false)
+            ->assertSee('javascript:alert(1)', false) // visível como texto escapado, sem ser ligação
+            ->assertDontSee('href="javascript:', false)
+            ->assertDontSee('href="JAVASCRIPT:', false);
+
+        $this->actingAs($this->mobileUser())
+            ->get(route('admin.mobile.form-proposals.opportunities.show', [$request->id, $opportunity->id]))
+            ->assertOk()
+            ->assertDontSee('href="javascript:', false);
+    }
+
     public function test_lista_filtra_por_estado_e_pesquisa(): void
     {
         $this->siteRequest(['name' => 'Ana Nova', 'brand' => 'Volvo', 'model' => 'XC40', 'status' => 'novo']);

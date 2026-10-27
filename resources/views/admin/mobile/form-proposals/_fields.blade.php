@@ -93,9 +93,14 @@
         <div class="fw-semibold mb-2"><i class="bi bi-link-45deg me-1"></i> Anúncio identificado</div>
         <div class="d-grid gap-2">
             @foreach($links as $link)
-                <a href="{{ $link }}" target="_blank" rel="noopener" class="btn btn-outline-primary text-start text-break">
-                    <i class="bi bi-box-arrow-up-right me-1"></i> {{ $link }}
-                </a>
+                {{-- ad_links é texto livre do formulário público: só http(s) vira ligação. --}}
+                @if(\App\Support\SafeUrl::isHttp($link))
+                    <a href="{{ trim($link) }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary text-start text-break">
+                        <i class="bi bi-box-arrow-up-right me-1"></i> {{ $link }}
+                    </a>
+                @else
+                    <div class="text-break text-muted small px-1">{{ $link }}</div>
+                @endif
             @endforeach
         </div>
     </div>
