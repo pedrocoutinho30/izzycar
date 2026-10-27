@@ -1,6 +1,6 @@
 @php use Illuminate\Support\Str; @endphp
 
-<div class="row g-4 align-items-start">
+<div class="row g-4">{{-- sem align-items-start: a coluna dos filtros tem de ter a altura da lista para o sticky ter por onde andar --}}
 
     {{-- Sidebar de filtros --}}
     <div class="col-lg-3">
