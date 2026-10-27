@@ -64,7 +64,7 @@ class ClientController extends Controller
             'convertedProposals' => fn ($q) => $q->latest(),
             'carCandidates',
             'vehicles.legalization',
-            'sale.v3Vehicle',
+            'sale.v3Vehicle.legalization',
             'owner',
         ]);
 
@@ -100,23 +100,26 @@ class ClientController extends Controller
 
         $data = $request->validate($this->clients->rules());
 
-        if ($erro = $this->emailTaken($data)) {
+        if ($erro = $this->emailTaken($request, $data)) {
             return back()->withInput()->withErrors(['email' => $erro]);
         }
 
         // Mesmo aviso de duplicados do desktop (aqui só pode ser o telefone), confirmável.
         if ($warning = $this->clients->duplicateWarning($data, $request->boolean('confirm_duplicate'))) {
-            return back()->withInput()->withErrors(['duplicate' => $warning['message']]);
+            $mensagem = $this->ownScope($request) ? 'Já existe um registo com este telefone.' : $warning['message'];
+
+            return back()->withInput()->withErrors(['duplicate' => $mensagem]);
         }
 
-        // Quem só vê os seus clientes fica dono do que cria (senão deixava de o ver).
+        // Como no desktop e nas leads, o dono fica por atribuir.
         $client = $this->clients->create($data);
-        if ($this->permissions->scope($request->user(), 'clients', 'view') === 'own') {
-            $client->forceFill(['owner_id' => $request->user()->getKey()])->save();
-        }
 
-        return redirect()->route('admin.mobile.clients.show', $client->id)
-            ->with('success', 'Cliente criado com sucesso!');
+        // Quem só vê os seus clientes pode não poder abrir o que acabou de criar: vai para a lista.
+        $destino = $this->permissions->allows($request->user(), 'clients', 'view', $client)
+            ? route('admin.mobile.clients.show', $client->id)
+            : route('admin.mobile.clients.index');
+
+        return redirect($destino)->with('success', 'Cliente criado com sucesso!');
     }
 
     public function edit(Request $request, $id)
@@ -137,7 +140,7 @@ class ClientController extends Controller
 
         $data = $request->validate($this->clients->rules());
 
-        if ($erro = $this->emailTaken($data, $client->id)) {
+        if ($erro = $this->emailTaken($request, $data, $client->id)) {
             return back()->withInput()->withErrors(['email' => $erro]);
         }
 
@@ -180,11 +183,22 @@ class ClientController extends Controller
     }
 
     /** clients.email é único na BD: no mobile, um email repetido é um erro de validação (nunca um 500). */
-    private function emailTaken(array $data, ?int $ignoreId = null): ?string
+    private function emailTaken(Request $request, array $data, ?int $ignoreId = null): ?string
     {
         $existente = $this->clients->emailOwner($data['email'] ?? null, $ignoreId);
+        if (!$existente) {
+            return null;
+        }
 
-        return $existente ? "Já existe «{$existente->name}» com o mesmo email." : null;
+        // Quem só vê os seus clientes não fica a saber o nome de um cliente alheio.
+        return $this->ownScope($request)
+            ? 'Já existe um registo com este email.'
+            : "Já existe «{$existente->name}» com o mesmo email.";
+    }
+
+    private function ownScope(Request $request): bool
+    {
+        return $this->permissions->scope($request->user(), 'clients', 'view') === 'own';
     }
 
     private function canCreate(Request $request): bool

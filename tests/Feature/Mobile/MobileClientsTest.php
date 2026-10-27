@@ -339,7 +339,7 @@ class MobileClientsTest extends TestCase
         $this->actingAs($user)->get(route('admin.mobile.clients.index'))->assertOk()->assertDontSee('Alheio');
     }
 
-    public function test_criar_com_ver_proprios_fica_dono_do_cliente(): void
+    public function test_criar_com_ver_proprios_nao_atribui_dono_e_volta_a_lista(): void
     {
         config(['permissions.enforce' => true]);
         $user = $this->userWith(['clients.view.own', 'clients.create']);
@@ -348,11 +348,44 @@ class MobileClientsTest extends TestCase
             ->assertSee('href="' . route('admin.mobile.clients.create') . '"', false);
 
         $this->actingAs($user)->post(route('admin.mobile.clients.store'), ['name' => 'Novo', 'owner_id' => $this->backofficeUser('cms')->id])
-            ->assertSessionHasNoErrors();
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('admin.mobile.clients.index'))
+            ->assertSessionHas('success', 'Cliente criado com sucesso!');
 
         $client = Client::sole();
-        $this->assertSame($user->id, $client->owner_id);
-        $this->actingAs($user)->get(route('admin.mobile.clients.show', $client->id))->assertOk();
+        $this->assertNull($client->owner_id);
+        $this->assertNull($client->angariador_code);
+    }
+
+    public function test_criar_com_ver_todos_vai_para_a_ficha(): void
+    {
+        $user = $this->userWith(['clients.view.all', 'clients.create']);
+
+        $this->actingAs($user)->post(route('admin.mobile.clients.store'), ['name' => 'Novo'])
+            ->assertRedirect(route('admin.mobile.clients.show', Client::sole()->id));
+    }
+
+    public function test_duplicados_com_ver_proprios_usam_mensagem_neutra(): void
+    {
+        $this->cliente(['name' => 'Segredo Alheio', 'email' => 'dup@example.com', 'phone' => '911000111']);
+        $user = $this->userWith(['clients.view.own', 'clients.create', 'clients.update.own']);
+
+        $this->actingAs($user)->post(route('admin.mobile.clients.store'), ['name' => 'Nova', 'email' => 'dup@example.com'])
+            ->assertSessionHasErrors(['email' => 'Já existe um registo com este email.']);
+        $this->actingAs($user)->post(route('admin.mobile.clients.store'), ['name' => 'Nova', 'phone' => '911000111'])
+            ->assertSessionHasErrors(['duplicate' => 'Já existe um registo com este telefone.']);
+        $this->assertSame(1, Client::count());
+    }
+
+    public function test_duplicados_com_ver_todos_mantem_o_nome(): void
+    {
+        $this->cliente(['name' => 'Visivel', 'email' => 'dup@example.com', 'phone' => '911000111']);
+        $user = $this->userWith(['clients.view.all', 'clients.create']);
+
+        $this->actingAs($user)->post(route('admin.mobile.clients.store'), ['name' => 'Nova', 'email' => 'dup@example.com'])
+            ->assertSessionHasErrors(['email' => 'Já existe «Visivel» com o mesmo email.']);
+        $this->actingAs($user)->post(route('admin.mobile.clients.store'), ['name' => 'Nova', 'phone' => '911000111'])
+            ->assertSessionHasErrors(['duplicate' => 'Já existe «Visivel» com o mesmo telefone.']);
     }
 
     public function test_nomes_de_cliente_nas_cotacoes_ligam_a_ficha_mobile(): void
