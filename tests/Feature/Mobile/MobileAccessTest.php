@@ -43,6 +43,15 @@ class MobileAccessTest extends TestCase
         $this->actingAs($this->mobileUser())->get(route('admin.mobile.dashboard'))->assertOk();
     }
 
+    public function test_o_ecra_mobile_declara_manifest_e_metadados_pwa(): void
+    {
+        $this->actingAs($this->mobileUser())->get(route('admin.mobile.dashboard'))
+            ->assertOk()
+            ->assertSee('rel="manifest" href="' . asset('mobile-manifest.json') . '"', false)
+            ->assertSee('apple-mobile-web-app-title" content="IzzyCar Gestão"', false)
+            ->assertSee('rel="apple-touch-icon" href="' . asset('img/mobile/icon-180.png') . '"', false);
+    }
+
     public function test_utilizador_sem_permissao_vai_para_o_desktop_com_mensagem_e_sem_ciclo(): void
     {
         $user = $this->mobileUser(false);

@@ -11,8 +11,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="IzzyCar">
-    <link rel="apple-touch-icon" href="{{ asset('img/logo-arredondado.png') }}">
+    <meta name="apple-mobile-web-app-title" content="IzzyCar Gestão">
+    <link rel="apple-touch-icon" href="{{ asset('img/mobile/icon-180.png') }}">
+    <link rel="manifest" href="{{ asset('mobile-manifest.json') }}">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css">
