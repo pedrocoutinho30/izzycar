@@ -73,9 +73,9 @@
             box-shadow: var(--shadow-md);
         }
         .m-topbar h1 { flex: 1; min-width: 0; margin: 0; font-size: 1.05rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        /* Logo à esquerda; o título da página fica ao lado. O PNG tem margem transparente: recorta-se por CSS (logo-transparente.png: dourado legível sobre o vinho). */
-        .m-topbar-logo { flex-shrink: 0; display: block; width: 40px; height: 40px; overflow: hidden; position: relative; }
-        .m-topbar-logo img { position: absolute; height: 54px; width: auto; max-width: none; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+        /* Logo redondo (só o círculo com o J) à esquerda; o título da página fica ao lado. Ficheiro próprio, já recortado, dourado legível sobre o vinho. */
+        .m-topbar-logo { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; }
+        .m-topbar-logo img { display: block; width: 44px; height: 44px; max-width: none; }
         .m-topbar a, .m-topbar button { color: #fff; }
 
         .m-content { padding: 14px 12px; }
@@ -201,7 +201,7 @@
 <body>
     <header class="m-topbar">
         <a href="{{ route('admin.mobile.dashboard') }}" class="m-topbar-logo">
-            <img src="{{ asset('img/logo-transparente.png') }}" alt="IzzyCar - ir para o início">
+            <img src="{{ asset('img/mobile/logo-redondo.png') }}" alt="IzzyCar - ir para o início" width="44" height="44">
         </a>
         <h1>@yield('title', 'IzzyCar')</h1>
         @yield('header_actions')

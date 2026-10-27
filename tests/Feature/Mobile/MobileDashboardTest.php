@@ -125,7 +125,7 @@ class MobileDashboardTest extends TestCase
     public function test_logo_no_topo_do_inicio_e_de_outra_pagina_ligado_ao_inicio(): void
     {
         $user = $this->mobileUser();
-        $logo = 'src="' . asset('img/logo-transparente.png') . '"';
+        $logo = 'src="' . asset('img/mobile/logo-redondo.png') . '"';
         $link = 'href="' . route('admin.mobile.dashboard') . '" class="m-topbar-logo"';
 
         $this->actingAs($user)->get(route('admin.mobile.dashboard'))
