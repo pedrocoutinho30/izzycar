@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\SetPasswordMail;
 use App\Models\AuditLog;
 use App\Models\User;
+use App\Permissions\PermissionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
@@ -63,7 +64,10 @@ class UserV2Controller extends Controller
     public function create()
     {
         $roles = Role::orderBy('name')->get();
-        return view('admin.v2.users.form', compact('roles'));
+        $canManageMobile = (bool) auth()->user()
+            && app(PermissionService::class)->allows(auth()->user(), 'users', 'update');
+
+        return view('admin.v2.users.form', compact('roles', 'canManageMobile'));
     }
 
     public function store(Request $request)
@@ -101,6 +105,7 @@ class UserV2Controller extends Controller
 
         $user->syncRoles($validated['roles']);
         AuditLog::record('user_roles_updated', "Perfis de {$user->name} {$user->last_name}: " . implode(', ', $validated['roles']), $user, ['roles' => []], ['roles' => array_values($validated['roles'])]);
+        $this->syncMobileAccess($user, $request);
 
         $this->sendSetPasswordEmail($user);
 
@@ -167,11 +172,51 @@ class UserV2Controller extends Controller
         }
     }
 
+    /** Só quem gere utilizadores altera o acesso mobile, e nunca o próprio (exceto admin). */
+    private function canManageMobileAccess(User $target): bool
+    {
+        $actor = auth()->user();
+        $permissions = app(PermissionService::class);
+
+        if (!$actor || !$permissions->allows($actor, 'users', 'update')) {
+            return false;
+        }
+
+        return $actor->id !== $target->id || $permissions->isAdmin($actor);
+    }
+
+    /** Grava o acesso mobile (se o ator puder) e regista auditoria quando o valor muda. */
+    private function syncMobileAccess(User $user, Request $request): void
+    {
+        if (!$this->canManageMobileAccess($user)) {
+            return;
+        }
+
+        $old = (bool) $user->access_mobile;
+        $new = $request->boolean('access_mobile');
+
+        if ($old === $new) {
+            return;
+        }
+
+        $user->forceFill(['access_mobile' => $new])->save();
+
+        AuditLog::record(
+            'user_mobile_access_updated',
+            "Acesso mobile de {$user->name} {$user->last_name}: " . ($old ? 'sim' : 'não') . ' → ' . ($new ? 'sim' : 'não'),
+            $user,
+            ['access_mobile' => $old],
+            ['access_mobile' => $new]
+        );
+    }
+
     public function edit($id)
     {
         $user = User::with('roles')->findOrFail($id);
         $roles = Role::orderBy('name')->get();
-        return view('admin.v2.users.form', compact('user', 'roles'));
+        $canManageMobile = $this->canManageMobileAccess($user);
+
+        return view('admin.v2.users.form', compact('user', 'roles', 'canManageMobile'));
     }
 
     public function update(Request $request, $id)
@@ -212,6 +257,7 @@ class UserV2Controller extends Controller
 
         $user->save();
         $user->syncRoles($validated['roles']);
+        $this->syncMobileAccess($user, $request);
 
         $newRoles = collect($validated['roles'])->sort()->values()->all();
         if ($oldRoles !== $newRoles) {
