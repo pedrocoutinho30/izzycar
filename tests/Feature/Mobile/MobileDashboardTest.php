@@ -209,6 +209,84 @@ class MobileDashboardTest extends TestCase
         $this->assertStringContainsString(route('admin.mobile.cost-simulators.index'), html_entity_decode($html));
     }
 
+    /** Segue a ligação do cartão e devolve o HTML da lista. */
+    private function listaDoCartao(User $user, string $html, string $rotulo): string
+    {
+        $ok = preg_match('/<a href="([^"]+)" class="m-(?:stat|todo)(?: is-alert)?">(?:(?!<\/a>).)*?' . preg_quote($rotulo, '/') . '/s', $html, $m);
+        $this->assertSame(1, $ok, "Ligação do cartão '{$rotulo}' não encontrada");
+
+        return $this->actingAs($user)->get(html_entity_decode($m[1]))->assertOk()->getContent();
+    }
+
+    private function montarFollowups(?User $dono, ?User $outro): void
+    {
+        foreach ([[now()->setTime(8, 0), 2], [now()->subDay()->setTime(23, 59), 3], [now()->addDay()->setTime(0, 0), 1]] as [$quando, $n]) {
+            for ($i = 0; $i < $n; $i++) {
+                $this->lead(['name' => 'Minha', 'owner_id' => $dono?->id, 'next_followup_at' => $quando]);
+            }
+        }
+        $this->lead(['name' => 'Alheia', 'owner_id' => $outro?->id, 'next_followup_at' => now()->setTime(9, 0)]);
+        $this->lead(['name' => 'Alheia', 'owner_id' => $outro?->id, 'next_followup_at' => now()->subDays(3)]);
+        $this->lead(['name' => 'Alheia', 'owner_id' => $outro?->id, 'lead_status' => 'perdida', 'next_followup_at' => now()->subDays(2)]);
+    }
+
+    public function test_cartoes_de_followups_e_simulacoes_abrem_listas_com_o_mesmo_numero_para_admin(): void
+    {
+        $admin = $this->mobileUser();
+        $this->montarFollowups($admin, null);
+        $this->simulacao(false);
+        $this->simulacao(false);
+        $this->simulacao(true);
+
+        $html = $this->actingAs($admin)->get(route('admin.mobile.dashboard'))->assertOk()->getContent();
+
+        $hoje = $this->topo($html, 'Follow-ups hoje');
+        $this->assertSame(3, $hoje);
+        $this->assertSame($hoje, substr_count($this->listaDoCartao($admin, $html, 'Follow-ups hoje'), 'm-lead-card"'));
+
+        $atraso = $this->valor($html, 'Follow-ups em atraso');
+        $this->assertSame(5, $atraso);
+        $this->assertSame($atraso, substr_count($this->listaDoCartao($admin, $html, 'Follow-ups em atraso'), 'm-lead-card"'));
+
+        $novas = $this->topo($html, 'Simulações novas');
+        $this->assertSame(2, $novas);
+        $this->assertSame($novas, substr_count($this->listaDoCartao($admin, $html, 'Simulações novas'), 'm-lead-card"'));
+    }
+
+    public function test_cartoes_de_followups_abrem_listas_com_o_mesmo_numero_para_quem_so_ve_as_suas(): void
+    {
+        config(['permissions.enforce' => true]);
+        $user = $this->userWith(['leads.view.own']);
+        $outro = $this->backofficeUser('admin', ['email' => 'outro@example.com']);
+        $this->montarFollowups($user, $outro);
+
+        $html = $this->actingAs($user)->get(route('admin.mobile.dashboard'))->assertOk()->getContent();
+
+        $this->assertSame(2, $this->topo($html, 'Follow-ups hoje'));
+        $lista = $this->listaDoCartao($user, $html, 'Follow-ups hoje');
+        $this->assertSame(2, substr_count($lista, 'm-lead-card"'));
+        $this->assertStringNotContainsString('Alheia', $lista);
+
+        $this->assertSame(3, $this->valor($html, 'Follow-ups em atraso'));
+        $lista = $this->listaDoCartao($user, $html, 'Follow-ups em atraso');
+        $this->assertSame(3, substr_count($lista, 'm-lead-card"'));
+        $this->assertStringNotContainsString('Alheia', $lista);
+    }
+
+    public function test_filtros_de_followup_e_nao_lidas_ignoram_valores_invalidos_ou_em_array(): void
+    {
+        $admin = $this->mobileUser();
+        $this->montarFollowups($admin, null);
+        $this->simulacao(true);
+
+        $this->actingAs($admin)->get(route('admin.mobile.leads.index', ['followup' => ['hoje']]))->assertOk();
+        $this->actingAs($admin)->get(route('admin.mobile.leads.index', ['followup' => 'xpto']))->assertOk();
+        $this->actingAs($admin)->get(route('admin.mobile.cost-simulators.index', ['nao_lidas' => ['1']]))->assertOk()->assertSee('Cliente');
+        // Combina com a pesquisa: só as de hoje com este nome.
+        $this->assertSame(1, substr_count($this->actingAs($admin)->get(route('admin.mobile.leads.index', ['followup' => 'hoje', 'search' => 'Alheia']))->getContent(), 'm-lead-card"'));
+        $this->assertSame(2, substr_count($this->actingAs($admin)->get(route('admin.mobile.leads.index', ['followup' => 'hoje', 'search' => 'Minha']))->getContent(), 'm-lead-card"'));
+    }
+
     public function test_simulacoes_novas_usam_a_mesma_definicao_da_lista(): void
     {
         $this->simulacao(true);

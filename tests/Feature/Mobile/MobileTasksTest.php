@@ -281,6 +281,21 @@ class MobileTasksTest extends TestCase
         $task->refresh();
         $this->assertSame('Do outro', $task->title);
         $this->assertSame('pendente', $task->status);
+        $this->assertSame(1, Task::count()); // o POST de criação não escreveu nada
+    }
+
+    public function test_so_as_abertas_se_concluem_uma_cancelada_fica_como_esta(): void
+    {
+        $admin = $this->mobileUser();
+        $cancelada = $this->tarefa(['status' => 'cancelada']);
+
+        $this->actingAs($admin)->post(route('admin.mobile.tasks.complete', $cancelada->id))
+            ->assertRedirect()->assertSessionHas('info', 'Esta tarefa já não está aberta.');
+        $this->assertSame('cancelada', $cancelada->fresh()->status);
+
+        $aberta = $this->tarefa(['status' => 'em_progresso']);
+        $this->actingAs($admin)->post(route('admin.mobile.tasks.complete', $aberta->id))->assertSessionHas('success', 'Tarefa concluída.');
+        $this->assertSame('concluida', $aberta->fresh()->status);
     }
 
     #[DataProvider('enforce')]

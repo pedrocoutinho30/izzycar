@@ -34,6 +34,19 @@ class LeadController extends Controller
             ->orderBy('created_at', 'desc')
             ->filtrarLeads($request->only(['search', 'lead_source', 'lead_status', 'owner_id']));
 
+        // Follow-up (cartões "Para tratar"): mesmas fronteiras da contagem do início. Só escalares.
+        $followup = $request->query('followup');
+        $followup = is_string($followup) && in_array($followup, ['hoje', 'atraso'], true) ? $followup : null;
+        if ($followup !== null) {
+            $hoje = now()->startOfDay();
+            if ($followup === 'hoje') {
+                $query->where('next_followup_at', '>=', $hoje->toDateTimeString())
+                    ->where('next_followup_at', '<', $hoje->copy()->addDay()->toDateTimeString());
+            } else {
+                $query->where('next_followup_at', '<', $hoje->toDateTimeString());
+            }
+        }
+
         $leads = $this->permissions->applyScope($query, $request->user(), 'leads')
             ->with('owner')
             ->paginate(15)
@@ -41,7 +54,7 @@ class LeadController extends Controller
 
         $canCreate = $this->permissions->allows($request->user(), 'leads', 'create');
 
-        return view('admin.mobile.leads.index', compact('leads', 'canCreate'));
+        return view('admin.mobile.leads.index', compact('leads', 'canCreate', 'followup'));
     }
 
     public function show(Request $request, $id)

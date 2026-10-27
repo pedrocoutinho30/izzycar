@@ -14,6 +14,9 @@
             @if($filterClientId)
                 <input type="hidden" name="client_id" value="{{ $filterClientId }}">
             @endif
+            @if($naoLidas)
+                <input type="hidden" name="nao_lidas" value="1">
+            @endif
             <div class="input-group">
                 <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
                 <input type="search" name="search" value="{{ $search }}" class="form-control"
@@ -21,15 +24,19 @@
             </div>
         </form>
 
+        <div class="m-chips" role="group" aria-label="Filtrar por leitura">
+            <a href="{{ route('admin.mobile.cost-simulators.index', array_filter(['search' => $search, 'client_id' => $filterClientId, 'nao_lidas' => $naoLidas ? null : 1], 'filled')) }}" class="m-chip {{ $naoLidas ? 'active' : '' }}">Novas</a>
+        </div>
+
         @if($filterClient)
             <div class="m-chips" role="group" aria-label="Filtro por cliente">
-                <a href="{{ route('admin.mobile.cost-simulators.index', array_filter(['search' => $search], 'filled')) }}" class="m-chip active">
+                <a href="{{ route('admin.mobile.cost-simulators.index', array_filter(['search' => $search, 'nao_lidas' => $naoLidas ? 1 : null], 'filled')) }}" class="m-chip active">
                     {{ $filterClient->name }} <i class="bi bi-x-lg ms-1"></i><span class="visually-hidden">Remover filtro</span>
                 </a>
             </div>
         @elseif($filterClientId)
             <div class="m-chips" role="group" aria-label="Filtro por cliente">
-                <a href="{{ route('admin.mobile.cost-simulators.index', array_filter(['search' => $search], 'filled')) }}" class="m-chip active">
+                <a href="{{ route('admin.mobile.cost-simulators.index', array_filter(['search' => $search, 'nao_lidas' => $naoLidas ? 1 : null], 'filled')) }}" class="m-chip active">
                     Cliente #{{ $filterClientId }} <i class="bi bi-x-lg ms-1"></i><span class="visually-hidden">Remover filtro</span>
                 </a>
             </div>

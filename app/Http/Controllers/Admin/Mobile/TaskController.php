@@ -142,6 +142,11 @@ class TaskController extends Controller
             return back()->with('info', 'A tarefa já estava concluída.');
         }
 
+        // Só as abertas se concluem: um POST forjado não reabre/converte uma cancelada.
+        if (!in_array($task->status, TaskService::STATUS_ABERTOS, true)) {
+            return back()->with('info', 'Esta tarefa já não está aberta.');
+        }
+
         $this->tasks->complete($task);
 
         return back()->with('success', 'Tarefa concluída.');

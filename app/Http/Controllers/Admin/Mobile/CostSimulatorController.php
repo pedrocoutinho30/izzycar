@@ -56,6 +56,13 @@ class CostSimulatorController extends Controller
             });
         }
 
+        // Só as novas (read = falso), como o cartão "Simulações novas" do início. Só escalares.
+        $naoLidas = $request->query('nao_lidas');
+        $naoLidas = is_scalar($naoLidas) && filter_var($naoLidas, FILTER_VALIDATE_BOOLEAN);
+        if ($naoLidas) {
+            $query->where('read', false);
+        }
+
         $costSimulators = $query->paginate(15)->withQueryString();
 
         // O nome só aparece se o cliente filtrado tiver simulações nos resultados;
@@ -69,6 +76,7 @@ class CostSimulatorController extends Controller
             'filterClientId' => $clientId,
             'filterClient' => $filterClient,
             'search' => $search,
+            'naoLidas' => $naoLidas,
         ]);
     }
 

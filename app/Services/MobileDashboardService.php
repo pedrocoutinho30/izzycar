@@ -41,7 +41,7 @@ class MobileDashboardService
         if ($this->permissions->scope($user, 'leads', 'view') !== null) {
             $n = $this->leadNumbers($user);
             $cartoes[] = ['rotulo' => 'Leads novas', 'valor' => (int) $n->novas, 'icone' => 'bi-person-plus', 'href' => route('admin.mobile.leads.index', ['lead_status' => 'nova'])];
-            $cartoes[] = ['rotulo' => 'Follow-ups hoje', 'valor' => (int) $n->hoje, 'icone' => 'bi-alarm', 'href' => route('admin.mobile.leads.index')];
+            $cartoes[] = ['rotulo' => 'Follow-ups hoje', 'valor' => (int) $n->hoje, 'icone' => 'bi-alarm', 'href' => route('admin.mobile.leads.index', ['followup' => 'hoje'])];
         }
 
         if ($this->permissions->scope($user, 'form-proposals', 'view') !== null) {
@@ -52,7 +52,7 @@ class MobileDashboardService
         if ($this->permissions->allows($user, 'cost-simulators', 'view')) {
             // "Nova" é a definição da lista mobile (badge) e do desktop ("Não Lidos"): read = falso. Sem âmbito "próprios".
             $novas = CostSimulator::query()->where('read', false)->count();
-            $cartoes[] = ['rotulo' => 'Simulações novas', 'valor' => $novas, 'icone' => 'bi-calculator', 'href' => route('admin.mobile.cost-simulators.index')];
+            $cartoes[] = ['rotulo' => 'Simulações novas', 'valor' => $novas, 'icone' => 'bi-calculator', 'href' => route('admin.mobile.cost-simulators.index', ['nao_lidas' => 1])];
         }
 
         if ($this->permissions->allows($user, 'tasks', 'view')) {
@@ -145,7 +145,7 @@ class MobileDashboardService
             'cartoes' => [
                 // Sem filtro "exceto frias/perdidas" na lista: abre a lista completa.
                 ['rotulo' => 'A tratar', 'valor' => (int) $n->a_tratar, 'icone' => 'bi-telephone', 'href' => $lista],
-                ['rotulo' => 'Follow-ups em atraso', 'valor' => (int) $n->atraso, 'icone' => 'bi-exclamation-circle', 'href' => $lista, 'alerta' => true],
+                ['rotulo' => 'Follow-ups em atraso', 'valor' => (int) $n->atraso, 'icone' => 'bi-exclamation-circle', 'href' => route('admin.mobile.leads.index', ['followup' => 'atraso']), 'alerta' => true],
             ],
         ];
     }

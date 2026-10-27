@@ -7,10 +7,16 @@
 @section('content')
     @php
         $estadoAtual = request('lead_status');
-        // Os chips mantêm a pesquisa e trocam só o estado.
+        // Os chips mantêm a pesquisa e o outro filtro e trocam só o seu.
         $chipUrl = fn (?string $estado) => route('admin.mobile.leads.index', array_filter([
             'search' => request('search'),
             'lead_status' => $estado,
+            'followup' => $followup,
+        ], 'filled'));
+        $followupUrl = fn (?string $valor) => route('admin.mobile.leads.index', array_filter([
+            'search' => request('search'),
+            'lead_status' => $estadoAtual,
+            'followup' => $valor,
         ], 'filled'));
     @endphp
 
@@ -18,6 +24,9 @@
         <form method="GET" action="{{ route('admin.mobile.leads.index') }}" role="search">
             @if($estadoAtual)
                 <input type="hidden" name="lead_status" value="{{ $estadoAtual }}">
+            @endif
+            @if($followup)
+                <input type="hidden" name="followup" value="{{ $followup }}">
             @endif
             <div class="input-group">
                 <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
@@ -31,6 +40,11 @@
             @foreach(\App\Enums\LeadStatus::cases() as $estado)
                 <a href="{{ $chipUrl($estado->value) }}" class="m-chip {{ $estadoAtual === $estado->value ? 'active' : '' }}">{{ $estado->label() }}</a>
             @endforeach
+        </div>
+
+        <div class="m-chips" role="group" aria-label="Filtrar por follow-up">
+            <a href="{{ $followupUrl($followup === 'hoje' ? null : 'hoje') }}" class="m-chip {{ $followup === 'hoje' ? 'active' : '' }}">Follow-up hoje</a>
+            <a href="{{ $followupUrl($followup === 'atraso' ? null : 'atraso') }}" class="m-chip {{ $followup === 'atraso' ? 'active' : '' }}">Follow-up em atraso</a>
         </div>
     </div>
 
