@@ -690,11 +690,17 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     Route::prefix('mobile')->name('admin.mobile.')->middleware('mobile.access')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\Mobile\DashboardController::class, 'index'])->name('dashboard');
 
-        // Leads (as ações de criar/converter/follow-up/atividade/dono/eliminar chegam a seguir;
-        // "/leads/nova" tem de ficar antes de "/leads/{id}").
+        // Leads ("/leads/nova" tem de ficar antes de "/leads/{id}").
         Route::get('/leads', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'index'])->name('leads.index');
+        Route::get('/leads/nova', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'create'])->name('leads.create');
+        Route::post('/leads', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'store'])->name('leads.store');
         Route::get('/leads/{id}', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'show'])->name('leads.show')->whereNumber('id');
         Route::post('/leads/{id}/estado', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'status'])->name('leads.status')->whereNumber('id');
+        Route::post('/leads/{id}/converter', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'convert'])->name('leads.convert')->whereNumber('id');
+        Route::post('/leads/{id}/followup', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'followup'])->name('leads.followup')->whereNumber('id');
+        Route::post('/leads/{id}/atividade', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'activity'])->name('leads.activity')->whereNumber('id');
+        Route::post('/leads/{id}/dono', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'owner'])->name('leads.owner')->whereNumber('id');
+        Route::delete('/leads/{id}', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'destroy'])->name('leads.destroy')->whereNumber('id');
     });
 
     // ============================================================

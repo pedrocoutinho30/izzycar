@@ -9,6 +9,12 @@
 @endsection
 
 @section('content')
+    @if($errors->any())
+        <div class="alert alert-danger">
+            @foreach($errors->all() as $erro)<div>{{ $erro }}</div>@endforeach
+        </div>
+    @endif
+
     @php
         $rota = fn (string $nome) => \Illuminate\Support\Facades\Route::has($nome);
         $estado = \App\Enums\LeadStatus::tryFrom($lead->lead_status ?? 'nova');
@@ -79,7 +85,7 @@
             </h2>
             <div id="sec-estado" class="accordion-collapse collapse">
                 <div class="accordion-body d-grid gap-2">
-                    @foreach($statuses as $valor)
+                    @foreach($canUpdate ? $statuses : [] as $valor)
                         @continue($valor === ($lead->lead_status ?? 'nova'))
                         @php $opcao = \App\Enums\LeadStatus::from($valor); @endphp
                         <form action="{{ route('admin.mobile.leads.status', $lead->id) }}" method="POST">
@@ -91,7 +97,7 @@
                         </form>
                     @endforeach
 
-                    <hr class="my-2">
+                    @if($canUpdate)<hr class="my-2">@endif
                     <div class="fw-semibold"><i class="bi bi-alarm me-1"></i> Próximo follow-up</div>
                     @if($followup)
                         <div class="{{ $followup->isPast() ? 'text-danger' : '' }}">
@@ -105,7 +111,7 @@
                         <div class="text-muted small">Sem follow-up agendado.</div>
                     @endif
 
-                    @if($rota('admin.mobile.leads.followup'))
+                    @if($canUpdate && $rota('admin.mobile.leads.followup'))
                         <form action="{{ route('admin.mobile.leads.followup', $lead->id) }}" method="POST" class="d-grid gap-2">
                             @csrf
                             <input type="datetime-local" name="next_followup_at" class="form-control" required
@@ -172,7 +178,7 @@
                             <span class="badge bg-{{ $proposalColors[$proposalStatus] ?? 'secondary' }}">{{ $proposalStatus }}</span>
                             @if($convertida)
                                 @if($rota('admin.mobile.converted-proposals.show'))
-                                    <a href="{{ route('admin.mobile.converted-proposals.show', $convertida->id) }}" class="badge bg-dark text-decoration-none">Convertida <i class="bi bi-arrow-right-short"></i></a>
+                                    <a href="{{ route('admin.mobile.converted-proposals.show', $convertida->id) }}" class="badge bg-dark text-decoration-none d-inline-flex align-items-center justify-content-center" style="min-height:44px;min-width:44px">Convertida <i class="bi bi-arrow-right-short"></i></a>
                                 @else
                                     <span class="badge bg-dark">Convertida</span>
                                 @endif
@@ -253,7 +259,7 @@
             </h2>
             <div id="sec-timeline" class="accordion-collapse collapse">
                 <div class="accordion-body">
-                    @if($rota('admin.mobile.leads.activity'))
+                    @if($canUpdate && $rota('admin.mobile.leads.activity'))
                         <form action="{{ route('admin.mobile.leads.activity', $lead->id) }}" method="POST" class="d-grid gap-2 mb-3">
                             @csrf
                             <select name="type" class="form-select" aria-label="Tipo de atividade">
@@ -290,11 +296,33 @@
     </div>
 
     <div class="d-grid gap-2 mt-3">
-        @if($rota('admin.mobile.leads.convert'))
+        @if($canAssignOwner && $rota('admin.mobile.leads.owner'))
+            <form action="{{ route('admin.mobile.leads.owner', $lead->id) }}" method="POST" class="d-grid gap-2 m-card mb-0">
+                @csrf
+                <label class="fw-semibold" for="lead-owner"><i class="bi bi-person-badge me-1"></i> Proprietário</label>
+                <select name="owner_id" id="lead-owner" class="form-select">
+                    <option value="">— Sem proprietário —</option>
+                    @foreach($owners as $dono)
+                        <option value="{{ $dono->id }}" @selected($lead->owner_id == $dono->id)>{{ trim($dono->name . ' ' . $dono->last_name) }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="btn btn-outline-primary">Guardar proprietário</button>
+            </form>
+        @endif
+        @if($canUpdate && $rota('admin.mobile.leads.convert'))
             <form action="{{ route('admin.mobile.leads.convert', $lead->id) }}" method="POST" class="d-grid">
                 @csrf
                 <button type="submit" class="btn btn-success" onclick="return confirm('Converter esta lead em cliente?')">
                     <i class="bi bi-person-check me-1"></i> Converter em cliente
+                </button>
+            </form>
+        @endif
+        @if($canDelete && $rota('admin.mobile.leads.destroy'))
+            <form action="{{ route('admin.mobile.leads.destroy', $lead->id) }}" method="POST" class="d-grid">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Eliminar esta lead? Não pode ser desfeito.')">
+                    <i class="bi bi-trash me-1"></i> Eliminar lead
                 </button>
             </form>
         @endif

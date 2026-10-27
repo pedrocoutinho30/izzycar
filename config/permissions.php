@@ -53,9 +53,14 @@ return [
                     'label' => 'Leads',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'owner_id',
-                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads', 'admin.mobile.dashboard', 'admin.mobile.search'],
-                    // As leads mobile verificam o dono registo a registo (applyScope/allows).
-                    'own_routes' => ['admin.angariador.dashboard', 'admin.angariador.leads', 'admin.angariador.leads.*', 'admin.mobile.leads.*'],
+                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads', 'admin.mobile.dashboard', 'admin.mobile.search',
+                        // Mobile sem filtro por dono: criar, eliminar e atribuir dono (update.all) exigem "todas".
+                        'admin.mobile.leads.create', 'admin.mobile.leads.store', 'admin.mobile.leads.destroy', 'admin.mobile.leads.owner'],
+                    // Rotas mobile que verificam o dono registo a registo (applyScope/allows). Nomes explícitos:
+                    // uma rota nova não herda o acesso "próprias" sem ser listada aqui.
+                    'own_routes' => ['admin.angariador.dashboard', 'admin.angariador.leads', 'admin.angariador.leads.*',
+                        'admin.mobile.leads.index', 'admin.mobile.leads.show', 'admin.mobile.leads.status',
+                        'admin.mobile.leads.convert', 'admin.mobile.leads.followup', 'admin.mobile.leads.activity'],
                 ],
                 'clients' => [
                     'label' => 'Clientes',
@@ -181,6 +186,7 @@ return [
      */
     'route_actions' => [
         'admin.v2.leads.assign-owner' => 'update.all',
+        'admin.mobile.leads.owner' => 'update.all',
         'admin.v2.pre-leads.approve' => 'create',
         'admin.v2.proposals.createFromForm' => 'create',
         'admin.v2.proposals.createFromOpportunity' => 'create',
