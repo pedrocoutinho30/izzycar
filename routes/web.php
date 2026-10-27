@@ -60,7 +60,7 @@ Route::post('proposta/{proposal_code}/opcoes/{opportunity}/pedir-cotacao', [Prop
 Route::post('proposta/{proposal_code}/aceitar', [ProposalController::class, 'accept'])
     ->middleware('throttle:5,1')
     ->name('proposals.accept');
-Route::get('/proposta/{brand}/{model}/{version}/{id}/timeline', [ConvertedProposalController::class, 'detailTimeline'])
+Route::get('/proposta/{brand}/{model}/{version}/{code}/timeline', [ConvertedProposalController::class, 'detailTimeline'])
     ->name('converted-proposals.timeline');
 
 // Sem registo público: as contas de backoffice são criadas pela administração

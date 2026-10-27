@@ -451,7 +451,7 @@ $pendingValue = $totalValue - $paidValue;
     'subtitle' => $isEdit
         ? 'Cliente: ' . ($convertedProposal->client->name ?? 'N/A') . ' · Gestão do processo de importação'
         : 'Preencha os dados da nova proposta convertida',
-    'actionHref'  => $isEdit ? route('converted-proposals.timeline', ['brand' => $convertedProposal->brand ?? 'veiculo', 'model' => $convertedProposal->modelCar ?? 'modelo', 'version' => $convertedProposal->version ?? 'versao', 'id' => $convertedProposal->id]) : '',
+    'actionHref'  => $isEdit ? $convertedProposal->trackingUrl() : '',
     'actionLabel' => $isEdit ? 'Ver Timeline' : '',
 ])
 

@@ -74,7 +74,7 @@
                 <h5 class="modern-card-title"><i class="bi bi-link-45deg"></i> O que o cliente vê</h5>
             </div>
             <div class="p-3 d-grid gap-2">
-                <a href="{{ route('converted-proposals.timeline', ['brand' => $converted->brand ?? 'veiculo', 'model' => $converted->modelCar ?? 'modelo', 'version' => $converted->version ?? 'versao', 'id' => $converted->id]) }}" target="_blank" class="btn btn-primary-modern">
+                <a href="{{ $converted->trackingUrl() }}" target="_blank" class="btn btn-primary-modern">
                     <i class="bi bi-clock-history me-1"></i> Acompanhamento do cliente
                 </a>
                 @if($converted->proposal?->proposal_code)

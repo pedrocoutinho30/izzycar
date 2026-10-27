@@ -162,8 +162,26 @@ class ConvertedProposal extends Model
         return $this->hasMany(ConvertedProposalDocument::class);
     }
 
+    /**
+     * Ligação pública de acompanhamento do processo. Usa um código aleatório
+     * (nunca o id); marca/modelo/versão são segmentos decorativos, em slug.
+     */
+    public function trackingUrl(): string
+    {
+        return route('converted-proposals.timeline', [
+            'brand' => \Illuminate\Support\Str::slug((string) $this->brand) ?: 'carro',
+            'model' => \Illuminate\Support\Str::slug((string) $this->modelCar) ?: 'importado',
+            'version' => \Illuminate\Support\Str::slug((string) $this->version) ?: 'na',
+            'code' => $this->tracking_code,
+        ]);
+    }
+
     protected static function booted()
     {
+        static::creating(function (ConvertedProposal $proposal) {
+            $proposal->tracking_code ??= \Illuminate\Support\Str::random(24);
+        });
+
         // Data em que cada tranche foi recebida: fixada ao marcar como paga,
         // limpa ao desmarcar (não há campo para a escrever à mão).
         static::saving(function (ConvertedProposal $proposal) {

@@ -893,15 +893,8 @@ class ProposalController extends Controller
     {
         $client = Client::find($proposal->client_id);
 
-        // Liga de acompanhamento do processo — marca/modelo/versão são apenas
-        // segmentos decorativos do URL (a página só usa o id), por isso são
-        // convertidos em slug para nunca partirem a rota (ex: acentos, barras).
-        $trackingUrl = route('converted-proposals.timeline', [
-            'brand' => Str::slug((string) $convertedProposal->brand) ?: 'carro',
-            'model' => Str::slug((string) $convertedProposal->modelCar) ?: 'importado',
-            'version' => Str::slug((string) $convertedProposal->version) ?: 'na',
-            'id' => $convertedProposal->id,
-        ]);
+        // Liga de acompanhamento do processo (código aleatório, nunca o id).
+        $trackingUrl = $convertedProposal->trackingUrl();
 
         $data = [
             'client_name' => $client->name,

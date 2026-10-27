@@ -93,12 +93,7 @@
     ]),
     'actions' => [
     [
-    'href' => route('converted-proposals.timeline', [
-        'brand' => $converted->brand ?? 'veiculo',
-        'model' => $converted->modelCar ?? 'modelo',
-        'version' => $converted->version ?? 'versao',
-        'id' => $converted->id,
-    ]),
+    'href' => $converted->trackingUrl(),
     'icon' => 'bi-clock-history',
     'label' => 'Acompanhamento',
     'color' => 'info'

@@ -40,7 +40,7 @@
                                 <a href="{{ route('converted-proposals.edit', $proposal->id) }}" class="btn btn-sm btn-outline-secondary me-2">
                                     <li class="fas fa-edit"></li>
                                 </a>
-                                <a href="{{ route('converted-proposals.timeline', [$proposal->brand, $proposal->modelCar, $proposal->version, $proposal->id]) }}" class="btn btn-sm btn-info">
+                                <a href="{{ $proposal->trackingUrl() }}" class="btn btn-sm btn-info">
                                     <li class="fa fa-eye"></li>
                                 </a>
                             </td>

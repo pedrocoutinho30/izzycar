@@ -128,9 +128,10 @@ class ConvertedProposalController extends Controller
         ]);
     }
 
-    public function detailTimeline($brand, $model, $version, $id)
+    public function detailTimeline($brand, $model, $version, $code)
     {
-        $convertedProposal = ConvertedProposal::findOrFail($id);
+        // Só pelo código aleatório: o id sequencial deixaria ver processos alheios.
+        $convertedProposal = ConvertedProposal::where('tracking_code', $code)->firstOrFail();
         $status_history = $convertedProposal->statusHistories()->orderBy('created_at', 'desc')->get();
         $allStatus = [
             ['status' => 'Iniciada', 'icon' => 'fa fa-play'],

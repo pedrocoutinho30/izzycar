@@ -206,11 +206,22 @@ class PhaseOneSecurityTest extends TestCase
         $converted = $this->converted(['status' => 'Cancelado', 'version' => 'eDrive40']);
         $converted->statusHistories()->create(['old_status' => 'Iniciada', 'new_status' => 'Cancelado']);
 
-        $this->get(route('converted-proposals.timeline', ['bmw', 'i4', 'edrive40', $converted->id]))
+        $this->get($converted->fresh()->trackingUrl())
             ->assertOk()
             ->assertSee('BMW i4')
             ->assertSee('Processo Cancelado')
             ->assertSee('Maria Silva');
+    }
+
+    public function test_timeline_nao_abre_com_o_id_sequencial(): void
+    {
+        $converted = $this->converted();
+
+        $this->assertNotEmpty($converted->fresh()->tracking_code);
+        $this->get(route('converted-proposals.timeline', ['bmw', 'i4', 'edrive40', $converted->id]))
+            ->assertNotFound();
+        $this->get(route('converted-proposals.timeline', ['bmw', 'i4', 'edrive40', 'codigo-errado']))
+            ->assertNotFound();
     }
 
     public function test_paid_flags_can_be_unticked(): void
