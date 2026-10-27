@@ -30,6 +30,7 @@
             <div class="mb-3">
                 <label for="password" class="form-label">{{ isset($user) ? 'Nova Senha (opcional)' : 'Senha' }}</label>
                 <input type="password" name="password" class="form-control" {{ isset($user) ? '' : 'required' }}>
+                <small class="form-text text-muted">Mínimo 10 caracteres, com maiúsculas, minúsculas e números.</small>
             </div>
 
             <div class="mb-3">

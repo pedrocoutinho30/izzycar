@@ -176,6 +176,7 @@ $existAction = isset($user) ? 'Editar' : 'Criar';
                         </label>
                         <input type="password" name="password" id="password"
                                class="form-control @error('password') is-invalid @enderror">
+                        <div class="form-text">Mínimo 10 caracteres, com maiúsculas, minúsculas e números.</div>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

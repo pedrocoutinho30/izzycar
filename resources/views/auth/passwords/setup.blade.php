@@ -280,6 +280,7 @@
                                name="password"
                                placeholder="••••••••"
                                required>
+                        <small class="text-muted d-block mt-1">Mínimo 10 caracteres, com maiúsculas, minúsculas e números.</small>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

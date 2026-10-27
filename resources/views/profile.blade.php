@@ -120,6 +120,7 @@
                                     <div class="form-group focused">
                                         <label class="form-control-label" for="new_password">New password</label>
                                         <input type="password" id="new_password" class="form-control" name="new_password" placeholder="New password">
+                                        <small class="form-text text-muted">Mínimo 10 caracteres, com maiúsculas, minúsculas e números.</small>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,8 +27,8 @@ class ProfileController extends Controller
             'last_name' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . Auth::user()->id,
             'current_password' => 'nullable|required_with:new_password',
-            'new_password' => 'nullable|min:8|max:12|required_with:current_password',
-            'password_confirmation' => 'nullable|min:8|max:12|required_with:new_password|same:new_password'
+            'new_password' => ['nullable', PasswordRule::defaults(), 'required_with:current_password'],
+            'password_confirmation' => 'nullable|required_with:new_password|same:new_password'
         ]);
 
 

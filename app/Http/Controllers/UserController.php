@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -27,7 +28,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => ['required', 'string', PasswordRule::defaults(), 'confirmed'],
             'role' => 'required|exists:roles,name', // validação do role
         ]);
 
@@ -56,7 +57,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => ['required','email', Rule::unique('users')->ignore($user->id)],
-            'password' => 'nullable|string|min:6|confirmed',
+            'password' => ['nullable', 'string', PasswordRule::defaults(), 'confirmed'],
             'role' => 'required|exists:roles,name', // validação do role
         ]);
 

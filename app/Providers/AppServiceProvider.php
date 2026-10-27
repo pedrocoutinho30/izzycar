@@ -23,6 +23,7 @@ use App\Models\Expense;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,6 +41,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Política central de palavras-passe: usada em todos os sítios onde se define uma password nova.
+        // O teste de passwords comprometidas (HIBP) faz chamadas de rede, por isso fica de fora nos testes.
+        Password::defaults(function () {
+            $regra = Password::min(10)->mixedCase()->numbers();
+
+            return app()->environment('testing') ? $regra : $regra->uncompromised();
+        });
 
         Page::observe(SeoObserver::class);
         Proposal::observe([SeoObserver::class, ProposalObserver::class]);

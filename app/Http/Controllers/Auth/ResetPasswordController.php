@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 
 class ResetPasswordController extends Controller
 {
@@ -38,6 +39,18 @@ class ResetPasswordController extends Controller
     protected function setUserPassword($user, $password)
     {
         $user->password = $password;
+    }
+
+    /**
+     * Regras de validação do reset: usa a política central de palavras-passe.
+     */
+    protected function rules()
+    {
+        return [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
+        ];
     }
 
     public function __construct()

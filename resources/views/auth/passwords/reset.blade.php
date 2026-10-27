@@ -35,6 +35,7 @@
 
                                     <div class="form-group">
                                         <input type="password" class="form-control form-control-user" name="password" placeholder="{{ __('Password') }}" required>
+                                        <small class="form-text text-muted">Mínimo 10 caracteres, com maiúsculas, minúsculas e números.</small>
                                     </div>
 
                                     <div class="form-group">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use App\Http\Controllers\Controller;
 use App\Mail\SetPasswordMail;
 use App\Models\AuditLog;
@@ -185,7 +186,7 @@ class UserV2Controller extends Controller
             'location' => 'nullable|string|max:255',
             'nif' => 'nullable|string|max:20',
             'iban' => 'nullable|string|max:40',
-            'password' => 'nullable|string|min:6|confirmed',
+            'password' => ['nullable', 'string', PasswordRule::defaults(), 'confirmed'],
             'roles' => 'required|array|min:1',
             'roles.*' => 'exists:roles,name',
             'referral_code' => ['nullable', 'string', 'max:100', 'alpha_dash', Rule::unique('users', 'referral_code')->ignore($user->id)],
