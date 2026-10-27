@@ -51,7 +51,7 @@
          HERO
     ══════════════════════════════════════ -->
     <tr>
-        <td style="background:linear-gradient(160deg,#6e0707 0%,#990000 50%,#7a0000 100%);padding:48px 32px 40px;text-align:center;">
+        <td style="background:linear-gradient(160deg,#7a5224 0%,#92642D 50%,#B59151 100%);padding:48px 32px 40px;text-align:center;">
             <p style="margin:0 0 16px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.6);">Guia de Custos 2025</p>
             <h1 class="hero-title" style="margin:0 0 16px;font-size:30px;font-weight:800;color:#ffffff;line-height:1.25;font-family:Arial,sans-serif;">
                 Quanto paga mesmo<br>ao importar um carro?
@@ -96,8 +96,8 @@
             <!-- Label da secção -->
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;">
                 <tr>
-                    <td style="border-left:4px solid #990000;padding-left:12px;">
-                        <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#990000;">Os custos</p>
+                    <td style="border-left:4px solid #92642D;padding-left:12px;">
+                        <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#92642D;">Os custos</p>
                         <h2 style="margin:4px 0 0;font-size:20px;font-weight:800;color:#111;">O que paga além do carro</h2>
                     </td>
                 </tr>
@@ -116,7 +116,7 @@
                 <!-- ISV -->
                 <tr style="background:#fff7f7;">
                     <td style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
-                        <p style="margin:0;font-size:14px;font-weight:800;color:#990000;" class="cost-label">ISV</p>
+                        <p style="margin:0;font-size:14px;font-weight:800;color:#92642D;" class="cost-label">ISV</p>
                         <p style="margin:2px 0 0;font-size:11px;color:#999;">Imposto Sobre Veículos</p>
                     </td>
                     <td style="padding:14px 16px;border-bottom:1px solid #f0f0f0;font-size:13px;color:#555;line-height:1.4;" class="cost-label">
@@ -222,8 +222,8 @@
 
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;">
                 <tr>
-                    <td style="border-left:4px solid #990000;padding-left:12px;">
-                        <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#990000;">Caso prático</p>
+                    <td style="border-left:4px solid #92642D;padding-left:12px;">
+                        <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#92642D;">Caso prático</p>
                         <h2 style="margin:4px 0 0;font-size:20px;font-weight:800;color:#111;">Mercedes EQS 450+ AMG Line · 2023 · Elétrico</h2>
                     </td>
                 </tr>
@@ -296,8 +296,8 @@
 
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;">
                 <tr>
-                    <td style="border-left:4px solid #990000;padding-left:12px;">
-                        <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#990000;">Dica importante</p>
+                    <td style="border-left:4px solid #92642D;padding-left:12px;">
+                        <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#92642D;">Dica importante</p>
                         <h2 style="margin:4px 0 0;font-size:20px;font-weight:800;color:#111;">Como o combustível afeta o ISV</h2>
                     </td>
                 </tr>
@@ -308,7 +308,7 @@
                 <tr>
                     <!-- Diesel -->
                     <td class="col-fuel" valign="top"
-                        style="width:32%;background:#fff5f5;border-radius:10px;border:1px solid #fecaca;padding:18px 16px;">
+                        style="width:32%;background:#faf5ec;border-radius:10px;border:1px solid #ead9b8;padding:18px 16px;">
                         <p style="margin:0 0 6px;font-size:20px;">⛽</p>
                         <p style="margin:0 0 4px;font-size:14px;font-weight:800;color:#991b1b;">Diesel</p>
                         <p style="margin:0;font-size:12px;line-height:1.5;color:#7f1d1d;">ISV mais elevado. CO₂ alto penaliza bastante.</p>
@@ -341,7 +341,7 @@
     <tr>
         <td style="background:#f8fafc;padding:32px 40px;font-family:Arial,sans-serif;">
 
-            <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#990000;">Como trabalhamos</p>
+            <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#92642D;">Como trabalhamos</p>
             <h2 style="margin:0 0 20px;font-size:20px;font-weight:800;color:#111;">O processo Izzycar, do início ao fim</h2>
 
             <!-- Steps -->
@@ -349,7 +349,7 @@
 
                 <tr>
                     <td width="36" valign="top" style="padding-right:14px;">
-                        <div style="width:32px;height:32px;background:linear-gradient(135deg,#990000,#6e0707);border-radius:50%;text-align:center;line-height:32px;font-size:13px;font-weight:800;color:#fff;">1</div>
+                        <div style="width:32px;height:32px;background:linear-gradient(135deg, #B59151, #92642D);border-radius:50%;text-align:center;line-height:32px;font-size:13px;font-weight:800;color:#fff;">1</div>
                     </td>
                     <td style="padding-bottom:16px;">
                         <p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#111;">Pedido de cotação gratuita</p>
@@ -358,7 +358,7 @@
                 </tr>
                 <tr>
                     <td width="36" valign="top" style="padding-right:14px;">
-                        <div style="width:32px;height:32px;background:linear-gradient(135deg,#990000,#6e0707);border-radius:50%;text-align:center;line-height:32px;font-size:13px;font-weight:800;color:#fff;">2</div>
+                        <div style="width:32px;height:32px;background:linear-gradient(135deg, #B59151, #92642D);border-radius:50%;text-align:center;line-height:32px;font-size:13px;font-weight:800;color:#fff;">2</div>
                     </td>
                     <td style="padding-bottom:16px;">
                         <p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#111;">Pesquisa e inspeção no país de origem</p>
@@ -367,7 +367,7 @@
                 </tr>
                 <tr>
                     <td width="36" valign="top" style="padding-right:14px;">
-                        <div style="width:32px;height:32px;background:linear-gradient(135deg,#990000,#6e0707);border-radius:50%;text-align:center;line-height:32px;font-size:13px;font-weight:800;color:#fff;">3</div>
+                        <div style="width:32px;height:32px;background:linear-gradient(135deg, #B59151, #92642D);border-radius:50%;text-align:center;line-height:32px;font-size:13px;font-weight:800;color:#fff;">3</div>
                     </td>
                     <td style="padding-bottom:16px;">
                         <p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#111;">Transporte e legalização completa</p>
@@ -376,7 +376,7 @@
                 </tr>
                 <tr>
                     <td width="36" valign="top" style="padding-right:14px;">
-                        <div style="width:32px;height:32px;background:linear-gradient(135deg,#990000,#6e0707);border-radius:50%;text-align:center;line-height:32px;font-size:13px;font-weight:800;color:#fff;">4</div>
+                        <div style="width:32px;height:32px;background:linear-gradient(135deg, #B59151, #92642D);border-radius:50%;text-align:center;line-height:32px;font-size:13px;font-weight:800;color:#fff;">4</div>
                     </td>
                     <td>
                         <p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#111;">Entrega com matrícula portuguesa</p>
@@ -393,7 +393,7 @@
          CTA
     ══════════════════════════════════════ -->
     <tr>
-        <td style="background:linear-gradient(160deg,#6e0707 0%,#990000 100%);padding:40px 40px;text-align:center;font-family:Arial,sans-serif;">
+        <td style="background:linear-gradient(160deg,#92642D 0%,#B59151 100%);padding:40px 40px;text-align:center;font-family:Arial,sans-serif;">
             <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.6);">Sem compromisso · Resposta em 24h</p>
             <h2 style="margin:0 0 12px;font-size:24px;font-weight:800;color:#fff;">Quer saber o custo total<br>do seu carro específico?</h2>
             <p style="margin:0 0 28px;font-size:15px;color:rgba(255,255,255,0.8);line-height:1.6;">
@@ -401,7 +401,7 @@
             </p>
             <a href="https://izzycar.pt/formulario-importacao"
                class="cta-btn"
-               style="display:inline-block;background:#ffffff;color:#990000;text-decoration:none;padding:16px 40px;border-radius:50px;font-size:16px;font-weight:800;letter-spacing:0.3px;box-shadow:0 8px 24px rgba(0,0,0,0.25);">
+               style="display:inline-block;background:#ffffff;color:#92642D;text-decoration:none;padding:16px 40px;border-radius:50px;font-size:16px;font-weight:800;letter-spacing:0.3px;box-shadow:0 8px 24px rgba(0,0,0,0.25);">
                 Pedir Cotação Gratuita →
             </a>
             <p style="margin:20px 0 0;font-size:12px;color:rgba(255,255,255,0.5);">

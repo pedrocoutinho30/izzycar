@@ -7,7 +7,7 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 580px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-        .header { background: #b30000; color: #fff; padding: 28px 32px; }
+        .header { background: #92642D; color: #fff; padding: 28px 32px; }
         .header h1 { margin: 0 0 4px; font-size: 1.3rem; font-weight: 700; }
         .header p { margin: 0; font-size: .9rem; opacity: .85; }
         .body { padding: 28px 32px; }
@@ -19,10 +19,10 @@
         .lead-name { font-weight: 600; font-size: .95rem; color: #111; }
         .lead-note { font-size: .82rem; color: #666; margin-top: 2px; }
         .lead-phone { font-size: .8rem; color: #999; margin-top: 2px; }
-        .lead-link { display: inline-block; margin-top: 4px; font-size: .78rem; color: #b30000; text-decoration: none; }
+        .lead-link { display: inline-block; margin-top: 4px; font-size: .78rem; color: #92642D; text-decoration: none; }
         .empty { color: #999; font-size: .9rem; text-align: center; padding: 24px 0; }
         .footer { padding: 20px 32px; background: #fafafa; border-top: 1px solid #eee; font-size: .78rem; color: #aaa; text-align: center; }
-        .footer a { color: #b30000; text-decoration: none; }
+        .footer a { color: #92642D; text-decoration: none; }
     </style>
 </head>
 <body>

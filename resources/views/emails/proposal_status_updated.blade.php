@@ -82,7 +82,7 @@
             border-radius: 6px;
             text-align: center;
             margin: 20px 0;">
-            <b style="color: #990000;">{{ $oldStatus }}</b> ➝ <b style="color: green;">{{ $newStatus }}</b>
+            <b style="color: #92642D;">{{ $oldStatus }}</b> ➝ <b style="color: green;">{{ $newStatus }}</b>
         </div>
 
 
@@ -91,7 +91,7 @@
 
         @if($convertedProposal->tracking_code)
         <div style="text-align: center; margin: 25px 0;">
-            <a href="{{ $convertedProposal->trackingUrl() }}" style="display: inline-block; background: #990000; color: #fff; text-decoration: none; font-weight: bold; padding: 12px 28px; border-radius: 6px;">Acompanhar o Processo</a>
+            <a href="{{ $convertedProposal->trackingUrl() }}" style="display: inline-block; background: #92642D; color: #fff; text-decoration: none; font-weight: bold; padding: 12px 28px; border-radius: 6px;">Acompanhar o Processo</a>
         </div>
         @endif
 

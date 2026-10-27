@@ -20,7 +20,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+            background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -34,13 +34,13 @@
         }
         .info-box {
             background-color: #f8f9fa;
-            border-left: 4px solid #990000;
+            border-left: 4px solid #92642D;
             padding: 15px;
             margin: 20px 0;
             border-radius: 4px;
         }
         .info-box strong {
-            color: #990000;
+            color: #92642D;
         }
         .footer {
             background-color: #f8f9fa;

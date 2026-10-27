@@ -27,7 +27,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .email-header {
-            background-color: #990000;
+            background-color: #92642D;
             color: #ffffff;
             padding: 30px 20px;
             text-align: center;
@@ -47,7 +47,7 @@
         }
         .task-card {
             background-color: #f8f9fa;
-            border-left: 4px solid #990000;
+            border-left: 4px solid #92642D;
             padding: 20px;
             margin: 20px 0;
             border-radius: 4px;
@@ -55,7 +55,7 @@
         .task-title {
             font-size: 20px;
             font-weight: 600;
-            color: #990000;
+            color: #92642D;
             margin-bottom: 10px;
         }
         .task-description {
@@ -113,7 +113,7 @@
         }
         .btn-primary {
             display: inline-block;
-            background-color: #990000;
+            background-color: #92642D;
             color: #ffffff;
             text-decoration: none;
             padding: 12px 30px;

@@ -11,7 +11,7 @@
             <td align="center">
                 <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);">
                     <tr>
-                        <td style="background:#6e0707;color:#fff;padding:24px 32px;">
+                        <td style="background:#92642D;color:#fff;padding:24px 32px;">
                             <h1 style="margin:0;font-size:22px;">{{ $headline }}</h1>
                         </td>
                     </tr>
@@ -21,7 +21,7 @@
                             <p style="margin:0 0 20px 0;font-size:14px;line-height:1.6;color:#444;">
                                 Selecionámos oportunidades especiais para si. Veja os destaques abaixo.
                             </p>
-                            <a href="{{ url('/') }}" style="display:inline-block;background:#6e0707;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:600;">
+                            <a href="{{ url('/') }}" style="display:inline-block;background:#92642D;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:600;">
                                 Visitar Izzycar
                             </a>
                         </td>
@@ -48,7 +48,7 @@
                                                 </p>
                                             @endif
                                             <p style="margin:0 0 6px 0;font-size:13px;color:#444;">
-                                                Preço chave na mão: <strong style="color:#6e0707;">{{ $car['price'] }}</strong>
+                                                Preço chave na mão: <strong style="color:#92642D;">{{ $car['price'] }}</strong>
                                             </p>
                                             <p style="margin:0 0 6px 0;font-size:13px;color:#0f766e;">
                                                 Poupança face ao mercado nacional: <strong>{{ $car['savings'] }}</strong>
@@ -69,7 +69,7 @@
                             Recebeste este email porque subscreveste a newsletter da Izzycar.
                             @if(isset($email))
                                 <br>
-                                <a href="{{ route('newsletter.unsubscribe') }}?email={{ urlencode($email) }}&name={{ urlencode($name ?? '') }}" style="color:#6e0707;text-decoration:underline;">
+                                <a href="{{ route('newsletter.unsubscribe') }}?email={{ urlencode($email) }}&name={{ urlencode($name ?? '') }}" style="color:#92642D;text-decoration:underline;">
                                     Deixar de subscrever
                                 </a>
                             @endif

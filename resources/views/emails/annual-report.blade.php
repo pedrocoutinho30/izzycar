@@ -6,16 +6,16 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f5f5f5; margin:0; padding:20px; color:#333; }
         .container { max-width:580px; margin:0 auto; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); }
-        .header { background:#8B0000; color:#fff; padding:22px 32px; }
+        .header { background:#92642D; color:#fff; padding:22px 32px; }
         .header h1 { margin:0 0 4px; font-size:1.1rem; font-weight:700; }
         .header p { margin:0; font-size:.82rem; opacity:.8; }
         .body { padding:24px 32px; }
         .greeting { font-size:.9rem; margin-bottom:14px; }
-        .section-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:#8B0000; margin:18px 0 8px; }
+        .section-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:#92642D; margin:18px 0 8px; }
         .kpi-row { display:table; width:100%; border-spacing:8px 0; margin-bottom:10px; }
         .kpi { display:table-cell; background:#f9f9f9; border:1px solid #eee; border-radius:7px; padding:10px 12px; }
         .kpi-label { font-size:.68rem; color:#999; text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
-        .kpi-value { font-size:1.25rem; font-weight:800; color:#8B0000; }
+        .kpi-value { font-size:1.25rem; font-weight:800; color:#92642D; }
         .kpi-sub { font-size:.7rem; color:#aaa; margin-top:2px; }
         .delta-up   { color:#198754; font-weight:700; }
         .delta-down { color:#dc3545; font-weight:700; }
@@ -143,7 +143,7 @@
         <hr>
         <div class="attachment-note">📎 O relatório completo com evolução mensal e todas as comparações está em anexo em PDF.</div>
     </div>
-    <div class="footer">Izzycar · <a href="{{ url('/gestao') }}" style="color:#8B0000;text-decoration:none;">Backoffice</a> · Gerado automaticamente em {{ now()->format('d/m/Y \à\s H:i') }}</div>
+    <div class="footer">Izzycar · <a href="{{ url('/gestao') }}" style="color:#92642D;text-decoration:none;">Backoffice</a> · Gerado automaticamente em {{ now()->format('d/m/Y \à\s H:i') }}</div>
 </div>
 </body>
 </html>

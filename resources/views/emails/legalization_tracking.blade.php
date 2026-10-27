@@ -16,11 +16,11 @@
         .greeting { font-size: 18px; font-weight: bold; color: #111; margin-bottom: 10px; }
         .intro { font-size: 15px; color: #555; line-height: 1.7; margin-bottom: 28px; }
         .cta-block { text-align: center; margin: 32px 0; }
-        .cta-btn { display: inline-block; background: linear-gradient(135deg, #990000, #6e0707); color: #ffffff !important; text-decoration: none; padding: 16px 36px; border-radius: 8px; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; }
+        .cta-btn { display: inline-block; background: linear-gradient(135deg, #B59151, #92642D); color: #ffffff !important; text-decoration: none; padding: 16px 36px; border-radius: 8px; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; }
         .note { font-size: 13px; color: #888; text-align: center; margin-top: 8px; }
         .divider { border: none; border-top: 1px solid #eee; margin: 28px 0; }
         .secondary-cta { text-align: center; font-size: 14px; color: #555; margin-bottom: 8px; }
-        .secondary-cta a { color: #990000; font-weight: bold; text-decoration: none; }
+        .secondary-cta a { color: #92642D; font-weight: bold; text-decoration: none; }
         .footer { background: #111111; padding: 28px 30px; text-align: center; }
         .footer img { width: 90px; max-width: 90px; height: auto; margin-bottom: 12px; }
         .footer p { color: rgba(255,255,255,0.5); font-size: 12px; line-height: 1.8; }
