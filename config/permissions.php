@@ -53,8 +53,9 @@ return [
                     'label' => 'Leads',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'owner_id',
-                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads', 'admin.mobile.dashboard', 'admin.mobile.leads.*', 'admin.mobile.search'],
-                    'own_routes' => ['admin.angariador.dashboard', 'admin.angariador.leads', 'admin.angariador.leads.*'],
+                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads', 'admin.mobile.dashboard', 'admin.mobile.search'],
+                    // As leads mobile verificam o dono registo a registo (applyScope/allows).
+                    'own_routes' => ['admin.angariador.dashboard', 'admin.angariador.leads', 'admin.angariador.leads.*', 'admin.mobile.leads.*'],
                 ],
                 'clients' => [
                     'label' => 'Clientes',

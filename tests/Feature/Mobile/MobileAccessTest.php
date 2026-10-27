@@ -29,15 +29,6 @@ class MobileAccessTest extends TestCase
         Cache::forever('site_logo', '');
     }
 
-    /** access_mobile fora do $fillable: define-se com forceFill. */
-    private function mobileUser(bool $acesso = true): User
-    {
-        $user = $this->backofficeUser('admin');
-        $user->forceFill(['access_mobile' => $acesso])->save();
-
-        return $user;
-    }
-
     public function test_utilizador_com_permissao_acede_ao_mobile(): void
     {
         $this->actingAs($this->mobileUser())->get(route('admin.mobile.dashboard'))->assertOk();

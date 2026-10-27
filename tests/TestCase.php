@@ -33,4 +33,13 @@ abstract class TestCase extends BaseTestCase
 
         return $user;
     }
+
+    /** Admin com acesso ao mobile (access_mobile fora do $fillable: define-se com forceFill). */
+    protected function mobileUser(bool $acesso = true): User
+    {
+        $user = $this->backofficeUser('admin');
+        $user->forceFill(['access_mobile' => $acesso])->save();
+
+        return $user;
+    }
 }

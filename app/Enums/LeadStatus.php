@@ -5,8 +5,9 @@ namespace App\Enums;
 /**
  * Estado de uma lead (coluna clients.lead_status). A coluna não tem constraint
  * na BD, por isso quem escreve diretamente pode gravar outros valores:
- * labelOf() devolve-os tal como estão. Hoje só a exportação XLSX usa este
- * enum; as views antigas ainda têm arrays inline.
+ * labelOf() devolve-os tal como estão. Usado pela exportação XLSX e pelo
+ * mobile; as views desktop ainda têm arrays inline e a timeline escreve
+ * "Em Contacto" (ver LeadService).
  */
 enum LeadStatus: string
 {
@@ -27,6 +28,29 @@ enum LeadStatus: string
             self::Qualificada => 'Qualificada',
             self::Fria => 'Fria',
             self::Perdida => 'Perdida',
+        };
+    }
+
+    /** Cor Bootstrap (as mesmas do kanban e da ficha desktop). */
+    public function color(): string
+    {
+        return match ($this) {
+            self::Nova => 'success',
+            self::EmContacto => 'info',
+            self::Qualificada => 'primary',
+            self::Fria => 'secondary',
+            self::Perdida => 'danger',
+        };
+    }
+
+    public function icon(): string
+    {
+        return match ($this) {
+            self::Nova => 'bi-circle-fill',
+            self::EmContacto => 'bi-telephone-fill',
+            self::Qualificada => 'bi-patch-check-fill',
+            self::Fria => 'bi-snow',
+            self::Perdida => 'bi-x-circle-fill',
         };
     }
 

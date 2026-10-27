@@ -116,6 +116,48 @@
             color: var(--admin-secondary); text-decoration: none;
             background: none; border: 0; width: 100%; text-align: left;
         }
+
+        .m-topbar-back { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; margin-left: -10px; text-decoration: none; }
+
+        /* Pesquisa e chips fixos no topo das listas */
+        .m-sticky-filters {
+            position: sticky; top: calc(var(--topbar-height) + env(safe-area-inset-top)); z-index: 1020;
+            margin: -14px -12px 12px; padding: 12px 12px 4px; background: #f5f7fa;
+        }
+        .m-chips { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0 6px; scrollbar-width: none; }
+        .m-chips::-webkit-scrollbar { display: none; }
+        .m-chip {
+            flex-shrink: 0; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px;
+            border-radius: 22px; border: 1px solid var(--admin-border); background: #fff;
+            color: var(--admin-secondary); text-decoration: none; font-size: 0.9rem; white-space: nowrap;
+        }
+        .m-chip.active { background: var(--admin-primary); border-color: var(--admin-primary); color: #fff; }
+
+        .m-lead-card__link { display: block; color: inherit; text-decoration: none; }
+        .m-lead-card__name { overflow-wrap: anywhere; }
+        .m-contact-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .m-contact-actions .btn { flex: 1; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+
+        .m-fab {
+            position: fixed; z-index: 1025;
+            right: calc(16px + env(safe-area-inset-right));
+            bottom: calc(var(--bottomnav-height) + env(safe-area-inset-bottom) + 16px);
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--admin-primary); color: #fff; font-size: 1.6rem; box-shadow: var(--shadow-md);
+        }
+
+        .m-accordion .accordion-button { min-height: 52px; font-weight: 600; }
+        .m-accordion .accordion-button:not(.collapsed) { color: var(--admin-primary); background: #fbf1f1; }
+        .m-list-item { padding: 10px 0; border-bottom: 1px solid var(--admin-border); }
+        .m-list-item:last-child { border-bottom: 0; }
+        .m-dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; }
+        .m-dl dt { font-weight: 500; color: #6c757d; }
+        .m-dl dd { margin: 0; }
+        .m-timeline-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--admin-border); }
+        .m-timeline-item:last-child { border-bottom: 0; }
+        .m-timeline-icon { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.85rem; }
+        .min-w-0 { min-width: 0; }
     </style>
     @stack('styles')
 </head>
@@ -151,7 +193,7 @@
         $href = fn (string $rota) => \Illuminate\Support\Facades\Route::has($rota) ? route($rota) : '#';
     @endphp
     <nav class="m-bottomnav" aria-label="Navegação principal">
-        <a href="{{ $href('admin.mobile.leads.index') }}" class="{{ request()->routeIs('admin.mobile.leads.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.mobile.leads.index') }}" class="{{ request()->routeIs('admin.mobile.leads.*') ? 'active' : '' }}">
             <i class="bi bi-people"></i><span>Leads</span>
         </a>
         <a href="{{ $href('admin.mobile.clients.index') }}" class="{{ request()->routeIs('admin.mobile.clients.*') ? 'active' : '' }}">
