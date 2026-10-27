@@ -81,6 +81,13 @@ class LoginController extends Controller
         // um URL do próprio site — qualquer outro é descartado e vale o destino normal.
         MobilePwa::forgetUnsafeIntendedUrl($request);
 
+        // Destino mobile para quem não pode lá entrar (angariador puro → 403;
+        // sem access_mobile → salto de volta ao desktop): vai direto ao destino normal.
+        if (MobilePwa::intendedMobileUrl($request) !== null
+            && ($user->isAngariadorOnly() || !$user->access_mobile)) {
+            $request->session()->forget('url.intended');
+        }
+
         return null;
     }
 

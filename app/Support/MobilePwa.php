@@ -43,6 +43,11 @@ final class MobilePwa
             return false;
         }
 
+        // Credenciais no URL ("https://site@outro/..." ou "https://outro@site/..."): recusar sempre.
+        if (isset($parts['user']) || isset($parts['pass'])) {
+            return false;
+        }
+
         if (!isset($parts['scheme']) && !isset($parts['host'])) {
             return str_starts_with($url, '/') && !str_starts_with($url, '//');
         }

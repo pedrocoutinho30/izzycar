@@ -77,8 +77,27 @@ class MobilePwaTest extends TestCase
             $this->assertContains($size, $purposes['maskable'] ?? []);
         }
 
-        // O iPhone usa o apple-touch-icon de 180px: tem de ser opaco.
+        // O iPhone usa o apple-touch-icon de 180px (o tamanho é verificado aqui;
+        // a opacidade no teste seguinte).
         $this->assertSame([180, 180], array_slice(getimagesize(public_path('img/mobile/icon-180.png')), 0, 2));
+    }
+
+    public function test_apple_touch_icon_e_opaco(): void
+    {
+        if (!function_exists('imagecreatefrompng')) {
+            $this->markTestSkipped('Extensão GD não disponível.');
+        }
+
+        // O iPhone pinta a preto os píxeis transparentes do apple-touch-icon: nenhum
+        // píxel pode ter alpha (no GD, 0 = opaco, 127 = transparente).
+        $img = imagecreatefrompng(public_path('img/mobile/icon-180.png'));
+        $maxAlpha = 0;
+        for ($x = 0; $x < imagesx($img); $x++) {
+            for ($y = 0; $y < imagesy($img); $y++) {
+                $maxAlpha = max($maxAlpha, (imagecolorat($img, $x, $y) >> 24) & 0x7F);
+            }
+        }
+        $this->assertSame(0, $maxAlpha, 'icon-180.png tem píxeis transparentes.');
     }
 
     public function test_atalhos_do_manifest_apontam_para_rotas_mobile_existentes(): void
@@ -170,31 +189,37 @@ class MobilePwaTest extends TestCase
         $this->get('/gestao/mobile/leads')->assertOk();
     }
 
-    public function test_login_sem_access_mobile_acaba_no_desktop_com_aviso_e_sem_ciclo(): void
+    public function test_login_sem_access_mobile_vai_direto_ao_dashboard_desktop(): void
     {
         $user = $this->mobileUser(false);
 
         $this->get('/gestao/mobile')->assertRedirect('/login');
-        $response = $this->login($user)->assertRedirect(url('/gestao/mobile'));
+        // O destino mobile é descartado: sem o salto /gestao/mobile → dashboard.
+        $this->login($user)->assertRedirect(RouteServiceProvider::HOME);
+        $this->assertSame(url(RouteServiceProvider::HOME), route('admin.v2.dashboard'));
+        $this->assertNull(session('url.intended'));
+        $this->assertAuthenticatedAs($user);
 
-        // Segue os redirects à mão: tem de parar em no máximo 3 saltos.
-        $visited = [];
-        $hops = 0;
-        $flash = null;
-        while ($response->isRedirect() && $hops < 3) {
-            $location = $response->headers->get('Location');
-            $visited[] = $location;
-            $response = $this->get($location);
-            $flash ??= session('error');
-            $hops++;
-        }
+        $this->get(route('admin.v2.dashboard'))->assertOk();
+    }
 
-        $response->assertOk();
-        $this->assertLessThanOrEqual(2, $hops, 'Cadeia de redirects: ' . implode(' → ', $visited));
-        $this->assertSame(route('admin.v2.dashboard'), end($visited));
-        $this->assertSame(count($visited), count(array_unique($visited)), 'Ciclo de redirects.');
-        // O aviso é posto na sessão pelo EnsureMobileAccess (o dashboard desktop, hoje, não o mostra).
-        $this->assertSame('Não tem acesso à versão mobile.', $flash);
+    public function test_angariador_com_destino_mobile_entra_no_dashboard_do_angariador(): void
+    {
+        $angariador = $this->backofficeUser('angariador');
+        $angariador->forceFill(['access_mobile' => true])->save();
+        $this->assertTrue($angariador->fresh()->isAngariadorOnly());
+
+        $this->get('/gestao/mobile/leads')->assertRedirect('/login');
+        $response = $this->login($angariador)->assertRedirect(route('admin.angariador.dashboard'));
+        $this->assertNull(session('url.intended'));
+
+        $this->get($response->headers->get('Location'))->assertOk();
+    }
+
+    public function test_destino_desktop_continua_a_valer_para_quem_nao_tem_access_mobile(): void
+    {
+        $this->get('/gestao/v2/leads')->assertRedirect('/login');
+        $this->login($this->mobileUser(false))->assertRedirect(url('/gestao/v2/leads'));
     }
 
     public function test_angariador_com_access_mobile_continua_barrado(): void
@@ -275,9 +300,28 @@ class MobilePwaTest extends TestCase
             $this->assertFalse(MobilePwa::isSameOrigin($bad, $request), $bad);
         }
 
+        $host = parse_url(url('/'), PHP_URL_HOST);
+        $scheme = parse_url(url('/'), PHP_URL_SCHEME);
+        foreach ([
+            "{$scheme}://{$host}@evil.com/gestao/mobile",   // userinfo: o host real é evil.com
+            "{$scheme}://evil.com@{$host}/gestao/mobile",   // userinfo com o nosso host: recusado na mesma
+            "{$scheme}://user:pass@{$host}/gestao/mobile",
+            "{$scheme}://{$host}:8443/gestao/mobile",       // outra porta = outra origem
+            'https:/evil.com/gestao/mobile',                // o browser lê https://evil.com
+            'https:evil.com/gestao/mobile',
+            "{$scheme}://{$host}.evil.com/gestao/mobile",
+            "\t/gestao/mobile",
+        ] as $bad) {
+            $this->assertFalse(MobilePwa::isSameOrigin($bad, $request), $bad);
+        }
+
+        // Esquema/host em maiúsculas continua a ser a mesma origem.
+        $this->assertTrue(MobilePwa::isSameOrigin(strtoupper("{$scheme}://{$host}") . '/gestao/mobile', $request));
+
         $this->assertTrue(MobilePwa::isMobilePath('/gestao/mobile'));
         $this->assertTrue(MobilePwa::isMobilePath('/gestao/mobile/leads/3'));
         $this->assertFalse(MobilePwa::isMobilePath('/gestao/mobilex'));
+        $this->assertFalse(MobilePwa::isMobilePath('/gestao/mobile.evil'));
         $this->assertFalse(MobilePwa::isMobilePath('/gestao/v2/dashboard'));
     }
 
@@ -294,28 +338,107 @@ class MobilePwaTest extends TestCase
         }
     }
 
-    public function test_service_worker_nao_guarda_paginas_autenticadas(): void
+    public function test_service_worker_versao_nova_apaga_caches_antigas_e_instala_sem_falhar(): void
     {
         $sw = file_get_contents(public_path('sw.js'));
 
-        // Versão nova: o activate apaga as caches antigas (que podiam ter /gestao).
-        $this->assertMatchesRegularExpression("/const CACHE_VERSION = 'izzycar-v(\\d+)'/", $sw);
-        preg_match("/const CACHE_VERSION = 'izzycar-v(\\d+)'/", $sw, $m);
-        $this->assertGreaterThanOrEqual(2, (int) $m[1]);
+        // v3: o activate apaga tudo o que não seja a versão atual (v1 tinha JSON de
+        // /gestao, v2 ficheiros de /storage), antes e depois do clients.claim().
+        $this->assertStringContainsString("const CACHE_VERSION = 'izzycar-v3';", $sw);
         $this->assertStringContainsString('.filter((key) => key !== CACHE_VERSION)', $sw);
+        $this->assertMatchesRegularExpression('/purgeOldCaches\(\)\s*\.then\(\(\) => self\.clients\.claim\(\)\)\s*\.then\(purgeOldCaches\)/', $sw);
 
-        // Áreas privadas excluídas.
-        foreach (["'/gestao'", "'/login'", "'/logout'", "'/password'", "'/two-factor'"] as $path) {
-            $this->assertStringContainsString($path, $sw);
+        // Install tolerante: cada asset à parte, nunca addAll (um 404 no offline.html
+        // deixava o worker antigo a controlar as páginas).
+        $this->assertStringNotContainsString('addAll(', $sw);
+        $this->assertStringContainsString('Promise.allSettled(', $sw);
+        $this->assertStringContainsString('self.skipWaiting()', $sw);
+
+        // Push e cliques nas notificações continuam lá.
+        $this->assertStringContainsString("addEventListener('push'", $sw);
+        $this->assertStringContainsString("addEventListener('notificationclick'", $sw);
+    }
+
+    /**
+     * Corre as funções de decisão do sw.js em node (o ficheiro exporta-as quando
+     * há `module`; no browser esse bloco não corre).
+     */
+    public function test_service_worker_so_guarda_assets_estaticos_do_site(): void
+    {
+        $node = (new \Symfony\Component\Process\ExecutableFinder())->find('node');
+        if ($node === null) {
+            $this->markTestSkipped('node não está instalado.');
         }
 
-        // Só GET; respostas no-store/private não vão para a cache.
-        $this->assertStringContainsString("if (request.method !== 'GET') return;", $sw);
-        $this->assertStringContainsString('no-store|private', $sw);
+        $privados = [
+            '/gestao/mobile', '/gestao/mobile/leads', '/gestao/v2/leads', '/gestao/v2/leads/3.json',
+            '/login', '/logout', '/password/reset', '/definir-password/abc',
+            '/storage/photos/1/x.jpg', '/storage/photos/12_Joao/carta.pdf', '/storage/inspections/1.jpg',
+            '/storage/import-opportunities/9/foto.png', '/uploads/photos/1/x.jpg',
+            '/index.php/gestao/x', '/gest%61o/x', '/GESTAO/x', '//gestao/x', '/gestao%2Fmobile',
+            '/index.php/css/app.css', '/css/%2e%2e/storage/photos/1/x.jpg', '/img/..%2Fstorage/x.jpg',
+            '/css/%E0%A4%A', '/', '/viaturas', '/api/x', '/laravel-filemanager/x.js', '/x.css', '/sw.js',
+        ];
+        $estaticos = ['/css/app.css', '/img/logo-simples.png', '/fonts/x.woff2', '/js/x.js', '/images/default-car.jpg', '/vendor/jquery/jquery.min.js'];
 
-        // Deixou de haver o "resto: network-first com cache" e só há um cache.put
-        // (assets estáticos) — nenhum no ramo das navegações.
-        $this->assertStringNotContainsString('.catch(() => caches.match(request))', $sw);
-        $this->assertSame(1, substr_count($sw, 'cache.put('));
+        $script = <<<'JS'
+const sw = require(process.argv[1]);
+const cases = JSON.parse(process.argv[2]);
+const origin = 'https://izzycar.test';
+const req = (path, extra = {}) => ({ method: 'GET', mode: 'no-cors', url: origin + path, ...extra });
+const resp = (extra = {}, headers = {}) => ({ status: 200, type: 'basic', redirected: false, headers: new Headers(headers), ...extra });
+const out = { paths: {}, privados: {}, outros: {} };
+for (const p of cases.paths) out.paths[p] = sw.isCacheableRequest(req(p), origin);
+for (const p of cases.privadosCheck) out.privados[p] = sw.isPrivatePath(p);
+Object.assign(out.outros, {
+  version: sw.CACHE_VERSION,
+  post: sw.isCacheableRequest(req('/css/app.css', { method: 'POST' }), origin),
+  head: sw.isCacheableRequest(req('/css/app.css', { method: 'HEAD' }), origin),
+  navigate: sw.isCacheableRequest(req('/css/app.css', { mode: 'navigate' }), origin),
+  crossOrigin: sw.isCacheableRequest({ method: 'GET', url: 'https://evil.com/css/app.css' }, origin),
+  ok: sw.isCacheableResponse(resp({}, { 'Cache-Control': 'public, max-age=31536000, immutable' })),
+  semHeaders: sw.isCacheableResponse(resp()),
+  private: sw.isCacheableResponse(resp({}, { 'Cache-Control': 'no-cache, private' })),
+  noStore: sw.isCacheableResponse(resp({}, { 'Cache-Control': 'no-store' })),
+  setCookie: sw.isCacheableResponse(resp({}, { 'Set-Cookie': 'laravel_session=x' })),
+  redirected: sw.isCacheableResponse(resp({ redirected: true })),
+  status404: sw.isCacheableResponse(resp({ status: 404 })),
+  status206: sw.isCacheableResponse(resp({ status: 206 })),
+  opaque: sw.isCacheableResponse(resp({ type: 'opaque', status: 0 })),
+  cors: sw.isCacheableResponse(resp({ type: 'cors' })),
+  vazio: sw.isCacheableResponse(null),
+});
+process.stdout.write(JSON.stringify(out));
+JS;
+
+        $process = new \Symfony\Component\Process\Process([
+            $node, '-e', $script, public_path('sw.js'),
+            json_encode(['paths' => array_merge($privados, $estaticos), 'privadosCheck' => ['/index.php/gestao/x', '/gest%61o/x', '/GESTAO/x', '/Login', '/storage/x', '/gestao%', '/css/app.css']]),
+        ]);
+        $process->mustRun();
+        $out = json_decode($process->getOutput(), true);
+        $this->assertIsArray($out, $process->getOutput() . $process->getErrorOutput());
+
+        foreach ($privados as $path) {
+            $this->assertFalse($out['paths'][$path], "Não pode ir para a cache: {$path}");
+        }
+        foreach ($estaticos as $path) {
+            $this->assertTrue($out['paths'][$path], "Asset estático devia poder ir para a cache: {$path}");
+        }
+
+        foreach (['/index.php/gestao/x', '/gest%61o/x', '/GESTAO/x', '/Login', '/storage/x', '/gestao%'] as $path) {
+            $this->assertTrue($out['privados'][$path], "Devia contar como privado: {$path}");
+        }
+        $this->assertFalse($out['privados']['/css/app.css']);
+
+        $this->assertSame('izzycar-v3', $out['outros']['version']);
+        foreach (['post', 'head', 'navigate', 'crossOrigin'] as $caso) {
+            $this->assertFalse($out['outros'][$caso], "Pedido não guardável: {$caso}");
+        }
+        $this->assertTrue($out['outros']['ok']);
+        $this->assertTrue($out['outros']['semHeaders']);
+        foreach (['private', 'noStore', 'setCookie', 'redirected', 'status404', 'status206', 'opaque', 'cors', 'vazio'] as $caso) {
+            $this->assertFalse($out['outros'][$caso], "Resposta não guardável: {$caso}");
+        }
     }
 }

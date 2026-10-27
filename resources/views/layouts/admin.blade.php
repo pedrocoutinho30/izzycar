@@ -461,6 +461,13 @@
                     .register('/sw.js', { scope: '/' })
                     .then(function (reg) {
                         console.log('[PWA] Service Worker registado:', reg.scope);
+                        // Há duas registrations (scopes / e /gestao/) com a mesma Cache Storage:
+                        // pede a ambas que procurem o sw.js novo, para nenhuma ficar na versão antiga.
+                        if (navigator.serviceWorker.getRegistrations) {
+                            navigator.serviceWorker.getRegistrations().then(function (regs) {
+                                regs.forEach(function (r) { r.update().catch(function () {}); });
+                            }).catch(function () {});
+                        }
                     })
                     .catch(function (err) {
                         console.warn('[PWA] Falha no registo do SW:', err);
