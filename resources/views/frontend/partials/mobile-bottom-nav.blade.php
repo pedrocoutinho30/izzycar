@@ -99,7 +99,7 @@
 }
 
 .mbn-item.is-active svg {
-    color: #ff5555;
+    color: #B59151;
 }
 
 /* Toque de animação "automóvel" — o ícone ativo dá um pequeno solavanco de
