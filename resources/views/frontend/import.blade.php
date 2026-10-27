@@ -256,7 +256,7 @@
         </div>
         <div class="import-description-card fade-in-up" data-delay="200">
             <div class="import-description-content">
-                {!!$data->process_import['description']!!}
+                {!! \App\Support\RichText::display($data->process_import['description']) !!}
             </div>
         </div>
     </div>
@@ -292,7 +292,7 @@
                     </div>
                     <div class="why-import-content">
                         <h5 class="why-import-title">{{ $item['title'] }}</h5>
-                        <div class="why-import-description">{!! $item['content'] !!}</div>
+                        <div class="why-import-description">{!! \App\Support\RichText::display($item['content']) !!}</div>
                     </div>
                 </div>
             </div>
@@ -388,7 +388,7 @@
                     </div>
                     <h5 class="cost-card-title">{{ $cost['title'] }}</h5>
                     <div class="cost-card-content">
-                        {!! $cost['content'] ?? 'Informação detalhada sobre este custo' !!}
+                        {!! \App\Support\RichText::display($cost['content'] ?? 'Informação detalhada sobre este custo') !!}
                     </div>
                     <div class="cost-card-footer">
                         <span class="cost-learn-more">
@@ -463,7 +463,7 @@
                 </button>
                 <div id="collapse-faq-{{ $loop->index }}" class="collapse faq-answer-collapse">
                     <div class="faq-answer-modern">
-                        {!! $faqItem['answer'] !!}
+                        {!! \App\Support\RichText::display($faqItem['answer']) !!}
                     </div>
                 </div>
             </div>

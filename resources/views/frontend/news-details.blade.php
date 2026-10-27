@@ -110,7 +110,7 @@
     <h1 class="nd-header__title">{{ $news->title }}</h1>
 
     @if(!empty($news->subtitle))
-    <div class="nd-header__subtitle">{!! $news->subtitle !!}</div>
+    <div class="nd-header__subtitle">{!! \App\Support\RichText::display($news->subtitle) !!}</div>
     @endif
   </div>
 </header>
@@ -135,7 +135,7 @@
     <main class="nd-article" id="ndArticle">
 
       <div class="nd-article__body nd-prose">
-        {!! $news->content !!}
+        {!! \App\Support\RichText::display($news->content) !!}
       </div>
 
       {{-- Gallery --}}
@@ -165,7 +165,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div class="nd-summary__content nd-prose">
-          {!! $news->summary !!}
+          {!! \App\Support\RichText::display($news->summary) !!}
         </div>
       </div>
       @endif

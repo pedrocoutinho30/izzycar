@@ -310,7 +310,7 @@
         @php $slug = \Illuminate\Support\Str::slug($tab['title']); @endphp
         <div class="process-content-inner {{ $index === 0 ? 'active' : '' }}" id="pane-import-{{ $slug }}">
             <div class="process-content-text">
-                {!! $tab['content'] !!}
+                {!! \App\Support\RichText::display($tab['content']) !!}
             </div>
             @if(!empty($tab['image']))
             <div class="process-content-image">

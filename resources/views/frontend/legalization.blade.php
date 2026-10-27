@@ -169,7 +169,7 @@
                 </svg>
             </div>
             <div class="intro-content">
-                {!!$data->contents['content']!!}
+                {!! \App\Support\RichText::display($data->contents['content']) !!}
             </div>
         </div>
     </div>
@@ -190,7 +190,7 @@
                     <div class="step-number">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</div>
                     <div class="step-content">
                         <h5 class="step-title">{{ $item['title'] }}</h5>
-                        <div class="step-description">{!! $item['content'] !!}</div>
+                        <div class="step-description">{!! \App\Support\RichText::display($item['content']) !!}</div>
                     </div>
                     <div class="step-arrow">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
