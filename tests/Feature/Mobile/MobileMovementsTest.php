@@ -460,6 +460,93 @@ class MobileMovementsTest extends TestCase
         $this->actingAs($this->userWith(['leads.view.all']))->get(route('admin.mobile.leads.index'))->assertOk()->assertDontSee($link, false);
     }
 
+    // ── Correções da revisão ────────────────────────────────────────────
+
+    public function test_chip_do_cliente_so_mostra_o_nome_a_quem_pode_ver_a_ficha(): void
+    {
+        $cliente = Client::create(['name' => 'Segredo Reservado', 'email' => 's@example.com', 'phone' => '911111111', 'is_lead' => false]);
+        // Sem movimentos do cliente, para o nome não vir dos cartões da lista.
+        $url = route('admin.mobile.movements.index', ['client_id' => $cliente->id]);
+
+        $soMovimentos = $this->userWith(['movements.view']);
+        $this->actingAs($soMovimentos)->get($url)->assertOk()
+            ->assertDontSee('Segredo Reservado')->assertSee('Cliente #' . $cliente->id);
+
+        $comClientes = $this->userWith(['movements.view', 'clients.view.all']);
+        $this->actingAs($comClientes)->get($url)->assertOk()->assertSee('Segredo Reservado');
+    }
+
+    public function test_editar_movimento_antigo_sem_tocar_nos_campos_mantem_os_valores(): void
+    {
+        $user = $this->userWith(['movements.view', 'movements.update']);
+        $antigo = $this->mov([
+            'category' => 'categoria_antiga', 'payment_method' => 'cheque', 'status' => 'estado_antigo',
+            'vat_rate' => 21, 'amount' => 123, 'amount_gross' => 123, 'vat_amount' => 21.35, 'amount_net' => 101.65,
+        ]);
+
+        $html = $this->actingAs($user)->get(route('admin.mobile.movements.edit', $antigo->id))->assertOk()->getContent();
+        $this->assertStringContainsString('21% (atual)', $html);
+        $this->assertStringContainsString('categoria_antiga (atual)', $html);
+        $this->assertStringContainsString('estado_antigo (atual)', $html);
+        $this->assertStringContainsString('cheque (atual)', $html);
+
+        // O que o browser enviaria sem mexer em nada.
+        $this->actingAs($user)->put(route('admin.mobile.movements.update', $antigo->id), [
+            'movement_type' => 'expense', 'category' => 'categoria_antiga', 'title' => 'Manual', 'amount' => '123',
+            'vat_rate' => '21', 'expense_date' => '2026-05-10', 'status' => 'estado_antigo', 'payment_method' => 'cheque',
+        ])->assertRedirect();
+
+        $f = $antigo->fresh();
+        $this->assertSame('categoria_antiga', $f->category);
+        $this->assertSame('estado_antigo', $f->status);
+        $this->assertSame('cheque', $f->payment_method);
+        $this->assertEquals(21, $f->vat_rate);
+        $this->assertEquals(21.35, $f->vat_amount);
+    }
+
+    public function test_editar_movimento_antigo_sem_taxa_de_iva_mantem_taxa_e_valores(): void
+    {
+        $user = $this->userWith(['movements.view', 'movements.update']);
+        $antigo = $this->mov(['vat_rate' => null, 'amount' => 80, 'amount_gross' => 80, 'vat_amount' => null, 'amount_net' => null]);
+
+        $html = $this->actingAs($user)->get(route('admin.mobile.movements.edit', $antigo->id))->assertOk()->getContent();
+        $this->assertStringContainsString('Não definido', $html);
+        $this->assertDoesNotMatchRegularExpression('/<option value="23" selected/', $html);
+
+        $this->actingAs($user)->put(route('admin.mobile.movements.update', $antigo->id), [
+            'movement_type' => 'expense', 'category' => 'repair', 'title' => 'Manual', 'amount' => '80',
+            'vat_rate' => '', 'expense_date' => '2026-05-10', 'status' => 'paid',
+        ])->assertRedirect();
+
+        $f = $antigo->fresh();
+        $this->assertNull($f->vat_rate);
+        $this->assertNull($f->vat_amount);
+        $this->assertNull($f->amount_net);
+        $this->assertEquals(80, $f->amount_gross);
+    }
+
+    public function test_totais_filtrados_usam_o_montante_quando_nao_ha_bruto(): void
+    {
+        $this->mov(['movement_type' => 'income', 'amount' => 500, 'amount_gross' => 500]);
+        $this->mov(['movement_type' => 'income', 'amount' => 250, 'amount_gross' => null]);
+        $this->mov(['movement_type' => 'expense', 'amount' => 40, 'amount_gross' => null]);
+        $this->mov(['movement_type' => 'expense', 'amount' => 60, 'amount_gross' => 60]);
+
+        $r = $this->actingAs($this->userWith(['movements.view']))->get(route('admin.mobile.movements.index', ['year' => '2026']))->assertOk();
+        $this->assertEquals(750.0, $r->viewData('filteredIncome'));
+        $this->assertEquals(100.0, $r->viewData('filteredExpenses'));
+    }
+
+    public function test_carregar_mais_navega_quando_o_pedido_falha(): void
+    {
+        foreach (glob(resource_path('views/admin/mobile/*/index.blade.php')) as $vista) {
+            $codigo = file_get_contents($vista);
+            if (str_contains($codigo, "getElementById('m-load-more')")) {
+                $this->assertStringContainsString('if (!resposta.ok) throw', $codigo, basename(dirname($vista)));
+            }
+        }
+    }
+
     public function test_rotas_mobile_cobertas_pelo_catalogo_com_a_acao_certa(): void
     {
         $registry = app(\App\Permissions\PermissionRegistry::class);

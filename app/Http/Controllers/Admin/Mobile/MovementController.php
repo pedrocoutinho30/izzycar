@@ -15,6 +15,7 @@ use App\Support\DecimalInput;
 use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Movimentos financeiros na versão mobile: lista com os filtros e os totais
@@ -66,8 +67,10 @@ class MovementController extends Controller
 
         // Totais dos resultados filtrados (todas as páginas, não só a visível).
         $filteredCount = (clone $query)->count();
-        $filteredIncome = (float) (clone $query)->where('movement_type', 'income')->sum('amount_gross');
-        $filteredExpenses = (float) (clone $query)->where('movement_type', 'expense')->sum('amount_gross');
+        // Como os cartões: valor bruto, ou o montante quando o bruto não está preenchido.
+        $valorLinha = 'COALESCE(amount_gross, amount)';
+        $filteredIncome = (float) (clone $query)->where('movement_type', 'income')->sum(DB::raw($valorLinha));
+        $filteredExpenses = (float) (clone $query)->where('movement_type', 'expense')->sum(DB::raw($valorLinha));
 
         $movements = $query->orderBy('expense_date', 'desc')
             ->orderBy('created_at', 'desc')
@@ -86,9 +89,21 @@ class MovementController extends Controller
             'filteredExpenses' => $filteredExpenses,
             'availableYears' => $this->movements->availableYears(),
             'vehicles' => V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get(),
-            'filterClient' => $filters['client_id'] !== null ? Client::select('id', 'name')->find($filters['client_id']) : null,
+            'filterClient' => $this->filterClient($user, $filters['client_id']),
             'canCreate' => $this->permissions->allows($user, 'movements', 'create'),
         ]);
+    }
+
+    /** Nome do cliente do filtro só para quem pode ver essa ficha (senão, chip neutro "Cliente #N"). */
+    private function filterClient($user, ?int $id): ?Client
+    {
+        if ($id === null) {
+            return null;
+        }
+
+        $client = Client::select('id', 'name', 'is_lead')->find($id);
+
+        return $client && $this->permissions->allows($user, $client->is_lead ? 'leads' : 'clients', 'view', $client) ? $client : null;
     }
 
     public function show(Request $request, $id)

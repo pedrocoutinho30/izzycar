@@ -64,6 +64,7 @@
         botao.classList.add('disabled');
         try {
             const resposta = await fetch(botao.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            if (!resposta.ok) throw new Error('HTTP ' + resposta.status); // abre a página inteira
             const pagina = new DOMParser().parseFromString(await resposta.text(), 'text/html');
             pagina.querySelectorAll('#m-leads-list > .m-lead-card').forEach((cartao) => {
                 document.getElementById('m-leads-list').appendChild(cartao);

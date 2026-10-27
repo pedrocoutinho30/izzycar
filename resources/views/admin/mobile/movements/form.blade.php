@@ -11,8 +11,19 @@
         return is_numeric($v) ? str_replace('.', ',', (string) (float) $v) : $v;
     };
     $data = old('expense_date', $movement->expense_date?->format('Y-m-d'));
-    // Taxas de IVA do formulário do desktop (por omissão 23%).
-    $iva = old('vat_rate', $movement->vat_rate ?? 23);
+    // Taxas de IVA do formulário do desktop. Num movimento novo, 23% por omissão (já vem no modelo);
+    // num antigo sem taxa fica "Não definido" e uma taxa fora da lista mantém-se como "(atual)".
+    $iva = old('vat_rate', $movement->vat_rate);
+    $taxas = [0 => 'Sem IVA', 6 => '6%', 13 => '13%', 19 => '19%', 23 => '23%', 25 => '25%'];
+    $ivaForaDaLista = is_numeric($iva) && ! in_array((float) $iva, array_map('floatval', array_keys($taxas)), true);
+    // Com vírgula decimal, como o resto do formulário (o DecimalInput lê "21.5" como milhares).
+    $ivaTexto = is_numeric($iva) ? str_replace('.', ',', (string) (float) $iva) : '';
+    // Valor atual fora da lista de opções: acrescenta-se como opção selecionada, para não se perder ao guardar.
+    $foraDaLista = function (string $campo, array $lista) use ($valor) {
+        $v = $valor($campo);
+
+        return is_string($v) && $v !== '' && ! array_key_exists($v, $lista) ? $v : null;
+    };
     $voltar = $editar ? route('admin.mobile.movements.show', $movement->id) : route('admin.mobile.movements.index');
 @endphp
 
@@ -47,6 +58,9 @@
                     @foreach(\App\Models\Expense::categories() as $opcao => $nome)
                         <option value="{{ $opcao }}" @selected($valor('category') === $opcao)>{{ $nome }}</option>
                     @endforeach
+                    @if($extra = $foraDaLista('category', \App\Models\Expense::categories()))
+                        <option value="{{ $extra }}" selected>{{ $extra }} (atual)</option>
+                    @endif
                 </select>
             </div>
 
@@ -85,9 +99,15 @@
             <div>
                 <label for="mov-vat" class="form-label fw-semibold">Taxa de IVA</label>
                 <select id="mov-vat" name="vat_rate" class="form-select @error('vat_rate') is-invalid @enderror">
-                    @foreach([0 => 'Sem IVA', 6 => '6%', 13 => '13%', 19 => '19%', 23 => '23%', 25 => '25%'] as $taxa => $nome)
-                        <option value="{{ $taxa }}" @selected((float) $iva == $taxa)>{{ $nome }}</option>
+                    @if($iva === null || $iva === '')
+                        <option value="" selected>Não definido</option>
+                    @endif
+                    @foreach($taxas as $taxa => $nome)
+                        <option value="{{ $taxa }}" @selected($iva !== null && $iva !== '' && (float) $iva == $taxa)>{{ $nome }}</option>
                     @endforeach
+                    @if($ivaForaDaLista)
+                        <option value="{{ $ivaTexto }}" selected>{{ $ivaTexto }}% (atual)</option>
+                    @endif
                 </select>
             </div>
 
@@ -102,6 +122,9 @@
                     @foreach(\App\Models\Expense::statuses() as $opcao => $nome)
                         <option value="{{ $opcao }}" @selected(($valor('status') ?? 'paid') === $opcao)>{{ $nome }}</option>
                     @endforeach
+                    @if($extra = $foraDaLista('status', \App\Models\Expense::statuses()))
+                        <option value="{{ $extra }}" selected>{{ $extra }} (atual)</option>
+                    @endif
                 </select>
             </div>
 
@@ -112,6 +135,9 @@
                     @foreach(\App\Models\Expense::paymentMethods() as $opcao => $nome)
                         <option value="{{ $opcao }}" @selected($valor('payment_method') === $opcao)>{{ $nome }}</option>
                     @endforeach
+                    @if($extra = $foraDaLista('payment_method', \App\Models\Expense::paymentMethods()))
+                        <option value="{{ $extra }}" selected>{{ $extra }} (atual)</option>
+                    @endif
                 </select>
             </div>
         </div>

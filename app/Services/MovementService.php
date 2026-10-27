@@ -118,6 +118,16 @@ class MovementService
     public function computeVatFields(array &$data): void
     {
         $gross   = (float) ($data['amount'] ?? 0);
+
+        // Taxa explicitamente por definir (movimento antigo no mobile): não se
+        // inventa IVA; o valor bruto sincroniza-se e o IVA/líquido ficam como estão.
+        if (array_key_exists('vat_rate', $data) && $data['vat_rate'] === null) {
+            $data['amount_gross'] = $gross;
+            unset($data['vat_amount'], $data['amount_net']);
+
+            return;
+        }
+
         $vatRate = (float) ($data['vat_rate'] ?? 0);
         $vatAmt  = $vatRate > 0 ? round($gross - ($gross / (1 + $vatRate / 100)), 2) : 0.0;
 
