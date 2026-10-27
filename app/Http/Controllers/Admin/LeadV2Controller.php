@@ -6,12 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\FormProposal;
 use App\Models\CostSimulator;
-use App\Models\LeadActivity;
 use App\Models\User;
+use App\Services\LeadService;
 use Illuminate\Http\Request;
 
 class LeadV2Controller extends Controller
 {
+    public function __construct(private LeadService $leads)
+    {
+    }
+
     // Leads activas = nova + em_contacto + qualificada (excluindo fria e perdida)
     private static function activeLeadsQuery()
     {
@@ -28,36 +32,13 @@ class LeadV2Controller extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name'        => 'required|string|max:255',
-            'email'       => 'nullable|email|max:255',
-            'phone'       => 'nullable|string|max:50',
-            'origin'      => 'nullable|string|max:255',
-            'lead_source' => 'nullable|string|max:255',
-            'lead_status' => 'nullable|in:nova,em_contacto,qualificada,fria,perdida',
-            'observation' => 'nullable|string|max:2000',
-            'owner_id'    => 'nullable|exists:users,id',
-        ]);
+        $data = $request->validate($this->leads->rules());
 
         if ($warning = app(\App\Services\ClientMatcher::class)->duplicateWarning($data['email'] ?? null, $data['phone'] ?? null, $request->boolean('confirm_duplicate'))) {
             return back()->withInput()->withErrors(['duplicate' => $warning['message']])->with('duplicate_url', $warning['url']);
         }
 
-        $lead = Client::create([
-            ...$data,
-            'is_lead'     => true,
-            'lead_source' => $data['lead_source'] ?? 'manual',
-            'lead_status' => $data['lead_status'] ?? 'nova',
-            'origin'      => $data['origin'] ?? 'Manual BO',
-        ]);
-
-        LeadActivity::log(
-            $lead->id,
-            'Lead criado manualmente',
-            'Criado por ' . (auth()->user()->name ?? '—') . '.',
-            'bi-plus-circle-fill',
-            'success'
-        );
+        $lead = $this->leads->create($data, auth()->user());
 
         return redirect()->route('admin.v2.leads.show', $lead->id)
             ->with('success', 'Lead criado com sucesso.');
@@ -103,15 +84,7 @@ class LeadV2Controller extends Controller
         $lead = Client::findOrFail($id);
         $request->validate(['owner_id' => 'nullable|exists:users,id']);
 
-        $lead->update(['owner_id' => $request->owner_id ?: null]);
-
-        LeadActivity::log(
-            $lead->id,
-            'Proprietário da lead alterado para: ' . ($lead->owner?->name ?? 'sem proprietário'),
-            '',
-            'bi-person-badge',
-            'info'
-        );
+        $this->leads->assignOwner($lead, $request->owner_id ? (int) $request->owner_id : null);
 
         return back()->with('success', 'Proprietário da lead actualizado.');
     }
@@ -156,27 +129,9 @@ class LeadV2Controller extends Controller
     public function updateStatus(Request $request, $id)
     {
         $lead = Client::where('is_lead', true)->findOrFail($id);
-        $request->validate(['status' => 'required|in:nova,em_contacto,qualificada,fria,perdida']);
+        $request->validate(['status' => 'required|in:' . implode(',', LeadService::STATUSES)]);
 
-        $oldStatus = $lead->lead_status ?? 'nova';
-        $lead->update(['lead_status' => $request->status]);
-
-        $statusLabels = [
-            'nova'        => 'Nova',
-            'em_contacto' => 'Em Contacto',
-            'qualificada' => 'Qualificada',
-            'fria'        => 'Fria',
-            'perdida'     => 'Perdida',
-        ];
-        $statusColors = ['nova' => 'success', 'em_contacto' => 'info', 'qualificada' => 'primary', 'fria' => 'secondary', 'perdida' => 'danger'];
-
-        LeadActivity::log(
-            $lead->id,
-            'Estado alterado: ' . ($statusLabels[$oldStatus] ?? $oldStatus) . ' → ' . ($statusLabels[$request->status] ?? $request->status),
-            '',
-            'bi-arrow-repeat',
-            $statusColors[$request->status] ?? 'secondary'
-        );
+        $this->leads->changeStatus($lead, $request->status);
 
         // Suporta tanto pedidos AJAX (kanban) como form POST normal
         if ($request->expectsJson()) {
@@ -189,15 +144,7 @@ class LeadV2Controller extends Controller
     public function convert($id)
     {
         $lead = Client::where('is_lead', true)->findOrFail($id);
-        $lead->convertToClient();
-
-        LeadActivity::log(
-            $lead->id,
-            'Lead convertido em cliente',
-            'Convertido manualmente pelo utilizador ' . (auth()->user()->name ?? '—') . '.',
-            'bi-person-check-fill',
-            'success'
-        );
+        $this->leads->convert($lead, auth()->user());
 
         return redirect()->route('admin.v2.clients.edit', $id)
             ->with('success', 'Lead convertido em cliente! Complete os dados em falta.');
@@ -211,18 +158,7 @@ class LeadV2Controller extends Controller
             'followup_note'    => 'nullable|string|max:255',
         ]);
 
-        $lead->update([
-            'next_followup_at' => $request->next_followup_at,
-            'followup_note'    => $request->followup_note,
-        ]);
-
-        LeadActivity::log(
-            $lead->id,
-            'Follow-up agendado para ' . \Carbon\Carbon::parse($request->next_followup_at)->format('d/m/Y H:i'),
-            $request->followup_note ?? '',
-            'bi-alarm-fill',
-            'warning'
-        );
+        $this->leads->scheduleFollowup($lead, $request->next_followup_at, $request->followup_note);
 
         return back()->with('success', 'Follow-up agendado.');
     }
@@ -236,7 +172,7 @@ class LeadV2Controller extends Controller
             'body'  => 'nullable|string|max:2000',
         ]);
 
-        LeadActivity::logManual($lead->id, $request->type, $request->title, $request->body ?? '');
+        $this->leads->logActivity($lead, $request->type, $request->title, $request->body);
 
         return back()->with('success', 'Actividade registada.');
     }
