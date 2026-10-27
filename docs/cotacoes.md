@@ -50,7 +50,7 @@ No código chamam-se `Proposal` ("proposta"/"cotação"). Cotação aceite gera 
 
 ## Financeiro
 
-`Expense::syncFromConvertedProposal` corre em cada `saved`: **receitas** (`import_service`) das tranches pagas; **despesas** de comissão (usa `angariador_commission`, não `valor_comissao`), inspeção, transporte, IPO, ISV, IMT, matrícula e registo, só enquanto estão pagas (desmarcar apaga). O valor do carro fica de fora. Sem `v3_vehicle_id` de propósito (a viatura é do cliente). Os movimentos com `source_type` não se editam em `v2/movements`, só na convertida. `ExpenseObserver` sincroniza `FinancialMovement`.
+`Expense::syncFromConvertedProposal` corre em cada `saved`: **receitas** (`import_service`) das tranches pagas; **despesas** de comissão (usa `angariador_commission`, não `valor_comissao`), inspeção, transporte, IPO, ISV, IMT, matrícula e registo, só enquanto estão pagas (desmarcar apaga). O valor do carro fica de fora. Sem `v3_vehicle_id` de propósito (a viatura é do cliente). Os movimentos com `source_type` não se editam em `v2/movements` nem no mobile (`MovementService::isAutomatic`), só na convertida. `ExpenseObserver` sincroniza `FinancialMovement`.
 
 ## Armadilhas
 

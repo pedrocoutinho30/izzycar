@@ -259,6 +259,11 @@
                 <i class="bi bi-calculator"></i> Simulador de custos
             </a>
             @endcanroute
+            @canroute('admin.mobile.movements.index')
+            <a class="m-sheet-item" href="{{ route('admin.mobile.movements.index') }}">
+                <i class="bi bi-journal-text"></i> Movimentos
+            </a>
+            @endcanroute
             <a class="m-sheet-item" href="{{ route('admin.v2.dashboard') }}">
                 <i class="bi bi-display"></i> Ir para a versão desktop
             </a>

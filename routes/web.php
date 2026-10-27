@@ -741,6 +741,16 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::get('/simulador-custos', [App\Http\Controllers\Admin\Mobile\CostSimulatorController::class, 'index'])->name('cost-simulators.index');
         Route::get('/simulador-custos/{id}', [App\Http\Controllers\Admin\Mobile\CostSimulatorController::class, 'show'])->name('cost-simulators.show')->whereNumber('id');
 
+        // Movimentos financeiros ("/movimentos/novo" tem de ficar antes de "/movimentos/{id}").
+        // Os automáticos (venda, viatura, convertida) são só de consulta; exportações e comprovativos no desktop.
+        Route::get('/movimentos', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'index'])->name('movements.index');
+        Route::get('/movimentos/novo', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'create'])->name('movements.create');
+        Route::post('/movimentos', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'store'])->name('movements.store');
+        Route::get('/movimentos/{id}', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'show'])->name('movements.show')->whereNumber('id');
+        Route::get('/movimentos/{id}/editar', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'edit'])->name('movements.edit')->whereNumber('id');
+        Route::put('/movimentos/{id}', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'update'])->name('movements.update')->whereNumber('id');
+        Route::delete('/movimentos/{id}', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'destroy'])->name('movements.destroy')->whereNumber('id');
+
         // Oportunidades de um pedido (scopeBindings: a oportunidade tem de ser do pedido).
         Route::prefix('/formularios/{formProposal}/oportunidades')->name('form-proposals.opportunities.')->scopeBindings()->group(function () {
             Route::post('/', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'store'])->name('store');

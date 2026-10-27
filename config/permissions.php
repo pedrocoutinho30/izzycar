@@ -125,7 +125,10 @@ return [
                 'legalizations' => ['label' => 'Legalizações', 'routes' => ['admin.legalizations.*']],
                 'vehicles' => ['label' => 'Viaturas', 'routes' => ['admin.v3.vehicles.*', 'admin.v2.vehicles.*']],
                 'tasks' => ['label' => 'Tarefas', 'routes' => ['admin.tasks.*']],
-                'movements' => ['label' => 'Movimentos', 'routes' => ['admin.v2.movements.*', 'admin.v2.expenses.*']],
+                'movements' => ['label' => 'Movimentos', 'routes' => ['admin.v2.movements.*', 'admin.v2.expenses.*',
+                    // Mobile: nomes explícitos (sem âmbito "próprios"; o controller verifica cada ação).
+                    'admin.mobile.movements.index', 'admin.mobile.movements.show', 'admin.mobile.movements.create', 'admin.mobile.movements.store',
+                    'admin.mobile.movements.edit', 'admin.mobile.movements.update', 'admin.mobile.movements.destroy']],
                 'sales' => ['label' => 'Vendas', 'routes' => ['admin.v2.sales.*']],
                 'inspections' => ['label' => 'Inspeções', 'routes' => ['admin.v3.inspections.*']],
                 'transports' => ['label' => 'Transportes', 'routes' => ['admin.transport-quotes.*']],

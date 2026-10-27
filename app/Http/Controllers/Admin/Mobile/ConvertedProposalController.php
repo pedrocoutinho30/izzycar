@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Mobile;
 
 use App\Http\Controllers\Controller;
 use App\Models\ConvertedProposal;
+use App\Models\Expense;
 use App\Permissions\PermissionService;
 use App\Services\ConvertedProposalService;
 use Illuminate\Http\Request;
@@ -95,6 +96,10 @@ class ConvertedProposalController extends Controller
                 && $this->permissions->allows($user, 'commissions', 'view', $convertedProposal),
             'canViewClient' => $client !== null && $this->permissions->allows($user, $client->is_lead ? 'leads' : 'clients', 'view', $client),
             'canViewProposal' => $proposal !== null && $this->permissions->allows($user, 'proposals', 'view', $proposal->setRelation('client', $client)),
+            // Lançamentos automáticos desta importação (tranches, comissão, custos pagos): só para quem vê movimentos.
+            'movementsCount' => $this->permissions->allows($user, 'movements', 'view')
+                ? Expense::fromConvertedProposal($convertedProposal->id)->count()
+                : null,
         ]);
     }
 

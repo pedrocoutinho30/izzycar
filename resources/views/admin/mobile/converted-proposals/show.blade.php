@@ -300,6 +300,11 @@
     </div>
 
     <div class="d-grid gap-2 mt-3">
+        @if($movementsCount)
+            <a href="{{ route('admin.mobile.movements.index', ['convertida' => $converted->id, 'year' => 'all']) }}" class="btn btn-outline-primary">
+                <i class="bi bi-journal-text me-1"></i> Movimentos desta importação ({{ $movementsCount }})
+            </a>
+        @endif
         @if($canViewProposal)
             <a href="{{ route('admin.mobile.proposals.show', $proposta->id) }}" class="btn btn-outline-primary">
                 <i class="bi bi-file-earmark-text me-1"></i> Cotação de origem
