@@ -188,7 +188,7 @@
                             @method('PATCH')
                             <input type="hidden" name="status" value="Enviado">
                             <input type="hidden" name="notify" value="1">
-                            <button type="submit" class="btn btn-outline-info w-100 text-start">Marcar como Enviado (email ao cliente)</button>
+                            <button type="submit" class="btn btn-outline-info w-100 text-start" onclick="return confirm('Marcar como Enviado? Envia um email ao cliente com o link da cotação.')">Marcar como Enviado (email ao cliente)</button>
                         </form>
                         <form action="{{ route('admin.mobile.proposals.status', $proposal->id) }}" method="POST">
                             @csrf

@@ -13,6 +13,7 @@ use App\Permissions\PermissionService;
 use App\Services\ProposalAcceptanceException;
 use App\Services\ProposalService;
 use App\Services\ProposalStatusNotAppliedException;
+use App\Support\DecimalInput;
 use Illuminate\Http\Request;
 
 /**
@@ -23,6 +24,13 @@ use Illuminate\Http\Request;
  */
 class ProposalController extends Controller
 {
+    /** Campos monetários/decimais: no telemóvel escrevem-se com vírgula ("800,50"). */
+    private const DECIMAL_FIELDS = [
+        'transport_cost', 'inspection_commission_cost', 'ipo_cost', 'imt_cost', 'registration_cost',
+        'license_plate_cost', 'isv_cost', 'commission_cost', 'iuc_cost', 'proposed_car_value',
+        'value', 'engine_capacity', 'co2',
+    ];
+
     public function __construct(private ProposalService $proposals, private PermissionService $permissions)
     {
     }
@@ -122,6 +130,7 @@ class ProposalController extends Controller
     public function store(Request $request)
     {
         $this->authorizeCreate($request);
+        $this->normalizeDecimals($request);
         $data = $this->withoutEmptyLinks($request->validate($this->proposals->rules()));
 
         $client = Client::findOrFail($data['client_id']);
@@ -170,6 +179,7 @@ class ProposalController extends Controller
     {
         $proposal = Proposal::findOrFail($id);
         $this->authorizeUpdate($request, $proposal);
+        $this->normalizeDecimals($request);
 
         $data = $this->withoutEmptyLinks($request->validate($this->proposals->updateRules()));
         if ((int) $data['client_id'] !== (int) $proposal->client_id) {
@@ -219,6 +229,18 @@ class ProposalController extends Controller
 
         return redirect()->route('admin.mobile.proposals.show', $proposal->id)
             ->with('success', "Cotação aceite. Cotação convertida #{$converted->id} criada.");
+    }
+
+    /** "800,50" e "1.200,50" passam a 800.50 e 1200.50 antes de validar (só no mobile). */
+    private function normalizeDecimals(Request $request): void
+    {
+        $normalizados = [];
+        foreach (self::DECIMAL_FIELDS as $campo) {
+            if ($request->exists($campo) && is_string($request->input($campo))) {
+                $normalizados[$campo] = DecimalInput::normalize($request->input($campo));
+            }
+        }
+        $request->merge($normalizados);
     }
 
     /** O formulário tem campos de links fixos: os vazios não se gravam. */

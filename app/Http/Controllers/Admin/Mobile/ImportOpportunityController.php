@@ -9,6 +9,7 @@ use App\Http\Requests\StoreOpportunityContactRequest;
 use App\Models\FormProposal;
 use App\Models\ImportOpportunity;
 use App\Models\ImportOpportunityContact;
+use App\Models\Proposal;
 use App\Permissions\PermissionService;
 use App\Services\FormProposalService;
 use App\Services\ImportOpportunityService;
@@ -55,7 +56,7 @@ class ImportOpportunityController extends Controller
             // Uma cotação por oportunidade: "Ver cotação" se já existe, senão "Criar cotação".
             'existingProposal' => $opportunity->proposal_id ? $opportunity->proposal : null,
             'canCreateProposal' => $formProposal->client_id !== null && $this->permissions->allows($request->user(), 'proposals', 'create'),
-            'canViewProposals' => $this->permissions->allows($request->user(), 'proposals', 'view', (new \App\Models\Proposal)->setRelation('client', $formProposal->client)),
+            'canViewProposals' => $this->permissions->allows($request->user(), 'proposals', 'view', (new Proposal)->setRelation('client', $formProposal->client)),
         ]);
     }
 

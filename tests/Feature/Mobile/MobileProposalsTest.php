@@ -312,6 +312,72 @@ class MobileProposalsTest extends TestCase
         $this->assertSame(1, ConvertedProposal::count());
     }
 
+    public function test_valores_com_virgula_e_milhares_gravam_se_como_decimais(): void
+    {
+        $lead = $this->lead();
+        $user = $this->mobileUser();
+
+        $this->actingAs($user)->post(route('admin.mobile.proposals.store'), $this->payload($lead, [
+            'transport_cost' => '800,50', 'ipo_cost' => '1.200,5', 'imt_cost' => '', 'isv_cost' => ' 2 300,25 ', 'proposed_car_value' => '20.000,00',
+        ]))->assertSessionHasNoErrors();
+
+        $proposal = Proposal::firstOrFail();
+        $this->assertSame(800.50, (float) $proposal->transport_cost);
+        $this->assertSame(1200.50, (float) $proposal->ipo_cost);
+        $this->assertSame(2300.25, (float) $proposal->isv_cost);
+        $this->assertSame(20000.0, (float) $proposal->proposed_car_value);
+        $this->assertNull($proposal->imt_cost);
+    }
+
+    public function test_texto_invalido_num_valor_da_erro_de_validacao(): void
+    {
+        $lead = $this->lead();
+
+        $this->actingAs($this->mobileUser())->post(route('admin.mobile.proposals.store'), $this->payload($lead, ['transport_cost' => 'abc', 'ipo_cost' => '1,2,3']))
+            ->assertSessionHasErrors(['transport_cost', 'ipo_cost']);
+        $this->assertSame(0, Proposal::count());
+    }
+
+    public function test_editar_sem_tocar_nos_valores_nao_os_altera(): void
+    {
+        $lead = $this->lead();
+        $proposal = $this->proposal($lead, ['transport_cost' => 1234.5, 'ipo_cost' => 99.9, 'imt_cost' => null]);
+        $user = $this->mobileUser();
+
+        $resposta = $this->actingAs($user)->get(route('admin.mobile.proposals.edit', $proposal->id))->assertOk();
+        $html = $resposta->getContent();
+        $this->assertStringContainsString('type="text"', $html);
+        $this->assertStringNotContainsString('step="0.01"', $html);
+
+        // Reenvia o que o formulário mostra.
+        preg_match('/name="transport_cost" value="([^"]*)"/', $html, $transporte);
+        preg_match('/name="ipo_cost" value="([^"]*)"/', $html, $ipo);
+        preg_match('/name="imt_cost" value="([^"]*)"/', $html, $imt);
+        preg_match('/name="proposed_car_value" value="([^"]*)"/', $html, $valor);
+
+        $this->actingAs($user)->put(route('admin.mobile.proposals.update', $proposal->id), $this->payload($lead, [
+            'transport_cost' => $transporte[1], 'ipo_cost' => $ipo[1], 'imt_cost' => $imt[1], 'proposed_car_value' => $valor[1],
+        ]))->assertSessionHasNoErrors();
+
+        $proposal->refresh();
+        $this->assertSame(1234.5, (float) $proposal->transport_cost);
+        $this->assertSame(99.9, (float) $proposal->ipo_cost);
+        $this->assertSame(20000.0, (float) $proposal->proposed_car_value);
+        $this->assertNull($proposal->imt_cost);
+    }
+
+    public function test_formulario_nao_oferece_aprovada_e_ficha_pede_confirmacao_do_envio(): void
+    {
+        $lead = $this->lead();
+        $proposal = $this->proposal($lead);
+        $user = $this->mobileUser();
+
+        $this->actingAs($user)->get(route('admin.mobile.proposals.edit', $proposal->id))
+            ->assertOk()->assertDontSee('<option value="Aprovada"', false)->assertSee('<option value="Enviado"', false);
+        $this->actingAs($user)->get(route('admin.mobile.proposals.show', $proposal->id))
+            ->assertOk()->assertSee("Envia um email ao cliente", false);
+    }
+
     public function test_editar_no_mobile_mantem_os_atributos_e_limpa_links_vazios(): void
     {
         $lead = $this->lead();

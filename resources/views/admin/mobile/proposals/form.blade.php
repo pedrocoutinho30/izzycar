@@ -105,7 +105,7 @@
                         </div>
                         <div>
                             <label class="form-label fw-semibold" for="mp-value">Valor do carro (€)</label>
-                            <input type="number" id="mp-value" name="proposed_car_value" value="{{ $valor('proposed_car_value') }}" class="form-control @error('proposed_car_value') is-invalid @enderror" min="0" step="0.01" inputmode="decimal">
+                            <input type="text" id="mp-value" name="proposed_car_value" value="{{ $valor('proposed_car_value') }}" class="form-control @error('proposed_car_value') is-invalid @enderror" inputmode="decimal" autocomplete="off">
                         </div>
                         <div>
                             <label class="form-label fw-semibold" for="mp-image">Foto</label>
@@ -132,8 +132,8 @@
                         @foreach($custos as $campo => [$rotulo, $obrigatorio])
                             <div>
                                 <label class="form-label fw-semibold" for="mp-{{ $campo }}">{{ $rotulo }} @if($obrigatorio)<span class="text-danger">*</span>@endif</label>
-                                <input type="number" id="mp-{{ $campo }}" name="{{ $campo }}" value="{{ $valor($campo) }}"
-                                       class="form-control @error($campo) is-invalid @enderror" min="0" step="0.01" inputmode="decimal" @required($obrigatorio)>
+                                <input type="text" id="mp-{{ $campo }}" name="{{ $campo }}" value="{{ $valor($campo) }}"
+                                       class="form-control @error($campo) is-invalid @enderror" inputmode="decimal" autocomplete="off" @required($obrigatorio)>
                             </div>
                         @endforeach
                     </div>
@@ -189,10 +189,11 @@
                             <label class="form-label fw-semibold" for="mp-status">Estado</label>
                             <select id="mp-status" name="status" class="form-select @error('status') is-invalid @enderror">
                                 @foreach($statuses as $opcao)
+                                    @continue($opcao === 'Aprovada')
                                     <option value="{{ $opcao }}" @selected(($valor('status') ?? 'Pendente') === $opcao)>{{ $opcao }}</option>
                                 @endforeach
                             </select>
-                            <div class="small text-muted">"Enviado" envia o email com o link ao cliente; "Aprovada" aceita a cotação e cria a cotação convertida.</div>
+                            <div class="small text-muted">"Enviado" envia o email com o link ao cliente. Para aceitar a cotação, use o botão "Aceitar" na ficha.</div>
                         @endif
                     </div>
                 </div>
