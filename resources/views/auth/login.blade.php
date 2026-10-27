@@ -6,6 +6,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Login - Izzycar Backoffice</title>
 
+    {{-- Vindo da área mobile (ex.: app do ecrã principal sem sessão): mesmo
+         manifest e aspeto da app mobile. No login desktop não muda nada. --}}
+    @if($mobilePwa ?? false)
+    @include('layouts._mobile-pwa-head')
+    @endif
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->

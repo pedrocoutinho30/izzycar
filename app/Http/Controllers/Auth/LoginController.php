@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use App\Support\MobilePwa;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,18 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    /**
+     * Formulário de login. Quando se vem da área mobile (url.intended em
+     * /gestao/mobile, ex.: a app do ecrã principal sem sessão), a página leva o
+     * manifest e as meta tags da app mobile; caso contrário fica como sempre.
+     */
+    public function showLoginForm()
+    {
+        return view('auth.login', [
+            'mobilePwa' => MobilePwa::intendedMobileUrl(request()) !== null,
+        ]);
+    }
+
     protected function authenticated(Request $request, $user)
     {
         if (!$user->isApproved()) {
@@ -63,6 +76,10 @@ class LoginController extends Controller
                 'email' => 'A sua conta não tem nenhum perfil atribuído. Contacte a administração.',
             ]);
         }
+
+        // O regresso usa url.intended (ex.: /gestao/mobile/leads); só se aceita
+        // um URL do próprio site — qualquer outro é descartado e vale o destino normal.
+        MobilePwa::forgetUnsafeIntendedUrl($request);
 
         return null;
     }
