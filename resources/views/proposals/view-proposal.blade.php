@@ -28,8 +28,7 @@
 
 @extends('frontend.partials.layout')
 <?php $no_footer = true; ?>
-<meta name="robots" content="noindex, nofollow">
-
+@section('robots', 'noindex, nofollow')
 @section('title', $proposal->brand . ' ' . $proposal->model . ' — Cotação de Importação')
 
 @section('content')

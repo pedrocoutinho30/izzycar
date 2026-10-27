@@ -11,6 +11,24 @@
     RewriteCond %1\.webp -f
     RewriteRule (.*)\.(jpe?g|png)$ $1.webp [T=image/webp,L]
 
+    # Proteção contra hotlinking: devolve 403 a imagens carregadas a partir de outros sites.
+    # Só se aplica a /storage/ (fotos de viaturas e restantes uploads). Ficam de fora:
+    #  - /img/ e /images/ (assets do site): não são abrangidos porque a regra só olha para /storage/;
+    #  - /storage/settings/ (logo, usado nos emails), /storage/newsletter-offers/ (newsletter),
+    #    /storage/proposals/ (foto no email de cotação aceite), /storage/brands/ e /storage/partners/:
+    #    clientes de email/webmail (Outlook web, etc.) enviam Referer de terceiros.
+    # Referers permitidos: vazio (acesso direto, apps, emails), o próprio site, localhost (desenvolvimento),
+    # motores de busca e redes sociais (para não estragar SEO nem partilhas).
+    RewriteCond %{REQUEST_URI} !^/storage/(settings|newsletter-offers|proposals|brands|partners)/ [NC]
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !^https?://([a-z0-9-]+\.)*izzycar\.pt(:[0-9]+)?(/|$) [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?(/|$) [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-z0-9-]+\.)*(google|bing|yahoo)\.[a-z]{2,3}(\.[a-z]{2})?(:[0-9]+)?(/|$) [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-z0-9-]+\.)*duckduckgo\.com(/|$) [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-z0-9-]+\.)*(facebook|fb|instagram|whatsapp|twitter|linkedin)\.com(/|$) [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-z0-9-]+\.)*(t\.co|x\.com|wa\.me|lnkd\.in)(/|$) [NC]
+    RewriteRule ^storage/.+\.(jpe?g|png|webp|gif)$ - [F,NC,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -60,6 +78,11 @@
     <FilesMatch "\.(html|php)$">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
     </FilesMatch>
+    # Uploads de clientes (retomas, avaliações, comprovativos, inspeções, documentos): fora dos motores de busca
+    <If "%{REQUEST_URI} =~ m#^/storage/(consignment-evaluations|retoma|import-opportunities|inspections|comissoes|expenses|movements|proposals|files)/#">
+        Header set X-Robots-Tag "noindex, noimageindex"
+    </If>
+
     # WebP content-type correto
     <FilesMatch "\.webp$">
         Header set Content-Type "image/webp"

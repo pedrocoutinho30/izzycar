@@ -1,6 +1,7 @@
 @extends('frontend.partials.layout')
 
 @section('title', 'Izzycar - Linha do Tempo da Cotação')
+@section('robots', 'noindex, nofollow')
 
 @section('content')
 
