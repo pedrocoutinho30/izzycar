@@ -15,7 +15,7 @@
         .body { padding: 36px 30px; }
         .greeting { font-size: 18px; font-weight: bold; color: #111; margin-bottom: 10px; }
         .intro { font-size: 15px; color: #555; line-height: 1.7; margin-bottom: 28px; }
-        .vehicle-box { background: #f8f8f8; border-left: 4px solid #990000; border-radius: 0 8px 8px 0; padding: 20px 24px; margin-bottom: 28px; }
+        .vehicle-box { background: #f8f8f8; border-left: 4px solid #92642D; border-radius: 0 8px 8px 0; padding: 20px 24px; margin-bottom: 28px; }
         .vehicle-box h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #aaa; margin-bottom: 14px; }
         .vehicle-table { width: 100%; border-collapse: collapse; }
         .vehicle-table td { font-size: 14px; padding: 8px 0; border-bottom: 1px solid #eee; }
@@ -25,18 +25,18 @@
         .vehicle-image { display: block; width: 100%; max-width: 100%; height: auto; border-radius: 8px; margin-top: 16px; }
         .steps { margin-bottom: 28px; }
         .step { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
-        .step-num { background: linear-gradient(135deg, #990000, #6e0707); color: #fff; width: 28px; height: 28px; border-radius: 50%; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .step-num { background: linear-gradient(135deg, #B59151, #92642D); color: #fff; width: 28px; height: 28px; border-radius: 50%; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .step-text { font-size: 14px; color: #444; line-height: 1.6; padding-top: 4px; }
         .step-text strong { color: #111; }
         .note-box { background: #fff8f0; border-left: 4px solid #c98a00; border-radius: 0 8px 8px 0; padding: 16px 20px; margin-bottom: 28px; font-size: 14px; color: #6b4a00; line-height: 1.6; }
         .note-box strong { color: #4a3300; }
-        .info-box { background: #f8f8f8; border-left: 4px solid #990000; border-radius: 0 8px 8px 0; padding: 16px 20px; margin-bottom: 28px; font-size: 14px; color: #555; line-height: 1.6; }
+        .info-box { background: #f8f8f8; border-left: 4px solid #92642D; border-radius: 0 8px 8px 0; padding: 16px 20px; margin-bottom: 28px; font-size: 14px; color: #555; line-height: 1.6; }
         .cta-block { text-align: center; margin: 32px 0 20px; }
-        .cta-btn { display: inline-block; background: linear-gradient(135deg, #990000, #6e0707); color: #ffffff !important; text-decoration: none; padding: 16px 36px; border-radius: 8px; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; }
+        .cta-btn { display: inline-block; background: linear-gradient(135deg, #B59151, #92642D); color: #ffffff !important; text-decoration: none; padding: 16px 36px; border-radius: 8px; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; }
         .note { font-size: 13px; color: #888; text-align: center; margin-top: 10px; word-break: break-all; }
         .divider { border: none; border-top: 1px solid #eee; margin: 28px 0; }
         .contact-block { text-align: center; font-size: 14px; color: #555; margin-bottom: 8px; }
-        .contact-block a { color: #990000; font-weight: bold; text-decoration: none; }
+        .contact-block a { color: #92642D; font-weight: bold; text-decoration: none; }
         .footer { background: #111111; padding: 28px 30px; text-align: center; }
         .footer img { width: 90px; max-width: 90px; height: auto; margin-bottom: 12px; }
         .footer p { color: rgba(255,255,255,0.5); font-size: 12px; line-height: 1.8; }

@@ -28,7 +28,7 @@
 
         /* Header */
         .header {
-            background-color: #990000;
+            background-color: #92642D;
             color: white;
             padding: 40px 30px;
             text-align: center;
@@ -90,7 +90,7 @@
 
         .offers-title {
             font-size: 26px;
-            color: #990000;
+            color: #92642D;
             margin-bottom: 30px;
             text-align: center;
             font-weight: bold;
@@ -106,7 +106,7 @@
             transform: translateX(-50%);
             width: 60px;
             height: 3px;
-            background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+            background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         }
 
         /* Offer Card */
@@ -149,16 +149,16 @@
         }
 
         .offer-price-section {
-            background-color: #fff5f5;
+            background-color: #faf5ec;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
-            border-left: 4px solid #990000;
+            border-left: 4px solid #92642D;
         }
 
         .offer-price {
             font-size: 16px;
-            color: #990000;
+            color: #92642D;
             font-weight: bold;
             margin-bottom: 5px;
         }
@@ -188,7 +188,7 @@
         }
 
         .offer-info strong {
-            color: #990000;
+            color: #92642D;
         }
 
         .offer-equipments {
@@ -204,7 +204,7 @@
 
         .offer-cta a {
             display: inline-block;
-            background-color: #990000;
+            background-color: #92642D;
             color: white;
             text-decoration: none;
             padding: 12px 30px;
@@ -227,7 +227,7 @@
 
         .info-blocks-title {
             font-size: 24px;
-            color: #990000;
+            color: #92642D;
             margin-bottom: 30px;
             text-align: center;
             font-weight: bold;
@@ -243,12 +243,12 @@
             transform: translateX(-50%);
             width: 60px;
             height: 3px;
-            background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+            background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         }
 
         .info-block {
             background-color: #f8f9fa;
-            border-left: 4px solid #990000;
+            border-left: 4px solid #92642D;
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 8px;
@@ -258,7 +258,7 @@
         .info-block-title {
             font-size: 16px;
             font-weight: bold;
-            color: #990000;
+            color: #92642D;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
@@ -276,12 +276,12 @@
         }
 
         .info-block-highlight {
-            background-color: #fff5f5;
+            background-color: #faf5ec;
             padding: 10px 15px;
             border-radius: 6px;
             margin-top: 10px;
             font-size: 13px;
-            color: #6e0707;
+            color: #92642D;
             font-weight: 500;
         }
 
@@ -308,7 +308,7 @@
         .feature-title {
             font-size: 14px;
             font-weight: bold;
-            color: #990000;
+            color: #92642D;
             margin-bottom: 5px;
         }
 
@@ -343,7 +343,7 @@
         }
 
         .footer-contact a {
-            color: #990000;
+            color: #92642D;
             text-decoration: none;
             display: inline-block;
             margin: 5px 10px;
@@ -364,12 +364,12 @@
         }
 
         .footer-links a:hover {
-            color: #990000;
+            color: #92642D;
         }
 
         /* CTA Section */
         .cta-section {
-            background-color: #990000;
+            background-color: #92642D;
             padding: 40px 30px;
             text-align: center;
             color: white;
@@ -397,7 +397,7 @@
         .cta-button {
             display: inline-block;
             background: white;
-            color: #990000;
+            color: #92642D;
             text-decoration: none;
             padding: 15px 35px;
             border-radius: 30px;
@@ -500,7 +500,7 @@
 <body>
     <div class="container">
         <!-- Header -->
-        <div class="header" style="background-color: #990000;">
+        <div class="header" style="background-color: #92642D;">
 
             <div class="logo"> <img src="https://izzycar.pt/storage/settings/logo.png" alt="Izzycar Logo" style="max-height: 80px; max-width: auto; margin-bottom: 10px;"></div>
 
@@ -647,12 +647,12 @@
         </div>
 
         <!-- CTA Section -->
-        <div class="cta-section" style="background-color: #990000;">
+        <div class="cta-section" style="background-color: #92642D;">
             <h2 class="cta-title">Pronto para importar o seu próximo carro?</h2>
             <p class="cta-text">Entre em contacto connosco e receba uma cotação personalizada sem compromisso</p>
             <div class="cta-buttons">
                 <a href="https://wa.me/351928459346?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20importação%20de%20veículos" 
-                   style="display: inline-block; background: white; color: #990000; text-decoration: none; padding: 15px 35px; border-radius: 30px; font-weight: bold; font-size: 16px; margin: 5px;">
+                   style="display: inline-block; background: white; color: #92642D; text-decoration: none; padding: 15px 35px; border-radius: 30px; font-weight: bold; font-size: 16px; margin: 5px;">
                     💬 Falar no WhatsApp
                 </a>
                 <a href="https://izzycar.pt/formulario-importacao" 

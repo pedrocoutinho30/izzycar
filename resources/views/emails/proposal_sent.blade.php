@@ -48,7 +48,7 @@
         </div>
 
         <div style="text-align: center; margin: 30px 0;">
-            <a href="{{ $url }}" style="background: #6e0707; color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">
+            <a href="{{ $url }}" style="background: #92642D; color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">
                 Ver Cotação
             </a>
         </div>

@@ -754,7 +754,7 @@
     }
 
     .trust-badge-item svg {
-        color: var(--accent-color);
+        color: var(--yellow-color);
         margin-bottom: 1rem;
     }
 
@@ -824,7 +824,7 @@
     }
 
     .cta-card-import {
-        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
+        background: linear-gradient(135deg, var(--yellow-color) 0%, #B59151 100%);
         border-radius: var(--radius-sharp-md);
         padding: 2.5rem;
         display: flex;
@@ -1017,7 +1017,7 @@
         flex-shrink: 0;
         width: 64px;
         height: 64px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
+        background: linear-gradient(135deg, var(--yellow-color) 0%, #B59151 100%);
         border-radius: var(--radius-sharp-sm);
         display: flex;
         align-items: center;
@@ -1090,7 +1090,7 @@
         align-items: center;
         gap: 10px;
         padding: 1rem 2rem;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
+        background: linear-gradient(135deg, var(--yellow-color) 0%, #B59151 100%);
         color: white;
         font-weight: 700;
         font-size: 1rem;
@@ -1142,7 +1142,7 @@
         left: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(90deg, var(--accent-color) 0%, #B59151 100%);
+        background: linear-gradient(90deg, var(--yellow-color) 0%, #B59151 100%);
         transform: scaleX(0);
         transition: transform 0.4s ease;
     }
@@ -1154,7 +1154,7 @@
     .cost-card-innovative:hover {
         transform: translateY(-10px) scale(1.02);
         /* box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); */
-        border-color: var(--accent-color);
+        border-color: var(--yellow-color);
     }
 
     .cost-card-header {
@@ -1225,7 +1225,7 @@
     }
 
     .cost-card-innovative:hover .cost-card-footer {
-        border-color: var(--accent-color);
+        border-color: var(--yellow-color);
     }
 
     .cost-learn-more {
@@ -1234,7 +1234,7 @@
         gap: 0.5rem;
         font-size: 0.9rem;
         font-weight: 600;
-        color: var(--accent-color);
+        color: var(--yellow-color);
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
@@ -1279,7 +1279,7 @@
         flex-shrink: 0;
         width: 40px;
         height: 40px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
+        background: linear-gradient(135deg, var(--yellow-color) 0%, #B59151 100%);
         color: white;
         border-radius: var(--radius-sharp-sm);
         display: flex;
@@ -1298,7 +1298,7 @@
 
     .faq-icon {
         flex-shrink: 0;
-        color: var(--accent-color);
+        color: var(--yellow-color);
         transition: transform 0.3s ease;
     }
 

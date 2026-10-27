@@ -37,11 +37,11 @@
         .highlight-box p { font-size: 14px; color: #6b4a00; line-height: 1.6; margin: 0; }
         .highlight-box strong { color: #4a3300; }
         .cta-block { text-align: center; margin: 34px 0 22px; }
-        .cta-btn { display: inline-block; background: linear-gradient(135deg, #990000, #6e0707); color: #ffffff !important; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; box-shadow: 0 6px 16px rgba(153,0,0,0.25); }
+        .cta-btn { display: inline-block; background: linear-gradient(135deg, #B59151, #92642D); color: #ffffff !important; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; box-shadow: 0 6px 16px rgba(146,100,45,0.25); }
         .note { font-size: 13px; color: #888; text-align: center; margin-top: 12px; }
         .divider { border: none; border-top: 1px solid #eee; margin: 30px 0; }
         .contact-block { text-align: center; font-size: 14px; color: #555; margin-bottom: 8px; }
-        .contact-block a { color: #990000; font-weight: bold; text-decoration: none; }
+        .contact-block a { color: #92642D; font-weight: bold; text-decoration: none; }
         .footer { background: #111111; padding: 28px 30px; text-align: center; }
         .footer img { width: 90px; max-width: 90px; height: auto; margin-bottom: 12px; }
         .footer p { color: rgba(255,255,255,0.5); font-size: 12px; line-height: 1.8; }

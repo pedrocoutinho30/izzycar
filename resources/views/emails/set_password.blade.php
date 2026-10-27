@@ -26,7 +26,7 @@
         <p style="font-size: 16px; margin-bottom: 20px; color: #fff;">Foi criada uma conta de acesso ao backoffice da Izzycar para si. Para começar a utilizá-la, defina a sua password clicando no botão abaixo.</p>
 
         <div style="text-align: center; margin: 30px 0;">
-            <a href="{{ $url }}" style="background: #6e0707; color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">
+            <a href="{{ $url }}" style="background: #92642D; color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">
                 Definir a minha password
             </a>
         </div>

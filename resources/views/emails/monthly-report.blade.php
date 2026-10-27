@@ -7,24 +7,24 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 580px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-        .header { background: #8B0000; color: #fff; padding: 28px 32px; display: flex; align-items: center; gap: 16px; }
+        .header { background: #92642D; color: #fff; padding: 28px 32px; display: flex; align-items: center; gap: 16px; }
         .header img { width: 52px; height: 52px; border-radius: 50%; }
         .header h1 { margin: 0 0 4px; font-size: 1.15rem; font-weight: 700; }
         .header p { margin: 0; font-size: .85rem; opacity: .8; }
         .body { padding: 28px 32px; }
         .greeting { font-size: .95rem; margin-bottom: 16px; }
-        .section-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #8B0000; margin: 20px 0 8px; }
+        .section-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #92642D; margin: 20px 0 8px; }
         .kpi-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .kpi { flex: 1; background: #f9f9f9; border: 1px solid #eee; border-radius: 7px; padding: 12px 14px; }
         .kpi-label { font-size: .7rem; color: #999; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
-        .kpi-value { font-size: 1.3rem; font-weight: 800; color: #8B0000; }
+        .kpi-value { font-size: 1.3rem; font-weight: 800; color: #92642D; }
         .kpi-sub { font-size: .72rem; color: #aaa; margin-top: 2px; }
         .delta-up   { color: #198754; font-weight: 700; }
         .delta-down { color: #dc3545; font-weight: 700; }
         .note { background: #fff8e1; border-left: 3px solid #f9a825; padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: .83rem; color: #555; margin: 16px 0; }
         .attachment-note { font-size: .82rem; color: #666; background: #f0f0f0; border-radius: 6px; padding: 10px 14px; margin-top: 16px; }
         .footer { padding: 18px 32px; background: #fafafa; border-top: 1px solid #eee; font-size: .72rem; color: #aaa; text-align: center; }
-        .footer a { color: #8B0000; text-decoration: none; }
+        .footer a { color: #92642D; text-decoration: none; }
         hr { border: none; border-top: 1px solid #f0f0f0; margin: 20px 0; }
     </style>
 </head>

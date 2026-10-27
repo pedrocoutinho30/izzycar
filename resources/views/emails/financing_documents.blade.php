@@ -29,7 +29,7 @@
         .highlight-box strong { color: #4a3300; }
         .divider { border: none; border-top: 1px solid #eee; margin: 30px 0; }
         .contact-block { text-align: center; font-size: 14px; color: #555; margin-bottom: 8px; }
-        .contact-block a { color: #990000; font-weight: bold; text-decoration: none; }
+        .contact-block a { color: #92642D; font-weight: bold; text-decoration: none; }
         .footer { background: #111111; padding: 28px 30px; text-align: center; }
         .footer img { width: 90px; max-width: 90px; height: auto; margin-bottom: 12px; }
         .footer p { color: rgba(255,255,255,0.5); font-size: 12px; line-height: 1.8; }
