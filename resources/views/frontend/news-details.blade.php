@@ -456,8 +456,8 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ── Summary ── */
 .nd-summary {
   display:flex; gap:1rem; align-items:flex-start;
-  background:linear-gradient(135deg,#fdf2f8,#fff);
-  border:1px solid #fecdd3; border-radius:16px;
+  background:linear-gradient(135deg,#92642D,#fff);
+  border:1px solid #92642D; border-radius:16px;
   padding:1.5rem; margin:2.5rem 0;
 }
 .nd-summary__icon {

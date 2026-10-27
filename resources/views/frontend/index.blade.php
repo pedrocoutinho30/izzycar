@@ -586,12 +586,12 @@
         font-weight: 700;
         text-decoration: none;
         transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(181,145,81, 0.4);
+        /* box-shadow: 0 10px 30px rgba(181,145,81, 0.4); */
     }
 
     .btn-hero-primary:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(181,145,81, 0.5);
+        /* box-shadow: 0 15px 40px rgba(181,145,81, 0.5); */
         color: white;
     }
 
@@ -1279,12 +1279,12 @@
         font-weight: 700;
         text-decoration: none;
         transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(181,145,81, 0.4);
+        /* box-shadow: 0 10px 30px rgba(181,145,81, 0.4); */
     }
 
     .btn-cta-primary:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(181,145,81, 0.5);
+        /* box-shadow: 0 15px 40px rgba(181,145,81, 0.5); */
         color: white;
     }
 

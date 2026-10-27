@@ -202,13 +202,13 @@
     border-radius: var(--radius-sharp-sm);
     letter-spacing: 0.02em;
     white-space: nowrap;
-    box-shadow: 0 4px 18px rgba(146,100,45,0.45);
+    /* box-shadow: 0 4px 18px rgba(146,100,45,0.45); */
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     flex-shrink: 0;
 }
 .nav-cta-btn:hover {
     background: linear-gradient(135deg, #D1B06F 0%, #B59151 100%);
-    box-shadow: 0 6px 26px rgba(146,100,45,0.65);
+    /* box-shadow: 0 6px 26px rgba(146,100,45,0.65); */
     transform: translateY(-1px);
     color: #fff !important;
 }
