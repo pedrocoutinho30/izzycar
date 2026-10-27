@@ -72,10 +72,27 @@
             color: #fff;
             box-shadow: var(--shadow-md);
         }
-        .m-topbar h1 { flex: 1; margin: 0; font-size: 1.15rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .m-topbar h1 { flex: 1; min-width: 0; margin: 0; font-size: 1.05rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* Logo à esquerda; o título da página fica ao lado. O PNG tem margem transparente: recorta-se por CSS (logo-transparente.png: dourado legível sobre o vinho). */
+        .m-topbar-logo { flex-shrink: 0; display: block; width: 40px; height: 40px; overflow: hidden; position: relative; }
+        .m-topbar-logo img { position: absolute; height: 54px; width: auto; max-width: none; left: 50%; top: 50%; transform: translate(-50%, -50%); }
         .m-topbar a, .m-topbar button { color: #fff; }
 
         .m-content { padding: 14px 12px; }
+
+        .m-section-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: #6c757d; margin: 4px 2px 8px; }
+        .m-section-title i { color: var(--admin-primary); margin-right: 4px; }
+        .m-stat {
+            display: flex; flex-direction: column; justify-content: space-between; gap: 4px; min-height: 88px; height: 100%;
+            padding: 12px; background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);
+            color: inherit; text-decoration: none;
+        }
+        .m-stat:active { background: var(--admin-hover); }
+        .m-stat__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+        .m-stat__value { font-size: 2rem; line-height: 1; font-weight: 700; color: var(--admin-primary); }
+        .m-stat__value.is-alert { color: var(--admin-danger); }
+        .m-stat__icon { font-size: 1.3rem; color: #adb5bd; }
+        .m-stat__label { font-size: 0.82rem; color: #6c757d; line-height: 1.2; }
 
         .m-card {
             background: #fff;
@@ -168,6 +185,9 @@
 
 <body>
     <header class="m-topbar">
+        <a href="{{ route('admin.mobile.dashboard') }}" class="m-topbar-logo">
+            <img src="{{ asset('img/logo-transparente.png') }}" alt="IzzyCar - ir para o início">
+        </a>
         <h1>@yield('title', 'IzzyCar')</h1>
         @yield('header_actions')
     </header>
