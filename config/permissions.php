@@ -53,14 +53,14 @@ return [
                     'label' => 'Leads',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'owner_id',
-                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads'],
+                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads', 'admin.mobile.dashboard', 'admin.mobile.leads.*', 'admin.mobile.search'],
                     'own_routes' => ['admin.angariador.dashboard', 'admin.angariador.leads', 'admin.angariador.leads.*'],
                 ],
                 'clients' => [
                     'label' => 'Clientes',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'owner_id',
-                    'routes' => ['admin.v2.clients.*', 'admin.v2.export.clients'],
+                    'routes' => ['admin.v2.clients.*', 'admin.v2.export.clients', 'admin.mobile.clients.*'],
                 ],
                 'form-proposals' => [
                     'label' => 'Formulários',
@@ -69,20 +69,20 @@ return [
                     // cada pedido (editar).
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => [], 'delete' => []],
                     'owner' => 'client.owner_id',
-                    'routes' => ['admin.v2.form-proposals.*', 'admin.v2.consignment-evaluations.*'],
+                    'routes' => ['admin.v2.form-proposals.*', 'admin.v2.consignment-evaluations.*', 'admin.mobile.form-proposals.*'],
                     'own_routes' => ['admin.angariador.formularios'],
                 ],
                 'proposals' => [
                     'label' => 'Cotações',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'client.owner_id',
-                    'routes' => ['admin.v2.proposals.*', 'admin.v2.car-candidates.*', 'admin.v2.export.proposals', 'isv.*'],
+                    'routes' => ['admin.v2.proposals.*', 'admin.v2.car-candidates.*', 'admin.v2.export.proposals', 'isv.*', 'admin.mobile.proposals.*'],
                     'own_routes' => ['admin.angariador.propostas', 'admin.angariador.cotacoes'],
                 ],
                 'converted-proposals' => [
                     'label' => 'Cotações convertidas',
                     'actions' => ['view' => [], 'create' => [], 'update' => [], 'delete' => []],
-                    'routes' => ['admin.v2.converted-proposals.*'],
+                    'routes' => ['admin.v2.converted-proposals.*', 'admin.mobile.converted-proposals.*'],
                 ],
                 'cost-simulators' => [
                     'label' => 'Simulador de custos',

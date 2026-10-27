@@ -3,6 +3,7 @@
 namespace Tests\Feature\Mobile;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Tests\RefreshesDatabaseWithoutMysqlOnlyMigrations;
 use Tests\TestCase;
 
@@ -19,5 +20,41 @@ class MobileAccessTest extends TestCase
 
         $user->fill(['access_mobile' => true]);
         $this->assertFalse((bool) $user->access_mobile);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Cache::forever('frontend_menus', collect());
+        Cache::forever('site_logo', '');
+    }
+
+    /** access_mobile fora do $fillable: define-se com forceFill. */
+    private function mobileUser(bool $acesso = true): User
+    {
+        $user = $this->backofficeUser('admin');
+        $user->forceFill(['access_mobile' => $acesso])->save();
+
+        return $user;
+    }
+
+    public function test_utilizador_com_permissao_acede_ao_mobile(): void
+    {
+        $this->actingAs($this->mobileUser())->get(route('admin.mobile.dashboard'))->assertOk();
+    }
+
+    public function test_utilizador_sem_permissao_vai_para_o_desktop_com_mensagem_e_sem_ciclo(): void
+    {
+        $user = $this->mobileUser(false);
+        $this->actingAs($user)->get('/gestao/mobile')
+            ->assertRedirect(route('admin.v2.dashboard'))
+            ->assertSessionHas('error', 'Não tem acesso à versão mobile.');
+
+        $this->actingAs($user)->get(route('admin.v2.dashboard'))->assertOk();
+    }
+
+    public function test_visitante_vai_para_login(): void
+    {
+        $this->get('/gestao/mobile')->assertRedirect('/login');
     }
 }

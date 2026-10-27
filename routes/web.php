@@ -685,6 +685,13 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     });
 
     // ============================================================
+    // GESTÃO MOBILE (iPhone) — só para quem tem access_mobile
+    // ============================================================
+    Route::prefix('mobile')->name('admin.mobile.')->middleware('mobile.access')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\Mobile\DashboardController::class, 'index'])->name('dashboard');
+    });
+
+    // ============================================================
     // GRUPOS DE ATRIBUTOS V2
     // ============================================================
     Route::prefix('v2/attribute-groups')->name('admin.v2.attribute-groups.')->group(function () {
