@@ -53,14 +53,25 @@ return [
                     'label' => 'Leads',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'owner_id',
-                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads'],
-                    'own_routes' => ['admin.angariador.dashboard', 'admin.angariador.leads', 'admin.angariador.leads.*'],
+                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads',
+                        // Mobile sem filtro por dono: criar, eliminar e atribuir dono (update.all) exigem "todas".
+                        'admin.mobile.leads.create', 'admin.mobile.leads.store', 'admin.mobile.leads.destroy', 'admin.mobile.leads.owner'],
+                    // Rotas mobile que verificam o dono registo a registo (applyScope/allows). Nomes explícitos:
+                    // uma rota nova não herda o acesso "próprias" sem ser listada aqui.
+                    'own_routes' => ['admin.angariador.dashboard', 'admin.angariador.leads', 'admin.angariador.leads.*',
+                        'admin.mobile.leads.index', 'admin.mobile.leads.show', 'admin.mobile.leads.status',
+                        'admin.mobile.leads.convert', 'admin.mobile.leads.followup', 'admin.mobile.leads.activity'],
                 ],
                 'clients' => [
                     'label' => 'Clientes',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'owner_id',
-                    'routes' => ['admin.v2.clients.*', 'admin.v2.export.clients'],
+                    // Mobile: criar (create/store) exige "criar"; sem filtro por dono.
+                    'routes' => ['admin.v2.clients.*', 'admin.v2.export.clients', 'admin.mobile.clients.create', 'admin.mobile.clients.store'],
+                    // Rotas mobile que verificam o dono registo a registo (applyScope/allows). Nomes explícitos:
+                    // uma rota nova não herda o acesso "próprios" sem ser listada aqui.
+                    'own_routes' => ['admin.mobile.clients.index', 'admin.mobile.clients.show', 'admin.mobile.clients.edit',
+                        'admin.mobile.clients.update', 'admin.mobile.clients.followup', 'admin.mobile.clients.activity'],
                 ],
                 'form-proposals' => [
                     'label' => 'Formulários',
@@ -69,26 +80,41 @@ return [
                     // cada pedido (editar).
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => [], 'delete' => []],
                     'owner' => 'client.owner_id',
-                    'routes' => ['admin.v2.form-proposals.*', 'admin.v2.consignment-evaluations.*'],
-                    'own_routes' => ['admin.angariador.formularios'],
+                    // Mobile: criar, mudar o estado e tudo o que mexe nas oportunidades
+                    // (editar, sem âmbito) segue o desktop. As oportunidades (vendedor,
+                    // preço de compra) exigem ver "todos", como no desktop.
+                    'routes' => ['admin.v2.form-proposals.*', 'admin.v2.consignment-evaluations.*', 'admin.mobile.form-proposals.*'],
+                    // Rotas mobile que verificam o dono do cliente registo a registo
+                    // (applyScope/allows). Nomes explícitos: uma rota nova não herda "próprios".
+                    'own_routes' => ['admin.angariador.formularios',
+                        'admin.mobile.form-proposals.index', 'admin.mobile.form-proposals.show'],
                 ],
                 'proposals' => [
                     'label' => 'Cotações',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'client.owner_id',
-                    'routes' => ['admin.v2.proposals.*', 'admin.v2.car-candidates.*', 'admin.v2.export.proposals', 'isv.*'],
-                    'own_routes' => ['admin.angariador.propostas', 'admin.angariador.cotacoes'],
+                    // Mobile: criar (create/store) exige "criar"; editar, mudar o estado e
+                    // aceitar exigem editar "todas", como as rotas do desktop.
+                    'routes' => ['admin.v2.proposals.*', 'admin.v2.car-candidates.*', 'admin.v2.export.proposals', 'isv.*', 'admin.mobile.proposals.*'],
+                    // Rotas mobile que verificam o dono do cliente registo a registo
+                    // (applyScope/allows). Nomes explícitos: uma rota nova não herda "próprias".
+                    'own_routes' => ['admin.angariador.propostas', 'admin.angariador.cotacoes',
+                        'admin.mobile.proposals.index', 'admin.mobile.proposals.show'],
                 ],
                 'converted-proposals' => [
                     'label' => 'Cotações convertidas',
                     'actions' => ['view' => [], 'create' => [], 'update' => [], 'delete' => []],
-                    'routes' => ['admin.v2.converted-proposals.*'],
+                    // Mobile: mudar o estado exige editar, como a rota update-status do desktop.
+                    // Ver (index/show) está em "shared": o controller filtra registo a registo.
+                    'routes' => ['admin.v2.converted-proposals.*', 'admin.mobile.converted-proposals.status'],
                 ],
                 'cost-simulators' => [
                     'label' => 'Simulador de custos',
                     // As simulações são feitas no site.
                     'actions' => ['view' => [], 'delete' => []],
-                    'routes' => ['admin.v2.cost-simulators.*'],
+                    // Mobile: só consulta (index/show), nomes explícitos. O objeto não tem âmbito
+                    // "próprios": o controller exige "ver" registo a registo, com enforce ligado ou não.
+                    'routes' => ['admin.v2.cost-simulators.*', 'admin.mobile.cost-simulators.index', 'admin.mobile.cost-simulators.show'],
                 ],
             ],
         ],
@@ -98,8 +124,15 @@ return [
             'resources' => [
                 'legalizations' => ['label' => 'Legalizações', 'routes' => ['admin.legalizations.*']],
                 'vehicles' => ['label' => 'Viaturas', 'routes' => ['admin.v3.vehicles.*', 'admin.v2.vehicles.*']],
-                'tasks' => ['label' => 'Tarefas', 'routes' => ['admin.tasks.*']],
-                'movements' => ['label' => 'Movimentos', 'routes' => ['admin.v2.movements.*', 'admin.v2.expenses.*']],
+                'tasks' => ['label' => 'Tarefas', 'routes' => ['admin.tasks.*',
+                    // Mobile: nomes explícitos. O objeto não tem âmbito "próprios" (como no desktop, quem pode
+                    // ver, vê todas); o controller verifica cada ação, com enforce ligado ou não.
+                    'admin.mobile.tasks.index', 'admin.mobile.tasks.create', 'admin.mobile.tasks.store',
+                    'admin.mobile.tasks.edit', 'admin.mobile.tasks.update', 'admin.mobile.tasks.complete']],
+                'movements' => ['label' => 'Movimentos', 'routes' => ['admin.v2.movements.*', 'admin.v2.expenses.*',
+                    // Mobile: nomes explícitos (sem âmbito "próprios"; o controller verifica cada ação).
+                    'admin.mobile.movements.index', 'admin.mobile.movements.show', 'admin.mobile.movements.create', 'admin.mobile.movements.store',
+                    'admin.mobile.movements.edit', 'admin.mobile.movements.update', 'admin.mobile.movements.destroy']],
                 'sales' => ['label' => 'Vendas', 'routes' => ['admin.v2.sales.*']],
                 'inspections' => ['label' => 'Inspeções', 'routes' => ['admin.v3.inspections.*']],
                 'transports' => ['label' => 'Transportes', 'routes' => ['admin.transport-quotes.*']],
@@ -180,6 +213,7 @@ return [
      */
     'route_actions' => [
         'admin.v2.leads.assign-owner' => 'update.all',
+        'admin.mobile.leads.owner' => 'update.all',
         'admin.v2.pre-leads.approve' => 'create',
         'admin.v2.proposals.createFromForm' => 'create',
         'admin.v2.proposals.createFromOpportunity' => 'create',
@@ -199,6 +233,10 @@ return [
         // A pesquisa filtra cada secção pelas permissões do utilizador.
         'admin.v2.search',
         'admin.v2.search.results',
+        // Idem no mobile (Mobile\SearchController: secção a secção e no âmbito de cada utilizador).
+        'admin.mobile.search',
+        // Início mobile: as contagens de leads respeitam o âmbito (0 sem permissão de leads).
+        'admin.mobile.dashboard',
         'admin.angariador.manual',
         'admin.angariador.faq',
         // Ficheiros privados (retomas, consignação, comprovativos, anexos): qualquer perfil
@@ -209,6 +247,10 @@ return [
         // Cotações convertidas do angariador: só as dos seus clientes (filtradas no controller).
         'admin.angariador.convertidas',
         'admin.angariador.convertidas.show',
+        // O mesmo no mobile: quem vê cotações convertidas vê todas; quem só vê cotações,
+        // as dos seus clientes (ConvertedProposalService::viewScope, no controller).
+        'admin.mobile.converted-proposals.index',
+        'admin.mobile.converted-proposals.show',
         'admin.angariador.stop-impersonating',
     ],
 

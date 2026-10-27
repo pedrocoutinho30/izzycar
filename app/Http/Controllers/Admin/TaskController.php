@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\V3Vehicle;
-use App\Notifications\TaskAssignedNotification;
+use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -20,6 +20,10 @@ use Carbon\Carbon;
  */
 class TaskController extends Controller
 {
+    public function __construct(private TaskService $tasks)
+    {
+    }
+
     /**
      * Exibe o calendário de tarefas
      * Suporta visualização mensal, semanal e diária
@@ -101,29 +105,10 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         // Validação dos dados
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'required|date',
-            'reminder_date' => 'nullable|date|before_or_equal:due_date',
-            'user_id' => 'nullable|exists:users,id',
-            'user_name' => 'nullable|string|max:255',
-            'v3_vehicle_id' => 'nullable|exists:v3_vehicles,id',
-            'status' => 'required|in:pendente,em_progresso,concluida,cancelada',
-        ], [
-            'title.required' => 'O título é obrigatório.',
-            'due_date.required' => 'A data limite é obrigatória.',
-            'reminder_date.before_or_equal' => 'A data do lembrete deve ser anterior ou igual à data limite.',
-            'status.required' => 'O estado é obrigatório.',
-        ]);
+        $validated = $request->validate($this->tasks->rules(), $this->tasks->messages());
 
-        // Criar a tarefa
-        $task = Task::create($validated);
-
-        // Notifica quem foi atribuído — mas não a si próprio, se se auto-atribuir
-        if ($task->user_id && $task->user_id !== auth()->id()) {
-            $task->user?->notify(new TaskAssignedNotification($task));
-        }
+        // Criar a tarefa (notifica quem foi atribuído, não a si próprio)
+        $this->tasks->create($validated, auth()->id());
 
         return redirect()
             ->route('admin.tasks.index')
@@ -160,24 +145,10 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         // Validação dos dados
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'required|date',
-            'reminder_date' => 'nullable|date|before_or_equal:due_date',
-            'user_id' => 'nullable|exists:users,id',
-            'user_name' => 'nullable|string|max:255',
-            'v3_vehicle_id' => 'nullable|exists:v3_vehicles,id',
-            'status' => 'required|in:pendente,em_progresso,concluida,cancelada',
-        ], [
-            'title.required' => 'O título é obrigatório.',
-            'due_date.required' => 'A data limite é obrigatória.',
-            'reminder_date.before_or_equal' => 'A data do lembrete deve ser anterior ou igual à data limite.',
-            'status.required' => 'O estado é obrigatório.',
-        ]);
+        $validated = $request->validate($this->tasks->rules(), $this->tasks->messages());
 
         // Atualizar a tarefa
-        $task->update($validated);
+        $this->tasks->update($task, $validated);
 
         return redirect()
             ->route('admin.tasks.index')
@@ -205,7 +176,7 @@ class TaskController extends Controller
             'status' => 'required|in:pendente,em_progresso,concluida,cancelada',
         ]);
 
-        $task->update(['status' => $validated['status']]);
+        $this->tasks->setStatus($task, $validated['status']);
 
         return response()->json([
             'success' => true,

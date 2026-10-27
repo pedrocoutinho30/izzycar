@@ -5,14 +5,20 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Expense;
-use App\Models\Legalization;
-use App\Models\Partner;
 use App\Models\V3Vehicle;
+use App\Services\MovementService;
 use Illuminate\Http\Request;
-use App\Services\PrivateFiles;
 
+/**
+ * Movimentos financeiros no desktop. As regras (validação, IVA, comprovativo,
+ * totais e saldos) estão no MovementService, partilhado com a versão mobile.
+ */
 class MovementV2Controller extends Controller
 {
+    public function __construct(private MovementService $movements)
+    {
+    }
+
     // ── Index ──────────────────────────────────────────────────────────────
 
     public function index(Request $request)
@@ -31,56 +37,18 @@ class MovementV2Controller extends Controller
             ->paginate(50)
             ->withQueryString();
 
-        // Stats — scoped to same year filter for coherence
-        $statsBase = Expense::query();
-        if ($year !== 'all' && !$request->filled('date_from') && !$request->filled('date_to')) {
-            $statsBase->whereYear('expense_date', $year);
-        }
-        $totalExpenses = (clone $statsBase)->where('movement_type', 'expense')->sum('amount_gross');
-        $totalIncome   = (clone $statsBase)->where('movement_type', 'income')->sum('amount_gross');
-        $pending       = (clone $statsBase)->where('status', 'pending')->sum('amount_gross');
-
-        // ── Saldo (running balance) ────────────────────────────────────────
-        $initialBalance = 15757.28;
-
-        // Load ALL year movements sorted ascending for cumulative balance calculation
-        $allYearMovements = Expense::query()
-            ->when($year !== 'all', fn ($q) => $q->whereYear('expense_date', $year))
-            ->orderBy('expense_date', 'asc')
-            ->orderBy('created_at', 'asc')
-            ->get(['id', 'movement_type', 'amount_gross', 'amount', 'status']);
-
-        $runningBalances     = []; // inclui pendentes
-        $runningBalancesReal = []; // só pagos
-        $runningBalance      = $initialBalance;
-        $runningBalanceReal  = $initialBalance;
-
-        foreach ($allYearMovements as $m) {
-            $amount = (float) ($m->amount_gross ?? $m->amount ?? 0);
-            $isPaid = $m->status !== 'pending';
-
-            if ($m->movement_type === 'income') {
-                $runningBalance += $amount;
-                if ($isPaid) $runningBalanceReal += $amount;
-            } else {
-                $runningBalance -= $amount;
-                if ($isPaid) $runningBalanceReal -= $amount;
-            }
-            $runningBalances[$m->id]     = $runningBalance;
-            $runningBalancesReal[$m->id] = $isPaid ? $runningBalanceReal : null;
-        }
-        $currentSaldo     = $runningBalance;
-        $currentSaldoReal = $runningBalanceReal;
+        // Totais e saldos (MovementService::summary, partilhado com o mobile)
+        $summary = $this->movements->summary($year, $request->filled('date_from') || $request->filled('date_to'));
+        $totalExpenses       = $summary['totalExpenses'];
+        $totalIncome         = $summary['totalIncome'];
+        $runningBalances     = $summary['runningBalances'];
+        $runningBalancesReal = $summary['runningBalancesReal'];
+        $currentSaldo        = $summary['saldo'];
+        $currentSaldoReal    = $summary['saldoReal'];
+        $initialBalance      = MovementService::INITIAL_BALANCE;
 
         // Available years for the year picker
-        $availableYears = Expense::selectRaw('YEAR(expense_date) as y')
-            ->whereNotNull('expense_date')
-            ->groupBy('y')
-            ->orderByDesc('y')
-            ->pluck('y');
-        if ($availableYears->isEmpty()) {
-            $availableYears = collect([now()->year]);
-        }
+        $availableYears = $this->movements->availableYears();
 
         $stats = [
             [
@@ -122,31 +90,16 @@ class MovementV2Controller extends Controller
 
     public function create()
     {
-        $vehicles      = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
-        $partners      = Partner::orderBy('name')->get();
-        $clients       = Client::select('id', 'name')->orderBy('name')->get();
-        $legalizations = Legalization::with('client')
-            ->select('id', 'client_id', 'marca', 'modelo', 'matricula')
-            ->orderByDesc('id')
-            ->get();
-
-        return view('admin.v2.movements.form', compact('vehicles', 'partners', 'clients', 'legalizations'));
+        return view('admin.v2.movements.form', $this->movements->formOptions());
     }
 
     // ── Store ──────────────────────────────────────────────────────────────
 
     public function store(Request $request)
     {
-        $validated = $this->validateMovement($request);
+        $validated = $request->validate($this->movements->rules());
 
-        if ($request->hasFile('attachment')) {
-            $validated['attachment_path'] = PrivateFiles::guardar($request->file('attachment'), 'movements/attachments');
-        }
-        unset($validated['attachment']);
-
-        $this->computeVatFields($validated);
-
-        Expense::create($validated);
+        $this->movements->create($validated, $request->hasFile('attachment') ? $request->file('attachment') : null);
 
         return redirect()->route('admin.v2.movements.index')
             ->with('success', 'Movimento criado com sucesso!');
@@ -158,20 +111,12 @@ class MovementV2Controller extends Controller
     {
         $movement = Expense::with(['v3Vehicle', 'partner', 'client'])->findOrFail($id);
 
-        if ($movement->source_type) {
+        if ($this->movements->isAutomatic($movement)) {
             return redirect()->route('admin.v2.movements.index')
                 ->with('error', 'Este movimento foi gerado automaticamente e não pode ser editado aqui. Edite a venda, o veículo ou a cotação convertida correspondente.');
         }
 
-        $vehicles      = V3Vehicle::select('id', 'reference', 'brand', 'model')->orderBy('reference')->get();
-        $partners      = Partner::orderBy('name')->get();
-        $clients       = Client::select('id', 'name')->orderBy('name')->get();
-        $legalizations = Legalization::with('client')
-            ->select('id', 'client_id', 'marca', 'modelo', 'matricula')
-            ->orderByDesc('id')
-            ->get();
-
-        return view('admin.v2.movements.form', compact('movement', 'vehicles', 'partners', 'clients', 'legalizations'));
+        return view('admin.v2.movements.form', ['movement' => $movement] + $this->movements->formOptions());
     }
 
     // ── Update ─────────────────────────────────────────────────────────────
@@ -180,30 +125,19 @@ class MovementV2Controller extends Controller
     {
         $movement = Expense::findOrFail($id);
 
-        if ($movement->source_type) {
+        if ($this->movements->isAutomatic($movement)) {
             return redirect()->route('admin.v2.movements.index')
                 ->with('error', 'Este movimento foi gerado automaticamente e não pode ser editado aqui.');
         }
 
-        $validated = $this->validateMovement($request, $id);
+        $validated = $request->validate($this->movements->rules());
 
-        if ($request->hasFile('attachment')) {
-            if ($movement->attachment_path) {
-                PrivateFiles::apagar($movement->attachment_path);
-            }
-            $validated['attachment_path'] = PrivateFiles::guardar($request->file('attachment'), 'movements/attachments');
-        } elseif ($request->boolean('remove_attachment')) {
-            if ($movement->attachment_path) {
-                PrivateFiles::apagar($movement->attachment_path);
-            }
-            $validated['attachment_path'] = null;
-        }
-
-        unset($validated['attachment'], $validated['remove_attachment']);
-
-        $this->computeVatFields($validated);
-
-        $movement->update($validated);
+        $this->movements->update(
+            $movement,
+            $validated,
+            $request->hasFile('attachment') ? $request->file('attachment') : null,
+            $request->boolean('remove_attachment'),
+        );
 
         return redirect()->route('admin.v2.movements.index')
             ->with('success', 'Movimento atualizado com sucesso!');
@@ -215,55 +149,14 @@ class MovementV2Controller extends Controller
     {
         $movement = Expense::findOrFail($id);
 
-        if ($movement->source_type) {
+        if ($this->movements->isAutomatic($movement)) {
             return redirect()->route('admin.v2.movements.index')
                 ->with('error', 'Este movimento foi gerado automaticamente e não pode ser eliminado aqui. Elimine a venda ou o veículo correspondente.');
         }
 
-        if ($movement->attachment_path) {
-            PrivateFiles::apagar($movement->attachment_path);
-        }
-
-        $movement->delete();
+        $this->movements->delete($movement);
 
         return redirect()->route('admin.v2.movements.index')
             ->with('success', 'Movimento eliminado com sucesso!');
-    }
-
-    // ── Helpers ────────────────────────────────────────────────────────────
-
-    private function validateMovement(Request $request, $ignoreId = null): array
-    {
-        return $request->validate([
-            'movement_type'   => 'required|in:expense,income',
-            'category'        => 'nullable|string|max:100',
-            'v3_vehicle_id'   => 'nullable|exists:v3_vehicles,id',
-            'legalization_id' => 'nullable|exists:legalizations,id',
-            'client_id'       => 'nullable|exists:clients,id',
-            'partner_id'      => 'nullable|exists:partners,id',
-            'title'          => 'required|string|max:255',
-            'amount'         => 'required|numeric|min:0',
-            'vat_rate'       => 'nullable|numeric|min:0|max:100',
-            'expense_date'   => 'required|date',
-            'observations'   => 'nullable|string',
-            'attachment'     => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:10240',
-            'remove_attachment' => 'nullable|boolean',
-            'payment_method' => 'nullable|string|max:50',
-            'status'         => 'nullable|string|max:50',
-        ]);
-    }
-
-    /**
-     * Auto-compute amount_gross, vat_amount, amount_net from amount + vat_rate.
-     */
-    private function computeVatFields(array &$data): void
-    {
-        $gross   = (float) ($data['amount'] ?? 0);
-        $vatRate = (float) ($data['vat_rate'] ?? 0);
-        $vatAmt  = $vatRate > 0 ? round($gross - ($gross / (1 + $vatRate / 100)), 2) : 0.0;
-
-        $data['amount_gross'] = $gross;
-        $data['vat_amount']   = $vatAmt;
-        $data['amount_net']   = round($gross - $vatAmt, 2);
     }
 }

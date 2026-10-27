@@ -6,7 +6,7 @@ Plataforma Laravel 12 (PHP 8.2, MySQL) para o mercado português: site público 
 
 Ler antes de mexer nestas áreas:
 
-- [docs/funil-comercial.md](docs/funil-comercial.md) — o fluxo ponta a ponta, da lead à venda.
+- [docs/funil-comercial.md](docs/funil-comercial.md) — o fluxo ponta a ponta, da lead à venda; inclui a versão mobile (`/gestao/mobile`, `access_mobile`).
 - [docs/leads-e-clientes.md](docs/leads-e-clientes.md) — leads, clientes, duplicados, pedidos de formulário e oportunidades.
 - [docs/cotacoes.md](docs/cotacoes.md) — cotações, aceitação, contrato e cotações convertidas.
 - [docs/viaturas.md](docs/viaturas.md) — viaturas V3, legalização, venda e site público.

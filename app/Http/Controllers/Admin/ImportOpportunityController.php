@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\ChecklistItemStatus;
-use App\Enums\OpportunityStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreImportOpportunityRequest;
 use App\Http\Requests\UpdateImportOpportunityRequest;
 use App\Models\FormProposal;
 use App\Models\ImportOpportunity;
+use App\Services\FormProposalService;
 use App\Services\ImportOpportunityService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Oportunidades de um Pedido de Importação — carros/anúncios em análise como
@@ -20,7 +19,7 @@ use Illuminate\Validation\Rule;
  */
 class ImportOpportunityController extends Controller
 {
-    public function __construct(private ImportOpportunityService $opportunities)
+    public function __construct(private ImportOpportunityService $opportunities, private FormProposalService $formProposals)
     {
     }
 
@@ -79,13 +78,9 @@ class ImportOpportunityController extends Controller
 
     public function updateStatus(Request $request, FormProposal $formProposal, ImportOpportunity $opportunity)
     {
-        $data = $request->validate(
-            ['status' => ['required', Rule::enum(OpportunityStatus::class)]],
-            ['status.required' => 'Escolha um estado.', 'status.enum' => 'Estado inválido.']
-        );
+        $data = $request->validate($this->formProposals->opportunityStatusRules(), $this->formProposals->opportunityStatusMessages());
 
-        $opportunity->update($data);
-        $status = $opportunity->status;
+        $status = $this->formProposals->changeOpportunityStatus($opportunity, $data['status']);
 
         return response()->json([
             'success' => true,
@@ -95,12 +90,7 @@ class ImportOpportunityController extends Controller
 
     public function updateChecklist(Request $request, FormProposal $formProposal, ImportOpportunity $opportunity)
     {
-        $data = $request->validate([
-            'item_id' => 'required|integer',
-            'status' => ['required', Rule::enum(ChecklistItemStatus::class)],
-        ], [
-            'status.enum' => 'Estado inválido.',
-        ]);
+        $data = $request->validate($this->formProposals->checklistRules(), $this->formProposals->checklistMessages());
 
         $this->opportunities->setChecklistStatus(
             $opportunity,
@@ -117,11 +107,9 @@ class ImportOpportunityController extends Controller
 
     public function updateNotes(Request $request, FormProposal $formProposal, ImportOpportunity $opportunity)
     {
-        $data = $request->validate(['notes' => 'nullable|string|max:20000'], [
-            'notes.max' => 'As notas são demasiado longas.',
-        ]);
+        $data = $request->validate($this->formProposals->notesRules(), $this->formProposals->notesMessages());
 
-        $opportunity->update($data);
+        $this->formProposals->saveOpportunityNotes($opportunity, $data);
 
         return response()->json(['success' => true, 'saved_at' => $opportunity->updated_at->format('H:i')]);
     }

@@ -1,0 +1,13 @@
+{
+  "name": "IzzyCar Gestão",
+  "short_name": "IzzyCar",
+  "start_url": "/gestao/mobile",
+  "scope": "/gestao/mobile",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6e0707",
+  "icons": [
+    {"src": "/img/mobile/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/img/mobile/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

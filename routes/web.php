@@ -685,6 +685,93 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     });
 
     // ============================================================
+    // GESTÃO MOBILE (iPhone) — só para quem tem access_mobile
+    // ============================================================
+    Route::prefix('mobile')->name('admin.mobile.')->middleware('mobile.access')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\Mobile\DashboardController::class, 'index'])->name('dashboard');
+
+        // Pesquisa: cada secção é filtrada pelas permissões do utilizador no controller.
+        Route::get('/pesquisa', [App\Http\Controllers\Admin\Mobile\SearchController::class, 'index'])->name('search');
+
+        // Leads ("/leads/nova" tem de ficar antes de "/leads/{id}").
+        Route::get('/leads', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'index'])->name('leads.index');
+        Route::get('/leads/nova', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'create'])->name('leads.create');
+        Route::post('/leads', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'store'])->name('leads.store');
+        Route::get('/leads/{id}', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'show'])->name('leads.show')->whereNumber('id');
+        Route::post('/leads/{id}/estado', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'status'])->name('leads.status')->whereNumber('id');
+        Route::post('/leads/{id}/converter', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'convert'])->name('leads.convert')->whereNumber('id');
+        Route::post('/leads/{id}/followup', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'followup'])->name('leads.followup')->whereNumber('id');
+        Route::post('/leads/{id}/atividade', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'activity'])->name('leads.activity')->whereNumber('id');
+        Route::post('/leads/{id}/dono', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'owner'])->name('leads.owner')->whereNumber('id');
+        Route::delete('/leads/{id}', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'destroy'])->name('leads.destroy')->whereNumber('id');
+
+        // Clientes ("/clientes/novo" tem de ficar antes de "/clientes/{id}").
+        Route::get('/clientes', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'index'])->name('clients.index');
+        Route::get('/clientes/novo', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'create'])->name('clients.create');
+        Route::post('/clientes', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'store'])->name('clients.store');
+        Route::get('/clientes/{id}', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'show'])->name('clients.show')->whereNumber('id');
+        Route::get('/clientes/{id}/editar', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'edit'])->name('clients.edit')->whereNumber('id');
+        Route::put('/clientes/{id}', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'update'])->name('clients.update')->whereNumber('id');
+        Route::post('/clientes/{id}/followup', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'followup'])->name('clients.followup')->whereNumber('id');
+        Route::post('/clientes/{id}/atividade', [App\Http\Controllers\Admin\Mobile\ClientController::class, 'activity'])->name('clients.activity')->whereNumber('id');
+
+        // Pedidos de formulário ("/formularios/novo" tem de ficar antes de "/formularios/{id}").
+        Route::get('/formularios', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'index'])->name('form-proposals.index');
+        Route::get('/formularios/novo', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'create'])->name('form-proposals.create');
+        Route::post('/formularios', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'store'])->name('form-proposals.store');
+        Route::get('/formularios/{id}', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'show'])->name('form-proposals.show')->whereNumber('id');
+        Route::patch('/formularios/{id}/estado', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'status'])->name('form-proposals.status')->whereNumber('id');
+
+        // Cotações ("/cotacoes/nova" tem de ficar antes de "/cotacoes/{id}").
+        Route::get('/cotacoes', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'index'])->name('proposals.index');
+        Route::get('/cotacoes/nova', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'create'])->name('proposals.create');
+        Route::post('/cotacoes', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'store'])->name('proposals.store');
+        Route::get('/cotacoes/{id}', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'show'])->name('proposals.show')->whereNumber('id');
+        Route::get('/cotacoes/{id}/editar', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'edit'])->name('proposals.edit')->whereNumber('id');
+        Route::put('/cotacoes/{id}', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'update'])->name('proposals.update')->whereNumber('id');
+        Route::patch('/cotacoes/{id}/estado', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'status'])->name('proposals.status')->whereNumber('id');
+        Route::post('/cotacoes/{id}/aceitar', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'accept'])->name('proposals.accept')->whereNumber('id');
+
+        // Cotações convertidas: consulta e estado do pipeline (pagamentos, documentos e contrato no desktop).
+        Route::get('/convertidas', [App\Http\Controllers\Admin\Mobile\ConvertedProposalController::class, 'index'])->name('converted-proposals.index');
+        Route::get('/convertidas/{id}', [App\Http\Controllers\Admin\Mobile\ConvertedProposalController::class, 'show'])->name('converted-proposals.show')->whereNumber('id');
+        Route::patch('/convertidas/{id}/estado', [App\Http\Controllers\Admin\Mobile\ConvertedProposalController::class, 'status'])->name('converted-proposals.status')->whereNumber('id');
+
+        // Simulador de custos: consulta das simulações feitas no site (eliminar no desktop).
+        Route::get('/simulador-custos', [App\Http\Controllers\Admin\Mobile\CostSimulatorController::class, 'index'])->name('cost-simulators.index');
+        Route::get('/simulador-custos/{id}', [App\Http\Controllers\Admin\Mobile\CostSimulatorController::class, 'show'])->name('cost-simulators.show')->whereNumber('id');
+
+        // Tarefas ("/tarefas/nova" tem de ficar antes de "/tarefas/{id}"). Sem calendário, anexos nem eliminar: ficam no desktop.
+        Route::get('/tarefas', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'index'])->name('tasks.index');
+        Route::get('/tarefas/nova', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/tarefas', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'store'])->name('tasks.store');
+        Route::get('/tarefas/{id}/editar', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'edit'])->name('tasks.edit')->whereNumber('id');
+        Route::put('/tarefas/{id}', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'update'])->name('tasks.update')->whereNumber('id');
+        Route::post('/tarefas/{id}/concluir', [App\Http\Controllers\Admin\Mobile\TaskController::class, 'complete'])->name('tasks.complete')->whereNumber('id');
+
+        // Movimentos financeiros ("/movimentos/novo" tem de ficar antes de "/movimentos/{id}").
+        // Os automáticos (venda, viatura, convertida) são só de consulta; exportações e comprovativos no desktop.
+        Route::get('/movimentos', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'index'])->name('movements.index');
+        Route::get('/movimentos/novo', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'create'])->name('movements.create');
+        Route::post('/movimentos', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'store'])->name('movements.store');
+        Route::get('/movimentos/{id}', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'show'])->name('movements.show')->whereNumber('id');
+        Route::get('/movimentos/{id}/editar', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'edit'])->name('movements.edit')->whereNumber('id');
+        Route::put('/movimentos/{id}', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'update'])->name('movements.update')->whereNumber('id');
+        Route::delete('/movimentos/{id}', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'destroy'])->name('movements.destroy')->whereNumber('id');
+
+        // Oportunidades de um pedido (scopeBindings: a oportunidade tem de ser do pedido).
+        Route::prefix('/formularios/{formProposal}/oportunidades')->name('form-proposals.opportunities.')->scopeBindings()->group(function () {
+            Route::post('/', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'store'])->name('store');
+            Route::get('/{opportunity}', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'show'])->name('show');
+            Route::patch('/{opportunity}/estado', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'status'])->name('status');
+            Route::patch('/{opportunity}/checklist', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'checklist'])->name('checklist');
+            Route::patch('/{opportunity}/notas', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'notes'])->name('notes');
+            Route::post('/{opportunity}/contactos', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'storeContact'])->name('contacts.store');
+            Route::delete('/{opportunity}/contactos/{contact}', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'destroyContact'])->name('contacts.destroy');
+        });
+    });
+
+    // ============================================================
     // GRUPOS DE ATRIBUTOS V2
     // ============================================================
     Route::prefix('v2/attribute-groups')->name('admin.v2.attribute-groups.')->group(function () {

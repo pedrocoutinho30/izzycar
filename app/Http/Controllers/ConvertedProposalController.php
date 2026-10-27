@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ConvertedProposal;
 use Illuminate\Http\Request;
-use App\Mail\ProposalStatusUpdatedMail;
-use App\Models\Client;
-use Illuminate\Support\Facades\Mail;
+use App\Services\ConvertedProposalService;
 use Illuminate\Support\Facades\Validator;
 
 class ConvertedProposalController extends Controller
@@ -83,48 +81,24 @@ class ConvertedProposalController extends Controller
             ->with('success', 'Proposta atualizada com sucesso!');
     }
 
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(Request $request, $id, ConvertedProposalService $service)
     {
-        $request->validate(
-            [
-                'status' => ['required', 'string', \Illuminate\Validation\Rule::in([...ConvertedProposal::PIPELINE_STATUSES, ...ConvertedProposal::CANCELLED_STATUSES])],
-                // Sem o campo mantém-se o comportamento antigo: avisar o cliente.
-                'notify' => ['nullable', 'boolean'],
-            ],
-            ['status.in' => 'Estado inválido.']
-        );
+        $request->validate($service->statusRules(), $service->statusMessages());
 
         $convertedProposal = ConvertedProposal::findOrFail($id);
-        $oldStatus = $convertedProposal->status;
-        $newStatus = $request->status;
+        $result = $service->changeStatus($convertedProposal, $request->status, $request->boolean('notify', true));
 
         // Sem alteração: não grava nem envia nada ao cliente.
-        if ($oldStatus === $newStatus) {
-            return response()->json(['success' => true, 'message' => 'O estado já era este.', 'oldStatus' => $oldStatus, 'newStatus' => $newStatus]);
-        }
-
-        $convertedProposal->status = $newStatus;
-        $convertedProposal->save();
-
-        $notified = false;
-        $client = Client::find($convertedProposal->client_id);
-        if ($request->boolean('notify', true) && $client && filled($client->email)) {
-            try {
-                Mail::to($client->email)->bcc('izzycarpt@gmail.com')->send(
-                    new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $newStatus, $client->name, $convertedProposal->matricula_destino)
-                );
-                $notified = true;
-            } catch (\Throwable $e) {
-                report($e);
-            }
+        if (!$result['changed']) {
+            return response()->json(['success' => true, 'message' => 'O estado já era este.', 'oldStatus' => $result['oldStatus'], 'newStatus' => $result['newStatus']]);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Estado atualizado com sucesso!',
-            'notified' => $notified,
-            'oldStatus' => $oldStatus,
-            'newStatus' => $newStatus,
+            'notified' => $result['notified'],
+            'oldStatus' => $result['oldStatus'],
+            'newStatus' => $result['newStatus'],
         ]);
     }
 

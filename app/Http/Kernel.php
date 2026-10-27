@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
         'blockInProd' => \App\Http\Middleware\BlockInProduction::class,
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'mobile.access' => \App\Http\Middleware\EnsureMobileAccess::class,
         'restrictAngariador' => \App\Http\Middleware\RestrictAngariadorArea::class,
         'authorizeResource' => \App\Http\Middleware\AuthorizeResource::class,
         'antispam' => \App\Http\Middleware\BlockSpamSubmissions::class,

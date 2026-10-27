@@ -5,8 +5,8 @@ No código chamam-se `Proposal` ("proposta"/"cotação"). Cotação aceite gera 
 ## Cotação (`app/Models/Proposal.php`)
 
 - **Conteúdo**: cliente, viatura (brand, model, version, year, mileage, `fuel`…), custos (`transport_cost` obrigatório, `ipo_cost`, `imt_cost`, `registration_cost`, `isv_cost`, `license_plate_cost`, `inspection_commission_cost`, `commission_cost`, `iuc_cost`), `proposed_car_*`, `images`, `notes` (internas), `url`, `other_links`, atributos (`ProposalAttributeValue`).
-- `proposal_code`: 12 caracteres únicos (inicial da marca + inicial do modelo + 8 aleatórios). É o identificador **público**: nunca expor o id sequencial.
-- `fuel`: string (era ENUM; migration `2026_10_06_120000`). Valores aceites nos controllers: Gasolina, Diesel, Gasolina (HEV), Diesel (HEV), Híbrido Plug-in/Gasolina, Híbrido Plug-in/Diesel, Elétrico. A lista repete-se em `ProposalV2Controller` (`store`, `update`) e `ProposalController`. Ao acrescentar um valor, mudar todos, as views de formulário e o enum `VehicleFuel` (`proposalLabel()` converte oportunidade→cotação).
+- `proposal_code`: 10 caracteres em maiúsculas (inicial da marca + inicial do modelo + 8 aleatórios; `ProposalService::create`). É o identificador **público**: nunca expor o id sequencial.
+- `fuel`: string (era ENUM; migration `2026_10_06_120000`). Valores aceites nos controllers: Gasolina, Diesel, Gasolina (HEV), Diesel (HEV), Híbrido Plug-in/Gasolina, Híbrido Plug-in/Diesel, Elétrico. A lista está em `ProposalService::FUELS` (regras do desktop e do mobile) e repete-se em `ProposalController` (V1). Ao acrescentar um valor, mudar todos, as views de formulário e o enum `VehicleFuel` (`proposalLabel()` converte oportunidade→cotação).
 - `images`: o V2 grava uma string (caminho canónico), apesar do cast para array.
 - **Validade**: `VALIDITY_DAYS = 15`, contados desde `created_at` (editar ou reenviar não renova). `isExpired()`.
 - **Estados** (strings): `Pendente`, `Enviado`, `Aprovada`, `Reprovada`, `Sem resposta`. A migration original define `Enviada`; o código usa `Enviado` **(por confirmar o que a BD real tem)**.
@@ -16,6 +16,7 @@ No código chamam-se `Proposal` ("proposta"/"cotação"). Cotação aceite gera 
 
 ## Criar e editar
 
+- **Lógica partilhada**: `App\Services\ProposalService` (`rules`, `prefillFor`, `create`, `update`, `changeStatus`, `accept`), usada pelo desktop e pelo mobile (`Admin/Mobile/ProposalController`, rotas `admin.mobile.proposals.*`).
 - **V2 (em uso)**: `Admin/ProposalV2Controller`, rotas `admin.v2.proposals.*`: `create`, `createFromForm/{formProposalId}`, `createFromOpportunity/{opportunity}`, `importFromListing`, `store`, `edit`, `update`, `destroy`, `updateStatus`, `accept`, `bulkReject`, `bulkUpdateStatus`.
 - **V1** (`ProposalController`): só `detail`, `accept` e `requestAlternativeQuote` têm rota. Os outros métodos existem sem rota; não os reativar.
 - `store`: nasce sempre `Pendente`; o estado pedido é aplicado no fim por `changeStatus`. Com `import_opportunity_id` liga a oportunidade (`linkProposal`, passa a `selecionado`) e usa a foto dela se não houver upload. Com `form_proposal_id` liga o pedido e passa-o de `novo` a `em_analise`.
@@ -49,7 +50,7 @@ No código chamam-se `Proposal` ("proposta"/"cotação"). Cotação aceite gera 
 
 ## Financeiro
 
-`Expense::syncFromConvertedProposal` corre em cada `saved`: **receitas** (`import_service`) das tranches pagas; **despesas** de comissão (usa `angariador_commission`, não `valor_comissao`), inspeção, transporte, IPO, ISV, IMT, matrícula e registo, só enquanto estão pagas (desmarcar apaga). O valor do carro fica de fora. Sem `v3_vehicle_id` de propósito (a viatura é do cliente). Os movimentos com `source_type` não se editam em `v2/movements`, só na convertida. `ExpenseObserver` sincroniza `FinancialMovement`.
+`Expense::syncFromConvertedProposal` corre em cada `saved`: **receitas** (`import_service`) das tranches pagas; **despesas** de comissão (usa `angariador_commission`, não `valor_comissao`), inspeção, transporte, IPO, ISV, IMT, matrícula e registo, só enquanto estão pagas (desmarcar apaga). O valor do carro fica de fora. Sem `v3_vehicle_id` de propósito (a viatura é do cliente). Os movimentos com `source_type` não se editam em `v2/movements` nem no mobile (`MovementService::isAutomatic`), só na convertida. `ExpenseObserver` sincroniza `FinancialMovement`.
 
 ## Armadilhas
 

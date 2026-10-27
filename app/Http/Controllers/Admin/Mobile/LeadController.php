@@ -1,0 +1,248 @@
+<?php
+
+namespace App\Http\Controllers\Admin\Mobile;
+
+use App\Http\Controllers\Controller;
+use App\Models\Client;
+use App\Models\ConvertedProposal;
+use App\Models\CostSimulator;
+use App\Models\FormProposal;
+use App\Models\LeadActivity;
+use App\Models\Proposal;
+use App\Models\User;
+use App\Permissions\PermissionService;
+use App\Services\ClientService;
+use App\Services\ConvertedProposalService;
+use App\Services\LeadService;
+use Illuminate\Http\Request;
+
+/**
+ * Leads na versão mobile. A lógica é a do desktop (LeadService); aqui só se
+ * filtra pelo âmbito do utilizador ("todas" ou "próprias") registo a registo.
+ */
+class LeadController extends Controller
+{
+    public function __construct(private LeadService $leads, private PermissionService $permissions)
+    {
+    }
+
+    public function index(Request $request)
+    {
+        // Leads perdidas ficam sempre no fim, como no desktop.
+        $query = Client::where('is_lead', true)
+            ->orderByRaw("lead_status = 'perdida' ASC")
+            ->orderBy('created_at', 'desc')
+            ->filtrarLeads($request->only(['search', 'lead_source', 'lead_status', 'owner_id']));
+
+        // Follow-up (cartões "Para tratar"): mesmas fronteiras da contagem do início. Só escalares.
+        $followup = $request->query('followup');
+        $followup = is_string($followup) && in_array($followup, ['hoje', 'atraso'], true) ? $followup : null;
+        if ($followup !== null) {
+            $hoje = now()->startOfDay();
+            if ($followup === 'hoje') {
+                $query->where('next_followup_at', '>=', $hoje->toDateTimeString())
+                    ->where('next_followup_at', '<', $hoje->copy()->addDay()->toDateTimeString());
+            } else {
+                $query->where('next_followup_at', '<', $hoje->toDateTimeString());
+            }
+        }
+
+        $leads = $this->permissions->applyScope($query, $request->user(), 'leads')
+            ->with('owner')
+            ->paginate(15)
+            ->withQueryString();
+
+        $canCreate = $this->permissions->allows($request->user(), 'leads', 'create');
+
+        return view('admin.mobile.leads.index', compact('leads', 'canCreate', 'followup'));
+    }
+
+    public function show(Request $request, $id)
+    {
+        $lead = Client::where('is_lead', true)->with([
+            'proposals' => fn ($q) => $q->latest(),
+            'convertedProposals' => fn ($q) => $q->latest(),
+            'owner',
+        ])->findOrFail($id);
+        abort_unless($this->permissions->allows($request->user(), 'leads', 'view', $lead), 403);
+
+        $formProposals = FormProposal::where('client_id', $lead->id)->withCount('opportunities')->orderBy('created_at', 'desc')->get();
+        $simulators    = CostSimulator::where('client_id', $lead->id)->orderBy('created_at', 'desc')->get();
+        $activities    = LeadActivity::where('client_id', $lead->id)->with('user')->orderBy('created_at', 'desc')->get();
+        // Para marcar as cotações que já deram origem a uma convertida.
+        $convertedByProposal = $lead->convertedProposals->whereNotNull('proposal_id')->keyBy('proposal_id');
+
+        $canAssignOwner = $this->canAssignOwner($request);
+
+        return view('admin.mobile.leads.show', [
+            'lead' => $lead,
+            'formProposals' => $formProposals,
+            'simulators' => $simulators,
+            'activities' => $activities,
+            'convertedByProposal' => $convertedByProposal,
+            'statuses' => $this->allowedStatuses($request),
+            'canUpdate' => $this->permissions->allows($request->user(), 'leads', 'update', $lead),
+            'canAssignOwner' => $canAssignOwner,
+            'canDelete' => $this->permissions->allows($request->user(), 'leads', 'delete'),
+            'owners' => $canAssignOwner ? $this->owners() : collect(),
+            // Os pedidos da lead são todos do mesmo cliente: o dono confere-se uma vez.
+            'canOpenRequests' => $this->permissions->allows($request->user(), 'form-proposals', 'view', (new FormProposal)->setRelation('client', $lead)),
+            'canCreateRequest' => $this->permissions->allows($request->user(), 'form-proposals', 'create'),
+            // Cotações: o dono também é o da lead (client.owner_id).
+            'canOpenProposals' => $this->permissions->allows($request->user(), 'proposals', 'view', (new Proposal)->setRelation('client', $lead)),
+            'canCreateProposal' => $this->permissions->allows($request->user(), 'proposals', 'create'),
+            // Convertidas: todas são deste cliente, o acesso confere-se uma vez.
+            'canOpenConverted' => app(ConvertedProposalService::class)->canView($request->user(), (new ConvertedProposal)->setRelation('client', $lead)),
+            // Simulações: sem âmbito "próprios", basta poder ver o objeto.
+            'canOpenSimulators' => $this->permissions->allows($request->user(), 'cost-simulators', 'view'),
+        ]);
+    }
+
+    public function create(Request $request)
+    {
+        return view('admin.mobile.leads.create', [
+            'owners' => $this->canAssignOwner($request) ? $this->owners() : collect(),
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate($this->leads->rules());
+
+        // Quem não pode atribuir donos não escolhe o dono da lead.
+        if (!$this->canAssignOwner($request)) {
+            unset($data['owner_id']);
+        }
+
+        // clients.email é único na BD: um email repetido nunca se pode forçar
+        // (nem com confirm_duplicate), senão o insert rebentava com 500.
+        // Quem só vê as suas leads não fica a saber o nome de um registo alheio.
+        $clients = app(ClientService::class);
+        $neutra = $this->permissions->scope($request->user(), 'leads', 'view') !== 'all';
+        if ($existente = $clients->emailOwner($data['email'] ?? null)) {
+            return back()->withInput()
+                ->withErrors(['duplicate' => $clients->emailTakenMessage($existente, $neutra)])
+                ->with('duplicate_email', true);
+        }
+
+        // Mesmo aviso de duplicados do desktop (LeadV2Controller::store): só telefone, confirmável.
+        if ($warning = $clients->duplicateWarning($data, $request->boolean('confirm_duplicate'))) {
+            return back()->withInput()->withErrors(['duplicate' => $clients->phoneWarningMessage($warning, $neutra)]);
+        }
+
+        $lead = $this->leads->create($data, $request->user());
+
+        return redirect()->route('admin.mobile.leads.show', $lead->id)
+            ->with('success', 'Lead criado com sucesso.');
+    }
+
+    public function status(Request $request, $id)
+    {
+        $lead = Client::where('is_lead', true)->findOrFail($id);
+        abort_unless($this->permissions->allows($request->user(), 'leads', 'update', $lead), 403);
+
+        $request->validate(['status' => 'required|in:' . implode(',', $this->allowedStatuses($request))]);
+
+        $this->leads->changeStatus($lead, $request->status);
+
+        return back(302, [], route('admin.mobile.leads.show', $lead->id))
+            ->with('success', 'Estado da lead atualizado.');
+    }
+
+    /** "Qualificada" só a equipa atribui: quem edita só as suas (angariador) não pode. */
+    private function allowedStatuses(Request $request): array
+    {
+        if ($this->permissions->scope($request->user(), 'leads', 'update') === 'all') {
+            return LeadService::STATUSES;
+        }
+
+        return array_values(array_diff(LeadService::STATUSES, ['qualificada']));
+    }
+
+    public function convert(Request $request, $id)
+    {
+        $lead = Client::where('is_lead', true)->findOrFail($id);
+        $this->authorizeUpdate($request, $lead);
+
+        $this->leads->convert($lead, $request->user());
+
+        // Já é cliente: segue para a ficha de cliente, se a puder ver.
+        if ($this->permissions->allows($request->user(), 'clients', 'view', $lead)) {
+            return redirect()->route('admin.mobile.clients.show', $lead->id)
+                ->with('success', 'Lead convertido em cliente! Complete os dados em falta.');
+        }
+
+        return redirect()->route('admin.mobile.leads.index')
+            ->with('success', 'Lead convertido em cliente. A ficha de cliente não está disponível para o seu perfil.');
+    }
+
+    public function followup(Request $request, $id)
+    {
+        $lead = Client::findOrFail($id);
+        $this->authorizeUpdate($request, $lead);
+
+        $request->validate([
+            'next_followup_at' => 'required|date|after:now',
+            'followup_note'    => 'nullable|string|max:255',
+        ]);
+
+        $this->leads->scheduleFollowup($lead, $request->next_followup_at, $request->followup_note);
+
+        return back()->with('success', 'Follow-up agendado.');
+    }
+
+    public function activity(Request $request, $id)
+    {
+        $lead = Client::findOrFail($id);
+        $this->authorizeUpdate($request, $lead);
+
+        $request->validate([
+            'type'  => 'required|in:note,call,email,whatsapp,facebook,meeting',
+            'title' => 'required|string|max:255',
+            'body'  => 'nullable|string|max:2000',
+        ]);
+
+        $this->leads->logActivity($lead, $request->type, $request->title, $request->body);
+
+        return back()->with('success', 'Actividade registada.');
+    }
+
+    public function owner(Request $request, $id)
+    {
+        $lead = Client::findOrFail($id);
+        abort_unless($this->canAssignOwner($request), 403);
+
+        $request->validate(['owner_id' => 'nullable|exists:users,id']);
+
+        $this->leads->assignOwner($lead, $request->owner_id ? (int) $request->owner_id : null);
+
+        return back()->with('success', 'Proprietário da lead actualizado.');
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $lead = Client::where('is_lead', true)->findOrFail($id);
+        abort_unless($this->permissions->allows($request->user(), 'leads', 'delete'), 403);
+
+        $lead->delete();
+
+        return redirect()->route('admin.mobile.leads.index')->with('success', 'Lead eliminado.');
+    }
+
+    /** Rotas "próprias": o dono confere-se por registo, como na ficha. */
+    private function authorizeUpdate(Request $request, Client $lead): void
+    {
+        abort_unless($this->permissions->allows($request->user(), 'leads', 'update', $lead), 403);
+    }
+
+    /** Atribuir dono exige editar todas as leads (update.all), como no desktop. */
+    private function canAssignOwner(Request $request): bool
+    {
+        return $this->permissions->allows($request->user(), 'leads', 'update', null, 'all');
+    }
+
+    private function owners()
+    {
+        return User::role('angariador')->orderBy('name')->get();
+    }
+}

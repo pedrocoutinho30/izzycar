@@ -74,6 +74,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'commission_fixed_value' => 'decimal:2',
             'contrato_assinado_em' => 'datetime',
+            'access_mobile' => 'boolean',
         ];
     }
 

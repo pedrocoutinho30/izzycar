@@ -132,6 +132,14 @@ $existAction = isset($user) ? 'Editar' : 'Criar';
                         @error('roles.*')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
+                        @if($canManageMobile ?? false)
+                        <div class="form-check mt-3">
+                            <input type="hidden" name="access_mobile" value="0">
+                            <input class="form-check-input" type="checkbox" name="access_mobile" value="1" id="access_mobile"
+                                   @checked(old('access_mobile', isset($user) ? $user->access_mobile : false))>
+                            <label class="form-check-label" for="access_mobile">Acesso à versão mobile</label>
+                        </div>
+                        @endif
                     </div>
 
                     <div class="col-12" id="angariadorFields" style="display:none">

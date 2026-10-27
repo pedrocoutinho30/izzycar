@@ -289,6 +289,18 @@ class Expense extends Model
         return ConvertedProposal::class . ':' . $entry;
     }
 
+    /** Todos os source_type dos lançamentos automáticos de uma cotação convertida. */
+    public static function importSourceTypes(): array
+    {
+        return array_map(fn ($entry) => self::importSourceType($entry), array_keys(self::IMPORT_ENTRIES));
+    }
+
+    /** Lançamentos automáticos gerados por uma cotação convertida. */
+    public function scopeFromConvertedProposal(Builder $query, int $convertedId): Builder
+    {
+        return $query->whereIn('source_type', self::importSourceTypes())->where('source_id', $convertedId);
+    }
+
     /**
      * Lança nos movimentos o que já foi pago/recebido numa importação. Um
      * lançamento só existe enquanto estiver pago: desmarcar apaga-o. Os
