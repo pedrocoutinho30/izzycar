@@ -11,8 +11,8 @@
 
     <style>
         :root {
-            --admin-primary: #6e0707;
-            --admin-primary-dark: #4a0505;
+            --admin-primary: #92642D;
+            --admin-primary-light: #B59151;
             --border-radius: 12px;
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
             --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -41,7 +41,7 @@
         }
 
         .register-header {
-            background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-dark));
+            background: linear-gradient(135deg, var(--admin-primary-light), var(--admin-primary));
             padding: 2rem;
             text-align: center;
             color: #fff;
@@ -63,13 +63,13 @@
         .form-control:focus {
             outline: none;
             border-color: var(--admin-primary);
-            box-shadow: 0 0 0 3px rgba(110, 7, 7, 0.1);
+            box-shadow: 0 0 0 3px rgba(146, 100, 45, 0.15);
         }
 
         .btn-register {
             width: 100%;
             padding: 0.8rem;
-            background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-dark));
+            background: linear-gradient(135deg, var(--admin-primary-light), var(--admin-primary));
             border: none;
             border-radius: 8px;
             color: white;
