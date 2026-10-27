@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .ef-step {
     width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
-    background: linear-gradient(135deg, var(--ef-brand), #9b1111);
+    background: linear-gradient(135deg, #B59151, var(--ef-brand));
     color: #fff; font-weight: 800; font-size: .9rem;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 4px 12px rgba(146,100,45,.3);
@@ -736,7 +736,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .ef-submit {
     display: inline-flex; align-items: center; gap: .65rem;
     padding: 1rem 2.25rem; border-radius: var(--radius-sharp-sm);
-    background: linear-gradient(135deg, var(--ef-brand), #9b1111);
+    background: linear-gradient(135deg, #B59151, var(--ef-brand));
     color: #fff; font-size: 1rem; font-weight: 700;
     border: none; cursor: pointer;
     box-shadow: 0 6px 20px rgba(146,100,45,.35);

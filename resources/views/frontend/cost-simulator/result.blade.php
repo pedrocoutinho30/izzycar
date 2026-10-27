@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .sr-total {
   display:flex; align-items:center; justify-content:space-between;
   padding:1.25rem 1.5rem; border-radius:var(--radius-sharp-md); margin-top:.25rem;
-  background: linear-gradient(135deg, var(--sr-brand) 0%, #9b1111 100%);
+  background: linear-gradient(135deg, #B59151 0%, var(--sr-brand) 100%);
   box-shadow:0 4px 16px rgba(146,100,45,.3);
 }
 .sr-total__label { font-size:.82rem; font-weight:500; color:rgba(255,255,255,.75); }
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
   border-color:#aaa; color:#111; transform:translateY(-1px); box-shadow: var(--sr-shadow);
 }
 .sr-btn--primary {
-  background: linear-gradient(135deg, var(--sr-brand), #9b1111);
+  background: linear-gradient(135deg, #B59151, var(--sr-brand));
   color:#fff; border:none;
   box-shadow:0 4px 16px rgba(146,100,45,.3);
 }
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function () {
   font-size:.85rem;
 }
 .sr-isv-table table th {
-  background: linear-gradient(135deg, var(--sr-brand), #9b1111);
+  background: linear-gradient(135deg, #B59151, var(--sr-brand));
   color:#fff; padding:.85rem 1rem; font-weight:700; text-align:left;
 }
 .sr-isv-table table th:first-child { border-radius:var(--radius-sharp-sm) 0 0 0; }
