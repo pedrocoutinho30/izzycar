@@ -95,6 +95,46 @@ class MobileCostSimulatorsTest extends TestCase
             ->assertOk()->assertDontSee('Rui Costa')->assertDontSee('Ana Silva')->assertSee('Nenhuma simulação encontrada');
     }
 
+    public function test_pesquisa_trata_underscore_e_ponto_de_exclamacao_como_texto(): void
+    {
+        $this->simulation($this->client(), ['brand' => 'A_B', 'model' => 'ModeloUnder']);
+        $this->simulation($this->client(['name' => 'Rui Costa', 'email' => 'rui@example.com']), ['brand' => 'AxB', 'model' => 'ModeloX']);
+        $this->simulation($this->client(['name' => 'Eva Lima', 'email' => 'eva@example.com']), ['brand' => 'Wow!', 'model' => 'ModeloBang']);
+        $user = $this->mobileUser();
+
+        $this->actingAs($user)->get(route('admin.mobile.cost-simulators.index', ['search' => 'A_B']))
+            ->assertOk()->assertSee('ModeloUnder')->assertDontSee('ModeloX');
+        $this->actingAs($user)->get(route('admin.mobile.cost-simulators.index', ['search' => 'w!']))
+            ->assertOk()->assertSee('ModeloBang')->assertDontSee('ModeloUnder');
+        $this->actingAs($user)->get(route('admin.mobile.cost-simulators.index', ['search' => '!']))
+            ->assertOk()->assertSee('ModeloBang')->assertDontSee('ModeloX');
+    }
+
+    public function test_parametros_em_formato_de_lista_nao_dao_erro(): void
+    {
+        $this->simulation($this->client(), ['model' => 'ModeloAna']);
+        $user = $this->mobileUser();
+
+        foreach (['search' => ['x'], 'client_id' => [1], 'page' => [1]] as $chave => $valor) {
+            $this->actingAs($user)->get(route('admin.mobile.cost-simulators.index', [$chave => $valor]))
+                ->assertOk()->assertSee('ModeloAna');
+        }
+    }
+
+    public function test_chip_do_filtro_so_mostra_o_nome_se_o_cliente_tem_simulacoes(): void
+    {
+        $ana = $this->client();
+        $semSimulacoes = $this->client(['name' => 'Nome Secreto', 'email' => 'secreto@example.com']);
+        $this->simulation($ana);
+        $user = $this->mobileUser();
+
+        $this->actingAs($user)->get(route('admin.mobile.cost-simulators.index', ['client_id' => $semSimulacoes->id]))
+            ->assertOk()->assertDontSee('Nome Secreto')
+            ->assertSee('Cliente #' . $semSimulacoes->id)->assertSee('Remover filtro');
+        $this->actingAs($user)->get(route('admin.mobile.cost-simulators.index', ['client_id' => $ana->id]))
+            ->assertOk()->assertSee('Ana Silva')->assertDontSee('Cliente #' . $ana->id);
+    }
+
     public function test_filtro_por_cliente_e_chip_para_remover(): void
     {
         $ana = $this->client();
@@ -154,7 +194,6 @@ class MobileCostSimulatorsTest extends TestCase
 
         $this->actingAs($this->mobileUser())->get(route('admin.mobile.cost-simulators.show', $sim->id))
             ->assertOk()
-            ->assertDontSee('IUC (Imposto Único de Circulação)')
             ->assertDontSee('Cilindrada')->assertDontSee('Autonomia da bateria')->assertDontSee('Emissão de partículas');
     }
 

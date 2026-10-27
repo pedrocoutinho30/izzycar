@@ -8,11 +8,10 @@
         (bool) $client->is_lead => route('admin.mobile.leads.show', $client->id),
         default => route('admin.mobile.clients.show', $client->id),
     };
-    // Custos pela ordem do desktop: [nome, valor]. O IUC só aparece quando existe.
+    // Custos pela ordem do desktop: [nome, valor].
     $custos = array_values(array_filter([
         ['Valor do carro', $sim->car_value],
         ['ISV (Imposto sobre Veículos)', $sim->isv_cost],
-        $sim->iuc_cost ? ['IUC (Imposto Único de Circulação)', $sim->iuc_cost] : null,
         ['Comissão', $sim->commission_cost],
         ['Inspeção na origem', $sim->inspection_commission_cost],
         ['Transporte', $sim->transport],
@@ -53,7 +52,7 @@
             @if($sim->read)
                 <span class="badge bg-success flex-shrink-0">Lido</span>
             @else
-                <span class="badge bg-warning text-dark flex-shrink-0">Novo</span>
+                <span class="badge bg-warning text-dark flex-shrink-0">Nova</span>
             @endif
         </div>
         <div class="small text-muted">Simulação #{{ $sim->id }} · {{ $sim->created_at->format('d/m/Y H:i') }}</div>

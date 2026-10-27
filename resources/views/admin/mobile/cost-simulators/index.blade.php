@@ -11,26 +11,26 @@
 
     <div class="m-sticky-filters">
         <form method="GET" action="{{ route('admin.mobile.cost-simulators.index') }}" role="search">
-            @if($filterClient)
-                <input type="hidden" name="client_id" value="{{ $filterClient->id }}">
+            @if($filterClientId)
+                <input type="hidden" name="client_id" value="{{ $filterClientId }}">
             @endif
             <div class="input-group">
                 <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                <input type="search" name="search" value="{{ request('search') }}" class="form-control"
+                <input type="search" name="search" value="{{ $search }}" class="form-control"
                        placeholder="Cliente, email, telefone, marca ou modelo" aria-label="Pesquisar simulações" enterkeyhint="search">
             </div>
         </form>
 
         @if($filterClient)
             <div class="m-chips" role="group" aria-label="Filtro por cliente">
-                <a href="{{ route('admin.mobile.cost-simulators.index', array_filter(['search' => request('search')], 'filled')) }}" class="m-chip active">
+                <a href="{{ route('admin.mobile.cost-simulators.index', array_filter(['search' => $search], 'filled')) }}" class="m-chip active">
                     {{ $filterClient->name }} <i class="bi bi-x-lg ms-1"></i><span class="visually-hidden">Remover filtro</span>
                 </a>
             </div>
-        @elseif(request()->filled('client_id'))
+        @elseif($filterClientId)
             <div class="m-chips" role="group" aria-label="Filtro por cliente">
-                <a href="{{ route('admin.mobile.cost-simulators.index', array_filter(['search' => request('search')], 'filled')) }}" class="m-chip active">
-                    Cliente #{{ request()->integer('client_id') }} <i class="bi bi-x-lg ms-1"></i><span class="visually-hidden">Remover filtro</span>
+                <a href="{{ route('admin.mobile.cost-simulators.index', array_filter(['search' => $search], 'filled')) }}" class="m-chip active">
+                    Cliente #{{ $filterClientId }} <i class="bi bi-x-lg ms-1"></i><span class="visually-hidden">Remover filtro</span>
                 </a>
             </div>
         @endif

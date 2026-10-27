@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Mobile;
 
 use App\Http\Controllers\Controller;
-use App\Models\Client;
 use App\Models\CostSimulator;
 use App\Permissions\PermissionService;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,16 +30,18 @@ class CostSimulatorController extends Controller
         $query = CostSimulator::with('client')->orderBy('created_at', 'desc')->orderBy('id', 'desc');
 
         // Simulações de um cliente (ligação a partir da ficha do cliente/lead).
-        $client = null;
-        if ($request->filled('client_id')) {
-            $clientId = $request->integer('client_id');
+        // Só valores escalares: client_id[]=1 conta como ausente.
+        $clientId = null;
+        $rawClientId = $request->query('client_id');
+        if (is_scalar($rawClientId) && filter_var($rawClientId, FILTER_VALIDATE_INT) !== false && (int) $rawClientId > 0) {
+            $clientId = (int) $rawClientId;
             $query->where('client_id', $clientId);
-            $client = Client::find($clientId);
         }
 
         // Pesquisa por cliente (nome, email, telefone, NIF) ou viatura. Literal: % e _ contam como texto.
-        if ($request->filled('search') && is_string($request->search)) {
-            $search = trim($request->search);
+        $search = $request->query('search');
+        $search = is_string($search) ? trim($search) : '';
+        if ($search !== '') {
             $query->where(function (Builder $q) use ($search) {
                 $this->like($q, 'brand', $search);
                 $this->like($q, 'model', $search, 'or');
@@ -55,9 +56,19 @@ class CostSimulatorController extends Controller
             });
         }
 
+        $costSimulators = $query->paginate(15)->withQueryString();
+
+        // O nome só aparece se o cliente filtrado tiver simulações nos resultados;
+        // caso contrário o chip é neutro (não revela nomes de clientes sem simulações).
+        $filterClient = $clientId !== null
+            ? $costSimulators->getCollection()->first()?->client
+            : null;
+
         return view('admin.mobile.cost-simulators.index', [
-            'costSimulators' => $query->paginate(15)->withQueryString(),
-            'filterClient' => $client,
+            'costSimulators' => $costSimulators,
+            'filterClientId' => $clientId,
+            'filterClient' => $filterClient,
+            'search' => $search,
         ]);
     }
 
