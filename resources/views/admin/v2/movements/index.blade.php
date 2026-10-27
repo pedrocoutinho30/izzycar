@@ -276,7 +276,7 @@
                             title="{{ $rowSaldoReal === null ? 'Movimento pendente — não contabilizado no saldo real' : '' }}">
                             {{ $rowSaldoReal !== null ? '€ ' . number_format($rowSaldoReal, 2, ',', '.') : '—' }}
                         </td>
-                        <td>>
+                        <td>
                             <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }} border border-{{ $statusColor }}-subtle">
                                 {{ $mov->status_label }}
                             </span>
