@@ -176,6 +176,9 @@
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
+        @if (session('info'))
+            <div class="alert alert-info">{{ session('info') }}</div>
+        @endif
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
@@ -220,6 +223,11 @@
             @canroute('admin.mobile.form-proposals.index')
             <a class="m-sheet-item" href="{{ route('admin.mobile.form-proposals.index') }}">
                 <i class="bi bi-envelope-open"></i> Formulários
+            </a>
+            @endcanroute
+            @canroute('admin.mobile.proposals.index')
+            <a class="m-sheet-item" href="{{ route('admin.mobile.proposals.index') }}">
+                <i class="bi bi-file-earmark-text"></i> Cotações
             </a>
             @endcanroute
             <a class="m-sheet-item" href="{{ route('admin.v2.dashboard') }}">

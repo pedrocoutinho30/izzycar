@@ -55,6 +55,8 @@ class FormProposalController extends Controller
             'manualStatuses' => FormProposalService::MANUAL_STATUSES,
             'canUpdate' => $canUpdate,
             'canViewOpportunities' => $canViewOpportunities,
+            // Criar cotação a partir do pedido: só com cliente e quem pode criar cotações.
+            'canCreateProposal' => $formProposal->client_id !== null && $this->permissions->allows($request->user(), 'proposals', 'create'),
             'opportunityProgress' => $canViewOpportunities
                 ? $formProposal->opportunities->mapWithKeys(fn ($opportunity) => [$opportunity->id => $opportunities->progress($opportunity)])
                 : collect(),

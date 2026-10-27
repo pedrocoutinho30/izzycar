@@ -88,8 +88,13 @@ return [
                     'label' => 'Cotações',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'client.owner_id',
+                    // Mobile: criar (create/store) exige "criar"; editar, mudar o estado e
+                    // aceitar exigem editar "todas", como as rotas do desktop.
                     'routes' => ['admin.v2.proposals.*', 'admin.v2.car-candidates.*', 'admin.v2.export.proposals', 'isv.*', 'admin.mobile.proposals.*'],
-                    'own_routes' => ['admin.angariador.propostas', 'admin.angariador.cotacoes'],
+                    // Rotas mobile que verificam o dono do cliente registo a registo
+                    // (applyScope/allows). Nomes explícitos: uma rota nova não herda "próprias".
+                    'own_routes' => ['admin.angariador.propostas', 'admin.angariador.cotacoes',
+                        'admin.mobile.proposals.index', 'admin.mobile.proposals.show'],
                 ],
                 'converted-proposals' => [
                     'label' => 'Cotações convertidas',

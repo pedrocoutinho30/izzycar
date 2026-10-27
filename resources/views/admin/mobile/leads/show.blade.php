@@ -178,16 +178,19 @@
                             $proposalStatus = $proposal->status ?? 'Pendente';
                             $convertida = $convertedByProposal->get($proposal->id);
                         @endphp
-                        <div class="m-list-item">
+                        <div class="m-list-item position-relative">
                             <div class="fw-semibold">{{ trim(($proposal->brand ?? '') . ' ' . ($proposal->model ?? '—')) }}</div>
                             <div class="small text-muted">
                                 {{ $proposal->created_at->format('d/m/Y') }}
                                 @if($proposal->value) · {{ number_format($proposal->value, 0, ',', '.') }} € @endif
                             </div>
                             <span class="badge bg-{{ $proposalColors[$proposalStatus] ?? 'secondary' }}">{{ $proposalStatus }}</span>
+                            @if($canOpenProposals)
+                                <a href="{{ route('admin.mobile.proposals.show', $proposal->id) }}" class="stretched-link" aria-label="Abrir cotação {{ trim(($proposal->brand ?? '') . ' ' . ($proposal->model ?? '')) }}"></a>
+                            @endif
                             @if($convertida)
                                 @if($rota('admin.mobile.converted-proposals.show'))
-                                    <a href="{{ route('admin.mobile.converted-proposals.show', $convertida->id) }}" class="badge bg-dark text-decoration-none d-inline-flex align-items-center justify-content-center" style="min-height:44px;min-width:44px">Convertida <i class="bi bi-arrow-right-short"></i></a>
+                                    <a href="{{ route('admin.mobile.converted-proposals.show', $convertida->id) }}" class="badge bg-dark text-decoration-none d-inline-flex align-items-center justify-content-center position-relative" style="min-height:44px;min-width:44px;z-index:2">Convertida <i class="bi bi-arrow-right-short"></i></a>
                                 @else
                                     <span class="badge bg-dark">Convertida</span>
                                 @endif
@@ -197,7 +200,7 @@
                         <div class="text-muted small">Sem cotações.</div>
                     @endforelse
 
-                    @if($rota('admin.mobile.proposals.create'))
+                    @if($canCreateProposal)
                         <a href="{{ route('admin.mobile.proposals.create', ['client_id' => $lead->id]) }}" class="btn btn-primary w-100 mt-2">
                             <i class="bi bi-file-earmark-plus me-1"></i> Criar cotação
                         </a>

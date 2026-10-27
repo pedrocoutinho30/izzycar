@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\CostSimulator;
 use App\Models\FormProposal;
 use App\Models\LeadActivity;
+use App\Models\Proposal;
 use App\Models\User;
 use App\Permissions\PermissionService;
 use App\Services\ClientMatcher;
@@ -73,6 +74,9 @@ class LeadController extends Controller
             // Os pedidos da lead são todos do mesmo cliente: o dono confere-se uma vez.
             'canOpenRequests' => $this->permissions->allows($request->user(), 'form-proposals', 'view', (new FormProposal)->setRelation('client', $lead)),
             'canCreateRequest' => $this->permissions->allows($request->user(), 'form-proposals', 'create'),
+            // Cotações: o dono também é o da lead (client.owner_id).
+            'canOpenProposals' => $this->permissions->allows($request->user(), 'proposals', 'view', (new Proposal)->setRelation('client', $lead)),
+            'canCreateProposal' => $this->permissions->allows($request->user(), 'proposals', 'create'),
         ]);
     }
 

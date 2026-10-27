@@ -53,6 +53,12 @@
 
     @include('admin.mobile.form-proposals._fields')
 
+    @if($canCreateProposal)
+        <a href="{{ route('admin.mobile.proposals.create', ['form_proposal_id' => $formProposal->id]) }}" class="btn btn-primary w-100 mb-3">
+            <i class="bi bi-file-earmark-plus me-1"></i> Criar cotação
+        </a>
+    @endif
+
     {{-- Oportunidades --}}
     @if($canViewOpportunities)
         <div class="m-card" id="oportunidades">

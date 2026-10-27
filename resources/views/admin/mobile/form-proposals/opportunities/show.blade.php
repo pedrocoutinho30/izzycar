@@ -80,6 +80,16 @@
         @endif
     </div>
 
+    @if($existingProposal && $canViewProposals)
+        <a href="{{ route('admin.mobile.proposals.show', $existingProposal->id) }}" class="btn btn-outline-primary w-100 mb-3">
+            <i class="bi bi-file-earmark-text me-1"></i> Ver cotação #{{ $existingProposal->id }}
+        </a>
+    @elseif(! $existingProposal && $canCreateProposal)
+        <a href="{{ route('admin.mobile.proposals.create', ['opportunity_id' => $opportunity->id]) }}" class="btn btn-primary w-100 mb-3">
+            <i class="bi bi-file-earmark-plus me-1"></i> Criar cotação
+        </a>
+    @endif
+
     {{-- Checklists aplicáveis (base + específicas do combustível) --}}
     <div id="checklist">
         <div class="m-card">

@@ -52,6 +52,10 @@ class ImportOpportunityController extends Controller
             'checklistStatuses' => $this->opportunities->checklistStatuses($opportunity),
             'progress' => $this->opportunities->progress($opportunity),
             'canUpdate' => $this->permissions->allows($request->user(), 'form-proposals', 'update'),
+            // Uma cotação por oportunidade: "Ver cotação" se já existe, senão "Criar cotação".
+            'existingProposal' => $opportunity->proposal_id ? $opportunity->proposal : null,
+            'canCreateProposal' => $formProposal->client_id !== null && $this->permissions->allows($request->user(), 'proposals', 'create'),
+            'canViewProposals' => $this->permissions->allows($request->user(), 'proposals', 'view', (new \App\Models\Proposal)->setRelation('client', $formProposal->client)),
         ]);
     }
 

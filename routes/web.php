@@ -709,6 +709,16 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::get('/formularios/{id}', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'show'])->name('form-proposals.show')->whereNumber('id');
         Route::patch('/formularios/{id}/estado', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'status'])->name('form-proposals.status')->whereNumber('id');
 
+        // Cotações ("/cotacoes/nova" tem de ficar antes de "/cotacoes/{id}").
+        Route::get('/cotacoes', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'index'])->name('proposals.index');
+        Route::get('/cotacoes/nova', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'create'])->name('proposals.create');
+        Route::post('/cotacoes', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'store'])->name('proposals.store');
+        Route::get('/cotacoes/{id}', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'show'])->name('proposals.show')->whereNumber('id');
+        Route::get('/cotacoes/{id}/editar', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'edit'])->name('proposals.edit')->whereNumber('id');
+        Route::put('/cotacoes/{id}', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'update'])->name('proposals.update')->whereNumber('id');
+        Route::patch('/cotacoes/{id}/estado', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'status'])->name('proposals.status')->whereNumber('id');
+        Route::post('/cotacoes/{id}/aceitar', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'accept'])->name('proposals.accept')->whereNumber('id');
+
         // Oportunidades de um pedido (scopeBindings: a oportunidade tem de ser do pedido).
         Route::prefix('/formularios/{formProposal}/oportunidades')->name('form-proposals.opportunities.')->scopeBindings()->group(function () {
             Route::post('/', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'store'])->name('store');
