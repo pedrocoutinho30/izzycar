@@ -11,7 +11,7 @@ use App\Models\LeadActivity;
 use App\Models\Proposal;
 use App\Models\User;
 use App\Permissions\PermissionService;
-use App\Services\ClientMatcher;
+use App\Services\ClientService;
 use App\Services\ConvertedProposalService;
 use App\Services\LeadService;
 use Illuminate\Http\Request;
@@ -101,19 +101,18 @@ class LeadController extends Controller
 
         // clients.email é único na BD: um email repetido nunca se pode forçar
         // (nem com confirm_duplicate), senão o insert rebentava com 500.
-        $matcher = app(ClientMatcher::class);
-        if ($email = $matcher->normalizeEmail($data['email'] ?? null)) {
-            $existente = Client::where('email_normalized', $email)->orWhereRaw('LOWER(email) = ?', [$email])->first();
-            if ($existente) {
-                return back()->withInput()
-                    ->withErrors(['duplicate' => "Já existe «{$existente->name}» com o mesmo email."])
-                    ->with('duplicate_email', true);
-            }
+        // Quem só vê as suas leads não fica a saber o nome de um registo alheio.
+        $clients = app(ClientService::class);
+        $neutra = $this->permissions->scope($request->user(), 'leads', 'view') !== 'all';
+        if ($existente = $clients->emailOwner($data['email'] ?? null)) {
+            return back()->withInput()
+                ->withErrors(['duplicate' => $clients->emailTakenMessage($existente, $neutra)])
+                ->with('duplicate_email', true);
         }
 
         // Mesmo aviso de duplicados do desktop (LeadV2Controller::store): só telefone, confirmável.
-        if ($warning = $matcher->duplicateWarning($data['email'] ?? null, $data['phone'] ?? null, $request->boolean('confirm_duplicate'))) {
-            return back()->withInput()->withErrors(['duplicate' => $warning['message']]);
+        if ($warning = $clients->duplicateWarning($data, $request->boolean('confirm_duplicate'))) {
+            return back()->withInput()->withErrors(['duplicate' => $clients->phoneWarningMessage($warning, $neutra)]);
         }
 
         $lead = $this->leads->create($data, $request->user());

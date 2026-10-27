@@ -66,6 +66,23 @@ class ClientService
             ->first();
     }
 
+    /**
+     * Mensagem de email repetido. Com $neutra (quem só vê os seus registos) não
+     * se revela o nome de um registo alheio.
+     */
+    public function emailTakenMessage(Client $existente, bool $neutra): string
+    {
+        return $neutra
+            ? 'Já existe um registo com este email.'
+            : "Já existe «{$existente->name}» com o mesmo email.";
+    }
+
+    /** Idem para o aviso de telefone repetido (o aviso do ClientMatcher traz o nome). */
+    public function phoneWarningMessage(array $warning, bool $neutra): string
+    {
+        return $neutra ? 'Já existe um registo com este telefone.' : $warning['message'];
+    }
+
     /** Cria o cliente com os dados já validados (o aviso de duplicados fica no controller). */
     public function create(array $data): Client
     {

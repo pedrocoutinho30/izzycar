@@ -3,6 +3,7 @@
 @section('title', 'Início')
 
 @section('content')
+    @if($veLeads)
     <div class="row g-2">
         <div class="col-6">
             <div class="m-card text-center">
@@ -17,4 +18,5 @@
             </div>
         </div>
     </div>
+    @endif
 @endsection

@@ -106,9 +106,7 @@ class ClientController extends Controller
 
         // Mesmo aviso de duplicados do desktop (aqui só pode ser o telefone), confirmável.
         if ($warning = $this->clients->duplicateWarning($data, $request->boolean('confirm_duplicate'))) {
-            $mensagem = $this->ownScope($request) ? 'Já existe um registo com este telefone.' : $warning['message'];
-
-            return back()->withInput()->withErrors(['duplicate' => $mensagem]);
+            return back()->withInput()->withErrors(['duplicate' => $this->clients->phoneWarningMessage($warning, $this->ownScope($request))]);
         }
 
         // Como no desktop e nas leads, o dono fica por atribuir.
@@ -191,9 +189,7 @@ class ClientController extends Controller
         }
 
         // Quem só vê os seus clientes não fica a saber o nome de um cliente alheio.
-        return $this->ownScope($request)
-            ? 'Já existe um registo com este email.'
-            : "Já existe «{$existente->name}» com o mesmo email.";
+        return $this->clients->emailTakenMessage($existente, $this->ownScope($request));
     }
 
     private function ownScope(Request $request): bool

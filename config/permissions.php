@@ -53,7 +53,7 @@ return [
                     'label' => 'Leads',
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => ['all', 'own'], 'delete' => []],
                     'owner' => 'owner_id',
-                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads', 'admin.mobile.dashboard',
+                    'routes' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.api.new-leads', 'admin.v2.export.leads',
                         // Mobile sem filtro por dono: criar, eliminar e atribuir dono (update.all) exigem "todas".
                         'admin.mobile.leads.create', 'admin.mobile.leads.store', 'admin.mobile.leads.destroy', 'admin.mobile.leads.owner'],
                     // Rotas mobile que verificam o dono registo a registo (applyScope/allows). Nomes explícitos:
@@ -226,6 +226,8 @@ return [
         'admin.v2.search.results',
         // Idem no mobile (Mobile\SearchController: secção a secção e no âmbito de cada utilizador).
         'admin.mobile.search',
+        // Início mobile: as contagens de leads respeitam o âmbito (0 sem permissão de leads).
+        'admin.mobile.dashboard',
         'admin.angariador.manual',
         'admin.angariador.faq',
         // Ficheiros privados (retomas, consignação, comprovativos, anexos): qualquer perfil

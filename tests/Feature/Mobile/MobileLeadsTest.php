@@ -205,6 +205,44 @@ class MobileLeadsTest extends TestCase
         $this->assertSame(2, Client::count());
     }
 
+    public function test_criar_lead_duplicada_com_ver_proprias_usa_mensagem_neutra(): void
+    {
+        Client::create(['name' => 'Segredo Alheio', 'email' => 'dup@example.com', 'phone' => '911000111', 'is_lead' => false]);
+        $user = $this->userWith(['leads.view.own', 'leads.create']);
+
+        $this->actingAs($user)->post(route('admin.mobile.leads.store'), ['name' => 'Nova', 'email' => 'dup@example.com'])
+            ->assertSessionHasErrors(['duplicate' => 'Já existe um registo com este email.'])
+            ->assertSessionHas('duplicate_email', true);
+        $this->actingAs($user)->post(route('admin.mobile.leads.store'), ['name' => 'Nova', 'phone' => '911000111'])
+            ->assertSessionHasErrors(['duplicate' => 'Já existe um registo com este telefone.']);
+
+        $this->actingAs($user)->from(route('admin.mobile.leads.create'))
+            ->post(route('admin.mobile.leads.store'), ['name' => 'Nova', 'phone' => '911000111']);
+        $this->actingAs($user)->get(route('admin.mobile.leads.create'))->assertOk()->assertDontSee('Segredo Alheio');
+        $this->assertSame(1, Client::count());
+    }
+
+    public function test_criar_lead_duplicada_com_ver_todas_mantem_o_nome(): void
+    {
+        Client::create(['name' => 'Visivel', 'email' => 'dup@example.com', 'phone' => '911000111', 'is_lead' => true, 'lead_status' => 'nova']);
+        $user = $this->userWith(['leads.view.all', 'leads.create']);
+
+        $this->actingAs($user)->post(route('admin.mobile.leads.store'), ['name' => 'Nova', 'email' => 'dup@example.com'])
+            ->assertSessionHasErrors(['duplicate' => 'Já existe «Visivel» com o mesmo email.']);
+        $this->actingAs($user)->post(route('admin.mobile.leads.store'), ['name' => 'Nova', 'phone' => '911000111'])
+            ->assertSessionHasErrors(['duplicate' => 'Já existe «Visivel» com o mesmo telefone.']);
+    }
+
+    public function test_inicio_acessivel_sem_permissao_de_leads_e_sem_contagens(): void
+    {
+        config(['permissions.enforce' => true]);
+        Client::create(['name' => 'Lead Alheia', 'is_lead' => true, 'lead_status' => 'nova']);
+        $user = $this->userWith(['clients.view.own']);
+
+        $this->actingAs($user)->get(route('admin.mobile.dashboard'))
+            ->assertOk()->assertDontSee('Leads novas')->assertDontSee('Follow-ups hoje');
+    }
+
     public function test_converter_lead_em_cliente(): void
     {
         $lead = Client::create(['name' => 'Ana', 'is_lead' => true, 'lead_status' => 'nova']);
