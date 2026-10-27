@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <style>
 :root {
-    --ef-brand:  #6e0707;
+    --ef-brand:  #92642D;
     --ef-dark:   #111;
     --ef-gray:   #6b7280;
     --ef-light:  #f9fafb;
@@ -514,7 +514,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .ef-hero__badge {
     display: inline-flex; align-items: center; gap: .5rem;
-    background: rgba(110,7,7,.2); border: 1px solid rgba(110,7,7,.35);
+    background: rgba(146,100,45,.2); border: 1px solid rgba(146,100,45,.35);
     color: rgba(255,255,255,.9); font-size: .8rem; font-weight: 600;
     padding: .4rem 1rem; border-radius: 100px; margin-bottom: 1.5rem;
 }
@@ -574,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function () {
     background: linear-gradient(135deg, var(--ef-brand), #9b1111);
     color: #fff; font-weight: 800; font-size: .9rem;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 12px rgba(110,7,7,.3);
+    box-shadow: 0 4px 12px rgba(146,100,45,.3);
 }
 .ef-card__title { font-size: 1.2rem; font-weight: 800; color: #111; margin: 0 0 .2rem; }
 .ef-card__sub   { font-size: .82rem; color: var(--ef-gray); margin: 0; }
@@ -604,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .ef-input:focus, .ef-select:focus, .ef-textarea:focus {
     border-color: var(--ef-brand);
-    box-shadow: 0 0 0 3px rgba(110,7,7,.1);
+    box-shadow: 0 0 0 3px rgba(146,100,45,.1);
 }
 .ef-textarea { resize: vertical; min-height: 110px; }
 .ef-input-suffix {
@@ -615,7 +615,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .ef-input-suffix:focus-within {
     border-color: var(--ef-brand);
-    box-shadow: 0 0 0 3px rgba(110,7,7,.1);
+    box-shadow: 0 0 0 3px rgba(146,100,45,.1);
 }
 .ef-input-suffix .ef-input {
     border: none; border-radius: 0; box-shadow: none; flex: 1;
@@ -651,7 +651,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .ef-cond__label { font-size: .9rem; font-weight: 700; color: #111; line-height: 1.2; }
 .ef-cond__sub   { font-size: .72rem; color: var(--ef-gray); line-height: 1.3; }
 
-.ef-cond input:checked ~ .ef-cond__box { border-color: var(--ef-brand); background: rgba(110,7,7,.04); }
+.ef-cond input:checked ~ .ef-cond__box { border-color: var(--ef-brand); background: rgba(146,100,45,.04); }
 .ef-cond input:checked ~ .ef-cond__box .ef-cond__dot { border-color: var(--ef-brand); }
 .ef-cond input:checked ~ .ef-cond__box .ef-cond__dot::after { transform: scale(1); }
 
@@ -697,7 +697,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .ef-upload-zone:hover, .ef-drop-active {
     border-color: var(--ef-brand);
-    background: rgba(110,7,7,.03);
+    background: rgba(146,100,45,.03);
 }
 .ef-upload-input {
     position: absolute; inset: 0; opacity: 0; cursor: pointer;
@@ -735,14 +735,14 @@ document.addEventListener('DOMContentLoaded', function () {
 .ef-privacy { display: flex; align-items: center; gap: .4rem; color: var(--ef-gray); font-size: .75rem; }
 .ef-submit {
     display: inline-flex; align-items: center; gap: .65rem;
-    padding: 1rem 2.25rem; border-radius: 12px;
+    padding: 1rem 2.25rem; border-radius: var(--radius-sharp-sm);
     background: linear-gradient(135deg, var(--ef-brand), #9b1111);
     color: #fff; font-size: 1rem; font-weight: 700;
     border: none; cursor: pointer;
-    box-shadow: 0 6px 20px rgba(110,7,7,.35);
+    box-shadow: 0 6px 20px rgba(146,100,45,.35);
     transition: transform .15s, box-shadow .2s;
 }
-.ef-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(110,7,7,.4); }
+.ef-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(146,100,45,.4); }
 .ef-submit:disabled { opacity: .7; cursor: not-allowed; }
 @keyframes ef-spin { to { transform: rotate(360deg); } }
 .ef-spinner {

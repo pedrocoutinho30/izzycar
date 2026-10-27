@@ -42,7 +42,7 @@
     }
 
     .modal-header-modern {
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
         padding: 2rem;
         border: none;
         display: flex;
@@ -126,7 +126,7 @@
     }
 
     .modal-body-modern::-webkit-scrollbar-thumb:hover {
-        background: #990000;
+        background: #B59151;
     }
 
     /* Backdrop com blur */

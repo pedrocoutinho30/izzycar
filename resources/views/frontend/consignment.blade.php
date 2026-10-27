@@ -308,7 +308,7 @@
 
 @push('styles')
 <style>
-    :root { --cs-accent: #6e0707; --cs-accent2: #990000; }
+    :root { --cs-accent: #92642D; --cs-accent2: #B59151; }
 
     /* ── Shared ── */
     .cs-label {
@@ -318,7 +318,7 @@
         letter-spacing: .1em;
         text-transform: uppercase;
         color: var(--cs-accent);
-        background: rgba(110,7,7,.08);
+        background: rgba(146,100,45,.08);
         padding: 4px 14px;
         border-radius: 50px;
         margin-bottom: .75rem;
@@ -344,7 +344,7 @@
     .cs-btn-primary {
         display: inline-flex; align-items: center; gap: 8px;
         background: var(--cs-accent); color: #fff;
-        padding: 14px 28px; border-radius: 50px;
+        padding: 14px 28px; border-radius: var(--radius-sharp-sm);
         font-weight: 700; font-size: .95rem;
         text-decoration: none; transition: .25s;
     }
@@ -352,7 +352,7 @@
     .cs-btn-outline {
         display: inline-flex; align-items: center; gap: 8px;
         border: 2px solid rgba(255,255,255,.4); color: #fff;
-        padding: 13px 28px; border-radius: 50px;
+        padding: 13px 28px; border-radius: var(--radius-sharp-sm);
         font-weight: 700; font-size: .95rem;
         text-decoration: none; transition: .25s;
     }
@@ -383,7 +383,7 @@
     .cs-badge {
         display: inline-flex; align-items: center; gap: 8px;
         padding: 10px 20px;
-        background: rgba(110,7,7,.25); border: 1px solid rgba(110,7,7,.4);
+        background: rgba(146,100,45,.25); border: 1px solid rgba(146,100,45,.4);
         border-radius: 50px; color: #fff;
         font-size: .88rem; font-weight: 600; margin-bottom: 1.5rem;
     }
@@ -423,7 +423,7 @@
     .cs-stat-card:hover { border-color: var(--cs-accent); transform: translateY(-3px); }
     .cs-stat-icon {
         width: 48px; height: 48px;
-        background: rgba(110,7,7,.08); border-radius: 12px;
+        background: rgba(146,100,45,.08); border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
         font-size: 1.35rem; color: var(--cs-accent);
         flex-shrink: 0;
@@ -443,7 +443,7 @@
         left: 28px;
         top: 0; bottom: 0;
         width: 2px;
-        background: linear-gradient(to bottom, var(--cs-accent), rgba(110,7,7,.1));
+        background: linear-gradient(to bottom, var(--cs-accent), rgba(146,100,45,.1));
     }
     .cs-step {
         display: flex;
@@ -479,7 +479,7 @@
     .cs-step-icon {
         flex-shrink: 0;
         width: 44px; height: 44px;
-        background: rgba(110,7,7,.08);
+        background: rgba(146,100,45,.08);
         border-radius: 10px;
         display: flex; align-items: center; justify-content: center;
         font-size: 1.2rem; color: var(--cs-accent);
@@ -499,7 +499,7 @@
         height: 100%;
         transition: .25s;
     }
-    .cs-benefit:hover { border-color: var(--cs-accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(110,7,7,.08); }
+    .cs-benefit:hover { border-color: var(--cs-accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(146,100,45,.08); }
     .cs-benefit-icon {
         font-size: 1.6rem;
         color: var(--cs-accent);
@@ -530,7 +530,7 @@
     .cs-price-highlight {
         display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px;
         padding: 12px 20px;
-        background: rgba(110,7,7,.06);
+        background: rgba(146,100,45,.06);
         border-radius: 12px;
         font-size: .9rem; font-weight: 600; color: var(--cs-accent);
     }
@@ -547,7 +547,7 @@
     .cs-cta-btn-primary {
         display: inline-flex; align-items: center; gap: 8px;
         background: #fff; color: var(--cs-accent);
-        padding: 15px 28px; border-radius: 50px;
+        padding: 15px 28px; border-radius: var(--radius-sharp-sm);
         font-weight: 700; font-size: .95rem;
         text-decoration: none; transition: .25s;
         white-space: nowrap;
@@ -556,7 +556,7 @@
     .cs-cta-btn-whatsapp {
         display: inline-flex; align-items: center; gap: 8px;
         background: #25d366; color: #fff;
-        padding: 15px 28px; border-radius: 50px;
+        padding: 15px 28px; border-radius: var(--radius-sharp-sm);
         font-weight: 700; font-size: .95rem;
         text-decoration: none; transition: .25s;
         white-space: nowrap;

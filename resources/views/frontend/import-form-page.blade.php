@@ -657,7 +657,7 @@ document.addEventListener('DOMContentLoaded', function () {
    FORMULÁRIO DE IMPORTAÇÃO
 ════════════════════════════════════════ */
 :root {
-  --if-brand:  #6e0707;
+  --if-brand:  #92642D;
   --if-dark:   #111111;
   --if-gray:   #6b7280;
   --if-light:  #f9fafb;
@@ -682,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .if-hero__badge {
   display:inline-flex; align-items:center; gap:.45rem;
-  background:rgba(110,7,7,.2); border:1px solid rgba(110,7,7,.35);
+  background:rgba(146,100,45,.2); border:1px solid rgba(146,100,45,.35);
   color:rgba(255,255,255,.9); font-size:.78rem; font-weight:600;
   padding:.4rem 1rem; border-radius:var(--radius-sharp-sm); margin-bottom:1.5rem;
 }
@@ -741,7 +741,7 @@ document.addEventListener('DOMContentLoaded', function () {
   background: linear-gradient(135deg, var(--if-brand), #9b1111);
   color:#fff; font-weight:800; font-size:.9rem;
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 4px 12px rgba(110,7,7,.3);
+  box-shadow:0 4px 12px rgba(146,100,45,.3);
 }
 .if-card__title { font-size:1.2rem; font-weight:800; color:#111; margin:0 0 .2rem; }
 .if-card__sub   { font-size:.82rem; color: var(--if-gray); margin:0; }
@@ -771,7 +771,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .if-input:focus, .if-select:focus, .if-textarea:focus {
   border-color: var(--if-brand);
-  box-shadow:0 0 0 3px rgba(110,7,7,.1);
+  box-shadow:0 0 0 3px rgba(146,100,45,.1);
 }
 .if-input.if-invalid, .if-select.if-invalid, .if-textarea.if-invalid {
   border-color:#dc2626;
@@ -804,7 +804,7 @@ document.addEventListener('DOMContentLoaded', function () {
   text-align:center; transition:.25s; background:#fafafa; overflow:hidden;
 }
 .if-upload-zone:hover, .if-drop-active {
-  border-color: var(--if-brand); background:rgba(110,7,7,.03);
+  border-color: var(--if-brand); background:rgba(146,100,45,.03);
 }
 .if-upload-input {
   position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; z-index:2;
@@ -886,10 +886,10 @@ document.addEventListener('DOMContentLoaded', function () {
   background: linear-gradient(135deg, var(--if-brand), #9b1111);
   color:#fff; font-size:1rem; font-weight:700;
   border:none; cursor:pointer;
-  box-shadow:0 6px 20px rgba(110,7,7,.35);
+  box-shadow:0 6px 20px rgba(146,100,45,.35);
   transition:transform .15s, box-shadow .2s;
 }
-.if-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 10px 28px rgba(110,7,7,.4); }
+.if-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 10px 28px rgba(146,100,45,.4); }
 .if-submit:disabled { opacity:.7; cursor:not-allowed; }
 
 /* ── Reveal ── */

@@ -76,7 +76,7 @@
         box-shadow: 0 20px 60px rgba(0,0,0,.2);
     }
     .contact-modal-header {
-        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        background: linear-gradient(135deg, #92642D 0%, #B59151 100%);
         padding: 1.25rem 1.5rem;
         border-bottom: none;
         align-items: flex-start;
@@ -107,16 +107,16 @@
         color: #333;
     }
     .contact-input:focus {
-        border-color: #6e0707;
-        box-shadow: 0 0 0 3px rgba(110,7,7,.1);
+        border-color: #92642D;
+        box-shadow: 0 0 0 3px rgba(146,100,45,.1);
         outline: none;
     }
     .contact-input::placeholder { color: #aaa; }
     .contact-submit-btn {
-        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        background: linear-gradient(135deg, #92642D 0%, #B59151 100%);
         color: #fff;
         border: none;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         padding: 12px;
         font-weight: 600;
         font-size: .95rem;

@@ -75,14 +75,14 @@
         max-width: 360px;
         background-color: var(--white-color) !important;
         border-radius: 12px;
-        border: 1px solid rgba(110, 7, 7, 0.1);
+        border: 1px solid rgba(146,100,45, 0.1);
         transition: all 0.3s ease;
         overflow: hidden;
     }
 
     .custom-block:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(110, 7, 7, 0.2) !important;
+        box-shadow: 0 8px 30px rgba(146,100,45, 0.2) !important;
     }
 
     .custom-block a {
@@ -107,7 +107,7 @@
     /* Swiper Navigation */
     .swiper-button-next,
     .swiper-button-prev {
-        background-color: rgba(110, 7, 7, 0.9);
+        background-color: rgba(146,100,45, 0.9);
         width: 40px;
         height: 40px;
         border-radius: 50%;
@@ -116,7 +116,7 @@
 
     .swiper-button-next:hover,
     .swiper-button-prev:hover {
-        background-color: rgba(110, 7, 7, 1);
+        background-color: rgba(146,100,45, 1);
         transform: scale(1.1);
     }
 

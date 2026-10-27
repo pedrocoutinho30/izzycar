@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
    NEWS BLOG — LISTAGEM
 ════════════════════════════════════════ */
 :root {
-  --nb-brand:  #6e0707;
+  --nb-brand:  #92642D;
   --nb-dark:   #111111;
   --nb-gray:   #6b7280;
   --nb-light:  #f9fafb;
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .nb-hero__bg {
   position:absolute; inset:0; pointer-events:none;
-  background: radial-gradient(ellipse at 30% 0%, rgba(110,7,7,.25) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 30% 0%, rgba(146,100,45,.25) 0%, transparent 65%);
 }
 .nb-hero__inner {
   position:relative; max-width:700px;
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .nb-hero__breadcrumb span:last-child { color:rgba(255,255,255,.7); }
 .nb-hero__badge {
   display:inline-flex; align-items:center; gap:.45rem;
-  background:rgba(110,7,7,.2); border:1px solid rgba(110,7,7,.35);
+  background:rgba(146,100,45,.2); border:1px solid rgba(146,100,45,.35);
   color:rgba(255,255,255,.9); font-size:.78rem; font-weight:600;
   padding:.4rem 1rem; border-radius:100px; margin-bottom:1.5rem;
 }
@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .nb-read-time {
   display:inline-flex; align-items:center; gap:.3rem;
   font-size:.72rem; font-weight:600; color: var(--nb-brand);
-  background:rgba(110,7,7,.07); border-radius:100px;
+  background:rgba(146,100,45,.07); border-radius:100px;
   padding:.2rem .6rem;
 }
 
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .nb-cta__sub   { font-size:.83rem; color:rgba(255,255,255,.55); margin:0; }
 .nb-cta__btn {
   display:inline-flex; align-items:center; gap:.55rem; flex-shrink:0;
-  padding:.85rem 1.75rem; border-radius:12px;
+  padding:.85rem 1.75rem; border-radius:var(--radius-sharp-sm);
   background: var(--nb-brand); color:#fff; font-weight:700; font-size:.9rem;
   text-decoration:none; transition:background .2s, transform .15s;
   white-space:nowrap;

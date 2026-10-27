@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
    NEWS DETAIL
 ════════════════════════════════════════ */
 :root {
-  --nd-brand:  #6e0707;
+  --nd-brand:  #92642D;
   --nd-dark:   #111111;
   --nd-gray:   #6b7280;
   --nd-light:  #f9fafb;
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .nd-header::before {
   content:''; position:absolute; inset:0; pointer-events:none;
-  background: radial-gradient(ellipse at 30% 0%, rgba(110,7,7,.25) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 30% 0%, rgba(146,100,45,.25) 0%, transparent 65%);
 }
 .nd-header__inner { max-width:820px; margin:0 auto; position:relative; }
 
@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .nd-back-wrap { margin-top:1.5rem; }
 .nd-back-btn {
   display:inline-flex; align-items:center; gap:.5rem;
-  padding:.7rem 1.4rem; border-radius:10px;
+  padding:.7rem 1.4rem; border-radius:var(--radius-sharp-sm);
   border:1.5px solid var(--nd-border); color:#374151;
   font-size:.85rem; font-weight:600; text-decoration:none;
   transition:border-color .2s, color .2s;
@@ -521,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .nd-sb-card__desc  { font-size:.8rem; color:rgba(255,255,255,.55); margin:0 0 1.25rem; line-height:1.5; }
 .nd-sb-card__btn {
   display:flex; align-items:center; justify-content:center; gap:.5rem;
-  padding:.75rem; border-radius:10px;
+  padding:.75rem; border-radius:var(--radius-sharp-sm);
   background: var(--nd-brand); color:#fff; font-size:.85rem; font-weight:700;
   text-decoration:none; transition:background .2s;
 }

@@ -167,8 +167,8 @@
 
 .mobile-nav-link:hover,
 .mobile-nav-link:active {
-    background: rgba(110, 7, 7, 0.2);
-    border-color: rgba(110, 7, 7, 0.5);
+    background: rgba(146,100,45, 0.2);
+    border-color: rgba(146,100,45, 0.5);
     color: #fff;
     transform: translateX(5px);
 }
@@ -184,12 +184,12 @@
 /* Parent Menu Items */
 .mobile-nav-link-parent {
     padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, rgba(110, 7, 7, 0.2) 0%, rgba(110, 7, 7, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(146,100,45, 0.2) 0%, rgba(146,100,45, 0.1) 100%);
     border-radius: var(--radius-sharp-md);
     color: #fff;
     font-weight: 700;
     font-size: 1.1rem;
-    border: 2px solid rgba(110, 7, 7, 0.3);
+    border: 2px solid rgba(146,100,45, 0.3);
     margin-bottom: 0.75rem;
 }
 
@@ -217,8 +217,8 @@
 
 .mobile-nav-sublink:hover,
 .mobile-nav-sublink:active {
-    background: rgba(110, 7, 7, 0.15);
-    border-left-color: #990000;
+    background: rgba(146,100,45, 0.15);
+    border-left-color: #B59151;
     color: #fff;
     padding-left: 1.5rem;
 }
@@ -253,12 +253,12 @@
 }
 
 .mobile-menu-modern::-webkit-scrollbar-thumb {
-    background: rgba(110, 7, 7, 0.5);
+    background: rgba(146,100,45, 0.5);
     border-radius: 3px;
 }
 
 .mobile-menu-modern::-webkit-scrollbar-thumb:hover {
-    background: rgba(110, 7, 7, 0.7);
+    background: rgba(146,100,45, 0.7);
 }
 
 /* Mobile CTA Button */
@@ -272,13 +272,13 @@
     gap: 0.5rem;
     width: 100%;
     padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+    background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
     color: #fff;
     font-weight: 700;
     font-size: 1.05rem;
     text-decoration: none;
     border-radius: var(--radius-sharp-sm);
-    box-shadow: 0 4px 20px rgba(110,7,7,0.5);
+    box-shadow: 0 4px 20px rgba(146,100,45,0.5);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     letter-spacing: 0.03em;
 }
@@ -286,7 +286,7 @@
 .mobile-cta-btn:active {
     color: #fff;
     transform: scale(1.02);
-    box-shadow: 0 6px 28px rgba(110,7,7,0.7);
+    box-shadow: 0 6px 28px rgba(146,100,45,0.7);
 }
 </style>
 

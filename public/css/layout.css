@@ -16,9 +16,9 @@ https://templatemo.com/tm-590-topic-listing
   --secondary-color: #2a2a2a;
   /* + escuro e mais consistente */
   --section-bg-color: #1a1a1a;
-  --custom-btn-bg-color: #990000;
+  --custom-btn-bg-color: #B59151;
   /* botão principal em destaque */
-  --custom-btn-bg-hover-color: #990000;
+  --custom-btn-bg-hover-color: #92642D;
   /* hover vermelho mais escuro */
   --dark-color: #000000;
   --p-color: #cccccc;
@@ -28,13 +28,13 @@ https://templatemo.com/tm-590-topic-listing
   /* texto secundário */
   --border-color: #333333;
   /* borda neutra sutil */
-  /* --accent-color: #9b1010; */
-  --accent-color: #6e0707;
+  /* --accent-color: #B59151; */
+  --accent-color: #92642D;
 
   /* para icons ou chamadas de ação */
   --link-color: #ff5555;
   /* link em vermelho claro */
-  --link-hover-color: #9b1010;
+  --link-hover-color: #B59151;
   /* hover link ainda mais forte */
 
 
@@ -355,7 +355,7 @@ strong {
 .custom-btn {
   background: var(--custom-btn-bg-color);
   border: 2px solid transparent;
-  border-radius: var(--border-radius-large);
+  border-radius: var(--radius-sharp-sm);
   color: var(--white-color);
   font-size: var(--btn-font-size);
   font-weight: var(--font-weight-semibold);
@@ -700,7 +700,7 @@ strong {
 .hero-section button[type="submit"] {
   background-color: var(--primary-color);
   border: 0;
-  border-radius: var(--border-radius-large) !important;
+  border-radius: var(--radius-sharp-sm) !important;
   color: var(--white-color);
   max-width: 150px;
 }
@@ -1153,7 +1153,7 @@ blockquote {
 .custom-form button[type="submit"] {
   background: var(--custom-btn-bg-color);
   border: none;
-  border-radius: var(--border-radius-large);
+  border-radius: var(--radius-sharp-sm);
   color: var(--white-color);
   font-family: var(--title-font-family);
   font-size: var(--p-font-size);
@@ -1558,7 +1558,7 @@ blockquote {
     
 
     .container {
-        overflow-x: hidden;
+        overflow-x: clip; /* clip não cria contentor de scroll: mantém o sticky dos filtros */
     }
 
     /* Hero Badge */
@@ -1642,20 +1642,20 @@ blockquote {
         align-items: center;
         gap: 12px;
         padding: 14px 32px;
-        background: linear-gradient(135deg, #990000, #6e0707);
+        background: linear-gradient(135deg, #B59151, #92642D);
         color: white;
         border: none;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 1rem;
         font-weight: 600;
         text-decoration: none;
         transition: all 0.3s ease;
-        box-shadow: 0 8px 25px rgba(153, 0, 0, 0.3);
+        box-shadow: 0 8px 25px rgba(181,145,81, 0.3);
     }
 
     .cta-accept-btn:hover {
         transform: translateY(-3px);
-        box-shadow: 0 12px 35px rgba(153, 0, 0, 0.4);
+        box-shadow: 0 12px 35px rgba(181,145,81, 0.4);
         color: white;
     }
 
@@ -1717,7 +1717,7 @@ blockquote {
         padding: 12px 24px;
         background: white;
         color: #111;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         text-decoration: none;
         font-weight: 600;
         font-size: 0.9rem;
@@ -1861,7 +1861,7 @@ blockquote {
 
     .cost-separator {
         height: 2px;
-        background: linear-gradient(90deg, var(--accent-color), #990000);
+        background: linear-gradient(90deg, var(--accent-color), #B59151);
         margin: 1rem 0;
         border-radius: 2px;
     }
@@ -1879,7 +1879,7 @@ blockquote {
     .cost-value-total {
         font-size: 2rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #990000, #6e0707);
+        background: linear-gradient(135deg, #B59151, #92642D);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -1984,7 +1984,7 @@ blockquote {
         top: 20px;
         bottom: 20px;
         width: 3px;
-        background: linear-gradient(to bottom, var(--accent-color), #990000);
+        background: linear-gradient(to bottom, var(--accent-color), #B59151);
         border-radius: 3px;
     }
 
@@ -2011,13 +2011,13 @@ blockquote {
         top: 0;
         width: 44px;
         height: 44px;
-        background: linear-gradient(135deg, #990000, #6e0707);
+        background: linear-gradient(135deg, #B59151, #92642D);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        /* box-shadow: 0 4px 15px rgba(153, 0, 0, 0.3); */
-        border: 2px solid rgba(153, 0, 0, 0.3);
+        /* box-shadow: 0 4px 15px rgba(181,145,81, 0.3); */
+        border: 2px solid rgba(181,145,81, 0.3);
         z-index: 2;
     }
 
@@ -2106,7 +2106,7 @@ blockquote {
     .info-card-icon {
         width: 64px;
         height: 64px;
-        background: linear-gradient(135deg, #990000, #6e0707);
+        background: linear-gradient(135deg, #B59151, #92642D);
         border-radius: 16px;
         display: flex;
         align-items: center;
@@ -2275,7 +2275,7 @@ blockquote {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
         color: white;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         text-decoration: none;
         font-weight: 600;
         font-size: 0.95rem;
@@ -2295,20 +2295,20 @@ blockquote {
         align-items: center;
         gap: 12px;
         padding: 18px 40px;
-        background: linear-gradient(135deg, #990000, #6e0707);
+        background: linear-gradient(135deg, #B59151, #92642D);
         color: white;
         border: none;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-size: 1.1rem;
         font-weight: 700;
         text-decoration: none;
         transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(153, 0, 0, 0.4);
+        box-shadow: 0 10px 30px rgba(181,145,81, 0.4);
     }
 
     .btn-accept-final:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(153, 0, 0, 0.5);
+        box-shadow: 0 15px 40px rgba(181,145,81, 0.5);
         color: white;
     }
 
@@ -2361,7 +2361,7 @@ blockquote {
         background-color: rgba(255, 255, 255, 0.1);
         border-color: var(--accent-color);
         color: white;
-        box-shadow: 0 0 0 0.2rem rgba(153, 0, 0, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(181,145,81, 0.25);
     }
 
     /* Equipment Section */

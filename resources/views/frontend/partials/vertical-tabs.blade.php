@@ -26,7 +26,7 @@
         top: 40px;
         bottom: 40px;
         width: 2px;
-        background: linear-gradient(180deg, rgba(153,0,0,0.7) 0%, rgba(153,0,0,0.1) 100%);
+        background: linear-gradient(180deg, rgba(181,145,81,0.7) 0%, rgba(181,145,81,0.1) 100%);
         z-index: 0;
         pointer-events: none;
     }
@@ -52,13 +52,13 @@
     }
 
     .process-nav-item:hover {
-        background: rgba(153,0,0,0.03);
-        border-left-color: rgba(153,0,0,0.35);
+        background: rgba(181,145,81,0.03);
+        border-left-color: rgba(181,145,81,0.35);
     }
 
     .process-nav-item.active {
-        background: linear-gradient(135deg, rgba(110,7,7,0.07) 0%, rgba(153,0,0,0.02) 100%);
-        border-left-color: #990000;
+        background: linear-gradient(135deg, rgba(146,100,45,0.07) 0%, rgba(181,145,81,0.02) 100%);
+        border-left-color: #B59151;
     }
 
     .process-step-number {
@@ -80,10 +80,10 @@
     }
 
     .process-nav-item.active .process-step-number {
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
-        border-color: #990000;
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
+        border-color: #B59151;
         color: #fff;
-        box-shadow: 0 4px 14px rgba(153,0,0,0.45), 0 0 0 3px rgba(153,0,0,0.15);
+        box-shadow: 0 4px 14px rgba(181,145,81,0.45), 0 0 0 3px rgba(181,145,81,0.15);
     }
 
     .process-step-title {
@@ -97,7 +97,7 @@
     }
 
     .process-nav-item.active .process-step-title {
-        color: #990000;
+        color: #B59151;
         font-weight: 700;
     }
 
@@ -110,7 +110,7 @@
     }
 
     .process-nav-item.active .step-arrow {
-        color: #990000;
+        color: #B59151;
     }
 
     /* Painel de conteúdo */
@@ -120,7 +120,7 @@
         border-radius: 20px;
         padding: 2.5rem 3rem;
         border: 1px solid rgba(0,0,0,0.06);
-        border-top: 4px solid #990000;
+        border-top: 4px solid #B59151;
         box-shadow: 0 8px 30px rgba(0,0,0,0.08);
         min-height: 450px;
         position: relative;
@@ -134,7 +134,7 @@
         right: 0;
         width: 260px;
         height: 260px;
-        background: radial-gradient(ellipse at top right, rgba(153,0,0,0.04) 0%, transparent 70%);
+        background: radial-gradient(ellipse at top right, rgba(181,145,81,0.04) 0%, transparent 70%);
         pointer-events: none;
     }
 
@@ -151,7 +151,7 @@
     }
 
     .step-label-num {
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         color: #fff;
         font-size: 0.72rem;
         font-weight: 800;
@@ -213,9 +213,9 @@
         top: 0.55rem;
         width: 8px;
         height: 8px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         border-radius: 50%;
-        box-shadow: 0 2px 5px rgba(153,0,0,0.35);
+        box-shadow: 0 2px 5px rgba(181,145,81,0.35);
     }
 
     .process-content-image {

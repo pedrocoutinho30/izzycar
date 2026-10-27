@@ -130,8 +130,8 @@
         align-items: center;
         gap: 8px;
         padding: 10px 20px;
-        background: rgba(110,7,7,.2);
-        border: 1px solid rgba(110,7,7,.3);
+        background: rgba(146,100,45,.2);
+        border: 1px solid rgba(146,100,45,.3);
         border-radius: 50px;
         color: #fff;
         font-size: .9rem;
@@ -166,8 +166,8 @@
         display: flex;
         align-items: center;
         gap: 2rem;
-        background: linear-gradient(135deg, rgba(110,7,7,.15) 0%, rgba(153,0,0,.08) 100%);
-        border: 1px solid rgba(110,7,7,.25);
+        background: linear-gradient(135deg, rgba(146,100,45,.15) 0%, rgba(181,145,81,.08) 100%);
+        border: 1px solid rgba(146,100,45,.25);
         border-radius: 20px;
         padding: 2.5rem;
     }
@@ -175,7 +175,7 @@
         flex-shrink: 0;
         width: 72px; height: 72px;
         display: flex; align-items: center; justify-content: center;
-        background: rgba(110,7,7,.2);
+        background: rgba(146,100,45,.2);
         border-radius: 50%;
         color: #cc3333;
     }
@@ -191,16 +191,16 @@
         flex-shrink: 0;
         display: inline-flex; align-items: center; gap: 10px;
         padding: 1rem 2rem;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         color: #fff; font-weight: 700; font-size: .95rem;
-        border-radius: 50px; text-decoration: none;
+        border-radius: var(--radius-sharp-sm); text-decoration: none;
         transition: all .3s ease;
-        box-shadow: 0 6px 20px rgba(110,7,7,.35);
+        box-shadow: 0 6px 20px rgba(146,100,45,.35);
         white-space: nowrap;
     }
     .vehicles-cta-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(110,7,7,.45);
+        box-shadow: 0 10px 30px rgba(146,100,45,.45);
         color: #fff;
     }
     @media (max-width: 768px) {

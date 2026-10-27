@@ -116,7 +116,7 @@
 
 <style>
 /* ── Mobile Filter Bar ────────────────────────────── */
-.vl-mobile-filters { background: #fff; border-radius: var(--radius-sharp-md); border: 1px solid rgba(110,7,7,.1); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.05); }
+.vl-mobile-filters { background: #fff; border-radius: var(--radius-sharp-md); border: 1px solid rgba(146,100,45,.1); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.05); }
 .vl-mobile-filter-toggle {
     width: 100%; background: #fdf7f7; border: none; padding: 14px 18px;
     display: flex; align-items: center; font-weight: 700; color: var(--accent-color);
@@ -128,16 +128,16 @@
     font-size: .7rem; display: inline-flex; align-items: center; justify-content: center;
     margin-left: 6px; font-weight: 700;
 }
-.vl-mobile-filter-body { padding: 14px 16px 16px; border-top: 1px solid rgba(110,7,7,.08); }
+.vl-mobile-filter-body { padding: 14px 16px 16px; border-top: 1px solid rgba(146,100,45,.08); }
 .vl-filter-label-m { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: #888; font-weight: 600; display: block; margin-bottom: 4px; }
 .vl-select-m { border-radius: var(--radius-sharp-sm); font-size: .85rem; border-color: #e0e0e0; }
-.vl-select-m:focus { border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(110,7,7,.1); }
+.vl-select-m:focus { border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(146,100,45,.1); }
 .vl-mobile-count { padding: 8px 18px; font-size: .8rem; color: #888; font-weight: 600; border-top: 1px solid #f0f0f0; text-align: right; }
 .vl-mobile-count span { color: var(--accent-color); }
 
 /* ── Vehicle Card Grid ────────────────────────────── */
 .vlm-card-link { text-decoration: none; display: block; }
-.vlm-card { border-radius: var(--radius-sharp-md); overflow: hidden; background: #fff; border: 1px solid rgba(110,7,7,.1); box-shadow: 0 2px 10px rgba(0,0,0,.06); transition: transform .2s, box-shadow .2s; }
+.vlm-card { border-radius: var(--radius-sharp-md); overflow: hidden; background: #fff; border: 1px solid rgba(146,100,45,.1); box-shadow: 0 2px 10px rgba(0,0,0,.06); transition: transform .2s, box-shadow .2s; }
 .vlm-card:active { transform: scale(.98); }
 .vlm-img-wrap { position: relative; width: 100%; padding-top: 70%; overflow: hidden; }
 .vlm-img-wrap img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }

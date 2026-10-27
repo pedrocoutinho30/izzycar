@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function () {
    SIMULADOR DE CUSTOS
 ════════════════════════════════════════ */
 :root {
-  --sc-brand:  #6e0707;
+  --sc-brand:  #92642D;
   --sc-dark:   #111111;
   --sc-gray:   #6b7280;
   --sc-light:  #f9fafb;
@@ -495,7 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .sc-hero__badge {
   display:inline-flex; align-items:center; gap:.45rem;
-  background:rgba(110,7,7,.2); border:1px solid rgba(110,7,7,.35);
+  background:rgba(146,100,45,.2); border:1px solid rgba(146,100,45,.35);
   color:rgba(255,255,255,.9); font-size:.78rem; font-weight:600;
   padding:.4rem 1rem; border-radius:var(--radius-sharp-sm); margin-bottom:1.5rem;
 }
@@ -550,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function () {
   background: linear-gradient(135deg, var(--sc-brand), #9b1111);
   color:#fff; font-weight:800; font-size:.9rem;
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 4px 12px rgba(110,7,7,.3);
+  box-shadow:0 4px 12px rgba(146,100,45,.3);
 }
 .sc-card__title { font-size:1.2rem; font-weight:800; color:#111; margin:0 0 .2rem; }
 .sc-card__sub   { font-size:.82rem; color: var(--sc-gray); margin:0; }
@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .sc-input:focus, .sc-select:focus {
   border-color: var(--sc-brand);
-  box-shadow:0 0 0 3px rgba(110,7,7,.1);
+  box-shadow:0 0 0 3px rgba(146,100,45,.1);
 }
 .sc-input--error { border-color:#ef4444; }
 .sc-input--error:focus { box-shadow:0 0 0 3px rgba(239,68,68,.12); }
@@ -610,10 +610,10 @@ document.addEventListener('DOMContentLoaded', function () {
   background: linear-gradient(135deg, var(--sc-brand), #9b1111);
   color:#fff; font-size:1rem; font-weight:700;
   border:none; cursor:pointer;
-  box-shadow:0 6px 20px rgba(110,7,7,.35);
+  box-shadow:0 6px 20px rgba(146,100,45,.35);
   transition:transform .15s, box-shadow .2s;
 }
-.sc-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 10px 28px rgba(110,7,7,.4); }
+.sc-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 10px 28px rgba(146,100,45,.4); }
 .sc-submit:disabled { opacity:.7; cursor:not-allowed; }
 
 /* ── Reveal ── */
@@ -630,7 +630,7 @@ document.addEventListener('DOMContentLoaded', function () {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  color: rgba(153,0,0,0.7);
+  color: rgba(181,145,81,0.7);
   cursor: help;
   transition: color 0.2s ease;
 }

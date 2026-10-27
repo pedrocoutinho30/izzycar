@@ -40,7 +40,7 @@
         flex-shrink: 0;
         width: 40px;
         height: 40px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
         color: white;
         border-radius: 10px;
         display: flex;

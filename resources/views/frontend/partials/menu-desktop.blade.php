@@ -121,7 +121,7 @@
     left: 50%;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #990000 0%, #6e0707 100%);
+    background: linear-gradient(90deg, #B59151 0%, #92642D 100%);
     transform: translateX(-50%);
     transition: width 0.3s ease;
 }
@@ -171,13 +171,13 @@
     top: 0;
     width: 3px;
     height: 100%;
-    background: linear-gradient(180deg, #990000 0%, #6e0707 100%);
+    background: linear-gradient(180deg, #B59151 0%, #92642D 100%);
     transform: scaleY(0);
     transition: transform 0.3s ease;
 }
 
 .dropdown-item-modern:hover {
-    background: rgba(110, 7, 7, 0.15);
+    background: rgba(146,100,45, 0.15);
     color: #fff;
     padding-left: 2rem;
 }
@@ -192,7 +192,7 @@
     align-items: center;
     margin-left: 1.25rem;
     padding: 0.55rem 1.5rem;
-    background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+    background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
     color: #fff !important;
     font-weight: 700;
     font-size: 0.9rem;
@@ -200,13 +200,13 @@
     border-radius: var(--radius-sharp-sm);
     letter-spacing: 0.02em;
     white-space: nowrap;
-    box-shadow: 0 4px 18px rgba(110,7,7,0.45);
+    box-shadow: 0 4px 18px rgba(146,100,45,0.45);
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     flex-shrink: 0;
 }
 .nav-cta-btn:hover {
-    background: linear-gradient(135deg, #b30000 0%, #990000 100%);
-    box-shadow: 0 6px 26px rgba(110,7,7,0.65);
+    background: linear-gradient(135deg, #b30000 0%, #B59151 100%);
+    box-shadow: 0 6px 26px rgba(146,100,45,0.65);
     transform: translateY(-1px);
     color: #fff !important;
 }
@@ -214,7 +214,7 @@
 .navbar-toggler-modern {
     background: none;
     border: none;
-    color: #990000;
+    color: #B59151;
     padding: 0;
     line-height: 1;
 }
