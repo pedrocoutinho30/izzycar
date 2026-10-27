@@ -68,7 +68,8 @@ class MobileLeadsTest extends TestCase
             ->assertOk()
             ->assertSee('Tesla Model 3')->assertDontSee('Fiat Panda')
             ->assertSee('BMW i4')->assertSee('Audi A3')->assertSee('Aprovada')->assertSee('Pendente')
-            ->assertSee('<span class="badge bg-dark">Convertida</span>', false)->assertSee('Transporte')
+            // A cotação aceite liga à convertida no mobile.
+            ->assertSee('href="' . route('admin.mobile.converted-proposals.show', ConvertedProposal::sole()->id) . '" class="badge bg-dark', false)->assertSee('Transporte')
             ->assertSee('Peugeot')
             ->assertSee('Lead criado manualmente')
             ->assertSee('href="tel:+351912345678"', false)

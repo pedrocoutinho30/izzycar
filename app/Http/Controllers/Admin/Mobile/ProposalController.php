@@ -10,6 +10,7 @@ use App\Models\ImportOpportunity;
 use App\Models\Proposal;
 use App\Models\User;
 use App\Permissions\PermissionService;
+use App\Services\ConvertedProposalService;
 use App\Services\ProposalAcceptanceException;
 use App\Services\ProposalService;
 use App\Services\ProposalStatusNotAppliedException;
@@ -70,9 +71,12 @@ class ProposalController extends Controller
         $proposal = Proposal::with('client')->findOrFail($id);
         abort_unless($this->permissions->allows($request->user(), 'proposals', 'view', $proposal), 403);
 
+        $converted = ConvertedProposal::with('client')->where('proposal_id', $proposal->id)->first();
+
         return view('admin.mobile.proposals.show', [
             'proposal' => $proposal,
-            'converted' => ConvertedProposal::where('proposal_id', $proposal->id)->first(),
+            'converted' => $converted,
+            'canViewConverted' => $converted && app(ConvertedProposalService::class)->canView($request->user(), $converted),
             'canUpdate' => $this->canUpdate($request->user(), $proposal),
             'canViewClient' => $proposal->client && $this->canSeeClient($request->user(), $proposal->client),
             'statuses' => ProposalService::STATUSES,

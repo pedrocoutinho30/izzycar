@@ -230,6 +230,12 @@
                 <i class="bi bi-file-earmark-text"></i> Cotações
             </a>
             @endcanroute
+            {{-- Rota partilhada: quem a pode abrir decide o ConvertedProposalService (todas ou as dos seus clientes). --}}
+            @if(app(\App\Services\ConvertedProposalService::class)->viewScope(auth()->user()))
+            <a class="m-sheet-item" href="{{ route('admin.mobile.converted-proposals.index') }}">
+                <i class="bi bi-arrow-repeat"></i> Convertidas
+            </a>
+            @endif
             <a class="m-sheet-item" href="{{ route('admin.v2.dashboard') }}">
                 <i class="bi bi-display"></i> Ir para a versão desktop
             </a>

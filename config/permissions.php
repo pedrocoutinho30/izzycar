@@ -99,7 +99,9 @@ return [
                 'converted-proposals' => [
                     'label' => 'Cotações convertidas',
                     'actions' => ['view' => [], 'create' => [], 'update' => [], 'delete' => []],
-                    'routes' => ['admin.v2.converted-proposals.*', 'admin.mobile.converted-proposals.*'],
+                    // Mobile: mudar o estado exige editar, como a rota update-status do desktop.
+                    // Ver (index/show) está em "shared": o controller filtra registo a registo.
+                    'routes' => ['admin.v2.converted-proposals.*', 'admin.mobile.converted-proposals.status'],
                 ],
                 'cost-simulators' => [
                     'label' => 'Simulador de custos',
@@ -227,6 +229,10 @@ return [
         // Cotações convertidas do angariador: só as dos seus clientes (filtradas no controller).
         'admin.angariador.convertidas',
         'admin.angariador.convertidas.show',
+        // O mesmo no mobile: quem vê cotações convertidas vê todas; quem só vê cotações,
+        // as dos seus clientes (ConvertedProposalService::viewScope, no controller).
+        'admin.mobile.converted-proposals.index',
+        'admin.mobile.converted-proposals.show',
         'admin.angariador.stop-impersonating',
     ],
 

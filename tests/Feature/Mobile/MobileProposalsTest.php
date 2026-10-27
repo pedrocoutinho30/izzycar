@@ -275,10 +275,10 @@ class MobileProposalsTest extends TestCase
         $this->assertSame('convertido', $request->fresh()->status);
         Mail::assertNothingSent();
 
-        // A ficha liga à convertida (desktop, até haver a página mobile).
+        // A ficha liga à convertida no mobile.
         $this->actingAs($user)->get(route('admin.mobile.proposals.show', $proposal->id))
             ->assertSee('Cotação convertida #' . $converted->id)
-            ->assertSee(route('admin.v2.converted-proposals.edit', $converted->id), false)
+            ->assertSee('href="' . route('admin.mobile.converted-proposals.show', $converted->id) . '"', false)
             ->assertDontSee('Aceitar cotação')->assertDontSee('Marcar como');
 
         // Aceitar outra vez não duplica.

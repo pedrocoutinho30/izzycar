@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Mobile;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\ConvertedProposal;
 use App\Models\CostSimulator;
 use App\Models\FormProposal;
 use App\Models\LeadActivity;
@@ -11,6 +12,7 @@ use App\Models\Proposal;
 use App\Models\User;
 use App\Permissions\PermissionService;
 use App\Services\ClientMatcher;
+use App\Services\ConvertedProposalService;
 use App\Services\LeadService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -77,6 +79,8 @@ class LeadController extends Controller
             // Cotações: o dono também é o da lead (client.owner_id).
             'canOpenProposals' => $this->permissions->allows($request->user(), 'proposals', 'view', (new Proposal)->setRelation('client', $lead)),
             'canCreateProposal' => $this->permissions->allows($request->user(), 'proposals', 'create'),
+            // Convertidas: todas são deste cliente, o acesso confere-se uma vez.
+            'canOpenConverted' => app(ConvertedProposalService::class)->canView($request->user(), (new ConvertedProposal)->setRelation('client', $lead)),
         ]);
     }
 

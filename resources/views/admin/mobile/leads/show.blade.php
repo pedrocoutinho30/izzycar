@@ -189,7 +189,7 @@
                                 <a href="{{ route('admin.mobile.proposals.show', $proposal->id) }}" class="stretched-link" aria-label="Abrir cotação {{ trim(($proposal->brand ?? '') . ' ' . ($proposal->model ?? '')) }}"></a>
                             @endif
                             @if($convertida)
-                                @if($rota('admin.mobile.converted-proposals.show'))
+                                @if($canOpenConverted)
                                     <a href="{{ route('admin.mobile.converted-proposals.show', $convertida->id) }}" class="badge bg-dark text-decoration-none d-inline-flex align-items-center justify-content-center position-relative" style="min-height:44px;min-width:44px;z-index:2">Convertida <i class="bi bi-arrow-right-short"></i></a>
                                 @else
                                     <span class="badge bg-dark">Convertida</span>
@@ -224,8 +224,8 @@
                             <div class="fw-semibold">{{ trim(($convertida->brand ?? '') . ' ' . ($convertida->modelCar ?? '—')) }}</div>
                             <div class="small text-muted">{{ $convertida->created_at->format('d/m/Y') }}</div>
                             <span class="badge bg-{{ $convertida->isCancelled() ? 'danger' : 'info' }}">{{ $convertida->status ?? 'Iniciada' }}</span>
-                            @if($rota('admin.mobile.converted-proposals.show'))
-                                <a href="{{ route('admin.mobile.converted-proposals.show', $convertida->id) }}" class="stretched-link" aria-label="Abrir convertida"></a>
+                            @if($canOpenConverted)
+                                <a href="{{ route('admin.mobile.converted-proposals.show', $convertida->id) }}" class="stretched-link" aria-label="Abrir convertida {{ trim(($convertida->brand ?? '') . ' ' . ($convertida->modelCar ?? '')) }}"></a>
                             @endif
                         </div>
                     @empty

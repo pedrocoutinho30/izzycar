@@ -719,6 +719,11 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::patch('/cotacoes/{id}/estado', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'status'])->name('proposals.status')->whereNumber('id');
         Route::post('/cotacoes/{id}/aceitar', [App\Http\Controllers\Admin\Mobile\ProposalController::class, 'accept'])->name('proposals.accept')->whereNumber('id');
 
+        // Cotações convertidas: consulta e estado do pipeline (pagamentos, documentos e contrato no desktop).
+        Route::get('/convertidas', [App\Http\Controllers\Admin\Mobile\ConvertedProposalController::class, 'index'])->name('converted-proposals.index');
+        Route::get('/convertidas/{id}', [App\Http\Controllers\Admin\Mobile\ConvertedProposalController::class, 'show'])->name('converted-proposals.show')->whereNumber('id');
+        Route::patch('/convertidas/{id}/estado', [App\Http\Controllers\Admin\Mobile\ConvertedProposalController::class, 'status'])->name('converted-proposals.status')->whereNumber('id');
+
         // Oportunidades de um pedido (scopeBindings: a oportunidade tem de ser do pedido).
         Route::prefix('/formularios/{formProposal}/oportunidades')->name('form-proposals.opportunities.')->scopeBindings()->group(function () {
             Route::post('/', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'store'])->name('store');

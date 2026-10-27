@@ -88,12 +88,8 @@
         <div class="m-card">
             <div class="fw-semibold"><i class="bi bi-check-circle text-success me-1"></i> Cotação aceite</div>
             <div class="small text-muted">Cotação convertida #{{ $converted->id }} · {{ $converted->status ?? 'Iniciada' }}</div>
-            @if($rota('admin.mobile.converted-proposals.show'))
+            @if($canViewConverted)
                 <a href="{{ route('admin.mobile.converted-proposals.show', $converted->id) }}" class="btn btn-dark w-100 mt-2">Ver cotação convertida</a>
-            @else
-                @canroute('admin.v2.converted-proposals.edit')
-                <a href="{{ route('admin.v2.converted-proposals.edit', $converted->id) }}" class="btn btn-dark w-100 mt-2">Ver cotação convertida</a>
-                @endcanroute
             @endif
         </div>
     @endif
