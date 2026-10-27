@@ -259,7 +259,7 @@
     }
 
     .cta-card-import {
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+        background: linear-gradient(135deg, var(--yellow-color) 0%, #990000 100%);
         border-radius: 24px;
         padding: 2.5rem;
         display: flex;
