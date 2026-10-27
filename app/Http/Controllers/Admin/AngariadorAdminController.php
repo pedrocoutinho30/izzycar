@@ -12,11 +12,11 @@ use App\Models\User;
 use App\Services\AngariadorContractService;
 use App\Services\AngariadorIdentityDocuments;
 use App\Services\AngariadorMetricsService;
+use App\Services\PrivateFiles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -307,11 +307,11 @@ class AngariadorAdminController extends Controller
         ]);
 
         if ($proposal->comprovativo_pagamento) {
-            Storage::disk('public')->delete($proposal->comprovativo_pagamento);
+            PrivateFiles::apagar($proposal->comprovativo_pagamento);
         }
 
         $proposal->update([
-            'comprovativo_pagamento' => $request->file('comprovativo')->store('comissoes/comprovativos', 'public'),
+            'comprovativo_pagamento' => PrivateFiles::guardar($request->file('comprovativo'), 'comissoes/comprovativos'),
         ]);
 
         return back()->with('success', 'Comprovativo anexado.');

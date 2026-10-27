@@ -91,7 +91,7 @@
                                 </label>
                             </form>
                             @if($proposal->comprovativo_pagamento)
-                            <a href="{{ asset('storage/' . $proposal->comprovativo_pagamento) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver comprovativo">
+                            <a href="{{ \App\Services\PrivateFiles::url($proposal->comprovativo_pagamento) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver comprovativo">
                                 <i class="bi bi-eye"></i>
                             </a>
                             @endif

@@ -46,7 +46,7 @@
                         @if($proposal->comissao_paga)
                             <span class="badge bg-success">Pago em {{ optional($proposal->comissao_paga_em)->format('d/m/Y') }}</span>
                             @if($proposal->comprovativo_pagamento)
-                            <a href="{{ asset('storage/' . $proposal->comprovativo_pagamento) }}" target="_blank" class="ms-1" title="Ver comprovativo de transferência">
+                            <a href="{{ route('admin.angariador.comissoes.comprovativo', $proposal) }}" target="_blank" class="ms-1" title="Ver comprovativo de transferência">
                                 <i class="bi bi-paperclip"></i>
                             </a>
                             @endif

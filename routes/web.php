@@ -719,6 +719,14 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
     });
 
     // ============================================================
+    // FICHEIROS PRIVADOS (retomas, consignação, comprovativos, anexos)
+    // ============================================================
+    Route::get('/ficheiros/{tipo}/{caminho}', [App\Http\Controllers\Admin\PrivateFileController::class, 'show'])
+        ->whereIn('tipo', App\Services\PrivateFiles::tipos())
+        ->where('caminho', '.+')
+        ->name('admin.v2.files.show');
+
+    // ============================================================
     // RELATÓRIOS V2
     // ============================================================
     Route::prefix('v2/reports')->name('admin.v2.reports.')->group(function () {
@@ -768,6 +776,7 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::get('/cotacoes-convertidas', [App\Http\Controllers\Admin\AngariadorController::class, 'convertidas'])->name('convertidas');
         Route::get('/cotacoes-convertidas/{convertedProposal}', [App\Http\Controllers\Admin\AngariadorController::class, 'convertidaShow'])->name('convertidas.show');
         Route::get('/comissoes', [App\Http\Controllers\Admin\AngariadorController::class, 'comissoes'])->name('comissoes');
+        Route::get('/comissoes/{convertedProposal}/comprovativo', [App\Http\Controllers\Admin\AngariadorController::class, 'comprovativo'])->name('comissoes.comprovativo');
         // Os pedidos de importação passaram para dentro de cada lead.
         Route::redirect('/formularios', '/gestao/angariador/leads')->name('formularios');
         Route::get('/manual', [App\Http\Controllers\Admin\ManualController::class, 'angariador'])->name('manual');

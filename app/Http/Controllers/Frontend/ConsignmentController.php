@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
+use App\Services\PrivateFiles;
 use App\Models\ConsignmentEvaluation;
 use App\Models\Page;
 use App\Http\Controllers\Frontend\PageController;
@@ -66,9 +66,10 @@ class ConsignmentController extends Controller
                         || count($storedPaths) >= 10) {
                         continue;
                     }
-                    $path = $photo->store('consignment-evaluations/' . $ref, 'public');
+                    // Fotos do cliente: disco privado (só o backoffice autenticado as vê).
+                    $path = PrivateFiles::guardar($photo, 'consignment-evaluations/' . $ref);
                     if ($path) {
-                        $storedPaths[] = Storage::disk('public')->path($path);
+                        $storedPaths[] = $path;
                         $photoMeta[]   = $photo->getClientOriginalName() . ' (' . round($photo->getSize() / 1024) . ' KB)';
                     }
                 } catch (\Throwable $e) {
@@ -117,17 +118,15 @@ class ConsignmentController extends Controller
 
             Mail::raw($body, function ($message) use ($subject, $storedPaths) {
                 $message->to('geral@izzycar.pt')->subject($subject);
-                foreach ($storedPaths as $absolutePath) {
-                    $message->attach($absolutePath);
+                foreach ($storedPaths as $path) {
+                    if ($absolutePath = PrivateFiles::caminhoAbsoluto($path)) {
+                        $message->attach($absolutePath);
+                    }
                 }
             });
 
             // Guarda na base de dados
-            $relativePhotoPaths = [];
-            foreach ($storedPaths as $absolutePath) {
-                $rel = str_replace(Storage::disk('public')->path(''), '', $absolutePath);
-                $relativePhotoPaths[] = ltrim($rel, '/');
-            }
+            $relativePhotoPaths = $storedPaths;
 
             ConsignmentEvaluation::create([
                 'reference'       => $ref,

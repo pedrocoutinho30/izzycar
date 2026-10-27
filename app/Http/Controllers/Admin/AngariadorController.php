@@ -10,6 +10,7 @@ use App\Models\LeadActivity;
 use App\Models\Proposal;
 use App\Services\AngariadorContractService;
 use App\Services\AngariadorMetricsService;
+use App\Services\PrivateFiles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -255,5 +256,23 @@ class AngariadorController extends Controller
             'comissaoRecebida' => $recebido,
             'comissaoPendente' => $pendente,
         ]);
+    }
+
+    /**
+     * Comprovativo de transferência de uma comissão do próprio angariador.
+     * 404 (e não 403) se a cotação não for sua ou não tiver comprovativo.
+     */
+    public function comprovativo(ConvertedProposal $convertedProposal)
+    {
+        abort_unless(
+            $convertedProposal->owner_id === Auth::id() && $convertedProposal->comprovativo_pagamento,
+            404
+        );
+
+        $caminho = $convertedProposal->comprovativo_pagamento;
+        $pasta = PrivateFiles::TIPOS['comprovativos'] . '/';
+        abort_unless(str_starts_with($caminho, $pasta), 404);
+
+        return PrivateFiles::resposta('comprovativos', substr($caminho, strlen($pasta)));
     }
 }

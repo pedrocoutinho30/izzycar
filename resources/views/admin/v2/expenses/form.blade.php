@@ -164,11 +164,11 @@ $existAction = isset($expense) ? 'Editar' : 'Criar';
                                 $isImage = in_array($ext, ['jpg','jpeg','png','gif','webp']);
                             @endphp
                             @if($isImage)
-                            <a href="{{ asset('storage/' . $expense->attachment_path) }}" target="_blank">
-                                <img src="{{ asset('storage/' . $expense->attachment_path) }}" alt="Anexo" style="max-height:80px;border-radius:6px;border:1px solid #ddd;">
+                            <a href="{{ \App\Services\PrivateFiles::url($expense->attachment_path) }}" target="_blank">
+                                <img src="{{ \App\Services\PrivateFiles::url($expense->attachment_path) }}" alt="Anexo" style="max-height:80px;border-radius:6px;border:1px solid #ddd;">
                             </a>
                             @else
-                            <a href="{{ asset('storage/' . $expense->attachment_path) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                            <a href="{{ \App\Services\PrivateFiles::url($expense->attachment_path) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
                                 <i class="bi bi-file-earmark-pdf"></i> Ver ficheiro
                             </a>
                             @endif

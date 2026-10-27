@@ -120,7 +120,7 @@ return [
                     'actions' => ['view' => ['all', 'own'], 'update' => []],
                     'owner' => 'owner_id',
                     'routes' => ['admin.v2.angariadores.comissoes', 'admin.v2.angariadores.toggle-paid', 'admin.v2.angariadores.upload-receipt'],
-                    'own_routes' => ['admin.angariador.comissoes'],
+                    'own_routes' => ['admin.angariador.comissoes', 'admin.angariador.comissoes.comprovativo'],
                 ],
                 'sellers' => ['label' => 'Vendedores', 'routes' => ['admin.v2.sellers.*']],
                 'suppliers' => ['label' => 'Fornecedores', 'routes' => ['admin.v2.suppliers.*']],
@@ -201,6 +201,9 @@ return [
         'admin.v2.search.results',
         'admin.angariador.manual',
         'admin.angariador.faq',
+        // Ficheiros privados (retomas, consignação, comprovativos, anexos): qualquer perfil
+        // de backoffice autenticado; o angariador puro é barrado pelo restrictAngariador.
+        'admin.v2.files.show',
         // Cada utilizador só vê o seu próprio contrato assinado.
         'admin.angariador.contrato',
         // Cotações convertidas do angariador: só as dos seus clientes (filtradas no controller).

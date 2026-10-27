@@ -107,8 +107,8 @@
                 <div class="row g-2">
                     @foreach($evaluation->photos as $photo)
                     <div class="col-6 col-md-4 col-lg-3">
-                        <a href="{{ asset('storage/' . $photo) }}" target="_blank">
-                            <img src="{{ asset('storage/' . $photo) }}"
+                        <a href="{{ \App\Services\PrivateFiles::url($photo) }}" target="_blank">
+                            <img src="{{ \App\Services\PrivateFiles::url($photo) }}"
                                  class="img-fluid rounded"
                                  style="width:100%;height:120px;object-fit:cover;"
                                  alt="Foto">

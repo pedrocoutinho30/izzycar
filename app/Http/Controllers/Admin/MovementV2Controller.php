@@ -9,7 +9,7 @@ use App\Models\Legalization;
 use App\Models\Partner;
 use App\Models\V3Vehicle;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Services\PrivateFiles;
 
 class MovementV2Controller extends Controller
 {
@@ -140,8 +140,7 @@ class MovementV2Controller extends Controller
         $validated = $this->validateMovement($request);
 
         if ($request->hasFile('attachment')) {
-            $validated['attachment_path'] = $request->file('attachment')
-                ->store('movements/attachments', 'public');
+            $validated['attachment_path'] = PrivateFiles::guardar($request->file('attachment'), 'movements/attachments');
         }
         unset($validated['attachment']);
 
@@ -190,13 +189,12 @@ class MovementV2Controller extends Controller
 
         if ($request->hasFile('attachment')) {
             if ($movement->attachment_path) {
-                Storage::disk('public')->delete($movement->attachment_path);
+                PrivateFiles::apagar($movement->attachment_path);
             }
-            $validated['attachment_path'] = $request->file('attachment')
-                ->store('movements/attachments', 'public');
+            $validated['attachment_path'] = PrivateFiles::guardar($request->file('attachment'), 'movements/attachments');
         } elseif ($request->boolean('remove_attachment')) {
             if ($movement->attachment_path) {
-                Storage::disk('public')->delete($movement->attachment_path);
+                PrivateFiles::apagar($movement->attachment_path);
             }
             $validated['attachment_path'] = null;
         }
@@ -223,7 +221,7 @@ class MovementV2Controller extends Controller
         }
 
         if ($movement->attachment_path) {
-            Storage::disk('public')->delete($movement->attachment_path);
+            PrivateFiles::apagar($movement->attachment_path);
         }
 
         $movement->delete();

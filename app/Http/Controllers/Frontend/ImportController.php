@@ -10,6 +10,7 @@ use App\Models\Brand;
 use App\Models\FormProposal;
 use App\Models\Client;
 use App\Services\ClientMatcher;
+use App\Services\PrivateFiles;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ImportFormConfirmationMail;
@@ -78,7 +79,7 @@ class ImportController extends Controller
                     continue;
                 }
                 try {
-                    $retomaPhotoPaths[] = $photo->store('retoma/' . $ref, 'public');
+                    $retomaPhotoPaths[] = PrivateFiles::guardar($photo, 'retoma/' . $ref);
                 } catch (\Throwable $e) {
                     report($e);
                 }

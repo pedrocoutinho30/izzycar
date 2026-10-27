@@ -894,7 +894,7 @@ $pendingValue = $totalValue - $paidValue;
                     </div>
 
                     @if($convertedProposal->comprovativo_pagamento)
-                    <a href="{{ asset('storage/' . $convertedProposal->comprovativo_pagamento) }}" target="_blank" class="small">
+                    <a href="{{ \App\Services\PrivateFiles::url($convertedProposal->comprovativo_pagamento) }}" target="_blank" class="small">
                         <i class="bi bi-paperclip me-1"></i>Ver comprovativo anexado
                     </a>
                     @endif

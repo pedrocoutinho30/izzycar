@@ -7,7 +7,7 @@ use App\Models\Expense;
 use App\Models\Vehicle;
 use App\Models\Partner;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Services\PrivateFiles;
 
 /**
  * ExpenseV2Controller
@@ -116,7 +116,7 @@ class ExpenseV2Controller extends Controller
         ]);
 
         if ($request->hasFile('attachment')) {
-            $validated['attachment_path'] = $request->file('attachment')->store('expenses/attachments', 'public');
+            $validated['attachment_path'] = PrivateFiles::guardar($request->file('attachment'), 'expenses/attachments');
         }
 
         unset($validated['attachment']);
@@ -160,12 +160,12 @@ class ExpenseV2Controller extends Controller
 
         if ($request->hasFile('attachment')) {
             if ($expense->attachment_path) {
-                Storage::disk('public')->delete($expense->attachment_path);
+                PrivateFiles::apagar($expense->attachment_path);
             }
-            $validated['attachment_path'] = $request->file('attachment')->store('expenses/attachments', 'public');
+            $validated['attachment_path'] = PrivateFiles::guardar($request->file('attachment'), 'expenses/attachments');
         } elseif ($request->boolean('remove_attachment')) {
             if ($expense->attachment_path) {
-                Storage::disk('public')->delete($expense->attachment_path);
+                PrivateFiles::apagar($expense->attachment_path);
             }
             $validated['attachment_path'] = null;
         }
@@ -185,7 +185,7 @@ class ExpenseV2Controller extends Controller
         $expense = Expense::findOrFail($id);
 
         if ($expense->attachment_path) {
-            Storage::disk('public')->delete($expense->attachment_path);
+            PrivateFiles::apagar($expense->attachment_path);
         }
 
         $expense->delete();
