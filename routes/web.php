@@ -70,6 +70,7 @@ Auth::routes(['register' => false]);
 Route::get('/definir-password/{token}', [App\Http\Controllers\Auth\SetPasswordController::class, 'show'])
     ->name('password.setup');
 Route::post('/definir-password', [App\Http\Controllers\Auth\SetPasswordController::class, 'store'])
+    ->middleware('throttle:5,1')
     ->name('password.setup.store');
 
 // O manual é só para quem tem conta: sem sessão, redireciona para o login.

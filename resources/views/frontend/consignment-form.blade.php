@@ -46,6 +46,7 @@
 
         <form id="efForm" enctype="multipart/form-data" novalidate>
             @csrf
+            @include('frontend.partials._honeypot')
 
             {{-- ── STEP 1: Veículo ── --}}
             <div class="ef-card ef-reveal">

@@ -60,8 +60,10 @@ class ConsignmentController extends Controller
                     if (!$photo || !$photo->isValid()) {
                         continue;
                     }
-                    $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-                    if (!in_array(strtolower($photo->getClientOriginalExtension()), $allowed)) {
+                    // Tipo real do ficheiro (não o nome que o utilizador indica) e tamanho.
+                    if (!in_array($photo->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'], true)
+                        || $photo->getSize() > 5 * 1024 * 1024
+                        || count($storedPaths) >= 10) {
                         continue;
                     }
                     $path = $photo->store('consignment-evaluations/' . $ref, 'public');

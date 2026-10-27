@@ -58,7 +58,7 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::get('/viaturas-filtradas', [VehiclesController::class, 'filteredVehicles']);
     Route::get('/viaturas/{brand}/{model}/{id}', [VehiclesController::class, 'vehicleDetails'])->name('vehicles.details');
     // Route::get('/viaturas/{brand}/{model}/{id}/story', [VehiclesController::class, 'vehicleStory'])->name('vehicles.story');
-    Route::post('/contact/vehicle', [ContactController::class, 'send'])->name('contact.vehicle');
+    Route::post('/contact/vehicle', [ContactController::class, 'send'])->middleware(['throttle:5,1', 'antispam'])->name('contact.vehicle');
 
 
 
@@ -67,12 +67,12 @@ Route::middleware(['blockInProd'])->group(function () {
     Route::get('/legalizacao', [LegalizationController::class, 'getLegalizationPage'])->name('frontend.legalization');
     Route::get('/importacao', [ImportController::class, 'getImportPage'])->name('frontend.import');
     Route::get('/retomas', [TradeInController::class, 'getTradeInPage'])->name('frontend.trade-in');
-    Route::post('/retomas', [TradeInController::class, 'submitTradeInForm'])->name('frontend.trade-in-submit');
+    Route::post('/retomas', [TradeInController::class, 'submitTradeInForm'])->middleware(['throttle:5,1', 'antispam'])->name('frontend.trade-in-submit');
 
     Route::get('/venda', [SellingController::class, 'getSellingPage'])->name('frontend.selling');
     Route::get('/consignacao', [ConsignmentController::class, 'getConsignmentPage'])->name('frontend.consignment');
     Route::get('/consignacao/avaliacao', [ConsignmentController::class, 'evaluationForm'])->name('consignment.evaluation');
-    Route::post('/consignacao/avaliacao', [ConsignmentController::class, 'submitEvaluation'])->name('consignment.evaluation.submit');
+    Route::post('/consignacao/avaliacao', [ConsignmentController::class, 'submitEvaluation'])->middleware(['throttle:5,1', 'antispam'])->name('consignment.evaluation.submit');
 
     Route::get('/noticias', [NewsController::class, 'getNewsPage'])->name('frontend.news');
 

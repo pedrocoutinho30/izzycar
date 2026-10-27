@@ -15,6 +15,7 @@
             <div class="modal-body p-4">
                 <form action="{{ route('contact.vehicle') }}" method="POST">
                     @csrf
+                    @include('frontend.partials._honeypot')
                     <input type="hidden" name="url" value="{{ request()->fullUrl() }}">
 
                     <div class="row g-3">

@@ -62,14 +62,12 @@ class PageController extends Controller
         foreach ($fields as $fieldLabel => $value) {
             $fieldValue = '';
             if ($value instanceof \Illuminate\Http\UploadedFile) {
-                $originalName = $value->getClientOriginalName();
-                $fieldValue = $value->storeAs('files', $originalName, 'public');
+                $fieldValue = $this->storeUpload($value);
             } elseif (is_array($value) && count($value) > 0 && $value[0] instanceof \Illuminate\Http\UploadedFile) {
                 // múltiplos ficheiros (galeria)
                 $filePaths = [];
                 foreach ($value as $file) {
-                    $originalName = $file->getClientOriginalName();
-                    $filePaths[] = $file->storeAs('files', $originalName, 'public');
+                    $filePaths[] = $this->storeUpload($file);
                 }
                 $fieldValue = json_encode($filePaths);
             } else {
@@ -127,8 +125,7 @@ class PageController extends Controller
         if ($request->hasFile('fields')) {
 
             foreach ($request->file('fields') as $key => $file) {
-                $originalName = $file->getClientOriginalName();
-                $fieldValue = $file->storeAs('files', $originalName, 'public');
+                $fieldValue = $this->storeUpload($file);
                 $page->contents()->create([
                     'field_name' => $key,
                     'field_value' => $fieldValue
@@ -188,14 +185,12 @@ class PageController extends Controller
         foreach ($fields as $fieldLabel => $value) {
             $fieldValue = '';
             if ($value instanceof \Illuminate\Http\UploadedFile) {
-                $originalName = $value->getClientOriginalName();
-                $fieldValue = $value->storeAs('files', $originalName, 'public');
+                $fieldValue = $this->storeUpload($value);
             } elseif (is_array($value) && count($value) > 0 && $value[0] instanceof \Illuminate\Http\UploadedFile) {
                 // múltiplos ficheiros (galeria)
                 $filePaths = [];
                 foreach ($value as $file) {
-                    $originalName = $file->getClientOriginalName();
-                    $filePaths[] = $file->storeAs('files', $originalName, 'public');
+                    $filePaths[] = $this->storeUpload($file);
                 }
                 $fieldValue = json_encode($filePaths);
             } else {
@@ -269,8 +264,7 @@ class PageController extends Controller
         if ($request->hasFile('fields')) {
 
             foreach ($request->file('fields') as $key => $file) {
-                $originalName = $file->getClientOriginalName();
-                $fieldValue = $file->storeAs('files', $originalName, 'public');
+                $fieldValue = $this->storeUpload($file);
                 $page->contents()->create([
                     'field_name' => $key,
                     'field_value' => $fieldValue
@@ -300,14 +294,12 @@ class PageController extends Controller
             foreach ($fields as $fieldLabel => $value) {
                 $fieldValue = '';
                 if ($value instanceof \Illuminate\Http\UploadedFile) {
-                    $originalName = $value->getClientOriginalName();
-                    $fieldValue = $value->storeAs('files', $originalName, 'public');
+                    $fieldValue = $this->storeUpload($value);
                 } elseif (is_array($value) && count($value) > 0 && $value[0] instanceof \Illuminate\Http\UploadedFile) {
                     // múltiplos ficheiros (galeria)
                     $filePaths = [];
                     foreach ($value as $file) {
-                        $originalName = $file->getClientOriginalName();
-                        $filePaths[] = $file->storeAs('files', $originalName, 'public');
+                        $filePaths[] = $this->storeUpload($file);
                     }
                     $fieldValue = json_encode($filePaths);
                 } else {
@@ -423,5 +415,30 @@ class PageController extends Controller
         $pageType = PageType::where('name', PageType::SELLING)->first();
         $pages = Page::where('page_type_id', $pageType->id)->latest()->get();
         return view('pages.selling', compact('pages', 'pageType'));
+    }
+
+    /**
+     * Extensões aceites nos campos de ficheiro das páginas. O nome é
+     * normalizado e a extensão tem de estar na lista: nunca se guarda um
+     * .php (ou semelhante) na pasta pública, mesmo vindo de uma conta de admin.
+     */
+    private const UPLOAD_EXTENSIONS = [
+        'jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg', 'ico',
+        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'mp4', 'webm',
+    ];
+
+    private function storeUpload(\Illuminate\Http\UploadedFile $file): string
+    {
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        if (! in_array($extension, self::UPLOAD_EXTENSIONS, true)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'fields' => 'Tipo de ficheiro não permitido: .' . $extension,
+            ]);
+        }
+
+        $name = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'ficheiro';
+
+        return $file->storeAs('files', $name . '.' . $extension, 'public');
     }
 }

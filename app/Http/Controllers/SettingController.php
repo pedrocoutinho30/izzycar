@@ -27,7 +27,7 @@ class SettingController extends Controller
             $file = $request->file('valor');
 
             // Gera um nome único ou personalizado
-            $filename =  $request->label . '.' . $file->getClientOriginalExtension();
+            $filename =  preg_replace('/[^A-Za-z0-9_\-]/', '', $request->label) . '.' . $file->extension();
 
             // Guarda com o nome escolhido
             $path = $file->storeAs('settings', $filename, 'public');
@@ -59,7 +59,7 @@ class SettingController extends Controller
             $file = $request->file('valor');
 
             // nome da imagem: usa o nome do setting + extensão
-            $filename =  $setting->label . '.' . $file->getClientOriginalExtension();
+            $filename =  preg_replace('/[^A-Za-z0-9_\-]/', '', $setting->label) . '.' . $file->extension();
 
             // guarda com nome fixo
             $path = $file->storeAs('settings', $filename, 'public');
@@ -89,7 +89,10 @@ class SettingController extends Controller
             'titulo' => 'required|string|max:255',
             'label' => 'required|string|max:255|unique:settings,label,' . ($request->setting->id ?? 'NULL'),
             'tipo' => 'required|string|in:text,number,boolean,image',
-            'valor' => 'nullable',
+            // Imagens: só formatos de imagem (a extensão guardada vem do tipo real do ficheiro).
+            'valor' => $request->tipo === 'image' && $request->hasFile('valor')
+                ? 'file|mimes:jpg,jpeg,png,gif,webp,svg,ico|max:5120'
+                : 'nullable',
         ], [], [
             'titulo' => 'Título',
             'label' => 'Label',

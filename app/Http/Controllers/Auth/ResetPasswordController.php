@@ -39,4 +39,9 @@ class ResetPasswordController extends Controller
     {
         $user->password = $password;
     }
+
+    public function __construct()
+    {
+        $this->middleware('throttle:5,1')->only('reset');
+    }
 }
