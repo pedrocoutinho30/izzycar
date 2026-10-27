@@ -39,7 +39,7 @@
                     aria-labelledby="tab-import-{{ $slug }}">
                     <div class="content-tab px-4 text-center">
                         <p class="text-dark mb-4">
-                            {!! $tab['content'] ?? '' !!}
+                            {!! \App\Support\RichText::display($tab['content'] ?? '') !!}
                         </p>
                         @if (!empty($tab['image']))
                             <img src="{{ asset('storage/' . $tab['image']) }}" loading="lazy"

@@ -84,10 +84,10 @@ class AppServiceProvider extends ServiceProvider
             $logoSmall = Cache::remember('site_logo_small', 3600, function () use ($logo) {
                 $webp = $logo ? preg_replace('/\.(png|jpe?g)$/i', '.webp', $logo) : null;
                 $variant = \App\Services\ThumbnailService::existing($webp, \App\Services\ThumbnailService::LOGO_WIDTH);
-
                 return $variant ? 'storage/' . $variant : '';
             });
 
+            
             $view->with('menus', $menus);
             $view->with('logotipo_small', $logoSmall ?: null);
             $view->with('logotipo', "storage/" . $logo);

@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #6e0707; --bg: #f4f4f6; }
+        :root { --accent: #92642D; --bg: #f4f4f6; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -184,7 +184,7 @@
             gap: 16px;
             background: var(--accent);
             color: #fff;
-            border-radius: 16px;
+            border-radius: var(--radius-sharp-sm);
             padding: 40px 50px;
             font-size: 34px;
             font-weight: 700;
@@ -203,7 +203,7 @@
             gap: 14px;
             background: #25d366;
             color: #fff;
-            border-radius: 16px;
+            border-radius: var(--radius-sharp-sm);
             padding: 36px 40px;
             font-size: 32px;
             font-weight: 700;
@@ -216,7 +216,7 @@
             justify-content: center;
             background: #f3f4f6;
             border: 1.5px solid #e5e7eb;
-            border-radius: 16px;
+            border-radius: var(--radius-sharp-sm);
             font-size: 36px;
             color: #374151;
         }
@@ -243,7 +243,7 @@
             color: var(--accent);
             margin-bottom: 18px;
             padding-bottom: 12px;
-            border-bottom: 1.5px solid rgba(110,7,7,.1);
+            border-bottom: 1.5px solid rgba(146,100,45,.1);
         }
         .st-attr-list {
             list-style: none;

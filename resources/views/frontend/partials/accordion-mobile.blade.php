@@ -40,7 +40,7 @@
         flex-shrink: 0;
         width: 40px;
         height: 40px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
         color: white;
         border-radius: 10px;
         display: flex;
@@ -146,7 +146,7 @@
                     aria-labelledby="{{ $headingId }}"
                     data-bs-parent="#{{ $accordionId }}">
                     <div class="process-accordion-body">
-                        {!! $item['content'] !!}
+                        {!! \App\Support\RichText::display($item['content']) !!}
                         @if(!empty($item['image']))
                         <div class="process-accordion-image">
                             <img src="{{ asset('storage/' . $item['image']) }}" 

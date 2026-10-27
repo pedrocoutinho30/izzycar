@@ -282,11 +282,11 @@
     .vd-layout { display: grid; grid-template-columns: 88px 1fr 290px; gap: 1rem; align-items: start; }
 
     /* ── Thumbnail strip ────────────────────────────────────────────────── */
-    .vd-thumbs { display: flex; flex-direction: column; gap: .4rem; max-height: 520px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(110,7,7,.25) transparent; padding-right: 2px; }
+    .vd-thumbs { display: flex; flex-direction: column; gap: .4rem; max-height: 520px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(146,100,45,.25) transparent; padding-right: 2px; }
     .vd-thumb { width: 80px; height: 60px; border-radius: var(--radius-sharp-sm); overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: border-color .2s, box-shadow .2s; flex-shrink: 0; }
     .vd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .vd-thumb.active { border-color: var(--accent-color); box-shadow: 0 0 0 1px var(--accent-color); }
-    .vd-thumb:hover:not(.active) { border-color: rgba(110,7,7,.35); }
+    .vd-thumb:hover:not(.active) { border-color: rgba(146,100,45,.35); }
 
     /* ── Main swiper ────────────────────────────────────────────────────── */
     .vd-main { min-width: 0; }
@@ -296,13 +296,13 @@
     /* Swiper nav buttons */
     .mySwiperMain .swiper-button-next,
     .mySwiperMain .swiper-button-prev {
-        background: rgba(110,7,7,.85);
+        background: rgba(146,100,45,.85);
         width: 38px; height: 38px;
         border-radius: 50%;
         transition: background .2s;
     }
     .mySwiperMain .swiper-button-next:hover,
-    .mySwiperMain .swiper-button-prev:hover { background: rgba(110,7,7,1); }
+    .mySwiperMain .swiper-button-prev:hover { background: rgba(146,100,45,1); }
     .mySwiperMain .swiper-button-next::after,
     .mySwiperMain .swiper-button-prev::after { font-size: 15px; color: #fff; }
 
@@ -337,7 +337,7 @@
     /* ── Action buttons ─────────────────────────────────────────────────── */
     .vd-actions { flex-shrink: 0; padding-bottom: .85rem; margin-bottom: .75rem; border-bottom: 1.5px solid #e9ecef; }
     .vd-btn-primary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: var(--accent-color); color: #fff; border: none; border-radius: var(--radius-sharp-sm); padding: .7rem 1rem; font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .2s, transform .2s; text-decoration: none; }
-    .vd-btn-primary:hover { background: #8b0000; transform: translateY(-1px); color: #fff; }
+    .vd-btn-primary:hover { background: #7F5A2E; transform: translateY(-1px); color: #fff; }
     .vd-btn-secondary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: #25d366; color: #fff; border: none; border-radius: var(--radius-sharp-sm); padding: .6rem .9rem; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; }
     .vd-btn-secondary:hover { background: #1da951; color: #fff; }
     .vd-btn-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border: 1.5px solid #e5e7eb; border-radius: var(--radius-sharp-sm); color: #374151; font-size: .9rem; cursor: pointer; transition: background .2s; flex-shrink: 0; }
@@ -351,7 +351,7 @@
 
     /* ── Attribute cards ────────────────────────────────────────────────── */
     .vd-attr-card { background: #fff; border: 1px solid #e9ecef; border-radius: var(--radius-sharp-md); padding: .85rem 1rem; }
-    .vd-attr-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-color); margin-bottom: .55rem; padding-bottom: .35rem; border-bottom: 1.5px solid rgba(110,7,7,.1); }
+    .vd-attr-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-color); margin-bottom: .55rem; padding-bottom: .35rem; border-bottom: 1.5px solid rgba(146,100,45,.1); }
     .vd-attr-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .28rem; }
     .vd-attr-item { display: flex; align-items: flex-start; gap: .4rem; font-size: .82rem; color: #374151; line-height: 1.4; }
     .vd-attr-item i { color: var(--accent-color); font-size: .72rem; flex-shrink: 0; margin-top: .2rem; }
@@ -388,7 +388,7 @@
     .mySwiperRelated .swiper-slide { height: auto; display: flex; }
     .related-card-link { display: flex; flex: 1; }
     .related-card { display: flex; flex-direction: column; width: 100%; background: #fff; border-radius: var(--radius-sharp-md); overflow: hidden; border: 1px solid rgba(0,0,0,.06); box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: transform .3s, box-shadow .3s; }
-    .related-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(110,7,7,.14); }
+    .related-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(146,100,45,.14); }
     .related-card-img { position: relative; height: 195px; overflow: hidden; background: #e9e9e9; flex-shrink: 0; }
     .related-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
     .related-card:hover .related-card-img img { transform: scale(1.06); }
@@ -406,7 +406,7 @@
     .related-cta { font-size: .8rem; font-weight: 600; color: #9ca3af; transition: color .2s; }
     .related-card:hover .related-cta { color: var(--accent-color); }
     .related-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--accent-color); box-shadow: 0 2px 10px rgba(0,0,0,.12); cursor: pointer; z-index: 10; transition: background .2s, box-shadow .2s; user-select: none; }
-    .related-nav:hover { background: var(--accent-color); color: #fff; box-shadow: 0 4px 16px rgba(110,7,7,.3); }
+    .related-nav:hover { background: var(--accent-color); color: #fff; box-shadow: 0 4px 16px rgba(146,100,45,.3); }
     .related-prev { left: 0; } .related-next { right: 0; }
     .related-nav.swiper-button-disabled { opacity: .35; pointer-events: none; }
 </style>

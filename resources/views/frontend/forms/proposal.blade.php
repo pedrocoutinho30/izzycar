@@ -353,7 +353,7 @@
     #importForm .form-control:focus,
     #importForm .form-select:focus {
         border-color: var(--accent-color);
-        box-shadow: 0 0 0 4px rgba(110, 7, 7, 0.1);
+        box-shadow: 0 0 0 4px rgba(146,100,45, 0.1);
         background: white;
         outline: none;
     }
@@ -418,7 +418,7 @@
 
     /* Submit Button */
     #contactSubmitProposalBtn {
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
         color: white;
         border: none;
         border-radius: var(--radius-sharp-sm);
@@ -427,12 +427,12 @@
         font-weight: 700;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(110, 7, 7, 0.3);
+        box-shadow: 0 4px 15px rgba(146,100,45, 0.3);
     }
 
     #contactSubmitProposalBtn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(110, 7, 7, 0.4);
+        box-shadow: 0 6px 20px rgba(146,100,45, 0.4);
     }
 
     #contactSubmitProposalBtn:disabled {

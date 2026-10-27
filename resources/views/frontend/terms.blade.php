@@ -300,7 +300,7 @@ $sections = [
 .lp-hero__badge {
     display: inline-flex; align-items: center; gap: .5rem;
     padding: .5rem 1.25rem;
-    background: rgba(110,7,7,.25); border: 1px solid rgba(110,7,7,.4);
+    background: rgba(146,100,45,.25); border: 1px solid rgba(146,100,45,.4);
     border-radius: 50px; color: #fff; font-size: .85rem; font-weight: 600;
     margin-bottom: 1.25rem;
 }
@@ -348,24 +348,24 @@ $sections = [
     font-size: .85rem; color: #444; text-decoration: none; transition: all .2s;
 }
 .lp-toc__link:hover, .lp-toc__link.active {
-    background: rgba(110,7,7,.06); color: #6e0707; font-weight: 600;
+    background: rgba(146,100,45,.06); color: #92642D; font-weight: 600;
 }
 .lp-toc__num {
-    font-size: .7rem; font-weight: 700; color: #6e0707;
-    background: rgba(110,7,7,.08); border-radius: 4px;
+    font-size: .7rem; font-weight: 700; color: #92642D;
+    background: rgba(146,100,45,.08); border-radius: 4px;
     padding: .1rem .4rem; flex-shrink: 0;
 }
 .lp-toc__cta { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #f0f0f0; }
 .lp-toc__cta-link {
     display: flex; align-items: center; gap: .5rem;
-    font-size: .85rem; color: #6e0707; text-decoration: none; font-weight: 600;
+    font-size: .85rem; color: #92642D; text-decoration: none; font-weight: 600;
 }
 .lp-toc__cta-link:hover { text-decoration: underline; }
 
 /* ── Sections ─────────────────────────────────────────────── */
 .lp-intro {
     display: flex; gap: 1.5rem; align-items: flex-start;
-    background: linear-gradient(135deg, #6e0707, #900);
+    background: linear-gradient(135deg, #B59151, #92642D);
     border-radius: 18px; padding: 2rem; margin-bottom: 2rem; color: #fff;
 }
 .lp-intro__icon {
@@ -378,14 +378,14 @@ $sections = [
 .lp-section {
     background: #fff; border-radius: 18px; padding: 2.5rem 2.5rem 2rem;
     margin-bottom: 1.75rem; box-shadow: 0 4px 20px rgba(0,0,0,.06);
-    border-left: 4px solid #6e0707; position: relative; scroll-margin-top: 90px;
+    border-left: 4px solid #92642D; position: relative; scroll-margin-top: 90px;
 }
 .lp-section__num {
     position: absolute; top: -16px; left: 2rem;
-    background: linear-gradient(135deg, #6e0707, #900);
+    background: linear-gradient(135deg, #B59151, #92642D);
     color: #fff; width: 48px; height: 48px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(110,7,7,.3);
+    font-weight: 800; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(146,100,45,.3);
 }
 .lp-section__title { font-size: 1.4rem; font-weight: 700; color: #111; margin: .5rem 0 1.25rem; padding-top: .25rem; }
 .lp-section__body { font-size: 1rem; line-height: 1.75; color: #111; }
@@ -404,7 +404,7 @@ $sections = [
 .lp-list li { position: relative; padding-left: 1.6rem; margin-bottom: .6rem; }
 .lp-list li::before {
     content: ''; position: absolute; left: 0; top: .6rem;
-    width: 7px; height: 7px; border-radius: 50%; background: #6e0707;
+    width: 7px; height: 7px; border-radius: 50%; background: #92642D;
 }
 
 /* ── Entity / contact ─────────────────────────────────────── */
@@ -413,15 +413,15 @@ $sections = [
     margin: 1rem 0; display: flex; flex-direction: column; gap: .6rem;
 }
 .lp-entity-row { display: flex; align-items: center; gap: .6rem; font-size: .95rem; }
-.lp-entity-row i { color: #6e0707; width: 18px; }
+.lp-entity-row i { color: #92642D; width: 18px; }
 .lp-contact-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
 .lp-contact-chip {
     display: inline-flex; align-items: center; gap: .5rem;
     padding: .6rem 1rem; background: #f8f9fa; border-radius: 10px;
     color: #333; text-decoration: none; font-size: .9rem; font-weight: 500; transition: all .2s;
 }
-.lp-contact-chip:hover { background: #f0e8e8; color: #6e0707; }
-.lp-contact-chip i { color: #6e0707; }
+.lp-contact-chip:hover { background: #f0e8e8; color: #92642D; }
+.lp-contact-chip i { color: #92642D; }
 
 /* ── Services grid ────────────────────────────────────────── */
 .lp-services-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
@@ -430,18 +430,18 @@ $sections = [
     background: #f8f9fa; border-radius: 12px; padding: 1.1rem;
     display: flex; flex-direction: column; gap: .4rem;
 }
-.lp-service-card i { font-size: 1.4rem; color: #6e0707; }
+.lp-service-card i { font-size: 1.4rem; color: #92642D; }
 .lp-service-card strong { font-size: .9rem; color: #111; }
 .lp-service-card span { font-size: .85rem; color: #666; line-height: 1.5; }
 
 /* ── Note / highlight ─────────────────────────────────────── */
 .lp-note {
     display: flex; gap: .6rem; align-items: flex-start;
-    background: rgba(110,7,7,.04); border-left: 3px solid #6e0707;
+    background: rgba(146,100,45,.04); border-left: 3px solid #92642D;
     border-radius: 0 10px 10px 0; padding: .9rem 1.1rem;
     font-size: .9rem; color: #555; margin-top: 1rem;
 }
-.lp-note i { color: #6e0707; flex-shrink: 0; margin-top: .1rem; }
+.lp-note i { color: #92642D; flex-shrink: 0; margin-top: .1rem; }
 .lp-highlight {
     display: flex; gap: .75rem; align-items: flex-start;
     background: rgba(40,167,69,.06); border: 1px solid rgba(40,167,69,.2);
@@ -450,14 +450,14 @@ $sections = [
 .lp-highlight i { color: #28a745; font-size: 1.2rem; flex-shrink: 0; }
 
 /* ── Misc ─────────────────────────────────────────────────── */
-.lp-link { color: #6e0707; font-weight: 600; text-decoration: none; }
+.lp-link { color: #92642D; font-weight: 600; text-decoration: none; }
 .lp-link:hover { text-decoration: underline; }
 .lp-update-badge {
     display: inline-flex; align-items: center; gap: .5rem;
     background: #f8f9fa; border-radius: 10px; padding: .75rem 1.25rem;
     font-size: .9rem; color: #555;
 }
-.lp-update-badge i { color: #6e0707; }
+.lp-update-badge i { color: #92642D; }
 
 @media (max-width: 768px) {
     .lp-section { padding: 2rem 1.5rem 1.5rem; }

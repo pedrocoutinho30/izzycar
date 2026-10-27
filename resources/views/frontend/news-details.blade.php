@@ -110,7 +110,7 @@
     <h1 class="nd-header__title">{{ $news->title }}</h1>
 
     @if(!empty($news->subtitle))
-    <div class="nd-header__subtitle">{!! $news->subtitle !!}</div>
+    <div class="nd-header__subtitle">{!! \App\Support\RichText::display($news->subtitle) !!}</div>
     @endif
   </div>
 </header>
@@ -135,7 +135,7 @@
     <main class="nd-article" id="ndArticle">
 
       <div class="nd-article__body nd-prose">
-        {!! $news->content !!}
+        {!! \App\Support\RichText::display($news->content) !!}
       </div>
 
       {{-- Gallery --}}
@@ -165,7 +165,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div class="nd-summary__content nd-prose">
-          {!! $news->summary !!}
+          {!! \App\Support\RichText::display($news->summary) !!}
         </div>
       </div>
       @endif
@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
    NEWS DETAIL
 ════════════════════════════════════════ */
 :root {
-  --nd-brand:  #6e0707;
+  --nd-brand:  #92642D;
   --nd-dark:   #111111;
   --nd-gray:   #6b7280;
   --nd-light:  #f9fafb;
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .nd-header::before {
   content:''; position:absolute; inset:0; pointer-events:none;
-  background: radial-gradient(ellipse at 30% 0%, rgba(110,7,7,.25) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 30% 0%, rgba(146,100,45,.25) 0%, transparent 65%);
 }
 .nd-header__inner { max-width:820px; margin:0 auto; position:relative; }
 
@@ -456,8 +456,8 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ── Summary ── */
 .nd-summary {
   display:flex; gap:1rem; align-items:flex-start;
-  background:linear-gradient(135deg,#fdf2f8,#fff);
-  border:1px solid #fecdd3; border-radius:16px;
+  background:linear-gradient(135deg,#92642D,#fff);
+  border:1px solid #92642D; border-radius:16px;
   padding:1.5rem; margin:2.5rem 0;
 }
 .nd-summary__icon {
@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .nd-back-wrap { margin-top:1.5rem; }
 .nd-back-btn {
   display:inline-flex; align-items:center; gap:.5rem;
-  padding:.7rem 1.4rem; border-radius:10px;
+  padding:.7rem 1.4rem; border-radius:var(--radius-sharp-sm);
   border:1.5px solid var(--nd-border); color:#374151;
   font-size:.85rem; font-weight:600; text-decoration:none;
   transition:border-color .2s, color .2s;
@@ -521,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .nd-sb-card__desc  { font-size:.8rem; color:rgba(255,255,255,.55); margin:0 0 1.25rem; line-height:1.5; }
 .nd-sb-card__btn {
   display:flex; align-items:center; justify-content:center; gap:.5rem;
-  padding:.75rem; border-radius:10px;
+  padding:.75rem; border-radius:var(--radius-sharp-sm);
   background: var(--nd-brand); color:#fff; font-size:.85rem; font-weight:700;
   text-decoration:none; transition:background .2s;
 }

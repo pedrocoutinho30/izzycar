@@ -327,11 +327,11 @@
     .nl-btn {
         display: inline-flex; align-items: center; gap: .45rem;
         padding: .6rem 1.4rem; border-radius: var(--radius-sharp-sm); border: none; cursor: pointer;
-        background: #990000; color: white; font-weight: 700; font-size: .9rem;
+        background: #B59151; color: white; font-weight: 700; font-size: .9rem;
         transition: background .2s, transform .2s;
         white-space: nowrap;
     }
-    .nl-btn:hover { background: #7a0000; transform: translateY(-1px); }
+    .nl-btn:hover { background: #92642D; transform: translateY(-1px); }
     .nl-feedback { font-size: .82rem; margin-top: .5rem; width: 100%; }
     .nl-feedback.success { color: #4ade80; }
     .nl-feedback.error   { color: #f87171; }
@@ -343,7 +343,7 @@
     }
 
     .cta-card {
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
         border-radius: var(--radius-sharp-md);
         padding: 2.5rem;
         display: flex;

@@ -154,9 +154,9 @@
 @push('styles')
 <style>
 :root {
-    --al-red: #990000;
-    --al-bordo: #6e0707;
-    --al-gradient: linear-gradient(135deg, #6e0707 0%, #9b1111 100%);
+    --al-red: #B59151;
+    --al-bordo: #92642D;
+    --al-gradient: linear-gradient(135deg, #B59151 0%, #92642D 100%);
 }
 
 .al-badge, .al-eyebrow {
@@ -164,17 +164,17 @@
     font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
     padding: .45rem 1.1rem; border-radius: var(--radius-sharp-sm);
 }
-.al-badge { background: rgba(153,0,0,.2); border: 1px solid rgba(153,0,0,.3); color: #fff; margin-bottom: 1.75rem; }
-.al-eyebrow { background: rgba(110,7,7,.08); border: 1px solid rgba(110,7,7,.18); color: var(--al-bordo); margin-bottom: 1.25rem; }
+.al-badge { background: rgba(181,145,81,.2); border: 1px solid rgba(181,145,81,.3); color: #fff; margin-bottom: 1.75rem; }
+.al-eyebrow { background: rgba(146,100,45,.08); border: 1px solid rgba(146,100,45,.18); color: var(--al-bordo); margin-bottom: 1.25rem; }
 
 .al-hero { position: relative; background: #0a0a0a; padding: 6rem 0 5rem; overflow: hidden; }
 .al-hero__noise {
     position: absolute; inset: 0; pointer-events: none; opacity: .5;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23990000' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23B59151' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
 }
 .al-hero__inner { position: relative; max-width: 720px; text-align: center; margin: 0 auto; }
 .al-hero__title { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 900; color: #fff; line-height: 1.15; margin-bottom: 1.25rem; }
-.al-accent { color: #ff5555; }
+.al-accent { color: #B59151; }
 .al-hero__desc { font-size: clamp(1rem, 1.6vw, 1.15rem); color: rgba(255,255,255,.7); line-height: 1.7; margin-bottom: 2.25rem; }
 .al-hero__actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
@@ -184,8 +184,8 @@
     text-decoration: none; border: none; cursor: pointer; transition: transform .15s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
     white-space: nowrap;
 }
-.al-btn--primary { background: var(--al-gradient); color: #fff; box-shadow: 0 8px 24px rgba(110,7,7,.35); }
-.al-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(110,7,7,.42); color: #fff; }
+.al-btn--primary { background: var(--al-gradient); color: #fff; box-shadow: 0 8px 24px rgba(146,100,45,.35); }
+.al-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(146,100,45,.42); color: #fff; }
 .al-btn--outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.3); }
 .al-btn--outline:hover { border-color: #fff; background: rgba(255,255,255,.08); color: #fff; }
 .al-btn--light { background: #fff; color: var(--al-bordo); }
@@ -217,7 +217,7 @@
 .al-step__num {
     flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--radius-sharp-sm);
     background: var(--al-gradient); color: #fff; font-weight: 800; font-size: 1.05rem;
-    display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(110,7,7,.28);
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(146,100,45,.28);
 }
 .al-step__title { font-size: 1.08rem; font-weight: 700; color: #111; margin: 0 0 .35rem; }
 .al-step__desc { color: #6b7280; line-height: 1.65; margin: 0; font-size: .95rem; }
@@ -225,7 +225,7 @@
 .al-commission {
     background: var(--al-gradient); border-radius: var(--radius-sharp-md);
     padding: 3.5rem 2rem; text-align: center; color: #fff;
-    box-shadow: 0 20px 50px rgba(110,7,7,.3);
+    box-shadow: 0 20px 50px rgba(146,100,45,.3);
 }
 .al-commission__value { font-size: clamp(3rem, 7vw, 4.5rem); font-weight: 900; line-height: 1; letter-spacing: -.02em; }
 .al-commission__label { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; margin: .5rem 0 1.25rem; opacity: .95; }

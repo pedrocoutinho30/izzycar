@@ -233,7 +233,7 @@
         padding: .65rem 1.1rem; font-size: .85rem; font-weight: 700;
         white-space: nowrap; flex-shrink: 0; text-decoration: none;
     }
-    .vd-sticky-cta__btn:hover { background: #8b0000; color: #fff; }
+    .vd-sticky-cta__btn:hover { background: #7F5A2E; color: #fff; }
 
     /* ── Header ─────────────────────────────────────────────────────────── */
     .vd-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
@@ -251,7 +251,7 @@
     /* ── Action buttons ─────────────────────────────────────────────────── */
     .vd-actions { flex-shrink: 0; }
     .vd-btn-primary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: var(--accent-color); color: #fff; border: none; border-radius: var(--radius-sharp-sm); padding: .7rem 1rem; font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; width: 100%; }
-    .vd-btn-primary:hover { background: #8b0000; color: #fff; }
+    .vd-btn-primary:hover { background: #7F5A2E; color: #fff; }
     .vd-btn-secondary { display: flex; align-items: center; justify-content: center; gap: .4rem; background: #25d366; color: #fff; border: none; border-radius: var(--radius-sharp-sm); padding: .65rem .9rem; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .2s; text-decoration: none; }
     .vd-btn-secondary:hover { background: #1da951; color: #fff; }
     .vd-btn-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border: 1.5px solid #e5e7eb; border-radius: var(--radius-sharp-sm); color: #374151; font-size: .9rem; cursor: pointer; transition: background .2s; flex-shrink: 0; }
@@ -265,7 +265,7 @@
 
     /* ── Attribute cards ────────────────────────────────────────────────── */
     .vd-attr-card { background: #fff; border: 1px solid #e9ecef; border-radius: var(--radius-sharp-md); padding: .85rem 1rem; }
-    .vd-attr-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-color); margin-bottom: .55rem; padding-bottom: .35rem; border-bottom: 1.5px solid rgba(110,7,7,.1); }
+    .vd-attr-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-color); margin-bottom: .55rem; padding-bottom: .35rem; border-bottom: 1.5px solid rgba(146,100,45,.1); }
     .vd-attr-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .28rem; }
     .vd-attr-item { display: flex; align-items: flex-start; gap: .4rem; font-size: .83rem; color: #374151; line-height: 1.4; }
     .vd-attr-item i { color: var(--accent-color); font-size: .72rem; flex-shrink: 0; margin-top: .2rem; }
@@ -318,14 +318,14 @@
 
     .mySwiperThumbsMobile .swiper-slide-thumb-active img {
         border-color: var(--accent-color);
-        box-shadow: 0 4px 12px rgba(110, 7, 7, 0.3);
+        box-shadow: 0 4px 12px rgba(146,100,45, 0.3);
     }
 
     /* Modern Card */
     .news-listing {
         background: var(--white-color) !important;
         border-radius: var(--radius-sharp-md);
-        border: 1px solid rgba(110, 7, 7, 0.1);
+        border: 1px solid rgba(146,100,45, 0.1);
     }
 
     .news-listing h3,
@@ -358,7 +358,7 @@
 
     .news-listing h5.card-title {
         padding-bottom: 10px;
-        border-bottom: 2px solid rgba(110, 7, 7, 0.2);
+        border-bottom: 2px solid rgba(146,100,45, 0.2);
     }
 
     .icon-colored {
@@ -378,16 +378,16 @@
     }
 
     .btn-outline-form:hover {
-        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        background: linear-gradient(135deg, #92642D 0%, #B59151 100%);
         color: white;
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(110, 7, 7, 0.3);
+        box-shadow: 0 6px 20px rgba(146,100,45, 0.3);
     }
 
     /* Navigation Buttons */
     .swiper-button-next-mobile,
     .swiper-button-prev-mobile {
-        background-color: rgba(110, 7, 7, 0.9);
+        background-color: rgba(146,100,45, 0.9);
         width: 35px;
         height: 35px;
         border-radius: 50%;
@@ -432,11 +432,11 @@
         background-color: rgba(255, 255, 255, 0.15);
         border-color: var(--accent-color);
         color: white;
-        box-shadow: 0 0 0 3px rgba(110, 7, 7, 0.2);
+        box-shadow: 0 0 0 3px rgba(146,100,45, 0.2);
     }
 
     #contactModalMobile .btn-primary {
-        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        background: linear-gradient(135deg, #92642D 0%, #B59151 100%);
         border: none;
         border-radius: var(--radius-sharp-sm);
         padding: 12px 24px;

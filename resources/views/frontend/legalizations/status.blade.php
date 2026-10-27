@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
    ESTADO DA LEGALIZAÇÃO
 ════════════════════════════════════════ */
 :root {
-  --lzt-brand:  #6e0707;
+  --lzt-brand:  #92642D;
   --lzt-dark:   #111111;
   --lzt-gray:   #6b7280;
   --lzt-light:  #f9fafb;
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .lzt-hero__overlay {
   position:absolute; inset:0; pointer-events:none;
-  background: radial-gradient(ellipse at 60% 0%, rgba(110,7,7,.2) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 60% 0%, rgba(146,100,45,.2) 0%, transparent 65%);
 }
 .lzt-hero__inner {
   position:relative; max-width:680px; margin:0 auto; text-align:center;
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 .lzt-tl-badge {
   display:inline-flex; align-items:center; gap:.35rem;
-  background: rgba(110,7,7,.08); color: var(--lzt-brand);
+  background: rgba(146,100,45,.08); color: var(--lzt-brand);
   font-size:.66rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
   padding:.28rem .65rem; border-radius:100px;
 }
@@ -276,9 +276,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @keyframes lzt-pop { 0% { transform:scale(.6); } 60% { transform:scale(1.12); } 100% { transform:scale(1); } }
 @keyframes lzt-pulse-ring {
-  0%   { box-shadow: 0 0 0 0 rgba(110,7,7,.28); }
-  70%  { box-shadow: 0 0 0 9px rgba(110,7,7,0); }
-  100% { box-shadow: 0 0 0 0 rgba(110,7,7,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(146,100,45,.28); }
+  70%  { box-shadow: 0 0 0 9px rgba(146,100,45,0); }
+  100% { box-shadow: 0 0 0 0 rgba(146,100,45,0); }
 }
 @keyframes lzt-blink { 0%,100% { opacity:1; } 50% { opacity:.25; } }
 
@@ -300,18 +300,18 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ── Buttons ── */
 .lzt-btn {
   display:inline-flex; align-items:center; gap:.55rem;
-  padding:.85rem 1.75rem; border-radius:12px;
+  padding:.85rem 1.75rem; border-radius:var(--radius-sharp-sm);
   font-size:.95rem; font-weight:700; text-decoration:none; white-space:nowrap;
   transition:transform .15s, box-shadow .2s;
 }
 .lzt-btn--primary {
   background: linear-gradient(135deg, var(--lzt-brand), #9b1111);
   color:#fff; border:none;
-  box-shadow:0 4px 16px rgba(110,7,7,.3);
+  box-shadow:0 4px 16px rgba(146,100,45,.3);
 }
 .lzt-btn--primary:hover {
   color:#fff; transform:translateY(-2px);
-  box-shadow:0 8px 24px rgba(110,7,7,.4);
+  box-shadow:0 8px 24px rgba(146,100,45,.4);
 }
 
 .lzt-footer-note { text-align:center; font-size:.85rem; color: var(--lzt-gray); }

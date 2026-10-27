@@ -8,7 +8,7 @@
     <style>
         :root {
             --primary-color: #111111;
-            --accent-color: #6e0707;
+            --accent-color: #92642D;
             --secondary-color: #f8f9fa;
         }
 
@@ -153,7 +153,7 @@
             background: rgba(17, 17, 17, 0.95);
             position: relative;
             z-index: 10;
-            border-bottom: 1px solid rgba(110, 7, 7, 0.2);
+            border-bottom: 1px solid rgba(146,100,45, 0.2);
         }
 
         .hamburger-icon {
@@ -192,14 +192,14 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: linear-gradient(135deg, rgba(110, 7, 7, 0.2) 0%, rgba(153, 0, 0, 0.2) 100%);
+            background: linear-gradient(135deg, rgba(146,100,45, 0.2) 0%, rgba(181,145,81, 0.2) 100%);
             color: #ff6b6b;
             padding: 0.75rem 1.5rem;
             border-radius: 50px;
             font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 2rem;
-            border: 1px solid rgba(110, 7, 7, 0.3);
+            border: 1px solid rgba(146,100,45, 0.3);
         }
 
         .hero-title-mockup {
@@ -211,7 +211,7 @@
         }
 
         .text-gradient-mockup {
-            background: linear-gradient(135deg, #ff6b6b 0%, #990000 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #B59151 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -235,14 +235,14 @@
         }
 
         .btn-primary-mockup {
-            background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+            background: linear-gradient(135deg, #92642D 0%, #B59151 100%);
             color: #fff;
             padding: 0.85rem 1.5rem;
-            border-radius: 50px;
+            border-radius: var(--radius-sharp-sm);
             font-weight: 600;
             font-size: 0.95rem;
             border: none;
-            box-shadow: 0 10px 30px rgba(110, 7, 7, 0.4);
+            box-shadow: 0 10px 30px rgba(146,100,45, 0.4);
             transition: all 0.3s ease;
             width: 100%;
         }
@@ -251,7 +251,7 @@
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
             padding: 0.85rem 1.5rem;
-            border-radius: 50px;
+            border-radius: var(--radius-sharp-sm);
             font-weight: 600;
             font-size: 0.95rem;
             border: 2px solid rgba(255, 255, 255, 0.2);
@@ -282,7 +282,7 @@
 
         .service-card-mockup {
             background: #fff;
-            border: 1px solid rgba(110, 7, 7, 0.1);
+            border: 1px solid rgba(146,100,45, 0.1);
             border-radius: 15px;
             padding: 1.75rem;
             text-align: center;
@@ -292,14 +292,14 @@
 
         .service-card-mockup:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(110, 7, 7, 0.15);
+            box-shadow: 0 8px 30px rgba(146,100,45, 0.15);
         }
 
         .service-icon {
             width: 60px;
             height: 60px;
             margin: 0 auto 1.5rem;
-            background: linear-gradient(135deg, rgba(110, 7, 7, 0.1) 0%, rgba(153, 0, 0, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(146,100,45, 0.1) 0%, rgba(181,145,81, 0.1) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -330,11 +330,11 @@
             position: fixed;
             top: 2rem;
             right: 2rem;
-            background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+            background: linear-gradient(135deg, #92642D 0%, #B59151 100%);
             color: #fff;
             padding: 1.5rem 2rem;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(110, 7, 7, 0.4);
+            box-shadow: 0 20px 60px rgba(146,100,45, 0.4);
             font-weight: 700;
             font-size: 1.2rem;
             z-index: 1000;

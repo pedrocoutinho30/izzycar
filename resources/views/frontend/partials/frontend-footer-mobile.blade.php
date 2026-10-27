@@ -236,19 +236,19 @@
         gap: 10px;
         width: 100%;
         padding: 1rem;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
         color: white;
         font-weight: 700;
         font-size: 1rem;
         border-radius: var(--radius-sharp-sm);
         text-decoration: none;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(110, 7, 7, 0.3);
+        box-shadow: 0 4px 15px rgba(146,100,45, 0.3);
     }
 
     .btn-mobile-cta:active {
         transform: scale(0.98);
-        box-shadow: 0 2px 10px rgba(110, 7, 7, 0.4);
+        box-shadow: 0 2px 10px rgba(146,100,45, 0.4);
     }
 
     .footer-mobile-bottom {
@@ -300,8 +300,9 @@
     .nl-mobile-btn {
         display: inline-flex; align-items: center; gap: .4rem;
         padding: .6rem 1.2rem; border-radius: var(--radius-sharp-sm); border: none; cursor: pointer;
-        background: #990000; color: white; font-weight: 700; font-size: .88rem;
+        background: #B59151; color: white; font-weight: 700; font-size: .88rem;
     }
+    .nl-mobile-btn:hover, .nl-mobile-btn:active { background: #92642D; }
     .nl-mobile-feedback { font-size: .8rem; margin-top: .5rem; }
     .nl-mobile-feedback.success { color: #4ade80; }
     .nl-mobile-feedback.error   { color: #f87171; }

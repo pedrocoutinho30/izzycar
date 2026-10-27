@@ -51,7 +51,7 @@
         box-shadow: 0 20px 60px rgba(0,0,0,.2);
     }
     .share-modal-header {
-        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        background: linear-gradient(135deg, #92642D 0%, #B59151 100%);
         padding: 1rem 1.25rem;
         border-bottom: none;
     }
@@ -59,14 +59,14 @@
     .share-btn-whatsapp {
         background: #25D366;
         color: #fff;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-weight: 600;
     }
     .share-btn-whatsapp:hover { background: #1ebe5d; color: #fff; }
     .share-btn-facebook {
         background: #1877F2;
         color: #fff;
-        border-radius: 50px;
+        border-radius: var(--radius-sharp-sm);
         font-weight: 600;
     }
     .share-btn-facebook:hover { background: #0d65d8; color: #fff; }

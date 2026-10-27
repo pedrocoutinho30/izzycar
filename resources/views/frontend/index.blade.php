@@ -294,7 +294,7 @@
             @endif
         </div>
 @php
-    $avatarColors = ['#990000','#1a73e8','#34A853','#F9AB00','#7B1FA2','#0F9D58','#E64A19','#00838F'];
+    $avatarColors = ['#B59151','#1a73e8','#34A853','#F9AB00','#7B1FA2','#0F9D58','#E64A19','#00838F'];
     $delays = [100, 200, 300, 200, 300, 400];
 @endphp
         <div class="row g-4" id="reviewsGrid">
@@ -541,7 +541,7 @@
 
     .hero-badge .material-symbols-outlined {
         font-size: 18px;
-        color: #cf1c1c;
+        color: #c9c9c9;
     }
 
     .hero-title {
@@ -553,7 +553,7 @@
     }
 
     .text-gradient {
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -579,19 +579,19 @@
         align-items: center;
         gap: 10px;
         padding: 18px 40px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         color: white;
         border-radius: var(--radius-sharp-sm);
         font-size: 1.1rem;
         font-weight: 700;
         text-decoration: none;
         transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(153, 0, 0, 0.4);
+        /* box-shadow: 0 10px 30px rgba(181,145,81, 0.4); */
     }
 
     .btn-hero-primary:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(153, 0, 0, 0.5);
+        /* box-shadow: 0 15px 40px rgba(181,145,81, 0.5); */
         color: white;
     }
 
@@ -646,8 +646,8 @@
     .section-badge {
         display: inline-block;
         padding: 8px 20px;
-        background: rgba(110, 7, 7, 0.1);
-        color: #990000;
+        background: rgba(146,100,45, 0.1);
+        color: #B59151;
         border-radius: var(--radius-sharp-sm);
         font-size: 0.9rem;
         font-weight: 700;
@@ -680,8 +680,8 @@
     }
 
     .services-section .section-badge {
-        background: rgba(153,0,0,0.2);
-        color: #ff8080;
+        background: rgba(181,145,81,0.2);
+        color: #B59151;
     }
 
     .service-bento {
@@ -751,7 +751,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: #ff8080;
+        color: #B59151;
         font-weight: 700;
         text-transform: uppercase;
         font-size: 0.85rem;
@@ -766,7 +766,7 @@
 
     .service-bento:hover .service-bento-link {
         gap: 12px;
-        color: #ff6060;
+        color: #D1B06F;
     }
 
     .road-divider {
@@ -789,13 +789,13 @@
         content: '';
         position: absolute;
         top: 0; bottom: 0; left: -28px; right: 0;
-        background-image: repeating-linear-gradient(90deg, rgba(255,128,128,0.4) 0 16px, transparent 16px 28px);
+        background-image: repeating-linear-gradient(90deg, rgba(181,145,81,0.45) 0 16px, transparent 16px 28px);
         animation: roadMove 0.2s linear infinite;
     }
     .road-divider-car {
         position: relative;
         z-index: 1;
-        color: #ff8080;
+        color: #B59151;
         background: #161616;
         padding: 0 6px;
         animation: roadDrive 3.5s ease-in-out infinite;
@@ -973,12 +973,12 @@
         height: 56px;
         margin: 0 auto 1.25rem;
         border-radius: var(--radius-sharp-sm);
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 14px rgba(110,7,7,0.35);
+        box-shadow: 0 4px 14px rgba(146,100,45,0.35);
         transition: transform 0.3s ease;
     }
 
@@ -1273,18 +1273,18 @@
         align-items: center;
         gap: 10px;
         padding: 18px 40px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         color: white;
         border-radius: var(--radius-sharp-sm);
         font-weight: 700;
         text-decoration: none;
         transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(153, 0, 0, 0.4);
+        /* box-shadow: 0 10px 30px rgba(181,145,81, 0.4); */
     }
 
     .btn-cta-primary:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(153, 0, 0, 0.5);
+        /* box-shadow: 0 15px 40px rgba(181,145,81, 0.5); */
         color: white;
     }
 
@@ -1330,7 +1330,7 @@
     }
 
     .cta-phone:hover {
-        color: #990000;
+        color: #B59151;
     }
 </style>
 @endpush

@@ -1,6 +1,6 @@
 @php use Illuminate\Support\Str; @endphp
 
-<div class="row g-4 align-items-start">
+<div class="row g-4">{{-- sem align-items-start: a coluna dos filtros tem de ter a altura da lista para o sticky ter por onde andar --}}
 
     {{-- Sidebar de filtros --}}
     <div class="col-lg-3">
@@ -164,8 +164,10 @@
 .vl-filter-sidebar {
     background: #fff;
     border-radius: var(--radius-sharp-md);
-    border: 1px solid rgba(110,7,7,.1);
-    overflow: hidden;
+    border: 1px solid rgba(146,100,45,.1);
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: calc(100vh - 110px);
     box-shadow: 0 2px 16px rgba(0,0,0,.06);
 }
 .vl-filter-header {
@@ -176,7 +178,7 @@
     font-weight: 700;
     font-size: 1rem;
     color: var(--accent-color);
-    border-bottom: 1px solid rgba(110,7,7,.1);
+    border-bottom: 1px solid rgba(146,100,45,.1);
     background: #fdf7f7;
 }
 .vl-clear-btn {
@@ -207,11 +209,11 @@
     font-size: .9rem;
     transition: border-color .2s;
 }
-.vl-select:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(110,7,7,.1); }
+.vl-select:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(146,100,45,.1); }
 .vl-select:disabled { opacity: .5; }
 .vl-count-badge {
     margin: 0 20px 18px;
-    background: rgba(110,7,7,.06);
+    background: rgba(146,100,45,.06);
     color: var(--accent-color);
     border-radius: var(--radius-sharp-sm);
     padding: 8px 14px;
@@ -227,11 +229,11 @@
     border-radius: var(--radius-sharp-md);
     overflow: hidden;
     background: #fff;
-    border: 1px solid rgba(110,7,7,.1);
+    border: 1px solid rgba(146,100,45,.1);
     box-shadow: 0 2px 12px rgba(0,0,0,.06);
     transition: transform .25s, box-shadow .25s;
 }
-.vl-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(110,7,7,.15); }
+.vl-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(146,100,45,.15); }
 .vl-card-img-wrap {
     position: relative;
     width: 300px;
@@ -286,7 +288,7 @@
 .vl-version { font-size: .82rem; color: var(--accent-color); opacity: .75; margin: 2px 0 10px; }
 .vl-specs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .vl-spec {
-    background: rgba(110,7,7,.06);
+    background: rgba(146,100,45,.06);
     border-radius: var(--radius-sharp-sm);
     padding: 4px 12px;
     font-size: .83rem;
@@ -343,7 +345,7 @@
     transition: background .2s, transform .2s;
     white-space: nowrap;
 }
-.vl-card:hover .vl-cta { background: #990000; transform: translateX(2px); }
+.vl-card:hover .vl-cta { background: #B59151; transform: translateX(2px); }
 .vl-card-actions { display: flex; align-items: center; gap: 8px; }
 .vl-action-btn {
     width: 36px; height: 36px;
@@ -358,7 +360,7 @@
 }
 .vl-action-btn--wa { background: #25d366; color: #fff; }
 .vl-action-btn--wa:hover { background: #1ebe5d; transform: scale(1.1); color: #fff; }
-.vl-action-btn--share { background: rgba(110,7,7,.1); color: var(--accent-color); }
+.vl-action-btn--share { background: rgba(146,100,45,.1); color: var(--accent-color); }
 .vl-action-btn--share:hover { background: var(--accent-color); color: #fff; transform: scale(1.1); }
 .vl-toast {
     position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);

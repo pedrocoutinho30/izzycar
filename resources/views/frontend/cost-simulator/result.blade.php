@@ -65,7 +65,7 @@
         <div class="sr-cost-row sr-cost-row--service">
           <div class="sr-cost-row__left">
             <div class="sr-cost-row__icon" style="background:#fdf2f8">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6e0707" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92642D" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
             <div>
               <div class="sr-cost-row__name">Serviços Izzycar</div>
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
    RESULTADO DA SIMULAÇÃO
 ════════════════════════════════════════ */
 :root {
-  --sr-brand:  #6e0707;
+  --sr-brand:  #92642D;
   --sr-dark:   #111111;
   --sr-gray:   #6b7280;
   --sr-light:  #f9fafb;
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 .sr-hero__overlay {
   position:absolute; inset:0; pointer-events:none;
-  background: radial-gradient(ellipse at 60% 0%, rgba(110,7,7,.2) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 60% 0%, rgba(146,100,45,.2) 0%, transparent 65%);
 }
 .sr-hero__inner {
   position:relative; max-width:680px; margin:0 auto; text-align:center;
@@ -252,8 +252,8 @@ document.addEventListener('DOMContentLoaded', function () {
 .sr-total {
   display:flex; align-items:center; justify-content:space-between;
   padding:1.25rem 1.5rem; border-radius:var(--radius-sharp-md); margin-top:.25rem;
-  background: linear-gradient(135deg, var(--sr-brand) 0%, #9b1111 100%);
-  box-shadow:0 4px 16px rgba(110,7,7,.3);
+  background: linear-gradient(135deg, #B59151 0%, var(--sr-brand) 100%);
+  box-shadow:0 4px 16px rgba(146,100,45,.3);
 }
 .sr-total__label { font-size:.82rem; font-weight:500; color:rgba(255,255,255,.75); }
 .sr-total__value { font-size:1.6rem; font-weight:900; color:#fff; }
@@ -281,13 +281,13 @@ document.addEventListener('DOMContentLoaded', function () {
   border-color:#aaa; color:#111; transform:translateY(-1px); box-shadow: var(--sr-shadow);
 }
 .sr-btn--primary {
-  background: linear-gradient(135deg, var(--sr-brand), #9b1111);
+  background: linear-gradient(135deg, #B59151, var(--sr-brand));
   color:#fff; border:none;
-  box-shadow:0 4px 16px rgba(110,7,7,.3);
+  box-shadow:0 4px 16px rgba(146,100,45,.3);
 }
 .sr-btn--primary:hover {
   color:#fff; transform:translateY(-2px);
-  box-shadow:0 8px 24px rgba(110,7,7,.4);
+  box-shadow:0 8px 24px rgba(146,100,45,.4);
 }
 .sr-btn--primary svg { transition:transform .2s; }
 .sr-btn--primary:hover svg { transform:translateX(3px); }
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function () {
   font-size:.85rem;
 }
 .sr-isv-table table th {
-  background: linear-gradient(135deg, var(--sr-brand), #9b1111);
+  background: linear-gradient(135deg, #B59151, var(--sr-brand));
   color:#fff; padding:.85rem 1rem; font-weight:700; text-align:left;
 }
 .sr-isv-table table th:first-child { border-radius:var(--radius-sharp-sm) 0 0 0; }

@@ -104,7 +104,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="theme-color" content="#6e0707">
+    <meta name="theme-color" content="#92642D">
     <meta name="format-detection" content="telephone=no">
 
     <title>@yield('title', 'Izzycar — Importação Automóvel Chave na Mão | Portugal')</title>
@@ -260,11 +260,11 @@
 
     /* Telefone */
     .fab--phone {
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         color: #fff;
-        box-shadow: 0 4px 16px rgba(110,7,7,.4);
+        box-shadow: 0 4px 16px rgba(146,100,45,.4);
     }
-    .fab--phone:hover { box-shadow: 0 6px 24px rgba(110,7,7,.55); color: #fff; }
+    .fab--phone:hover { box-shadow: 0 6px 24px rgba(146,100,45,.55); color: #fff; }
 
     /* WhatsApp */
     .fab--wa {

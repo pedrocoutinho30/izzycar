@@ -169,7 +169,7 @@
                 </svg>
             </div>
             <div class="intro-content">
-                {!!$data->contents['content']!!}
+                {!! \App\Support\RichText::display($data->contents['content']) !!}
             </div>
         </div>
     </div>
@@ -190,7 +190,7 @@
                     <div class="step-number">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</div>
                     <div class="step-content">
                         <h5 class="step-title">{{ $item['title'] }}</h5>
-                        <div class="step-description">{!! $item['content'] !!}</div>
+                        <div class="step-description">{!! \App\Support\RichText::display($item['content']) !!}</div>
                     </div>
                     <div class="step-arrow">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -271,8 +271,8 @@
         align-items: center;
         gap: 8px;
         padding: 10px 20px;
-        background: rgba(110, 7, 7, 0.2);
-        border: 1px solid rgba(110, 7, 7, 0.3);
+        background: rgba(146,100,45, 0.2);
+        border: 1px solid rgba(146,100,45, 0.3);
         border-radius: var(--radius-sharp-sm);
         color: #fff;
         font-size: 0.9rem;
@@ -300,8 +300,8 @@
     .section-badge {
         display: inline-block;
         padding: 8px 20px;
-        background: rgba(110, 7, 7, 0.1);
-        color: #990000;
+        background: rgba(146,100,45, 0.1);
+        color: #B59151;
         border-radius: var(--radius-sharp-sm);
         font-size: 0.9rem;
         font-weight: 700;
@@ -374,11 +374,11 @@
     .hero-legal-card-icon {
         flex-shrink: 0;
         width: 44px; height: 44px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         border-radius: var(--radius-sharp-sm);
         display: flex; align-items: center; justify-content: center;
         color: #fff;
-        box-shadow: 0 4px 14px rgba(153,0,0,0.45);
+        box-shadow: 0 4px 14px rgba(181,145,81,0.45);
     }
 
     .hero-legal-card-header > span {
@@ -407,13 +407,13 @@
 
     .hero-legal-item:hover {
         background: rgba(255,255,255,0.09);
-        border-color: rgba(153,0,0,0.35);
+        border-color: rgba(181,145,81,0.35);
     }
 
     .hero-legal-item-icon {
         flex-shrink: 0;
         width: 34px; height: 34px;
-        background: rgba(153,0,0,0.2);
+        background: rgba(181,145,81,0.2);
         border-radius: var(--radius-sharp-sm);
         display: flex; align-items: center; justify-content: center;
         color: #ff8080;
@@ -444,20 +444,20 @@
         gap: 0.5rem;
         width: 100%;
         padding: 0.85rem 1.5rem;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         color: #fff;
         font-weight: 700;
         font-size: 0.9rem;
         border-radius: var(--radius-sharp-sm);
         text-decoration: none;
-        box-shadow: 0 4px 16px rgba(153,0,0,0.45);
+        box-shadow: 0 4px 16px rgba(181,145,81,0.45);
         transition: all 0.25s ease;
     }
 
     .hero-legal-cta:hover {
         color: #fff;
         transform: translateY(-1px);
-        box-shadow: 0 6px 22px rgba(153,0,0,0.6);
+        box-shadow: 0 6px 22px rgba(181,145,81,0.6);
     }
 
     /* Secção intro */
@@ -472,7 +472,7 @@
         padding: 3rem;
         box-shadow: 0 6px 28px rgba(0,0,0,0.07);
         border: 1px solid rgba(0,0,0,0.05);
-        border-top: 4px solid #990000;
+        border-top: 4px solid #B59151;
         display: flex;
         gap: 2rem;
         align-items: flex-start;
@@ -485,18 +485,18 @@
         position: absolute;
         top: 0; right: 0;
         width: 200px; height: 200px;
-        background: radial-gradient(ellipse at top right, rgba(153,0,0,0.04) 0%, transparent 70%);
+        background: radial-gradient(ellipse at top right, rgba(181,145,81,0.04) 0%, transparent 70%);
         pointer-events: none;
     }
 
     .intro-icon {
         flex-shrink: 0;
         width: 72px; height: 72px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #990000 100%);
+        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
         border-radius: var(--radius-sharp-sm);
         display: flex; align-items: center; justify-content: center;
         color: white;
-        box-shadow: 0 6px 18px rgba(110,7,7,0.35);
+        box-shadow: 0 6px 18px rgba(146,100,45,0.35);
         position: relative; z-index: 1;
     }
 
@@ -528,7 +528,7 @@
     }
 
     .legalization-step-card:hover {
-        border-top-color: #990000;
+        border-top-color: #B59151;
         transform: translateY(-4px);
         box-shadow: 0 10px 32px rgba(0,0,0,0.11);
     }
@@ -538,12 +538,12 @@
         align-items: center;
         justify-content: center;
         width: 44px; height: 44px;
-        background: linear-gradient(135deg, #990000 0%, #6e0707 100%);
+        background: linear-gradient(135deg, #B59151 0%, #92642D 100%);
         color: #fff;
         font-size: 0.95rem;
         font-weight: 800;
         border-radius: var(--radius-sharp-sm);
-        box-shadow: 0 4px 12px rgba(153,0,0,0.35);
+        box-shadow: 0 4px 12px rgba(181,145,81,0.35);
         margin-bottom: 1.25rem;
         position: static;
         opacity: 1;
@@ -551,7 +551,7 @@
     }
 
     .legalization-step-card:hover .step-number {
-        box-shadow: 0 6px 18px rgba(153,0,0,0.5);
+        box-shadow: 0 6px 18px rgba(181,145,81,0.5);
         transform: scale(1.06);
     }
 
@@ -611,14 +611,14 @@
     }
 
     .legalization-cta-card {
-        background: linear-gradient(135deg, #6e0707 0%, #990000 100%);
+        background: linear-gradient(135deg, #92642D 0%, #B59151 100%);
         border-radius: var(--radius-sharp-md);
         padding: 3.5rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 2rem;
-        box-shadow: 0 20px 60px rgba(110, 7, 7, 0.4);
+        box-shadow: 0 20px 60px rgba(146,100,45, 0.4);
     }
 
     .legalization-cta-title {
@@ -646,7 +646,7 @@
         gap: 10px;
         padding: 1rem 2rem;
         background: white;
-        color: #6e0707;
+        color: #92642D;
         font-weight: 700;
         font-size: 1rem;
         border-radius: var(--radius-sharp-sm);
@@ -659,7 +659,7 @@
     .btn-legalization-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-        color: #6e0707;
+        color: #92642D;
     }
 
     .btn-legalization-secondary {

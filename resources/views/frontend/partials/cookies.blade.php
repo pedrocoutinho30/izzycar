@@ -70,7 +70,7 @@
     }
 
     #acceptAll {
-        background: #6e0707;
+        background: #92642D;
         color: white;
     }
 
