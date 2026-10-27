@@ -243,8 +243,8 @@
 
             <div class="iz-cost-row iz-cost-row--service">
               <div class="iz-cost-row__left">
-                <div class="iz-cost-row__icon" style="background:#fdf2f8">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6e0707" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div class="iz-cost-row__icon" style="background:#faf5ec">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92642D" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </div>
                 <div>
                   <div class="iz-cost-row__name">Serviço Izzycar</div>
@@ -383,7 +383,7 @@
         <div class="iz-eq-grid">
           @foreach ($filteredAttrs as $attr => $value)
           <div class="iz-eq-item">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6e0707" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92642D" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
             <span>{{ $attr == $value ? $attr : $attr . ': ' . $value }}</span>
           </div>
           @endforeach
@@ -447,7 +447,7 @@
 
       <div class="iz-info-card iz-reveal">
         <div class="iz-info-card__icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6e0707" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#92642D" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         </div>
         <h3 class="iz-info-card__title">Formalização Contratual</h3>
         <p class="iz-info-card__desc">O processo é oficializado com dois contratos que garantem total segurança jurídica.</p>
@@ -475,7 +475,7 @@
 
       <div class="iz-info-card iz-reveal" style="--delay:.1s">
         <div class="iz-info-card__icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6e0707" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#92642D" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         </div>
         <h3 class="iz-info-card__title">Modelo de Pagamento</h3>
         <p class="iz-info-card__desc">Pagamentos simples e seguros, divididos em etapas claras e transparentes.</p>
@@ -761,8 +761,8 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
    Self-contained — no Bootstrap dependency
 ════════════════════════════════════════ */
 :root {
-  --iz-brand:   #6e0707;
-  --iz-brand-d: #4a0505;
+  --iz-brand:   #92642D;
+  --iz-brand-d: #7a5224;
   --iz-black:   #0d0d0d;
   --iz-dark:    #111827;
   --iz-gray:    #6b7280;
@@ -777,7 +777,7 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
 @keyframes fadeUp   { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
 @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
 @keyframes spin     { to { transform:rotate(360deg); } }
-@keyframes pulse-brand { 0%,100%{ box-shadow:0 0 0 0 rgba(110,7,7,.3); } 50%{ box-shadow:0 0 0 10px rgba(110,7,7,0); } }
+@keyframes pulse-brand { 0%,100%{ box-shadow:0 0 0 0 rgba(146,100,45,.3); } 50%{ box-shadow:0 0 0 10px rgba(146,100,45,0); } }
 
 /* ── Sticky bar (bottom floating, appears after hero) ── */
 .iz-bar {
@@ -856,7 +856,7 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
   border:none; cursor:pointer; transition: background .2s, transform .15s, box-shadow .2s;
   animation: pulse-brand 2.5s ease-in-out 1.5s infinite;
 }
-.iz-hero__cta:hover { background: var(--iz-brand-d); transform:translateY(-2px); box-shadow:0 8px 24px rgba(110,7,7,.4); }
+.iz-hero__cta:hover { background: var(--iz-brand-d); transform:translateY(-2px); box-shadow:0 8px 24px rgba(146,100,45,.4); }
 .iz-hero__accepted-badge {
   display:inline-flex; align-items:center; gap:.5rem;
   background:rgba(74,222,128,.15); border:1px solid rgba(74,222,128,.3);
@@ -974,7 +974,7 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
   transition:border-color .2s, box-shadow .2s;
 }
 .iz-cost-row:hover { border-color:var(--iz-border); box-shadow:var(--iz-shadow); }
-.iz-cost-row--service { background:#fdf2f8; }
+.iz-cost-row--service { background:#faf5ec; }
 .iz-cost-row__left { display:flex; align-items:center; gap:.75rem; min-width:0; }
 .iz-cost-row__icon {
   width:36px; height:36px; border-radius:10px; flex-shrink:0;
@@ -986,10 +986,10 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
 
 .iz-costs__total-wrap {
   padding:1.25rem; border-radius:12px;
-  background: linear-gradient(135deg, var(--iz-brand) 0%, #9b1111 100%);
+  background: linear-gradient(135deg, #B59151 0%, var(--iz-brand) 100%);
   margin-bottom:1.25rem;
   display:flex; align-items:center; justify-content:space-between;
-  box-shadow: 0 4px 16px rgba(110,7,7,.35);
+  box-shadow: 0 4px 16px rgba(146,100,45,.35);
 }
 .iz-costs__total-label { font-size:.8rem; font-weight:500; color:rgba(255,255,255,.75); }
 .iz-costs__total { font-size:1.6rem; font-weight:800; color:#fff; text-shadow: 0 1px 4px rgba(0,0,0,.25); }
@@ -1026,7 +1026,7 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
   display:flex; align-items:center; justify-content:center; gap:.6rem;
   transition: background .2s, transform .15s, box-shadow .2s;
 }
-.iz-accept-btn:hover { background: var(--iz-brand-d); transform:translateY(-1px); box-shadow:0 6px 20px rgba(110,7,7,.35); }
+.iz-accept-btn:hover { background: var(--iz-brand-d); transform:translateY(-1px); box-shadow:0 6px 20px rgba(146,100,45,.35); }
 .iz-accept-btn--large { display:inline-flex; padding:1.1rem 2.5rem; width:auto; font-size:1.05rem; margin-top:1.5rem; }
 .iz-accepted-pill {
   display:flex; align-items:center; justify-content:center; gap:.5rem;
@@ -1118,7 +1118,7 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
   font-size:.8rem; font-weight:800;
   display:flex; align-items:center; justify-content:center;
   position:relative; z-index:1; margin-top:.2rem;
-  box-shadow:0 0 0 4px rgba(110,7,7,.2);
+  box-shadow:0 0 0 4px rgba(146,100,45,.2);
 }
 .iz-step__body { padding-bottom:2.5rem; flex:1; }
 .iz-step__top { display:flex; align-items:center; gap:1rem; margin-bottom:.4rem; }
@@ -1159,7 +1159,7 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
 }
 .iz-info-card__icon {
   width:52px; height:52px; border-radius:14px;
-  background:#fdf2f8; border:1px solid #fecdd3;
+  background:#faf5ec; border:1px solid #ead9b8;
   display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem;
 }
 .iz-info-card__title { font-size:1.1rem; font-weight:800; color: var(--iz-dark); margin:0 0 .5rem; }
@@ -1263,7 +1263,7 @@ document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
   font-size:.9rem; color: var(--iz-dark); outline:none;
   transition:border-color .2s, box-shadow .2s;
 }
-.iz-modal__input:focus { border-color: var(--iz-brand); box-shadow:0 0 0 3px rgba(110,7,7,.1); }
+.iz-modal__input:focus { border-color: var(--iz-brand); box-shadow:0 0 0 3px rgba(146,100,45,.1); }
 
 .iz-modal__summary {
   background: var(--iz-light); border:1px solid var(--iz-border);

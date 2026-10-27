@@ -148,7 +148,7 @@
     }
     @media(max-width:640px) { .hero-title-vehicles { white-space: normal; font-size: 1.7rem; } }
     .hero-title-vehicles .hero-accent {
-        color: var(--accent-color);
+        color: var(--yellow-color);
     }
     .hero-desc-vehicles {
         font-size: 1.1rem;

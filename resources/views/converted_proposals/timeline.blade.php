@@ -607,19 +607,19 @@
         align-items: center;
         gap: 10px;
         padding: 14px 28px;
-        background: linear-gradient(135deg, #990000, #6e0707);
+        background: linear-gradient(135deg, #B59151, #92642D);
         color: white;
         border-radius: 50px;
         text-decoration: none;
         font-weight: 600;
         font-size: 0.95rem;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(153, 0, 0, 0.3);
+        box-shadow: 0 4px 15px rgba(146, 100, 45,0.3);
     }
 
     .contact-btn-cancelled:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(153, 0, 0, 0.4);
+        box-shadow: 0 6px 20px rgba(146, 100, 45,0.4);
         color: white;
     }
 

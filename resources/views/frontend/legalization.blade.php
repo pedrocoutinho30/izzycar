@@ -288,7 +288,7 @@
         margin-bottom: 1.5rem;
         white-space: nowrap;
     }
-    .hero-accent { color: var(--accent-color); }
+    .hero-accent { color: var(--yellow-color); }
 
     .hero-description {
         font-size: 1.2rem;
@@ -492,7 +492,7 @@
     .intro-icon {
         flex-shrink: 0;
         width: 72px; height: 72px;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #B59151 100%);
+        background: linear-gradient(135deg, var(--yellow-color) 0%, #B59151 100%);
         border-radius: var(--radius-sharp-sm);
         display: flex; align-items: center; justify-content: center;
         color: white;
