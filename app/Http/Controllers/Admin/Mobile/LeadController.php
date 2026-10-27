@@ -70,6 +70,9 @@ class LeadController extends Controller
             'canAssignOwner' => $canAssignOwner,
             'canDelete' => $this->permissions->allows($request->user(), 'leads', 'delete'),
             'owners' => $canAssignOwner ? $this->owners() : collect(),
+            // Os pedidos da lead são todos do mesmo cliente: o dono confere-se uma vez.
+            'canOpenRequests' => $this->permissions->allows($request->user(), 'form-proposals', 'view', (new FormProposal)->setRelation('client', $lead)),
+            'canCreateRequest' => $this->permissions->allows($request->user(), 'form-proposals', 'create'),
         ]);
     }
 

@@ -701,6 +701,24 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::post('/leads/{id}/atividade', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'activity'])->name('leads.activity')->whereNumber('id');
         Route::post('/leads/{id}/dono', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'owner'])->name('leads.owner')->whereNumber('id');
         Route::delete('/leads/{id}', [App\Http\Controllers\Admin\Mobile\LeadController::class, 'destroy'])->name('leads.destroy')->whereNumber('id');
+
+        // Pedidos de formulário ("/formularios/novo" tem de ficar antes de "/formularios/{id}").
+        Route::get('/formularios', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'index'])->name('form-proposals.index');
+        Route::get('/formularios/novo', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'create'])->name('form-proposals.create');
+        Route::post('/formularios', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'store'])->name('form-proposals.store');
+        Route::get('/formularios/{id}', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'show'])->name('form-proposals.show')->whereNumber('id');
+        Route::patch('/formularios/{id}/estado', [App\Http\Controllers\Admin\Mobile\FormProposalController::class, 'status'])->name('form-proposals.status')->whereNumber('id');
+
+        // Oportunidades de um pedido (scopeBindings: a oportunidade tem de ser do pedido).
+        Route::prefix('/formularios/{formProposal}/oportunidades')->name('form-proposals.opportunities.')->scopeBindings()->group(function () {
+            Route::post('/', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'store'])->name('store');
+            Route::get('/{opportunity}', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'show'])->name('show');
+            Route::patch('/{opportunity}/estado', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'status'])->name('status');
+            Route::patch('/{opportunity}/checklist', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'checklist'])->name('checklist');
+            Route::patch('/{opportunity}/notas', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'notes'])->name('notes');
+            Route::post('/{opportunity}/contactos', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'storeContact'])->name('contacts.store');
+            Route::delete('/{opportunity}/contactos/{contact}', [App\Http\Controllers\Admin\Mobile\ImportOpportunityController::class, 'destroyContact'])->name('contacts.destroy');
+        });
     });
 
     // ============================================================

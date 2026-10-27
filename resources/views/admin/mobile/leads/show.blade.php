@@ -137,7 +137,7 @@
             <div id="sec-formularios" class="accordion-collapse collapse">
                 <div class="accordion-body">
                     @forelse($formProposals as $pedido)
-                        <div class="m-list-item">
+                        <div class="m-list-item position-relative">
                             <div class="fw-semibold">{{ $pedido->label }}</div>
                             <div class="small text-muted">
                                 {{ $pedido->isManual() ? 'Manual' : 'Site' }} · {{ $pedido->created_at->format('d/m/Y') }}
@@ -146,10 +146,19 @@
                             @if($pedido->status)
                                 <span class="badge bg-{{ $formColors[$pedido->status] ?? 'secondary' }}">{{ $formLabels[$pedido->status] ?? $pedido->status }}</span>
                             @endif
+                            @if($canOpenRequests)
+                                <a href="{{ route('admin.mobile.form-proposals.show', $pedido->id) }}" class="stretched-link" aria-label="Abrir pedido {{ $pedido->label }}"></a>
+                            @endif
                         </div>
                     @empty
                         <div class="text-muted small">Sem pedidos de importação.</div>
                     @endforelse
+
+                    @if($canCreateRequest)
+                        <a href="{{ route('admin.mobile.form-proposals.create', ['client_id' => $lead->id]) }}" class="btn btn-primary w-100 mt-2">
+                            <i class="bi bi-envelope-plus me-1"></i> Novo pedido
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>

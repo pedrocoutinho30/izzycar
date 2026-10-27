@@ -75,8 +75,14 @@ return [
                     // cada pedido (editar).
                     'actions' => ['view' => ['all', 'own'], 'create' => [], 'update' => [], 'delete' => []],
                     'owner' => 'client.owner_id',
+                    // Mobile: criar, mudar o estado e tudo o que mexe nas oportunidades
+                    // (editar, sem âmbito) segue o desktop. As oportunidades (vendedor,
+                    // preço de compra) exigem ver "todos", como no desktop.
                     'routes' => ['admin.v2.form-proposals.*', 'admin.v2.consignment-evaluations.*', 'admin.mobile.form-proposals.*'],
-                    'own_routes' => ['admin.angariador.formularios'],
+                    // Rotas mobile que verificam o dono do cliente registo a registo
+                    // (applyScope/allows). Nomes explícitos: uma rota nova não herda "próprios".
+                    'own_routes' => ['admin.angariador.formularios',
+                        'admin.mobile.form-proposals.index', 'admin.mobile.form-proposals.show'],
                 ],
                 'proposals' => [
                     'label' => 'Cotações',

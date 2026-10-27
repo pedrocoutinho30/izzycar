@@ -217,6 +217,11 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
         </div>
         <div class="offcanvas-body pt-0">
+            @canroute('admin.mobile.form-proposals.index')
+            <a class="m-sheet-item" href="{{ route('admin.mobile.form-proposals.index') }}">
+                <i class="bi bi-envelope-open"></i> Formulários
+            </a>
+            @endcanroute
             <a class="m-sheet-item" href="{{ route('admin.v2.dashboard') }}">
                 <i class="bi bi-display"></i> Ir para a versão desktop
             </a>
