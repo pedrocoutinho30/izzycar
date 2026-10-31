@@ -108,6 +108,8 @@ class VehicleInspectionController extends Controller
             'vehicle_inspection_template_id' =>  $template->id,
         ]));
         $this->ensureEntries($inspection, $template);
+        // A relação 'entries' pode ter ficado carregada antes de as entradas serem criadas.
+        $inspection->unsetRelation('entries');
         $this->inspectionService->recalculate($inspection);
 
         return redirect()
@@ -285,8 +287,33 @@ class VehicleInspectionController extends Controller
         ));
     }
 
+    /**
+     * Inspeções concluídas/convertidas são só de leitura (igual ao GET edit).
+     * Devolve a resposta de recusa, ou null se a edição é permitida.
+     */
+    private function rejectIfReadOnly(Request $request, VehicleInspection $inspection)
+    {
+        if (! in_array($inspection->status, ['completed', 'converted'])) {
+            return null;
+        }
+
+        $message = 'Esta inspeção está concluída e não pode ser editada. Crie uma nova revisão se necessário.';
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => false, 'message' => $message], 422);
+        }
+
+        return redirect()
+            ->route('admin.v3.inspections.report', $inspection)
+            ->with('info', $message);
+    }
+
     public function update(Request $request, VehicleInspection $inspection)
     {
+        if ($blocked = $this->rejectIfReadOnly($request, $inspection)) {
+            return $blocked;
+        }
+
         $template = $this->inspectionService->ensureDefaultTemplate();
         $this->ensureEntries($inspection, $template);
 
@@ -333,6 +360,8 @@ class VehicleInspectionController extends Controller
         }
 
         $inspection->save();
+        // As entradas foram alteradas por queries diretas: descartar a relação em cache antes de recalcular.
+        $inspection->unsetRelation('entries');
         $inspection = $this->inspectionService->recalculate($inspection);
 
         if ($request->expectsJson()) {
@@ -348,6 +377,10 @@ class VehicleInspectionController extends Controller
 
     public function uploadMedia(Request $request, VehicleInspection $inspection, VehicleInspectionEntry $entry)
     {
+        if ($blocked = $this->rejectIfReadOnly($request, $inspection)) {
+            return $blocked;
+        }
+
         abort_unless($entry->vehicle_inspection_id === $inspection->id, 404);
 
         $validated = $request->validate([
@@ -379,6 +412,10 @@ class VehicleInspectionController extends Controller
 
     public function reorderMedia(Request $request, VehicleInspection $inspection, VehicleInspectionEntry $entry)
     {
+        if ($blocked = $this->rejectIfReadOnly($request, $inspection)) {
+            return $blocked;
+        }
+
         abort_unless($entry->vehicle_inspection_id === $inspection->id, 404);
 
         $validated = $request->validate([
@@ -398,6 +435,10 @@ class VehicleInspectionController extends Controller
 
     public function destroyMedia(Request $request, VehicleInspection $inspection, VehicleInspectionEntry $entry, VehicleInspectionMedia $media)
     {
+        if ($blocked = $this->rejectIfReadOnly($request, $inspection)) {
+            return $blocked;
+        }
+
         abort_unless($entry->vehicle_inspection_id === $inspection->id && $media->vehicle_inspection_entry_id === $entry->id, 404);
 
         Storage::disk('public')->delete($media->path);
@@ -494,6 +535,10 @@ class VehicleInspectionController extends Controller
 
     public function uploadGeneralMedia(Request $request, VehicleInspection $inspection)
     {
+        if ($blocked = $this->rejectIfReadOnly($request, $inspection)) {
+            return $blocked;
+        }
+
         $request->validate([
             'files'   => 'required|array|min:1',
             'files.*' => 'file|max:51200',
@@ -521,6 +566,10 @@ class VehicleInspectionController extends Controller
 
     public function destroyGeneralMedia(Request $request, VehicleInspection $inspection, VehicleInspectionMedia $media)
     {
+        if ($blocked = $this->rejectIfReadOnly($request, $inspection)) {
+            return $blocked;
+        }
+
         abort_unless(
             $media->vehicle_inspection_id === $inspection->id && is_null($media->vehicle_inspection_entry_id),
             404

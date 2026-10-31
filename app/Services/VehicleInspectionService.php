@@ -47,6 +47,22 @@ class VehicleInspectionService
 
         $template = VehicleInspectionTemplate::where('is_default', true)->first();
 
+        if (! $template) {
+            // Nenhuma migration cria o template por omissão: criá-lo (vazio) em vez de rebentar.
+            // Não toca em templates existentes; só evita colisão de slug.
+            $slug = 'checklist-completa';
+            if (VehicleInspectionTemplate::where('slug', $slug)->exists()) {
+                $slug .= '-' . now()->format('YmdHis');
+            }
+
+            $template = VehicleInspectionTemplate::create([
+                'name' => 'Checklist Completa',
+                'slug' => $slug,
+                'description' => 'Checklist otimizada para análise de veículos usados antes da compra.',
+                'is_default' => true,
+            ]);
+        }
+
         // foreach ($this->definition() as $categoryIndex => $categoryData) {
         //     $category = VehicleInspectionCategory::updateOrCreate(
         //         [

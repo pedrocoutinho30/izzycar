@@ -174,16 +174,14 @@ class WebhookSitemapEstadoPublicoCoberturaTest extends TestCase
         $this->get('/api/whatsapp/webhook?hub_mode=unsubscribe&hub_verify_token=token-certo&hub_challenge=12345')->assertForbidden();
     }
 
-    /**
-     * BUG conhecido (WhatsAppWebhookController::verify, ~linha 24; SEG-003 em docs/auditoria/problemas.md):
-     * se WHATSAPP_VERIFY_TOKEN não estiver definido, `null === null` e o handshake aceita um pedido
-     * sem token. O correto seria recusar sempre que o token configurado esteja vazio.
-     */
-    public function test_verify_accepts_request_without_token_when_none_configured_known_bug(): void
+    public function test_verify_rejects_request_without_token_when_none_configured(): void
     {
-        config(['services.whatsapp.verify_token' => null]);
+        foreach ([null, ''] as $vazio) {
+            config(['services.whatsapp.verify_token' => $vazio]);
 
-        $this->get('/api/whatsapp/webhook?hub_mode=subscribe&hub_challenge=999')->assertOk()->assertSee('999');
+            $this->get('/api/whatsapp/webhook?hub_mode=subscribe&hub_challenge=999')->assertForbidden();
+            $this->get('/api/whatsapp/webhook?hub_mode=subscribe&hub_verify_token=&hub_challenge=999')->assertForbidden();
+        }
     }
 
     // ── Sitemap ──────────────────────────────────────────────────────────────

@@ -126,10 +126,8 @@ class VehicleInspectionCoberturaTest extends TestCase
         $this->assertSame('Seat', $inspection->brand);
         $this->assertSame($this->template->id, $inspection->vehicle_inspection_template_id);
         $this->assertSame(2, $inspection->entries()->count());
-        // BUG conhecido (VehicleInspectionController::store/ensureEntries): o recalculate usa a relação
-        // `entries` carregada ANTES de as entradas serem criadas, por isso o resumo guardado fica a zeros
-        // (o correto seria unverified_items = 2).
-        $this->assertSame(0, (int) $inspection->unverified_items);
+        // O resumo guardado reflete as entradas acabadas de criar.
+        $this->assertSame(2, (int) $inspection->unverified_items);
     }
 
     public function test_store_validates_fields(): void
@@ -160,12 +158,10 @@ class VehicleInspectionCoberturaTest extends TestCase
         $this->assertSame('Ruído', $entryBad->fresh()->notes);
         $this->assertSame('problema', $entryBad->fresh()->status);
 
-        // BUG conhecido (VehicleInspectionController::update): o resumo persistido é calculado com as
-        // entradas carregadas antes da alteração, ou seja, fica um "save" atrasado. Após esta
-        // gravação o correto seria verified_items = 2.
-        $this->assertSame(0, $inspection->verified_items);
+        // O resumo persistido reflete logo as alterações desta gravação.
+        $this->assertSame(2, $inspection->verified_items);
 
-        // Uma segunda gravação (sem alterações) já persiste os valores corretos.
+        // Uma segunda gravação (sem alterações) mantém os valores.
         $this->actingAs($this->backofficeUser('admin'))->put(route('admin.v3.inspections.update', $inspection), [])->assertRedirect();
         $inspection->refresh();
         $this->assertSame(2, $inspection->verified_items);
@@ -355,18 +351,42 @@ class VehicleInspectionCoberturaTest extends TestCase
         $this->assertNull(VehicleInspectionMedia::find($media->id));
     }
 
-    /**
-     * BUG conhecido: update() aceita editar uma inspeção concluída/convertida
-     * (só o GET edit redireciona para o relatório). Documenta o comportamento atual.
-     */
-    public function test_update_still_edits_completed_inspection_known_bug(): void
+    public function test_update_rejects_completed_or_converted_inspection(): void
+    {
+        $admin = $this->backofficeUser('admin');
+
+        foreach (['completed', 'converted'] as $status) {
+            $inspection = $this->inspection(['status' => $status, 'brand' => 'Original']);
+
+            $this->actingAs($admin)
+                ->put(route('admin.v3.inspections.update', $inspection), ['brand' => 'Alterada'])
+                ->assertRedirect(route('admin.v3.inspections.report', $inspection));
+
+            $this->actingAs($admin)
+                ->putJson(route('admin.v3.inspections.update', $inspection), ['brand' => 'Alterada'])
+                ->assertStatus(422)->assertJsonPath('success', false);
+
+            $this->assertSame('Original', $inspection->fresh()->brand);
+        }
+    }
+
+    public function test_media_routes_reject_completed_inspection(): void
     {
         $inspection = $this->inspection(['status' => 'completed']);
+        $entry = $inspection->entries()->first();
 
         $this->actingAs($this->backofficeUser('admin'))
-            ->put(route('admin.v3.inspections.update', $inspection), ['brand' => 'Alterada'])
-            ->assertRedirect();
+            ->postJson(route('admin.v3.inspections.media.reorder', [$inspection, $entry]), ['media_ids' => [1]])
+            ->assertStatus(422);
+    }
 
-        $this->assertSame('Alterada', $inspection->fresh()->brand);
+    public function test_default_template_is_created_when_missing(): void
+    {
+        VehicleInspectionTemplate::query()->update(['is_default' => false]);
+
+        $template = app(\App\Services\VehicleInspectionService::class)->ensureDefaultTemplate();
+
+        $this->assertTrue($template->is_default);
+        $this->assertSame(1, VehicleInspectionTemplate::where('is_default', true)->count());
     }
 }

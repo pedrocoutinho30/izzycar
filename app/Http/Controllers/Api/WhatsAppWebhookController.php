@@ -22,8 +22,12 @@ class WhatsAppWebhookController extends Controller
         // PHP converte automaticamente os pontos em "hub.mode" etc. para "_"
         // ao interpretar a query string, por isso os parâmetros chegam como
         // hub_mode / hub_verify_token / hub_challenge.
-        if ($request->query('hub_mode') === 'subscribe'
-            && $request->query('hub_verify_token') === config('services.whatsapp.verify_token')) {
+        $token = config('services.whatsapp.verify_token');
+
+        // Token não configurado: recusar sempre (null === null aceitaria pedidos sem token).
+        if (is_string($token) && $token !== ''
+            && $request->query('hub_mode') === 'subscribe'
+            && hash_equals($token, (string) $request->query('hub_verify_token', ''))) {
             return response($request->query('hub_challenge'), 200);
         }
 
