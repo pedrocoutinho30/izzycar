@@ -15,9 +15,9 @@ Limite metodológico: não foi inspecionada a BD de produção. "Migrations vs m
 | Camada | Versão / ferramenta |
 |---|---|
 | PHP | `^8.2` (`composer.json`; sem `platform` fixo no lock) |
-| Framework | `laravel/framework` v12.70.1; `laravel/ui` v4.6.3 (auth scaffolding + Bootstrap); `laravel/tinker`; `laravel/legacy-factories` |
+| Framework | `laravel/framework` v12.70.1; `laravel/ui` v4.6.3 (auth scaffolding + Bootstrap); `laravel/tinker`; ~~`laravel/legacy-factories`~~ (removido em `1e52c53`) |
 | Permissões | `spatie/laravel-permission` 6.25.0 (+ camada própria em `app/Permissions`) |
-| PDF | `barryvdh/laravel-dompdf` 3.1.2, `mpdf/mpdf` 8.3.1, `barryvdh/laravel-snappy` 1.0.5 (wkhtmltopdf), `spatie/browsershot` 5.2.3 (Chromium/puppeteer) — **4 motores de PDF** |
+| PDF | `barryvdh/laravel-dompdf` 3.1.2, `mpdf/mpdf` 8.3.1; `barryvdh/laravel-snappy` e `spatie/browsershot` foram removidos em `1e52c53` — **2 motores de PDF** (eram 4 à data da auditoria) |
 | Excel | `openspout/openspout` 4.28.5 (exports XLSX em `app/Exports`) |
 | Imagens | `intervention/image` 3.11.7 (`ImageOptimizerService`, `ThumbnailService`) |
 | Push | `laravel-notification-channels/webpush` 12.1.0 (`HasPushSubscriptions` no `User`) |
@@ -26,13 +26,13 @@ Limite metodológico: não foi inspecionada a BD de produção. "Migrations vs m
 | HTTP/mail | `guzzlehttp/guzzle` 7.16.1, `symfony/http-client`, `symfony/mailgun-mailer`, `symfony/postmark-mailer` |
 | Testes | `phpunit/phpunit` 11.5.55, `mockery`, `nunomaduro/collision`, `fakerphp/faker` |
 | Front-end (build) | `laravel-mix` 5.0.9 sobre `webpack` 4.47.0, `sass` 1.90, `vue-template-compiler` (sem uso aparente); `webpack.mix.js` tem só `mix.js('resources/js/app.js')` + `sass('resources/sass/app.scss')` |
-| Front-end (libs) | `tom-select` 2.4.3, `axios`, `puppeteer` 24.16.2 (dependência de runtime, usada com Browsershot [Hipótese]) |
+| Front-end (libs) | `tom-select` 2.4.3, `axios`, `puppeteer` 24.16.2 (continua em `package.json`; o único uso, o Browsershot, foi removido em `1e52c53`, logo já não tem uso) |
 | BD | MySQL (produção, Hostinger); sqlite `:memory:` nos testes (`phpunit.xml:24-25`) |
 | Cache / sessão / fila | defaults `file` / `file` / `sync` (`config/cache.php:21`, `config/queue.php:16`, `.env.example`) |
 | Scrapers | Python em `scarperAutoscout/` (pasta com typo "scarper"; venv dentro do repo) e `scripts/*.py` soltos |
 
 Observações:
-- [Confirmado] `composer.json:71` — script `pre-update-cmd` chama `Statamic\Console\Composer\Scripts::preUpdateCmd`, mas o Statamic não está em `require`. Resíduo que faria falhar um `composer update`.
+- [Confirmado] `composer.json:71` — script `pre-update-cmd` chama `Statamic\Console\Composer\Scripts::preUpdateCmd`, mas o Statamic não está em `require`. Resíduo que faria falhar um `composer update`. **[Removido em `1e52c53`.]**
 - [Confirmado] Estrutura "Laravel 10" em Laravel 12: `bootstrap/app.php` instancia `Application` à mão com `App\Http\Kernel`/`App\Console\Kernel`; não usa o esqueleto `Application::configure()`. Funciona, mas foge ao padrão e dificulta upgrades.
 - [Confirmado] Mix 5/Webpack 4 estão fora de suporte; o `package.json` não tem `engines`.
 - [Confirmado] Não existe `.github/` nem outro CI no repositório.
@@ -50,7 +50,7 @@ app/
   Models/ (77 ficheiros) · Models/Concerns/AssociatesSellerBrand
   Observers/ (6) · Permissions/ (4) · Providers/ (5)
   Services/ (~50, lógica de negócio) · Support/ (helpers: BrandLogos, VehicleCache, PushNotifier…) · Traits/HasSeo
-config/ (permissions.php = catálogo próprio; permission.php = Spatie; security.php; lfm.php; snappy.php; webpush.php)
+config/ (permissions.php = catálogo próprio; permission.php = Spatie; security.php; lfm.php; webpush.php; `snappy.php` foi removido em `1e52c53`)
 database/migrations (178) · seeders (14) · factories (só UserFactory)
 resources/views/{admin/v2,admin/v3,frontend,emails,pdf,…} · resources/js · resources/sass
 routes/{web.php 975 linhas, frontend.php, api.php, channels.php, console.php}
@@ -59,7 +59,7 @@ docs/ (funil-comercial, leads-e-clientes, cotacoes, viaturas, seguranca-csp, fic
 scarperAutoscout/ (scraper Python do Radar) · scripts/ (scripts Python antigos) · AutoScoutSearch/ · "info-*" (pastas de documentação solta na raiz)
 ```
 
-Ruído na raiz: `info-faq`, `info-importação`, `retomas`, `plataforma vendas`, `users`, `please`, `server.php` etc. (não analisados em profundidade).
+Ruído na raiz: `info-faq`, `info-importação`, `retomas`, `plataforma vendas`, `please`, `server.php` etc. (não analisados em profundidade). `users/` saiu do índice git (`00eb765`) e está no `.gitignore` (`73df400`); o hash continua no histórico.
 
 ### 1.3 Middleware
 
@@ -114,14 +114,14 @@ Duas camadas sobrepostas:
 
 ### 1.7 Commands e schedule
 
-`app/Console/Kernel.php:27-66` (CLI do Laravel é invocado por cron do alojamento [Hipótese]):
+`app/Console/Kernel.php` (a partir de `7e991a7` cada tarefa passa por `protegido()`: `withoutOverlapping` com expiração e log de falha; sem `onOneServer`) (CLI do Laravel é invocado por cron do alojamento [Hipótese]):
 
 | Comando | Cadência |
 |---|---|
 | `sitemap:generate` | diário |
 | `tasks:send-reminders` | 00:00 |
 | `legalizations:send-tracking-emails` | 15:00 |
-| `leads:followup-reminder` | **a cada minuto** |
+| `leads:followup-reminder` | **a cada minuto** (no minuto exato, com deduplicação por cache e `withoutOverlapping`, desde `7e991a7`) |
 | `commissions:overdue-alert` | 09:00 |
 | `reports:monthly` / `quarterly` / `annual` | dia 1, 01:00 / 01:10 (abr/jul/out) / 01:20 (1 jan) |
 | `radar:refresh-active` | 06:00, 14:00, 22:00 |
@@ -149,7 +149,7 @@ Comandos sem schedule: `clients:duplicates`, `clients:merge`, `converted-proposa
 ### 1.10 Build e deploy conhecidos
 
 - Memória do projeto (não confirmável no repo): alojamento partilhado Hostinger; **a pasta `public/` do domínio é uma cópia separada** — `git pull` não a atualiza, ficheiros de `public/` copiam-se à mão. `exec/proc_open` desativados no alojamento (confirmado em `AutoscoutScraperRunner`).
-- Assets: `npm run prod` (Mix) gera `public/js` e `public/css` (ficheiros compilados no repositório? `public/.DS_Store` está versionado — mostra ruído; [Hipótese] assets compilados são commitados).
+- Assets: `npm run prod` (Mix) gera `public/js` e `public/css` (ficheiros compilados no repositório? [Hipótese] assets compilados são commitados). Os `.DS_Store` versionados foram removidos em `1e52c53`.
 - Sem CI/CD, sem `Dockerfile`, sem pipeline de testes automática. `.claude/settings.json` nega `migrate` e `db:*` ao agente.
 - Migrations têm de ser corridas à mão em produção (regra do `CLAUDE.md`).
 
@@ -514,7 +514,7 @@ Colunas escritas mas fora de `$fillable` (funciona porque se atribui por proprie
 3. **Pipeline de sync encadeado** — `ConvertedProposal.saved → Expense (até 10 linhas por cotação convertida) → ExpenseObserver → FinancialMovement`. Cada gravação de uma cotação convertida pode gerar até ~20 writes e leituras (`firstOrNew`+`save` por entrada); correr dentro do pedido, sem fila.
 4. **Controllers V1/V2** — rotas V1 desligadas (`routes/web.php:164-169`, comentário "desligado — o V2/V3 substitui-o"), mas os controllers continuam em `app/Http/Controllers`: `SupplierController`, `PartnerController`, `ExpenseController`, `SaleController`, `UserController`, `SettingController`, `RoleController`, `PermissionController`, `VehicleAttributeController`, `AttributeGroupController`, `HomeController`, `_MenuController`, e `VehicleController` (sem rota direta; as `v2/vehicles` só redirecionam para V3, `web.php:474-480`); `ClientController`/`ConvertedProposalController`/`ProposalController` V1 mantêm ações ainda roteadas (`contractService`, `updateStatus`, páginas públicas da cotação). Também vivos mas não-V2: `BrandController`, `MenuController`, `PageController`, `PageTypeController`, `AdSearchController`, `AnuncioController` (rotas em `web.php:929-967`). Total ≈ 12 controllers sem rota (≈ 1500 linhas de código morto, só V1 Vehicle/Expense/Sale somam 642).
 5. **Dois scrapers/radares** — `AdSearch/AdListing` (+`ImportAdListings`, `AnuncioController`, `AdSearchController`) vs `Radar*`. O primeiro tem 33 colunas booleanas de equipamento fixas.
-6. **Quatro motores de PDF** (dompdf, mpdf, snappy, browsershot) — custo de manutenção e fontes duplicadas.
+6. **Quatro motores de PDF** (dompdf, mpdf, snappy, browsershot) — custo de manutenção e fontes duplicadas. **[Corrigido em parte em `1e52c53`: snappy e browsershot foram removidos; ficam dompdf e mpdf.]**
 7. **Enums vs arrays/strings** — `app/Enums` só cobre Oportunidades/Leads; estados de `ConvertedProposal`, `V3Vehicle.status`, `Task.status`, `Proposal.status`, `Expense.*`, `Legalization.ESTADOS`, `Client.client_type` ficam em constantes/arrays/strings livres (e `fuelOptions` do V3 duplica `VehicleFuel`). Já houve inconsistência de dados (`Cancelada/Cancelado`, `empresa/Empresa`).
 8. **Dois sistemas de menus** (`Menu` com `MenuV2Controller`/`MenuController` vs `MenuItem/_Menu` morto) e dois de cotação (`Proposal` vs `ProposedCar`).
 
@@ -530,13 +530,13 @@ Colunas escritas mas fora de `$fillable` (funciona porque se atribui por proprie
 | 6 | M | `Sale` continua com FK `vehicle_id` → `vehicles` `cascade` (apesar de nullable): apagar uma viatura V1 apaga a venda e, por observer, a despesa | `create_sales_table.php:12` |
 | 7 | M | `Task.vehicle_id` com `cascade` (apaga tarefas ao apagar viatura V1); `v3_vehicle_id` com `set null` — comportamento diferente para o mesmo conceito | `create_tasks_table.php:29`, `add_v3_vehicle_id_to_tasks.php:18` |
 | 8 | M | `legalizations.v3_vehicle_id` sem `unique`: processos duplicados para a mesma viatura são possíveis | `V3Vehicle.php:111-113` |
-| 9 | M | `V3Vehicle::generateReference()` usa `count()+1` por ano: apagar uma viatura e criar outra pode repetir a referência → violação do `unique(reference)` | `V3Vehicle.php:67-72` |
+| 9 | M | `V3Vehicle::generateReference()` usa `count()+1` por ano: apagar uma viatura e criar outra pode repetir a referência → violação do `unique(reference)` | `V3Vehicle.php:67-72` **[Corrigido em `ee9af9b`: maior sufixo do ano + 1, com verificação de existência]** |
 | 10 | M | Documentos/ficheiros em disco sem FK de integridade: `caminho`/`path` (V3, legalização, inspeção, convertidas); apagar o registo sem apagar o ficheiro (ou vice-versa) | modelos `*Document`, `V3VehicleController.php:116-117` |
 | 11 | M | `seller_contacts.is_primary` não é único por vendedor na BD; `Seller::primaryContact()` assume 1 | `Seller.php:56-59` |
 | 12 | B | `AuditLog` regista `getAttributes()` completos em `recordCreated/Deleted` (inclui dados pessoais de clientes) sem política de retenção [Hipótese de risco RGPD] | `AuditLog.php:62-80` |
 | 13 | B | `SeoObserver` lê `request()->has('seo')` — qualquer `save()` de `Page/Proposal` no mesmo pedido que tenha `seo` regrava SEO; efeito colateral global | `SeoObserver.php` |
-| 14 | M | `ProposalObserver::notifyProposalSent` envia emails dentro do `created/updated` do model com fila `sync`: falha do SMTP pode rebentar a gravação (sem try/catch visível) | `ProposalObserver.php` |
-| 15 | B | `leads:followup-reminder` corre todos os minutos em `sync` sem lock (`withoutOverlapping`) | `Kernel.php:39` |
+| 14 | M | `ProposalObserver::notifyProposalSent` envia emails dentro do `created/updated` do model com fila `sync`: falha do SMTP pode rebentar a gravação (sem try/catch visível) | `ProposalObserver.php` **[Corrigido em `9616cc9`: emails no fim e em `try/catch`]** |
+| 15 | B | `leads:followup-reminder` corre todos os minutos em `sync` sem lock (`withoutOverlapping`) | `Kernel.php:39` **[Corrigido em parte em `7e991a7`: `withoutOverlapping` e deduplicação; continua `sync`]** |
 
 ### 4.5 FKs e índices em falta
 
@@ -632,14 +632,14 @@ Ordem sugerida: primeiro o que corrige dados (P1-P3), depois consolidação (P4-
 - **Esquema:** exigir que toda a coluna de produção tenha migration; corrigir o drift com migrations "ensure" já existentes e fazer uma auditoria com `php artisan schema:dump` **numa cópia** para comparar com o repositório.
 - **CI:** workflow mínimo (GitHub Actions) com `composer install`, `php artisan test`, `php -l`; sem acesso à BD real.
 - **Build/deploy:** documentar o procedimento (git pull + cópia de `public/` + `npm run prod` + `php artisan config:cache|route:cache|view:cache` + `migrate`) em `docs/`; avaliar migrar de Mix 5/Webpack 4 para Vite (Laravel 12 traz suporte nativo) numa tarefa isolada, com impacto em `resources/views/layouts` e `public/`.
-- **Higiene do repositório:** retirar do versionamento `.DS_Store`, `scarperAutoscout/venv`, pastas "info-*" e `AutoScoutSearch` (mover para fora ou `.gitignore`), renomear `scarperAutoscout` (cuidado: caminho fixo em `AutoscoutScraperRunner::SCRAPER_DIR` e no crontab).
+- **Higiene do repositório** *(`.DS_Store` feito em `1e52c53`; o resto por fazer)*: retirar do versionamento `.DS_Store`, `scarperAutoscout/venv`, pastas "info-*" e `AutoScoutSearch` (mover para fora ou `.gitignore`), renomear `scarperAutoscout` (cuidado: caminho fixo em `AutoscoutScraperRunner::SCRAPER_DIR` e no crontab).
 - **Factories:** criar factories para os models com `HasFactory` e para Seller/ImportOpportunity/V3Vehicle para reduzir a montagem manual nos testes.
 
 ---
 
 ## Resumo (10 linhas)
 
-1. Stack: Laravel 12.70 / PHP ≥8.2 / MySQL, Spatie Permission 6.25, 4 motores de PDF, Mix 5 + Webpack 4, scraper Python a escrever diretamente nas tabelas `radar_*`; fila `sync`, sem Jobs, sem eventos de domínio, sem CI.
+1. Stack: Laravel 12.70 / PHP ≥8.2 / MySQL, Spatie Permission 6.25, 4 motores de PDF (2 depois de `1e52c53`), Mix 5 + Webpack 4, scraper Python a escrever diretamente nas tabelas `radar_*`; fila `sync`, sem Jobs, sem eventos de domínio, sem CI.
 2. 77 models em `app/Models`; nenhum usa SoftDeletes; 6 observers; regras de negócio importantes estão dentro dos models (`ConvertedProposal`, `Expense`, `Client`).
 3. Permissões em duas camadas (Spatie + catálogo `config/permissions.php`), mas `PERMISSIONS_ENFORCE` está desligado por omissão, pelo que só regista; a única barreira dura é `RestrictAngariadorArea` e verificações nos controllers Mobile.
 4. Pipeline financeiro encadeado: `ConvertedProposal`/`Sale`/`V3Vehicle` → `Expense` → `FinancialMovement`; os dois últimos duplicam montantes, e `source_type/source_id` é pseudo-polimórfico.
@@ -649,3 +649,27 @@ Ordem sugerida: primeiro o que corrige dados (P1-P3), depois consolidação (P4-
 8. Legado: `Vehicle` V1 ainda ligado a sales/tasks/expenses/legalizations/observer; ~12 controllers V1 sem rota; models mortos (`Car`, `ProposedCar`, `ImportSimulator`, `MenuItem`/`_Menu` sem migration).
 9. Drift repositório/produção: colunas só existentes em produção (`clients.owner_id`, `users.commission_fixed_value`, `converted_proposals.owner_id`) e remendos `ensure_*`; faltam índices em `expenses`, `clients`, `tasks`, `v3_vehicles`.
 10. Propostas P1-P10 (observer V3, FKs com limpeza prévia de órfãos, relações em falta, consolidação Expense/FinancialMovement com morphMap, retirada do V1 em 3 fases, enums, fila `database`, índices, ligar enforce por fases, CI/higiene) — nada implementado; qualquer migration exige validação em cópia e `php artisan migrate` manual em produção.
+
+---
+
+## Alterações após a auditoria
+
+Esta análise descreve o repositório à data da auditoria. O que mudou desde então (commits em `git log`), e o que **não** mudou:
+
+| Commit | Impacto na arquitetura |
+|---|---|
+| `00eb765` | Segurança: webhook, SSRF, uploads de Definições, filemanager atrás de `restrictAngariador`, proteção de admins em `UserV2Controller`; `users/*.yaml` fora do índice |
+| `73f68de` | Rotas públicas mortas removidas ou redirecionadas (`routes/frontend.php`) |
+| `ee9af9b` | `V3VehicleController::storeSale` transacional; IVA de despesas pela fonte única `MovementService::computeVatFields`; `V3Vehicle::generateReference` pelo maior sufixo |
+| `9616cc9` | `ProposalObserver` com envio de emails no fim e em `try/catch`; `ProposalService::create` numa transação; `ImportController` sem `$request->all()` |
+| `7e991a7` | `Kernel::protegido()` (`withoutOverlapping` + log de falha); deduplicação por cache em lembretes e alertas; `mail.bcc_address` |
+| `86550ca` | `App\Support\CsvSanitizer`, `App\Support\NewsletterLinks` (URLs assinadas), `App\Mail\NewsletterConfirmation`, `RichText::sanitize` com HTMLPurifier |
+| `5d2a3be` | `ImageOptimizerService::storeOptimized`; chave de cache da listagem pública só com filtros; `DashboardV2Controller::monthlyCounts` |
+| `1e52c53` | 40 ficheiros removidos (cópias, `.bak`, `.DS_Store`, `soup_debug.html`); `ProposalController::downloadPdf`; `config/snappy.php`; `laravel-snappy`, `browsershot`, `legacy-factories` e o script Statamic do `composer.json` |
+| `3bb96ac` | `MovementService::summary` (saldo de abertura do ano, pendentes separados, cêntimos) e `update/delete` com comprovativos pós-commit; `Proposal::isAccepted` ignora canceladas; `ProposalAcceptanceService` liberta a convertida cancelada; `ClientMergeService` com `plan()` dentro da transação; `SaleCalculator`, `ServiceTranches`, `GeocodingService::lookup`, `SyncGoogleReviews` |
+
+Nenhuma migration foi criada nem o esquema da BD mudou; não é preciso correr `php artisan migrate` por causa destes commits.
+
+**Continua como descrito:** fila `sync` sem `app/Jobs`, `PERMISSIONS_ENFORCE` desligado, eliminação de cliente/viatura com órfãos (4.4 pontos 1 a 8), FKs e índices em falta, CSP em report-only, drift entre repositório e produção, `Expense` vs `FinancialMovement`, legado V1 (em curso).
+
+**Em curso noutros trabalhos (não considerar feito):** limpeza V1, queries do layout, vendas V3 no menu, Modelo 9 duplicado, simulador de custos, consignação, rascunhos de notícias, SEG-012/015/017, testes novos.

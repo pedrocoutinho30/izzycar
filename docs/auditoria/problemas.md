@@ -2,6 +2,23 @@
 
 Revisão estática (ver README). Parte A: segurança e autorização (SEG-xxx). Parte B: lógica, dados e integrações (LOG-xxx). Testes existentes correram em sqlite em memória: 764 passaram, 1 falhou (ExampleTest, já conhecido).
 
+## Estado actual das correções (revisão de 2026-10-31)
+
+O texto de cada achado descreve o código **à data da auditoria**; cada um ganhou uma linha `Estado:` logo a seguir ao título, com o commit e o que falta. Fontes: `git log` desde `00eb765` (os commits `00eb765` a `73df400` foram feitos antes do commit dos documentos `f9f85fd`, que por isso os apanhou ainda por corrigir; `86550ca` a `3bb96ac` vieram depois). A suite passou de 764 para 872 testes passados, com a mesma falha conhecida (`ExampleTest`).
+
+| Estado | Quantidade | Itens |
+|---|---|---|
+| Corrigido | 15 | SEG-003 (00eb765), SEG-004 (00eb765), SEG-009 (9616cc9), SEG-010 (73df400), SEG-011 (86550ca), SEG-013 (86550ca), LOG-001 (7e991a7), LOG-003 (ee9af9b), LOG-005 (ee9af9b), LOG-006 (9616cc9), LOG-008 (3bb96ac), LOG-010 (9616cc9), LOG-011 (7e991a7), LOG-015 (3bb96ac), LOG-017 (3bb96ac) |
+| Parcial | 13 | SEG-002, SEG-005, SEG-006, SEG-007, SEG-008, SEG-018, LOG-004, LOG-007, LOG-009, LOG-012, LOG-013, LOG-014, LOG-018 |
+| Em curso | 3 | SEG-012, SEG-015, SEG-017 |
+| Aberto | 5 | SEG-001, SEG-014, SEG-016, LOG-002, LOG-016 |
+| **Total** | **36** | |
+
+Itens marcados "Em curso" estão a ser tratados noutros trabalhos em paralelo e **não** devem ser lidos como feitos; serão atualizados no fim. Comparação por gravidade: das 2 altas de segurança, nenhuma está resolvida (SEG-001 aberto, SEG-002 parcial); das 2 altas de lógica, LOG-001 está corrigida e LOG-002 aberta.
+
+Legenda de commits: `00eb765` webhook/SSRF/uploads/filemanager/admins; `73f68de` site público; `8da6d89` dashboard (mês com ano); `ee9af9b` IVA/venda/referência; `9616cc9` clientes/observer/importação; `7e991a7` agendador; `73df400` symfony/mime e `users/`; `86550ca` CSV/newsletter/HTML; `5d2a3be` desempenho; `1e52c53` limpeza; `3bb96ac` financeiro e integrações.
+
+
 ---
 
 # Auditoria IzzyCar - Segurança e autorização
@@ -17,6 +34,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 ## Altas
 
 ### SEG-001 - `PERMISSIONS_ENFORCE` desligado: o catálogo de permissões não bloqueia nada
+- **Estado:** Aberto. `PERMISSIONS_ENFORCE` continua a `false` por omissão (`config/permissions.php`); nada mudou. Falta analisar o log `would_block`, ligar por fases e acrescentar a verificação do dono nos controllers desktop. Depende do valor real em produção e de decisão do Pedro.
 - **Gravidade:** alta. **Confiança:** confirmado (código); o impacto concreto depende de que perfis/utilizadores existem em produção.
 - **Evidência:** `config/permissions.php:33` (`'enforce' => env('PERMISSIONS_ENFORCE', false)`); `app/Http/Middleware/AuthorizeResource.php:40-62` (com enforce desligado só faz `Log::warning('would_block')` e chama `$next`); grupo de rotas `routes/web.php:106` (`auth`, `restrictAngariador`, `authorizeResource`); `app/Http/Middleware/RestrictAngariadorArea.php` (só barra o utilizador "angariador puro").
 - **Cenário:** qualquer utilizador autenticado com pelo menos um perfil que não seja só "angariador" (por exemplo um perfil "cms", ou um comercial com `leads.view.own`) alcança TODAS as rotas de `/gestao`: utilizadores (`admin.v2.users.*`), perfis (`admin.v2.roles.*`), definições, movimentos financeiros, relatórios, exportações de leads/clientes, ficheiros privados, rotas `admin_only` (CMS de páginas, `page-contents`, `menus`, `email-preview`, `ad-searches`) e impersonation. Só o código das rotas mobile e do portal angariador verifica o dono do registo; os controllers desktop (`LeadV2Controller::show/updateStatus/convert/destroy`, `ClientV2Controller`, `ProposalV2Controller`) fazem `findOrFail($id)` sem filtro de dono, pelo que o âmbito "próprios" não existe no desktop.
@@ -27,6 +45,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Esforço:** médio (1-3 dias, o grosso é afinar perfis). **Dependências:** decisão do Pedro sobre perfis reais; memória do projeto diz que o refactor de permissões granulares está pendente.
 
 ### SEG-002 - Ficheiro versionado com hash de password e email pessoal (`users/`), e restos de outro CMS na raiz
+- **Estado:** Parcial. O ficheiro `users/*.yaml` saiu do índice git em `00eb765` e `/users/` ficou no `.gitignore` em `73df400` (`git ls-files users` devolve vazio). O hash continua no histórico git e a password não foi trocada (não verificável daqui). `please`, `server.php`, `retomas`, `plataforma vendas`, `info-faq*`, `info-metricas`, `info-transportes.md`, `info-venda` e `AutoScoutSearch/*.csv` continuam rastreados (por decidir com o Pedro). `scripts/soup_debug.html` foi removido em `1e52c53`. Falta: trocar a password, decidir sobre reescrever o histórico.
 - **Gravidade:** alta. **Confiança:** confirmado (ficheiro rastreado por git).
 - **Evidência:** `git ls-files users` devolve `users/<email>.yaml` (3 chaves: `name`, `id`, `password_hash`); `please` (CLI de outro framework, rastreado), `server.php`, `retomas` (nome de ficheiro, mas contém notas de esquema), `plataforma vendas`, `info-*`, `AutoScoutSearch/*.csv` e `scripts/` (scrapers, listas, `soup_debug.html`) também versionados. `.gitignore` não cobre `users/`.
 - **Cenário:** quem tiver acesso ao repositório (colaboradores, forks, backups, histórico git, clone no servidor) obtém o hash de uma conta, potencialmente reaproveitada noutro serviço, e um email pessoal. Um hash bcrypt é crackável offline se a password for fraca. O mesmo ficheiro vive no histórico mesmo que seja apagado agora.
@@ -41,6 +60,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 ## Médias
 
 ### SEG-003 - Webhook WhatsApp: HMAC calculado com segredo vazio se `WHATSAPP_APP_SECRET` não estiver definido
+- **Estado:** Corrigido em `00eb765`. `VerifyWhatsAppSignature` recusa (403, com `Log::error`) se `WHATSAPP_APP_SECRET` estiver vazio. Falta apenas, e é menor, o `verify()` do `WhatsAppWebhookController` continuar a comparar `hub_verify_token` com `===` sem exigir token não vazio (`WhatsAppWebhookController.php:26`). Testes em `SegurancaCorrecoesTest`.
 - **Gravidade:** média. **Confiança:** suspeito (depende do `.env` de produção, que não li).
 - **Evidência:** `app/Http/Middleware/VerifyWhatsAppSignature.php:20-24` (`hash_hmac('sha256', corpo, (string) config('services.whatsapp.app_secret'))` sem verificar que o segredo existe); `config/services.php:46-51`; `routes/api.php:34-39`; `.env.example` lista `WHATSAPP_APP_SECRET=` vazio.
 - **Cenário:** com segredo vazio, um atacante calcula `hash_hmac('sha256', $corpo, '')` e passa a assinatura. O endpoint `POST /api/whatsapp/webhook` cria `PreLead` (pendentes de aprovação) e escreve texto livre na BD.
@@ -51,6 +71,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Esforço:** baixo (< 1 h). **Dependências:** confirmar o `.env` de produção.
 
 ### SEG-004 - SSRF no "importar de anúncio": validação do domínio com `str_contains`
+- **Estado:** Corrigido em `00eb765`. `VehicleListingImportService` só aceita `https` e um host exato do AutoScout24 (regex com lista de TLD), e o Guzzle passa a `allow_redirects => false`. `autoscout24.evil.tld` já não passa. O endpoint não valida IPs privados porque o host é de lista fechada. Testes em `SegurancaCorrecoesTest`.
 - **Gravidade:** média. **Confiança:** confirmado (código).
 - **Evidência:** `app/Services/VehicleListingImportService.php:19-23` (`str_contains($host, 'autoscout24.')`) e `:42-47` (Guzzle `get($url)` com redirects por omissão); rota `routes/web.php:259` (`admin.v2.proposals.importFromListing`), validação só `url|max:1000` em `ProposalV2Controller.php:281-285`.
 - **Cenário:** um URL como `http://autoscout24.exemplo-do-atacante.tld/...` passa o teste e o servidor faz o pedido; o servidor do atacante pode redireccionar para `http://169.254.169.254/` ou serviços internos. O corpo só é devolvido quando contém `__NEXT_DATA__`, o que torna a exfiltração limitada (SSRF quase cego), mas permite sondar a rede interna.
@@ -61,6 +82,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Esforço:** baixo.
 
 ### SEG-005 - Push subscription sem validação do `endpoint` (SSRF)
+- **Estado:** Parcial. `PushSubscriptionController::store` passa a exigir `url:https` e `max:500` (`00eb765`). Falta a lista de hosts de push conhecidos (`fcm.googleapis.com`, `*.push.apple.com`, etc.); um `https://` interno continua a ser aceite.
 - **Gravidade:** média/baixa. **Confiança:** suspeito.
 - **Evidência:** `app/Http/Controllers/Admin/PushSubscriptionController.php:17-26` (`'endpoint' => ['required','string']`); rota partilhada (`config/permissions.php`, `admin.v2.push-subscriptions.*`).
 - **Cenário:** um utilizador autenticado regista como endpoint um URL interno; ao enviar notificações (`PushNotifier::notifyStaff`) o servidor faz POST a esse URL.
@@ -69,6 +91,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Validar:** teste com endpoint `http://localhost` rejeitado. **Esforço:** baixo.
 
 ### SEG-006 - HTML sem sanitização em conteúdo do site (XSS armazenado) com CSP só em report-only
+- **Estado:** Parcial. `RichText::display()` passa a sanitizar com o HTMLPurifier (lista branca de tags/atributos, sem `script`, `on*`, `javascript:`), antes de recolorir (`86550ca`; testes `RichTextSanitizeTest`, `RichTextTest`). O JSON-LD das notícias deixou de usar `addslashes` (`73f68de`). Falta: `{!! $tableIsv !!}` em `cost-simulator/result.blade.php:115` continua sem sanitizar (origem `ImportSimulator`, por verificar), `{!! $item['a'] !!}` no manual, `PageContentController` continua com `PageContent::create($request->all())`, e a CSP continua só em report-only (SEG-016).
 - **Gravidade:** média. **Confiança:** confirmado (padrão); exploração exige conta do backoffice com acesso a conteúdo (ou webhook, SEG-003).
 - **Evidência:** `app/Support/RichText.php` só troca cores, não sanitiza; usos de `{!! RichText::display(...) !!}` em `resources/views/frontend/news-details.blade.php:113,138,168`, `import.blade.php:259,295,391,466`, `legalization.blade.php:172,193`, `partials/vertical-tabs.blade.php:313`, `horizontal-tabs.blade.php:42`, `accordion-mobile.blade.php:149`; `{!! $item['a'] !!}` em `admin/v2/manual/faq.blade.php:74`; `{!! $tableIsv !!}` em `frontend/cost-simulator/result.blade.php:115` (HTML gerado e guardado em `cost_simulators.isv_table`, derivado de `ImportSimulator` com input público); `PageContentController.php:24,29` (`PageContent::create($request->all())`); `ezyang/htmlpurifier` está instalado mas não é usado (`grep Purifier app` vazio). CSP: `config/security.php:31-33` (`'unsafe-inline'`) e report-only (`docs/seguranca-csp.md`).
 - **Cenário:** um utilizador do backoffice (ou conta comprometida) grava `<script>`/`onerror=` num campo de notícia/página; corre no browser de todos os visitantes, e do admin quando pré-visualiza. Para `isv_table`, rever se algum campo do pedido público entra no HTML sem escape em `ImportSimulator::calcular`.
@@ -79,6 +102,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Esforço:** médio.
 
 ### SEG-007 - Uploads públicos permitem SVG (ou nome controlado pelo cliente) no domínio principal
+- **Estado:** Parcial. `SettingV2Controller` (a rota ativa das Definições) valida `mimes:jpg,jpeg,png,webp,gif,ico` + `mimetypes` + 5 MB e grava com nome gerado, sem SVG e sem usar o nome do cliente; o apagar da imagem antiga só aceita caminhos `settings/` (`00eb765`). Falta: `NewsletterManagementController` (`:221,260`) ainda aceita `svg`; `PageController.php:426` ainda lista `svg` e usa o nome do cliente; `SettingController` V1 (sem rota) ainda tem `svg`; `config/lfm.php` inalterado.
 - **Gravidade:** média/baixa. **Confiança:** confirmado.
 - **Evidência:** `app/Http/Controllers/SettingController.php:94` e `Admin/SettingV2Controller` (`mimes:...svg...` para imagens de settings, disco `public`); `Admin/NewsletterManagementController.php:211,250` (`svg` em `newsletter-offers`, disco `public`); `PageController.php:~425-442` (extensões permitidas incluem `svg`, nome derivado do nome original em `files/`, sobrescreve ficheiros com o mesmo nome); `config/lfm.php` (`files` aceita `text/plain`, `pdf`). `public/.htaccess` só nega PHP em `storage/app/public/.htaccess`.
 - **Cenário:** um SVG com `<script>` carregado em `/storage/settings/x.svg` e aberto directamente executa JS na origem do site (o `<img>` não executa, a navegação directa sim). Combinado com nome previsível (`files/<slug>.ext`) permite substituir um ficheiro legítimo do CMS.
@@ -88,6 +112,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Validar:** teste de upload `.svg` devolve 422; ficheiros novos com nome aleatório. **Esforço:** baixo.
 
 ### SEG-008 - Laravel Filemanager acessível a qualquer utilizador autenticado, fora de `restrictAngariador`/`authorizeResource`
+- **Estado:** Parcial. O grupo `laravel-filemanager` passa a ter `restrictAngariador` (`00eb765`): o angariador deixa de lá chegar. Continua sem `authorizeResource`, `max_size` a 50 000 KB, `text/plain` e pasta partilhada ativos.
 - **Gravidade:** média. **Confiança:** confirmado (rotas e config).
 - **Evidência:** `routes/web.php:102-104` (`middleware => ['web','auth']` apenas); `config/lfm.php` (`allow_shared_folder` true, `disk` public, `max_size` 50000 KB, `text/plain` e `pdf` permitidos).
 - **Cenário:** um angariador aprovado (utilizador externo) abre `/laravel-filemanager`, lista, envia e **apaga** ficheiros da pasta partilhada (`shares`) e envia PDF/texto até 50 MB para o disco público.
@@ -97,6 +122,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Validar:** teste de 403 para angariador; CKEditor continua a funcionar para admin. **Esforço:** baixo.
 
 ### SEG-009 - Formulário público de importação grava `$request->all()` no modelo e aceita código de angariador livre
+- **Estado:** Corrigido em `9616cc9`. `ImportController` deixou de usar `$request->all()`: grava só os campos validados e de uma lista fixa, e o código de angariador só vale se existir em `users.referral_code` (senão é ignorado e não fica gravado). Os campos `created_by`, `proposal_id`, `origin` do pedido são ignorados. Testes em `AuditoriaLeadsClientesCotacoesTest`. Não foi tratada a sugestão de registar na timeline quando um cliente existente recebe dono pelo formulário.
 - **Gravidade:** média/baixa. **Confiança:** confirmado.
 - **Evidência:** `app/Http/Controllers/Frontend/ImportController.php:68` (`$formPropposalData = $request->all()`) e `:179` (`FormProposal::create($formPropposalData)`); `app/Models/FormProposal.php:9-47` (`fillable` inclui `proposal_id`, `created_by`, `origin`, `title`, `angariador_code`, `status`); só `status`, `client_id`, `angariador_code`, `version` são forçados depois. Atribuição de dono por `referral_code` em `:100-101,114-143`.
 - **Cenário:** qualquer visitante envia campos extra (`proposal_id`, `created_by`, `origin`) que acabam gravados; pode também associar-se a um código de angariador alheio para lhe "dar" a lead (ou, num cliente já existente sem dono, atribuir `owner_id`), o que gera comissões indevidas.
@@ -106,6 +132,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Validar:** teste que garante que `created_by`/`proposal_id` do pedido são ignorados. **Esforço:** baixo.
 
 ### SEG-010 - Dependência com aviso conhecido: `symfony/mime` 7.4.19
+- **Estado:** Corrigido em `73df400`. `symfony/mime` passou a 7.4.22 (`composer.lock`). `composer audit` voltou a correr nesta revisão: "No security vulnerability advisories found". `npm audit` não foi repetido.
 - **Gravidade:** média/baixa. **Confiança:** confirmado (`composer audit`).
 - **Evidência:** `composer audit` reporta PKSA-wtxr-p26d-nn42 / CVE-2026-45070 (injecção de cabeçalhos de email por nomes de parâmetros MIME com carateres inválidos); versão instalada 7.4.19, corrigida em 7.4.22. Outras versões relevantes: laravel/framework 12.70.1, guzzle 7.16.1, spatie/laravel-permission 6.25.0, dompdf 3.1.6, intervention/image 3.11.7, laravel-filemanager 2.13.0 (sem avisos reportados). `npm audit --offline`: 0 vulnerabilidades (com cache local; não verifica avisos novos).
 - **Cenário:** só explorável se nomes de parâmetros de anexos/cabeçalhos puderem ser controlados por um atacante (o projecto anexa ficheiros de consignação, `ConsignmentController`).
@@ -116,45 +143,53 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 ## Baixas
 
 ### SEG-011 - Exportações CSV/XLSX sem proteção contra injecção de fórmulas
+- **Estado:** Corrigido em `86550ca`. Novo `App\Support\CsvSanitizer` (prefixa `'` a células que comecem por `= + - @`, tab ou CR, preservando números e telefones) aplicado em `ExportController::csvRow` (a única escrita CSV em `app/`). O XLSX (`ExportService`) já escreve texto como `StringCell`, nunca como fórmula. Testes `CsvSanitizerTest`.
 - **Gravidade:** baixa/média. **Confiança:** confirmado.
 - **Evidência:** `app/Http/Controllers/Admin/ExportController.php:158-163` (`fputcsv` directo) e `app/Services/ExportService.php` (sem escape de células iniciadas por `=`, `+`, `-`, `@`); dados de origem pública (nome, email, mensagem do formulário).
 - **Cenário:** um visitante submete como nome `=HYPERLINK(...)`; o staff abre o ficheiro no Excel e a fórmula executa/faz pedidos.
 - **Correção:** prefixar com `'` (ou tabulação) qualquer valor de texto que comece por `= + - @` antes de escrever. **Validar:** teste unitário do helper. **Esforço:** baixo.
 
 ### SEG-012 - Anti-spam contornável e registo de angariador sem anti-spam
+- **Estado:** Em curso. A tratar noutro trabalho em paralelo; não está marcado como feito.
 - **Gravidade:** baixa. **Confiança:** confirmado.
 - **Evidência:** `app/Http/Middleware/BlockSpamSubmissions.php:23-27` (o tempo mínimo só conta se `_form_started > 0`; omitir o campo ou o honeypot ignora a verificação); `routes/web.php:91-93` (`/registo-angariador` só com `throttle:5,1`, sem `antispam`, e a validação `unique:users,email` permite enumerar emails registados).
 - **Correção:** tratar ausência de `_form_started` como suspeita, juntar CAPTCHA (Turnstile/hCaptcha) aos formulários públicos e ao registo, resposta genérica no registo. **Esforço:** baixo/médio.
 
 ### SEG-013 - `unsubscribe` público por GET, sem assinatura nem throttle
+- **Estado:** Corrigido em `86550ca`. `/newsletter/unsubscribe` exige URL assinada (`hasValidSignature`, página 403 explicativa sem assinatura válida), com `throttle:10,1`; só avisa a administração e só regista quando o consentimento muda de facto; o log passa a `client_id`. Os emails da newsletter usam `NewsletterLinks::unsubscribe()` (link assinado, sem expirar). Acrescentado double opt-in: `subscribe` já não liga `newsletter_consent`, envia `NewsletterConfirmation` com link assinado (7 dias, `newsletter.confirm`), e `doSend` valida consentimento e email no servidor. Testes `NewsletterSecurityTest`. Nota: emails já enviados com o link antigo (sem assinatura) deixam de funcionar e mostram a página de ajuda.
 - **Gravidade:** baixa. **Confiança:** confirmado.
 - **Evidência:** `routes/web.php:95-96`; `Admin/NewsletterController.php:18-50` (altera `newsletter_consent` por email sem prova de posse, e envia sempre um email ao admin; regista o email em log).
 - **Cenário:** qualquer pessoa retira o consentimento de terceiros e gera emails ao admin em ciclo (sem rate limit).
 - **Correção:** `URL::signedRoute` (middleware `signed` já existe em `app/Http/Middleware/ValidateSignature.php`) nos links dos emails, `throttle`, e não registar o email completo. **Esforço:** baixo.
 
 ### SEG-014 - Sessão, cookies e proxies: valores por omissão
+- **Estado:** Aberto. Configuração de sessão, cookies e proxies inalterada; depende do `.env` de produção.
 - **Gravidade:** baixa. **Confiança:** suspeito (depende do `.env`).
 - **Evidência:** `config/session.php:49` (`encrypt => false`), `:169` (`secure => env('SESSION_SECURE_COOKIE')` sem omissão `true`), `SESSION_DRIVER` omissão `file`, `SESSION_LIFETIME` 120; `app/Http/Middleware/TrustProxies.php` (`$proxies` nulo: atrás do proxy da Hostinger `$request->ip()` pode ser o IP do proxy, anulando o `throttle` por IP e o log de IPs); `public/.htaccess` HSTS sem `includeSubDomains`.
 - **Correção:** `SESSION_SECURE_COOKIE=true`, considerar `SESSION_ENCRYPT=true`, definir `$proxies` (ou `'*'` se o hosting for sempre atrás de proxy) e verificar com `request()->ip()` em staging. **Esforço:** baixo. **Atenção:** testar login após alterar cookies seguros.
 
 ### SEG-015 - Ficheiros privados: leitura por qualquer perfil do backoffice e fallback para o disco público
+- **Estado:** Em curso. A tratar noutro trabalho em paralelo; não está marcado como feito. Continua pendente o `files:move-to-private --apply` em produção.
 - **Gravidade:** baixa. **Confiança:** confirmado.
 - **Evidência:** `config/permissions.php` (`admin.v2.files.show` em `shared`); `app/Services/PrivateFiles.php:47-60` (`disco()` procura em `local` e depois em `public`); docs/ficheiros-privados.md (passo de `files:move-to-private --apply` por fazer em produção, não verificável daqui). O `PrivateFiles::resposta` em si está bem protegido (whitelist de tipos, `..` rejeitado, `realpath`, `nosniff`, `Cache-Control: private`); downloads de documentos de legalização/cotações convertidas verificam que o documento pertence ao pai.
 - **Cenário:** qualquer perfil não angariador (ex. "cms") lê fotos de retomas, comprovativos e anexos financeiros; enquanto o comando não for aplicado, os ficheiros antigos continuam em `/storage/...` com URL directo (nomes aleatórios de `store()`, mas sem autenticação).
 - **Correção:** exigir permissão por tipo (`movements.view`, `commissions.view`, etc.) em vez de `shared`; correr `php artisan files:move-to-private` (dry-run) e depois `--apply` em produção. **Validar:** `/storage/retoma/...` devolve 404. **Esforço:** baixo.
 
 ### SEG-016 - CSP em modo report-only com `'unsafe-inline'`; endpoint `/csp-report` público
+- **Estado:** Aberto. CSP continua em report-only com `unsafe-inline`; plano de nonces inalterado.
 - **Gravidade:** baixa. **Confiança:** confirmado (documentado em `docs/seguranca-csp.md`).
 - **Evidência:** `app/Http/Middleware/ContentSecurityPolicyReportOnly.php`, `config/security.php:31-33,64` (`img-src https:`), `VerifyCsrfToken::$except = ['csp-report']`, `CspReportController` (limita 8 KB, 5 relatórios por pedido, 300 caracteres por campo, `throttle:30,1`; log sem query string: bem feito).
 - **Cenário:** a CSP não bloqueia XSS (ver SEG-006). O endpoint de relatórios pode ser inundado dentro do rate limit (30/min por IP) enchendo `csp.log` (rotativo 14 dias): impacto reduzido.
 - **Correção:** plano já descrito no doc (nonces, remover handlers `on*=`, passar a bloqueio). **Esforço:** alto (muitos scripts inline).
 
 ### SEG-017 - Registo de dados pessoais em logs
+- **Estado:** Em curso. A tratar noutro trabalho em paralelo; não está marcado como feito. O que já mudou de passagem em `86550ca`: os logs da newsletter (`NewsletterController`, `NewsletterManagementController`) passaram a registar `client_id` em vez do email. Mantém-se o nome e email no AuditLog de login/logout (`AppServiceProvider`).
 - **Gravidade:** baixa. **Confiança:** confirmado.
 - **Evidência:** `Admin/NewsletterController.php:34,48,90` (emails em `Log::info`), `Admin/NewsletterManagementController.php:178,181`, `AppServiceProvider.php:61,65` (nome+email no AuditLog de login/logout; aceitável como auditoria mas acessível a quem veja o log de auditoria). `storage/logs` está no `.gitignore`.
 - **Correção:** registar `client_id` em vez de email; definir retenção dos logs (`LOG_DAILY_DAYS`). **Esforço:** baixo.
 
 ### SEG-018 - Código legado/inactivo com superfície de ataque
+- **Estado:** Parcial. As cópias `* copy.php` e `*.php.bak` de `resources/views` foram removidas em `1e52c53` (20 views). Mantém-se `AdSearchController.php:421` com `dd()`, os controllers V1 (`PageContentController`, `SettingController`, `ProposalController`…) e a rota `ad-searches.*`. Rever na limpeza de V1 (em curso).
 - **Gravidade:** baixa. **Confiança:** confirmado.
 - **Evidência:** `app/Http/Controllers/AdSearchController.php:421` (`dd()` com `getErrorOutput()` do processo Python, rota `ad-searches.*` ainda registada, só admin mas sem enforce, SEG-001); `PageContentController` (`$request->all()`), `SettingController`/`ProposalController` V1 com validação de SVG, `*.blade.php.bak` e vistas "copy" em `resources/views` (ficheiros com `{!! !!}` não usados); `Admin/RadarController::store` grava YAML em `scarperAutoscout/searches/` (nome validado por regex `^[a-z0-9]+(-[a-z0-9]+)*$`, sem traversal: bem), `AutoscoutScraperRunner` usa `escapeshellarg` (bem). Rota `POST v2/financial/seed` protegida por `role:admin` (bem). `CORS` `allowed_origins: ['*']` em `api/*` (endpoints só devolvem dados públicos de marcas/anos/extras).
 - **Correção:** apagar controllers/vistas V1 e `.bak` não usados (seguir a regra do CLAUDE.md de não manter V1), tirar `dd()`. **Esforço:** baixo.
@@ -233,6 +268,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 ## Problemas
 
 ### LOG-001 — Lembrete de follow-up enviado 60 minutos antes e sem deduplicação
+- Estado: Corrigido em `7e991a7`. Janela semiaberta `[início do minuto, início do minuto seguinte)` em vez de `+60 min`, deduplicação por chave de cache atómica (`Cache::add`, cliente + instante do follow-up, TTL 180 min), `try/catch` com `report()` em cada envio e `withoutOverlapping(10)` no Kernel. Em vez da coluna `followup_reminded_at` (que exigia migration) usou-se a cache; fica a nota de que a deduplicação depende de a cache persistir entre execuções (driver `file` serve num só servidor). A semântica agora é "no minuto exato". Interage com LOG-002. Testes `ComandosAgendadosTest`.
 - Gravidade: Alta. Confiança: confirmado.
 - Evidência: `app/Console/Commands/SendFollowupReminder.php:17-24`. O código faz `$agora->addMinutes(60)` com o comentário "Ignorar segundos", e depois `whereBetween('next_followup_at', [$agora, $limite])`. A agenda é `everyMinute()` em `app/Console/Kernel.php:39`.
 - Cenário:
@@ -248,6 +284,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 a 1 dia. Dependências: migration para a coluna nova (dizer que falta `php artisan migrate` em produção) e decisão do Pedro sobre a semântica do lembrete.
 
 ### LOG-002 — Fuso horário por omissão `UTC`
+- Estado: Aberto. `config/app.php:70` continua com `APP_TIMEZONE` por omissão `UTC` e `.env.example` não define a variável. Falta definir `APP_TIMEZONE=Europe/Lisbon` em produção e decidir o que fazer aos dados já gravados. Atenção: ao remover o `+60 min` (LOG-001), os lembretes passam a ser coerentes com a hora guardada; se a hora de `next_followup_at` for local mas a app correr em UTC, o desfasamento passa a ser da própria app e não do lembrete.
 - Gravidade: Alta. Confiança: suspeito (depende do `.env` de produção).
 - Evidência: `config/app.php:70` (`env('APP_TIMEZONE', 'UTC')`). Não existe `APP_TIMEZONE` em `.env` nem em `.env.example`. Não há `date_default_timezone_set` nem `Europe/Lisbon` em `app/`, `config/` ou `bootstrap/`.
 - Cenário: `now()`, `today()`, `dailyAt('00:00')`, `dailyAt('09:00')`, `reports:monthly` à `01:00` e `whereDate('next_followup_at', today())` (`LeadV2Controller.php:64-69`) correm em UTC. Em Portugal há 0 h ou 1 h de diferença consoante o horário de verão. Datas guardadas e mostradas ficam deslocadas. "Hoje" no dashboard muda à 01:00 local no verão. Os 48 h de `isCommissionOverdue` e a validade da cotação variam uma hora. O hack de +60 min do LOG-001 sugere que alguém já notou o desfasamento.
@@ -258,6 +295,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 dia, mais revisão de dados. Dependências: decisão sobre conversão dos registos existentes. Interage com LOG-001.
 
 ### LOG-003 — IVA das despesas V3 calculado sobre o valor bruto
+- Estado: Corrigido em `ee9af9b`. `V3VehicleController::storeExpense` passa a chamar `MovementService::computeVatFields` (IVA incluído no bruto). 123 € a 23% dá 23,00 € de IVA e 100,00 € de líquido. Testes `V3VehicleFinanceFixesTest`. Os registos já gravados com a fórmula errada não foram reconciliados (exige script revisto e autorização do Pedro para dados em produção).
 - Gravidade: Média. Confiança: confirmado.
 - Evidência: `app/Http/Controllers/Admin/V3VehicleController.php:244-246`: `$vatAmount = round($amountGross * $vatRate / 100, 2)`. Em contraste, `MovementService::computeVatFields` (`MovementService.php:123-125`) e `SaleCalculator` (linha 45-46) usam `gross - gross/(1+rate)`.
 - Cenário: despesa de 123,00 € a 23 % de IVA. O correto é IVA 23,00 e líquido 100,00. O controller grava IVA 28,29 e líquido 94,71. Para 100,00 € a 23 % dá IVA 23,00 e líquido 77,00, em vez de 18,70 e 81,30.
@@ -268,6 +306,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 dia, mais reconciliação dos dados. Dependências: autorização do Pedro para corrigir dados em produção.
 
 ### LOG-004 — Registo de venda sem transação, duplo clique e `vat_type` livre
+- Estado: Parcial. Em `ee9af9b`: `storeSale` faz tudo numa `DB::transaction` com `lockForUpdate` na viatura (duplo clique deixa de duplicar), e `vat_type` é validado com `in:margem,geral_23,geral_13,geral_6,isento` em `storeSale` e `calculatePreview`. Falta: índice único em `sales.v3_vehicle_id` (exige migration e verificação de duplicados), `destroySale` continua a repor sempre `em_stock` (`V3VehicleController.php:560`) e o `vat_type` não é guardado na `Sale`.
 - Gravidade: Média. Confiança: confirmado.
 - Evidência: `V3VehicleController.php:489-545`.
   - A verificação `$vehicle->sales()->exists()` e o `Sale::create` não estão numa transação.
@@ -287,6 +326,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 1 dia. Dependências: verificar duplicados existentes em `sales` antes de criar o índice único.
 
 ### LOG-005 — Referência de viatura gerada por `count() + 1`
+- Estado: Corrigido em `ee9af9b`. `V3Vehicle::generateReference()` usa o maior sufixo do ano + 1 e avança enquanto a referência existir. Cobre a eliminação intermédia; a corrida entre dois pedidos simultâneos fica atenuada, não eliminada (continua a depender do índice único e sem repetição em `UniqueConstraintViolationException`). Testes `V3VehicleFinanceFixesTest`.
 - Gravidade: Média. Confiança: confirmado.
 - Evidência: `app/Models/V3Vehicle.php:67-72`. `V3Vehicle` não usa `SoftDeletes` e `destroy` faz `delete()` definitivo (`V3VehicleController.php:117-127`). A coluna `reference` é única (`create_v3_vehicles_table.php:13`).
 - Cenário:
@@ -299,6 +339,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 dia. Dependências: nenhuma.
 
 ### LOG-006 — Emails síncronos no observer: falha deixa a cotação a meio
+- Estado: Corrigido em `9616cc9`. `ProposalObserver::notifyProposalSent` faz primeiro o que é BD (timeline e follow-up) e só depois envia os emails, cada um em `try/catch` com `Log::error` sem dados pessoais; se falharem, regista uma `LeadActivity` de perigo a avisar. Não foi passado a fila (`Mail::queue`), que continua em aberto (plano 3.1). Testes `AuditoriaLeadsClientesCotacoesTest`.
 - Gravidade: Média. Confiança: confirmado.
 - Evidência: `app/Observers/ProposalObserver.php:20-23, 49-52, 84-99`. Em `updated`, `notifyProposalSent` envia `Mail::to(...)->send(...)` sem `try/catch`, ao cliente e depois ao angariador. O envio é síncrono, sem `ShouldQueue`. O mesmo vale para `created` com estado "Enviado".
 - Cenário:
@@ -314,6 +355,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 dia. Dependências: confirmar `QUEUE_CONNECTION` e se existe worker em produção.
 
 ### LOG-007 — Cotação convertida cancelada não liberta a cotação; estados sem regras de transição
+- Estado: Parcial. Em `3bb96ac`: `Proposal::isAccepted()` ignora convertidas canceladas e `ProposalAcceptanceService::accept` desliga (`proposal_id = null`) a convertida cancelada anterior, por causa do índice único, para a cotação poder ser aceite de novo; `ConvertedProposal::normalizeStatus()` unifica as grafias "Cancelada"/"Cancelado" só na leitura. Falta: política de transições de estado (reativar uma cancelada continua livre, tranches e movimentos por tratar), enum único e os ENUMs MySQL por confirmar. Testes `ConvertedProposalCancelledReleaseTest`.
 - Gravidade: Média. Confiança: suspeito (depende da intenção do negócio).
 - Evidência:
   - `ProposalAcceptanceService.php:73-80`: uma cotação aceite não muda de estado, e diz "para a anular, cancele a cotação convertida".
@@ -330,6 +372,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 1 a 2 dias. Dependências: decisão de negócio e migração de estados existentes.
 
 ### LOG-008 — Totais e saldos dos movimentos enganadores
+- Estado: Corrigido em `3bb96ac`. `MovementService::summary` passa a: abrir o ano com `INITIAL_BALANCE` mais todos os movimentos anteriores ao ano; separar `pendingIncome` e `pendingExpenses` (e `pending` é o líquido); fazer as somas em cêntimos inteiros; devolver `openingBalance`/`openingBalanceReal`. Testes `MovementServiceSummaryTest`. Ficam por decidir com o Pedro: se o saldo de abertura de 15 757,28 € vale antes de 2025 (a constante continua no código, não nas `settings`) e a semântica de totais que incluem pendentes.
 - Gravidade: Média. Confiança: confirmado (o código), com intenção a validar.
 - Evidência: `app/Services/MovementService.php:21, 148-180`.
   - O saldo parte sempre de `INITIAL_BALANCE = 15757.28` (constante float no código) em cada ano escolhido (linha 160 e seguintes). Os movimentos de anos anteriores não entram. O doc-comment admite "acumulam o ano".
@@ -344,6 +387,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 a 1 dia. Dependências: confirmar com o Pedro a semântica pretendida.
 
 ### LOG-009 — Agendador sem proteção de sobreposição, servidor único nem tratamento de falhas
+- Estado: Parcial. Em `7e991a7` todas as tarefas do Kernel passam por `protegido()`: `withoutOverlapping(n)` com expiração e `onFailure` que regista no log. `commissions:overdue-alert` deixa de repetir a mesma comissão (cache, 7 dias). Falta: `onOneServer` (exige cache partilhada; ficou comentado no código), `try/catch` em `tasks:send-reminders`/`legalizations:send-tracking-emails`/relatórios, o `mkdir` de `SendMonthlyReport`, e o fuso (LOG-002).
 - Gravidade: Média. Confiança: confirmado.
 - Evidência: `app/Console/Kernel.php:22-67`. Não há `withoutOverlapping` nem `onOneServer` em `app/` ou `routes/` (grep sem resultados). Só `radar:refresh-active` usa `Cache::lock` à mão (`RefreshActiveRadarSearches.php:23`).
 - Cenário:
@@ -360,6 +404,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 a 1 dia. Dependências: saber quantos servidores e que driver de cache existe em produção.
 
 ### LOG-010 — Criação de cotação em várias escritas sem transação
+- Estado: Corrigido em `9616cc9`. `ProposalService::create` faz as escritas de BD numa `DB::transaction`; se falhar, apaga as variantes da imagem já gravada em disco; o estado final aplica-se fora da transação como antes. O resto de `create`/`update` continua por rever. Testes `AuditoriaLeadsClientesCotacoesTest`.
 - Gravidade: Média. Confiança: suspeito (li só o início de `create`).
 - Evidência: `app/Services/ProposalService.php:215-260`. O método cria a `Proposal`, grava atributos, guarda a imagem (ficheiro em disco), atualiza `FormProposal` e aplica o estado final, sem `DB::transaction`. Só `ProposalStatusNotAppliedException` está prevista para a falha do último passo.
 - Cenário: falha ao guardar a imagem ou ao atualizar o pedido depois de `Proposal::create`. A cotação fica criada pela metade, sem link ao pedido e sem estado final.
@@ -370,6 +415,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 dia. Dependências: rever o resto de `create`/`update` (não lido).
 
 ### LOG-011 — `radar:classify-trims` salta lotes
+- Estado: Corrigido em `7e991a7`. `ClassifyRadarListingTrims` passa a `chunkById`.
 - Gravidade: Baixa. Confiança: confirmado (padrão conhecido do Laravel).
 - Evidência: `app/Console/Commands/ClassifyRadarListingTrims.php:44-69`. Usa `chunk(25)` sobre `whereNull('trim_classified_at')` e atualiza `trim_classified_at` dentro do callback.
 - Cenário: `chunk` pagina por `offset`. Depois do 1.º lote atualizado, a página 2 salta 25 registos ainda por classificar. Em cada execução só cerca de metade é tratada. O resto fica para a seguinte (3 execuções por dia).
@@ -380,6 +426,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 15 minutos. Dependências: nenhuma.
 
 ### LOG-012 — Merge de clientes: contagens fora da transação e sem bloqueio
+- Estado: Parcial. Em `3bb96ac` o `ClientMergeService::merge` calcula contagens e campos a herdar dentro da `DB::transaction`, com `lockForUpdate` nos clientes, e só atualiza o `keep` depois de apagar os duplicados (email/telefone herdado é único). Falta confirmar as FKs reais para `clients` com outro nome (consulta de leitura em produção). Testes `ClientMergeServiceTest`.
 - Gravidade: Baixa. Confiança: suspeito.
 - Evidência: `app/Services/ClientMergeService.php:52-70, 76-117`. As contagens (`$moved`) e os campos a preencher são calculados antes de `DB::transaction`. Os registos não são bloqueados (`lockForUpdate`). A deteção das tabelas usa só a coluna literal `client_id`.
 - Cenário:
@@ -393,6 +440,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 dia. Dependências: lista de FKs em produção.
 
 ### LOG-013 — Dinheiro em `float` e IVA desconhecido tratado como isento
+- Estado: Parcial. Em `3bb96ac` o `SaleCalculator` arredonda a cêntimos em cada passo, a taxa do regime de margem passa a parâmetro (`$marginVatRate`, 23 por omissão) e `compute()` lança `InvalidArgumentException` para `vat_type` desconhecido; `normaliseVatType` continua a devolver `isento` para valores que não reconhece, mas regista `Log::warning`. Continua tudo em `float` (sem centavos inteiros nem bcmath). Testes `SaleCalculatorTest`. Falta confirmar com o contabilista as regras do regime de margem.
 - Gravidade: Baixa. Confiança: confirmado.
 - Evidência:
   - `app/Services/SaleCalculator.php:21-27, 31-37, 49-58`. Todos os cálculos usam `float` e `round` só no fim. `vatRateMap[$vatType] ?? 0.0` trata qualquer valor desconhecido como isento. `normaliseVatType` devolve `isento` por omissão (linha 99).
@@ -406,6 +454,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 1 dia. Dependências: confirmar com o contabilista as regras do regime de margem.
 
 ### LOG-014 — Geocoding e Google Reviews engolem erros
+- Estado: Parcial. Em `3bb96ac`: `GeocodingService::lookup()` distingue `ok`/`not_found`/`error` e regista o erro sem a morada; `SyncGoogleReviews` regista as falhas no log (sem tokens nem conteúdo) e usa `firstOrCreate` por `google_review_id`. Falta: `TransportQuoteController` ainda chama `geocode()` (devolve `null` nos dois casos), índice único em `google_review_id`, repetição para 429 em `RadarTrimPriceAiService` e o limite de 1 pedido/s do Nominatim. Testes `GeocodingServiceTest`, `SyncGoogleReviewsTest`.
 - Gravidade: Baixa. Confiança: confirmado.
 - Evidência:
   - `app/Services/GeocodingService.php:51-53`: `catch (\Exception $e) { return null; }` sem `Log`. Sem controlo de 1 pedido/s apesar do comentário de cabeçalho.
@@ -419,6 +468,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 dia. Dependências: nenhuma.
 
 ### LOG-015 — `ServiceTranches`: `pct2` inconsistente com `tranche2`
+- Estado: Corrigido em `3bb96ac`. `ServiceTranches::split` passa a `pct2 = 100 - pct1` (ignora `final_payment`), coerente com `tranche2`. Testes `ServiceTranchesTest`. Quem tiver `final_payment` diferente nas Definições deixa de ter esse valor refletido (decisão tomada no código; a Definição fica sem efeito).
 - Gravidade: Baixa. Confiança: confirmado.
 - Evidência: `app/Services/ServiceTranches.php:24-37`. `tranche2 = total - tranche1`, mas `pct2` vem de `final_payment` (por omissão `100 - pct1`).
 - Cenário: nas Definições, `init_payment=60` e `final_payment=50`. As tranches são 60 % e 40 %, mas `pct2` devolve 50. Quem mostrar as percentagens (página pública da cotação) mostra 60/50.
@@ -429,6 +479,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 15 minutos. Dependências: decisão sobre qual das duas definições manda.
 
 ### LOG-016 — Código V1 morto com `route()` para nomes inexistentes
+- Estado: Aberto. O código V1 morto e os `route()` inexistentes não foram tocados (a limpeza de V1 está em curso noutro trabalho). Só saíram em `1e52c53` as cópias e `.bak` de views, que também continham referências mortas. Os 111 nomes não resolvidos medidos na auditoria não foram recontados.
 - Gravidade: Baixa. Confiança: confirmado.
 - Evidência: o `route:list` tem 569 nomes. Do conjunto de `route('...')` usados em `app/` e `resources/` (574 nomes únicos), 111 não existem. Os não resolvidos vêm sobretudo de código V1 sem rota:
   - `app/Http/Controllers/UserController.php`, `RoleController.php`, `SettingController.php`, `ClientController.php`, `SupplierController.php`, `FormProposalController.php`, `ProposalController.php` e as vistas `resources/views/{users,roles,settings,clients,suppliers,proposals,form_proposal,converted_proposals}`.
@@ -443,6 +494,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 a 1 dia. Dependências: confirmar que nada depende deste código.
 
 ### LOG-017 — Anexos de movimentos alterados fora de transação
+- Estado: Corrigido em `3bb96ac`. `MovementService::update` guarda o comprovativo novo primeiro, atualiza a BD numa transação (se falhar, remove o novo) e só apaga o antigo depois do commit; `delete` também só apaga o ficheiro depois de o registo sair da BD. Testes `MovementServiceTest`.
 - Gravidade: Baixa. Confiança: confirmado.
 - Evidência: `app/Services/MovementService.php:77-98`. O anexo antigo é apagado antes de guardar o novo e antes do `update` da BD.
 - Cenário: se `PrivateFiles::guardar` ou o `update` falhar, o comprovativo antigo já foi apagado e a BD continua a apontar para ele. Se o `update` falhar depois de guardar o novo, fica um ficheiro órfão.
@@ -453,6 +505,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 dia. Dependências: nenhuma.
 
 ### LOG-018 — Email de BCC fixo no código
+- Estado: Parcial. O BCC passou para `config('mail.bcc_address')` (`MAIL_BCC_ADDRESS`, com o mesmo valor por omissão) em `7e991a7`. Falta `mail.admin_address`: continua sem existir em `config/mail.php`, e `SendFollowupReminder` e `SendOverdueCommissionAlert` ainda usam `config('mail.admin_address', env(...))` com `env()` fora de `config/`, caindo no fallback `geral@izzycar.com` (domínio `.com`, diferente do `.pt`). Decisão do Pedro pendente.
 - Gravidade: Baixa. Confiança: confirmado.
 - Evidência: `app/Services/ConvertedProposalService.php:73` com `->bcc('izzycarpt@gmail.com')`. Também `config('mail.admin_address', env(...))` chamado com `env()` fora de `config/` em `SendFollowupReminder.php:30` e `SendOverdueCommissionAlert.php:32`, o que devolve `null` com `config:cache` se a chave de config não existir.
 - Impacto: troca de destinatário exige alterar código. Com `config:cache`, o fallback `env()` deixa de funcionar.
@@ -470,6 +523,8 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 
 ## Resultado dos testes existentes
 
+**Atualização (2026-10-31, após as correções):** 872 testes passam e 1 falha (`ExampleTest`, a mesma, nunca escondida). O resultado abaixo é o da auditoria original.
+
 - Confirmado antes de correr: `phpunit.xml` usa `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`, `QUEUE_CONNECTION=sync`, `MAIL_MAILER=array`, `CACHE_DRIVER=array` e `SESSION_DRIVER=array`.
 - Comando: `php artisan test`. Duração: cerca de 40 s.
 - Resultado: 764 passaram, 1 falhou (5272 asserções).
@@ -477,6 +532,8 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Recomendação: deixar o `ExampleTest` a usar o trait da suite, ou removê-lo se já não tiver valor, em vez de o ignorar.
 
 ## Lacunas de cobertura de testes por módulo
+
+**Atualização:** a tabela abaixo mede a cobertura à data da auditoria. Entretanto foram acrescentados testes para `SaleCalculator` (`SaleCalculatorTest`), `ServiceTranches` (`ServiceTranchesTest`), `storeSale`/`storeExpense`/`generateReference` (`V3VehicleFinanceFixesTest`), comandos agendados (`ComandosAgendadosTest`), `ClientMergeService`, `GeocodingService`, `SyncGoogleReviews`, `MovementService::summary` multi-ano (`MovementServiceSummaryTest`), cotação cancelada (`ConvertedProposalCancelledReleaseTest`), segurança (`SegurancaCorrecoesTest`, `NewsletterSecurityTest`, `CsvSanitizerTest`, `RichTextSanitizeTest`), dashboard e cache pública. Sem teste continuam, entre outros, `ProposalAcceptanceService` (concorrência), relatórios `reports:*`, `RadarTrimPriceAiService`, `ClassifyRadarListingTrims` e o teste de `route('nome')` literais. Outros testes estão a ser escritos em paralelo.
 
 Contagem de ficheiros em `tests/` que mencionam cada símbolo (0 significa sem cobertura direta):
 
@@ -496,6 +553,8 @@ Contagem de ficheiros em `tests/` que mencionam cada símbolo (0 significa sem c
 | Rotas e `route()` | `PermissionCatalogTest` | Sem teste que verifique `route('nome')` literais |
 
 ## Ordem de correção sugerida
+
+**Atualização:** feitos LOG-001, 003, 005, 006, 008, 010, 011, 015, 017 e parciais 004, 007, 009, 012, 013, 014, 018. Continuam por fazer, por esta ordem: LOG-002 (fuso, depende do `.env` de produção), restos de LOG-004 (índice único, `destroySale`), LOG-009 (`onOneServer`, relatórios), LOG-016 e a decisão de `mail.admin_address` (LOG-018).
 
 1. LOG-002 e LOG-001 (fuso e lembretes), porque afetam o negócio todos os dias.
 2. LOG-004, LOG-005 e LOG-003 (vendas, referências e IVA), porque tocam em dinheiro e em erros 500.

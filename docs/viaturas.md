@@ -68,7 +68,7 @@ Ecrã de edição com separadores (`resources/views/admin/v3/vehicles/edit.blade
 
 ## Armadilhas
 
-- `generateReference()` usa `count`+1 por ano: apagar viaturas pode gerar referências repetidas **(por confirmar índice único)**.
+- `generateReference()` usa o maior sufixo do ano + 1 e avança enquanto a referência existir, por isso apagar viaturas já não repete referências. A coluna `reference` é única; dois pedidos simultâneos continuam a depender desse índice (sem repetição automática).
 - `expenses_total` conta movimentos sincronizados (`source_type` não nulo), mas o cálculo da venda exclui-os (`whereNull('source_type')`): os dois totais podem diferir. Movimentos só da legalização não entram em `expenses_total`.
 - Viaturas importadas ficam `reservado` e `show_online=false`: ao pôr `show_online`, publicam-se como reservadas.
 - `destroy` de viatura não avisa de vendas, despesas ou legalização **(por confirmar cascades nas migrations)**.

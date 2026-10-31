@@ -2,9 +2,36 @@
 
 Auditoria só de leitura ao código (Laravel 12), feita a 2026-10-31. Nada foi alterado no código, no `.env` ou na base de dados.
 
+## Estado actual (revisão de 2026-10-31): o que foi implementado e o que foi medido
+
+Três propostas foram implementadas em `5d2a3be` (perf), mais a correção do `whereMonth` em `8da6d89`. Distingue-se aqui **medido** de **estimativa**.
+
+**Medido** (contagem de queries em testes PHPUnit com sqlite em memória e dados de teste; são contagens, não tempos, e não substituem medição em produção com volume real):
+
+| Alteração | Antes | Depois | Onde se mediu |
+|---|---|---|---|
+| Dashboard V2 (`DashboardV2Controller::index`), queries por carregamento | 41 | 26 | `DashboardV2QueriesTest` (teto fixado em 26) |
+| Gráfico de propostas por mês (6 meses) | 6 queries | 1 | idem |
+| `chart-data` (intervalo de meses, 4 modelos) | 13 | 5 | idem |
+| Listagem pública `/viaturas` com `utm_source`, `fbclid`, `page` (cache hit) | cada query string nova era miss | 0 queries a `v3_vehicle*` | `PublicVehicleListingCacheTest` |
+| Upload de foto V3, exemplo do teste: 642 600 B para 16 470 B | | | `V3PhotoUploadOptimizationTest`. **É um caso extremo (imagem de teste com muito ruído, que comprime muito) e não é representativo** de fotos reais; não usar para estimar o ganho |
+
+Os números do dashboard (41 e 26) são do teste, com um conjunto de dados mínimo; o número em produção depende dos dados e dos ramos que se ativam. O alvo estimado da auditoria (~12-15 queries) **não foi atingido** (26).
+
+**Continua estimativa** (nada foi medido): tempos de resposta (ms) de qualquer página, peso real da listagem pública e LCP, ganho das fotos reais de viaturas (-85-90% é estimativa), tamanho de `storage/framework/cache`, efeito de índices (não foram criados), ganho da fila, ganho de `config:cache`/`route:cache`, CSS/JS/ícones, retenção de tabelas.
+
+**Implementado:**
+- 2.1 Dashboard: `whereMonth` sem ano corrigido (`8da6d89`); contagens de propostas, clientes e vendas agregadas por `SUM(CASE ...)`; leads sem atividade com `whereNotExists` e `limit(10)`; follow-ups atrasados/hoje/amanhã numa só query; gráficos mensais numa query por modelo (`monthlyCounts`), com intervalos sargáveis em vez de `whereYear`/`whereMonth` (`5d2a3be`). Falta: cache curta do bloco de estatísticas, `ReportDataService::legalizationsSnapshot` (`Legalization::all()`) e os `whereDate` restantes.
+- 2.3/2.8 Listagem pública: chave de cache só com os filtros `brand`, `model`, `year`, `fuel`, `price_max`, `km_max`; só a foto de capa fica em cache; `with` de fotos reduzido a colunas usadas (`5d2a3be`). Falta: cachear IDs/paginar, mudar o driver de cache.
+- 2.4 Selects de clientes: `select('id','name'[,'email'])` em `ProposalV2Controller` (`index`, `create`, `formViewData`, `edit`). Falta em `SaleV2Controller`, `V3VehicleController`, `AuditLogController`, e as listas de catálogo.
+- 3.2 Imagens: `ImageOptimizerService::storeOptimized` aplicado a `V3VehicleController::uploadPhoto` (lado maior 1920 px, qualidade 82, WebP se o GD suportar, original se o otimizado não for menor, original em caso de erro). Falta: variante de cartão, backfill das fotos existentes, `srcset`, recompressão de `public/img`, confirmar WebP no GD de produção.
+- `LeadV2Controller::index`: `whereDate(..., today())` trocado por `whereBetween` (`5d2a3be`).
+
+**Não implementado:** 2.2 índices (nada foi criado), 2.5 exports com `cursor`, 2.7 retenção, 3.1 fila, 3.3 CSS/JS, 3.5 produção e observabilidade.
+
 ## Limites desta auditoria (ler primeiro)
 
-- **Não há medições reais.** Não foi feito EXPLAIN, nem ligação à BD remota, nem pedidos HTTP. Todos os benefícios abaixo são **estimativa** (E) até serem medidos com o plano da secção 4.
+- **Não havia medições reais à data da auditoria** (as contagens de queries acima são posteriores e só de testes). Não foi feito EXPLAIN, nem ligação à BD remota, nem pedidos HTTP. Todos os benefícios abaixo são **estimativa** (E) até serem medidos com o plano da secção 4.
 - Tamanhos de ficheiros (`du`/`find`) são do **checkout local**; produção pode diferir (o `public/` do domínio é uma cópia separada, ver memória de deploy).
 - `.env` não foi lido (segredos). O `.env.example` diz `CACHE_DRIVER=file`, `SESSION_DRIVER=file`, `QUEUE_CONNECTION=sync`, `APP_DEBUG=true`, `LOG_LEVEL=debug`: **confirmar os valores reais em produção**.
 - Contagens de linhas/volumes de tabelas desconhecidos: onde se propõe índice, a prioridade depende de `COUNT(*)` real (plano de medição, passo M1).
@@ -18,10 +45,10 @@ Convenção: **[E]** = estimativa; esforço P (<2h), M (0,5-1 dia), G (>1 dia).
 
 | # | Proposta | Área | Impacto [E] | Esforço |
 |---|---|---|---|---|
-| 1 | Fotos V3 sem otimização (originais até 1,3 MB servidos tal e qual) | imagens | Alto (site público) | M |
-| 2 | Cache da listagem pública: chave por `md5(request->all())`, `get()` de tudo, `with('photos')` | cache/BD | Médio-alto | P-M |
+| 1 **[PARCIAL]** | Fotos V3 sem otimização (originais até 1,3 MB servidos tal e qual) | imagens | Alto (site público) | M |
+| 2 **[FEITO `5d2a3be`]** | Cache da listagem pública: chave por `md5(request->all())`, `get()` de tudo, `with('photos')` | cache/BD | Médio-alto | P-M |
 | 3 | Índices em `clients` (`is_lead`, `lead_status`, `next_followup_at`) e `lead_activities` | BD | Médio (cron por minuto + dashboard) | P |
-| 4 | Dashboard V2: ~35 queries, `whereMonth` sem ano (bug de dados), gráfico em 6 + 8 queries | BD | Médio | M |
+| 4 **[FEITO em parte `5d2a3be`, `8da6d89`]** | Dashboard V2: ~35 queries, `whereMonth` sem ano (bug de dados), gráfico em 6 + 8 queries | BD | Médio | M |
 | 5 | Emails/PDF síncronos (`QUEUE_CONNECTION=sync`, zero Jobs) | filas | Alto na latência percebida | M-G |
 | 6 | Produção: `APP_DEBUG`, `LOG_LEVEL`, `laravel.log` único (172 MB local), cache/sessions em ficheiro | config | Médio (estabilidade) | P |
 | 7 | Retenção: `audit_logs`, `lead_activities`, `radar_price_history`, `radar_search_runs`, `sessions`, `jobs` sem prune | BD | Baixo hoje, crescente | M |
@@ -34,6 +61,8 @@ Convenção: **[E]** = estimativa; esforço P (<2h), M (0,5-1 dia), G (>1 dia).
 ## 2. Base de dados
 
 ### 2.1 Dashboard V2 (`app/Http/Controllers/Admin/DashboardV2Controller.php`)
+
+**[FEITO EM PARTE: ver o quadro "Estado actual" no início. Medido: 41 para 26 queries, gráfico 6 para 1, `chart-data` 13 para 5. O texto abaixo é a análise original.]**
 
 **Problema/evidência**
 - `index()` (linhas 25-260) faz cerca de 35 queries por carregamento, sem cache: contagens separadas por estado (l.30-70), 3 listas de follow-ups (l.125-160), gráfico de propostas com **6 queries `count()` em ciclo** (l.195-203).
@@ -77,6 +106,8 @@ Estado actual (migrations): `clients` só tem índices em `email` (unique), `ema
 
 ### 2.3 N+1 e eager loading
 
+**[A listagem pública (`with('photos')`) está feita em `5d2a3be`; o resto por fazer.]**
+
 Encontrado (verificar com M2 em views, porque o N+1 aparece na Blade):
 - `V3VehicleController::index` (l.36-40) está bem: eager de capa e cliente, paginado.
 - Site público: `VehiclesController.php:68,106` faz `with('photos')` (**todas** as fotos de cada viatura) para listagens que só mostram a capa; usar `with(['photos' => fn => where is_cover limit 1])` como já se faz em `:28` e `:240`. Como as listagens guardam o resultado em cache serializado, isto reduz também o tamanho do objeto em cache. Benefício [E]: menos linhas lidas (`n_viaturas × n_fotos` para `n_viaturas`).
@@ -89,6 +120,8 @@ Encontrado (verificar com M2 em views, porque o N+1 aparece na Blade):
 - Mobile (`MobileDashboardService`): já documenta "uma consulta agrupada por grupo"; não há problemas evidentes.
 
 ### 2.4 SELECT * e listas completas para selects
+
+**[Feito só em `ProposalV2Controller` (`5d2a3be`).]**
 
 - `Client::orderBy('name')->get()` com todas as colunas para `<select>`: `ProposalV2Controller.php:127,172,173,238,239,353,354`, `SaleV2Controller.php:119,172`, `V3VehicleController.php:95`. Cresce linearmente com clientes/leads e é reenviado no HTML. **Proposta**: `select('id','name')` (ganho imediato, P) e, a prazo, pesquisa assíncrona (Tom Select já existe em `package.json`) em vez de carregar tudo. Benefício [E]: memória e HTML proporcionais ao nº de clientes; relevante a partir de milhares.
 - Catálogos repetidos em cada render: `AttributeGroup::orderBy('order')->get()` e `VehicleAttribute::orderBy('order')->get()` em `ProposalV2Controller.php:181-182,235,241,362-363` e `V3VehicleController.php:100-101`. Dados quase estáticos: `Cache::remember` com invalidação nos controllers `AttributeGroupV2Controller`/`VehicleAttributeV2Controller` (chave versionada como `VehicleCache`). Benefício [E] pequeno (2 queries), baixo risco.
@@ -128,6 +161,8 @@ Tabelas sem qualquer prune/arquivo no código (`grep` de `Prunable`/`prune`/`mod
 **Medir**: tamanho e linhas por tabela (M1: `information_schema.tables`). **Rollback**: prune é destrutivo: exportar para ficheiro/backup antes da primeira execução; começar com `--pretend`.
 
 ### 2.8 Cache (chaves, invalidação, TTL, driver)
+
+**[Pontos 1 (chave só com filtros permitidos) e a redução do que fica em cache (só a capa) feitos em `5d2a3be`; medido: visita com `utm`/`fbclid`/`page` dá 0 queries a `v3_vehicle*`. Pontos 2 a 6 por fazer.]**
 
 **Evidência**
 - Driver por omissão `file` (`config/cache.php:21`).
@@ -171,6 +206,8 @@ Tabelas sem qualquer prune/arquivo no código (`grep` de `Prunable`/`prune`/`mod
 **Benefício [E]**: tempo de resposta do POST de aceitação/formulários cai de segundos (PDF + 2 SMTP) para <300 ms [E]; newsletter deixa de depender de timeout. **Riscos**: emails deixam de falhar visivelmente (tratar `failed_jobs` + alerta); sem worker nada é enviado (**risco alto se o cron falhar**: monitorizar `jobs` pendentes); serialização de modelos nos Jobs; testes que usam `Mail::fake()` continuam válidos (`Mail::assertQueued`). **Rollback**: voltar `QUEUE_CONNECTION=sync` (comportamento atual, sem alterar código). **Medir**: tempo do POST (M3) antes/depois; atraso de entrega. **Páginas**: aceitação pública da cotação, formulários de importação/simulador/contacto, newsletter, mudança de estado de cotação. **Esforço**: M (emails) / G (newsletter em lote + monitorização).
 
 ### 3.2 Imagens
+
+**[Upload otimizado feito em `5d2a3be`; backfill, variantes e `srcset` por fazer. O exemplo 642 600 B para 16 470 B do teste é um caso extremo de ruído e não é representativo.]**
 
 **Medições locais (`du`/`find`, 2026-10-31)**
 - `public/` 18 MB: `public/img` 12 MB (hero.webp 1,1 MB; `1.jpg` 1,7 MB, `2.jpg` 1,8 MB, `3.jpg` 3,1 MB; `img/manual` 2,5 MB), `public/vendor` 2,7 MB, `public/images` 1,8 MB.

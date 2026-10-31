@@ -10,7 +10,7 @@ No código chamam-se `Proposal` ("proposta"/"cotação"). Cotação aceite gera 
 - `images`: o V2 grava uma string (caminho canónico), apesar do cast para array.
 - **Validade**: `VALIDITY_DAYS = 15`, contados desde `created_at` (editar ou reenviar não renova). `isExpired()`.
 - **Estados** (strings): `Pendente`, `Enviado`, `Aprovada`, `Reprovada`, `Sem resposta`. A migration original define `Enviada`; o código usa `Enviado` **(por confirmar o que a BD real tem)**.
-- **Mudar de estado**: usar sempre `ProposalAcceptanceService::changeStatus`. Qualquer estado pode ir a qualquer outro, exceto: uma cotação já aceite só admite `Aprovada` (para anular, cancelar a convertida). `Aprovada` passa sempre por `accept()`; `Reprovada` marca as oportunidades ligadas como `rejeitado`. `ProposalController::updateStatus` (V1) não cria convertida; updates em massa ignoram o observer.
+- **Mudar de estado**: usar sempre `ProposalAcceptanceService::changeStatus`. Qualquer estado pode ir a qualquer outro, exceto: uma cotação já aceite só admite `Aprovada` (para anular, cancelar a convertida). Uma convertida cancelada deixa de contar como aceite (`Proposal::isAccepted()` ignora-a) e uma nova aceitação da mesma cotação desliga a cancelada anterior (`proposal_id` a `null`, por causa do índice único), ficando esta no histórico do cliente sem cotação. `Aprovada` passa sempre por `accept()`; `Reprovada` marca as oportunidades ligadas como `rejeitado`. `ProposalController::updateStatus` (V1) não cria convertida; updates em massa ignoram o observer.
 - `ProposalObserver`: `created`/`updated` gravam `AuditLog`; passar a `Enviado` dispara `notifyProposalSent` (`ProposalSentMail` ao cliente e, ao dono, versão `forAngariador`; agenda follow-up a +2 dias se vazio); passar a `Aprovada` converte a lead. Os mails saem de forma síncrona dentro do observer. `deleting` repõe oportunidades `selecionado` a `em_analise`.
 - **Logo da marca**: `<x-admin.brand-logo :brand="$proposal->brand" />` (mapa nome→logo em `App\Support\BrandLogos`, uma query por pedido); `item-card` aceita `titleBrand` e `page-header` `titleBrandLogo`.
 
@@ -58,6 +58,6 @@ No código chamam-se `Proposal` ("proposta"/"cotação"). Cotação aceite gera 
 2. `ConvertedProposalV2Controller::update` só envia o mail de estado se o cliente tem email, e uma falha no envio não impede a atualização (`report`).
 3. `ConvertedProposalV2Controller::store` não cria o histórico inicial `Iniciada`.
 4. A timeline pública usa o id sequencial (enumerável); a cotação usa `proposal_code`.
-5. Nomes de estado inconsistentes (`Enviado`/`Enviada`, `Cancelada`/`Cancelado`) e ENUMs antigos nas migrations: **(por confirmar o que a BD real tem)**.
+5. Nomes de estado inconsistentes (`Enviado`/`Enviada`, `Cancelada`/`Cancelado`) e ENUMs antigos nas migrations: **(por confirmar o que a BD real tem)**. `ConvertedProposal::normalizeStatus()` unifica as grafias de cancelada só na leitura; os dados gravados não se alteram.
 6. Eliminar a convertida apaga os movimentos automáticos.
 7. **(por confirmar)** `ProposalAcceptedMail::build`: se o angariador recebe o contrato.

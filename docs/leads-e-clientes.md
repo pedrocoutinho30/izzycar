@@ -19,7 +19,7 @@ A conversão acontece em três sítios: `LeadV2Controller::convert` (manual), `P
 ## Ecrãs e rotas
 
 - **Leads** (`LeadV2Controller`, `admin.v2.leads.*`): lista, kanban, ficha, criar, mudar estado, converter, follow-up, atribuir dono, atividades, eliminar. `show` e `destroy` filtram `is_lead=true` (um cliente dá 404 aí). Leads `perdida` ficam no fim da lista.
-- **Clientes** (`ClientV2Controller`, `admin.v2.clients.*`): lista (`is_lead=false`), ficha, criar, editar. `show/edit/update/destroy` **abrem também leads**. `update` **não verifica duplicados**.
+- **Clientes** (`ClientV2Controller`, `admin.v2.clients.*`): lista (`is_lead=false`), ficha, criar, editar. `show/edit/update/destroy` **abrem também leads**. `update` só recusa um email já usado por outro registo (`ClientService::emailOwner`, `clients.email` é único); o telefone não é verificado.
 - **Pré-leads** (`PreLeadController`, `admin.v2.pre-leads.*`): mensagens de WhatsApp (`Api/WhatsAppWebhookController`, só texto, ignora números já existentes) que esperam aprovação. `approve` cria lead (`lead_source=whatsapp`) ou, se o telefone já existe, só regista a atividade; em ambos os casos o pré-lead é apagado. `reject` apaga.
 - **Timeline**: `LeadActivity` (tipos `system`, `note`, `call`, `email`, `whatsapp`, `facebook`, `meeting`); `LeadActivity::log()` cria eventos de sistema. Continua a ser usada depois de a lead virar cliente.
 - `CarCandidate` (carros candidatos do cliente): modelo existe; **(por confirmar onde se gere)**.
@@ -63,4 +63,4 @@ Carro ou anúncio em análise, sempre dentro de um pedido. Rotas aninhadas `admi
 2. `lead_status` e `lead_source` sem restrição: quem escreve diretamente (site, WhatsApp, angariadores) pode gravar qualquer coisa.
 3. Duplicados por email/telefone podem juntar pessoas diferentes (famílias): o merge é manual.
 4. Telefones estrangeiros não passam no formulário do site.
-5. O `ClientController` legado e `ClientV2Controller::update` não verificam duplicados.
+5. O `ClientController` legado não verifica duplicados e `ClientV2Controller::update` só verifica o email (não o telefone). Um email repetido nunca se pode forçar no desktop (`store` de leads e clientes dão mensagem em vez de "criar mesmo assim").

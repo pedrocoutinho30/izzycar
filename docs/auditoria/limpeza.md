@@ -1,6 +1,6 @@
 # Candidatos a limpeza — IzzyCar
 
-Auditoria só de leitura, feita a 2026-10-31. Nada foi apagado, movido ou alterado; não houve ligação à base de dados remota (o `route:list` correu com sqlite em memória). Sem segredos nem dados pessoais neste documento.
+Auditoria só de leitura, feita a 2026-10-31 (o texto descreve o repositório à data da auditoria; as marcas **[FEITO]**, **[PARCIAL]**, **[MANTIDO]** e **[EM CURSO]** refletem o estado depois dos commits `00eb765`…`3bb96ac`); não houve ligação à base de dados remota (o `route:list` correu com sqlite em memória). Sem segredos nem dados pessoais neste documento.
 
 Convenções: **Risco** = probabilidade de partir algo ao eliminar. **Confiança** = confiança de que o candidato está mesmo sem uso. **Ganho** distingue armazenamento (A) de manutenção/desempenho (M).
 
@@ -13,19 +13,39 @@ Método: `route:list --json` (598 rotas) cruzado com ficheiros de `app/Http/Cont
 - `php artisan test` antes e depois; o `PermissionCatalogTest` falha se uma rota de `/gestao` ficar fora de `config/permissions.php` (e, ao apagar rotas, entradas órfãs no catálogo devem sair juntas).
 - Apagar em commits pequenos por grupo (um por secção abaixo) para ser fácil reverter com `git revert`.
 
+## Estado actual da limpeza (revisão de 2026-10-31)
+
+O commit `1e52c53` (chore(limpeza)) removeu 40 ficheiros e dependências sem uso; `00eb765` tirou `users/*.yaml` do índice e `73df400` pôs `/users/` no `.gitignore`.
+
+| Candidato | Estado |
+|---|---|
+| A `laravel.log` (local) | Mantido: não versionado, depende de truncar e de mudar para o canal `daily` |
+| B `scarperAutoscout/venv/` | Mantido (local, ignorado) |
+| C cópias e `.bak` de views | **Feito** (`1e52c53`): 20 views (18 em `frontend/` e 2 em `proposals/`) mais `scripts/marcas_modelos_submodelos copy.txt` |
+| `.DS_Store` | **Feito** (`1e52c53`): 13 ficheiros removidos do índice e `.DS_Store` no `.gitignore` |
+| D `users/*.yaml` | **Parcial**: fora do índice (`00eb765`) e ignorado (`73df400`); o hash continua no histórico git |
+| E ficheiros soltos na raiz | **Parcial**: `scripts/soup_debug.html` removido (`1e52c53`); mantidos `info-faq`, `info-faq-proposta`, `info-metricas`, `info-transportes.md`, `info-venda`, `plataforma vendas`, `retomas`, `please`, `server.php`, `AutoScoutSearch/*.csv` à espera de confirmação do Pedro (podem ser a única cópia dos briefings) |
+| F controllers/views V1 sem rota | **Em curso** noutro trabalho (limpeza V1) |
+| G rotas V1 ainda ligadas | Mantido (decisão do Pedro) |
+| H assets de `public/` sem referência | Mantido: exige confirmar a cópia separada de `public/` no domínio |
+| I dependências | **Parcial** (`1e52c53`): removidos `barryvdh/laravel-snappy` (+ `config/snappy.php`), `spatie/browsershot`, `laravel/legacy-factories` e o script `pre-update-cmd` do Statamic; ver secção 7 |
+| J `scripts/` | Mantido (decisão sobre `ad-searches`) |
+| K comandos sem documentação | Mantido |
+| `ProposalController::downloadPdf` | **Feito** (`1e52c53`): método removido, que era o único uso do Browsershot |
+
 ## 1. Resumo por prioridade
 
 | # | Candidato | Risco | Confiança | Ganho | Espaço |
 |---|---|---|---|---|---|
 | A | `storage/logs/laravel.log` (ignorado, local) | baixo | alta | A + M | 179 MB |
 | B | `scarperAutoscout/venv/` (ignorado, local) | baixo | alta | A | 146 MB |
-| C | Ficheiros `* copy.*` e `.bak` em `resources/views` (versionados) | baixo | alta | M | ~0,4 MB |
-| D | `users/*.yaml` (resto de Statamic, versionado, com hash de password) | baixo | alta | M + segurança | 4 KB |
-| E | Ficheiros soltos na raiz (`info-*`, `plataforma vendas`, `retomas`, `please`, `server.php`, `AutoScoutSearch/`) | baixo | alta/média | M | ~60 KB |
-| F | Controllers, modelos e views V1 sem rota | baixo-médio | alta | M | ~0,7 MB |
+| C **[FEITO]** | Ficheiros `* copy.*` e `.bak` em `resources/views` (versionados) | baixo | alta | M | ~0,4 MB |
+| D **[PARCIAL]** | `users/*.yaml` (resto de Statamic, versionado, com hash de password) | baixo | alta | M + segurança | 4 KB |
+| E **[PARCIAL]** | Ficheiros soltos na raiz (`info-*`, `plataforma vendas`, `retomas`, `please`, `server.php`, `AutoScoutSearch/`) | baixo | alta/média | M | ~60 KB |
+| F **[EM CURSO]** | Controllers, modelos e views V1 sem rota | baixo-médio | alta | M | ~0,7 MB |
 | G | Rotas e views V1 ainda ligadas (CMS de páginas/menus, `brands`, `anuncios`, `ad-searches`) | médio | média | M | ~0,2 MB |
 | H | Imagens `public/img/{1,2,3}.jpg` e outros assets sem referência | baixo | média-alta | A + desempenho | ~8 MB |
-| I | Dependências Composer sem uso (`snappy`, `htmlpurifier`, `easynav`, `legacy-factories`, scripts `Statamic`) | baixo-médio | média-alta | M | ~2,3 MB em `vendor/` |
+| I **[PARCIAL]** | Dependências Composer sem uso (`snappy`, `htmlpurifier`, `easynav`, `legacy-factories`, scripts `Statamic`) | baixo-médio | média-alta | M | ~2,3 MB em `vendor/` |
 | J | `scripts/` (Python antigo) | médio | média | M | 0,8 MB |
 | K | Comandos Artisan manuais sem documentação | baixo | n/a (manter, documentar) | M | — |
 
@@ -52,13 +72,13 @@ Medido com `du`: `storage` 234 MB, `node_modules` 209 MB, `vendor` 185 MB, `scar
 - `storage/framework/views` 3,0 MB é cache de Blade, regenerável; irrelevante.
 - `vendor/mpdf` 95 MB (sobretudo fontes TTF) é usado (Modelo 9, 1460, 1RA); não é candidato.
 - `.phpunit.result.cache` e `.superpowers/` já estão ignorados (`.gitignore` e `.git/info/exclude`).
-- `.DS_Store`: **13 ficheiros versionados** (`git ls-files | grep DS_Store`: raiz, `app/`, `app/Http/`, `database/`, `public/`, `public/vendor/`, `resources/`, `resources/views/`, `scripts/`, `scripts/imagens_carro/`, `storage/`, `storage/framework/`, `tests/`). O estado git inicial já mostra dois como modificados. Acção: `git rm --cached` e acrescentar `.DS_Store` ao `.gitignore`. Risco nulo, ganho de ruído em diffs.
+- **[FEITO em `1e52c53`]** `.DS_Store`: **13 ficheiros versionados** (`git ls-files | grep DS_Store`: raiz, `app/`, `app/Http/`, `database/`, `public/`, `public/vendor/`, `resources/`, `resources/views/`, `scripts/`, `scripts/imagens_carro/`, `storage/`, `storage/framework/`, `tests/`). O estado git inicial já mostra dois como modificados. Acção: `git rm --cached` e acrescentar `.DS_Store` ao `.gitignore`. Risco nulo, ganho de ruído em diffs.
 
 ## 3. Ficheiros versionados soltos e pastas na raiz
 
 Todos estes estão versionados (`git ls-files`) e nenhum é referenciado por código (`grep` em `app`, `routes`, `config`, `tests`).
 
-### C. Cópias e backups de views (versionados, 21 ficheiros, ~0,4 MB)
+### C. Cópias e backups de views (versionados, 21 ficheiros, ~0,4 MB) **[FEITO em `1e52c53`: removidos todos, `git ls-files | grep -E "copy|\.bak"` devolve vazio]**
 - `resources/views/frontend/`: `index.blade copy.php`, `import.blade copy.php`, `legalization.blade copy.php`, `terms.blade copy.php`, `privacy.blade copy.php`, `news.blade copy.php`, `news-desktop.blade copy.php`, `news-mobile.blade copy.php`, `news-details.blade copy.php`, `estruturas para usar.blade copy.php`, `vehicles-list-desktop.blade copy.php`, `vehicles-list-mobile.blade copy.php`, `vehicles-detail-mobile.blade copy.php`, `vehicles-list-desktop.blade.php.bak`, `vehicles-list-mobile.blade.php.bak`, `vehicles-detail-mobile.blade.php.bak`; `frontend/cost-simulator/result.blade copy.php`, `simulator.blade copy.php`.
 - `resources/views/proposals/`: `pdf.blade copy.php`, `view-proposal.blade copy.php`.
 - `scripts/marcas_modelos_submodelos copy.txt`.
@@ -67,11 +87,11 @@ Todos estes estão versionados (`git ls-files`) e nenhum é referenciado por có
 - Incerteza: nenhuma relevante. Antes de apagar, comparar com o original se alguém guardou ali um bloco para reaproveitar (por exemplo `estruturas para usar`, 32 KB, parece uma biblioteca de blocos).
 - Risco baixo, confiança alta. Ganho: manutenção (menos ruído em pesquisas, menos risco de editar a cópia errada).
 
-### D. `users/*.yaml` (resto de Statamic)
+### D. `users/*.yaml` (resto de Statamic) **[PARCIAL: saiu do índice em `00eb765`, ignorado em `73df400`; o hash continua no histórico git]**
 - Um ficheiro YAML versionado com nome, id e **hash de password** de uma conta. É formato de utilizadores Statamic; o projeto não tem Statamic (só uma referência morta em `composer.json`, ver I).
 - Risco: baixo para apagar; o ponto importante é de segurança: o hash está no histórico git. Recomenda-se remover do versionamento e, se a password for reutilizada, trocá-la. Não reproduzo o conteúdo aqui.
 
-### E. Ficheiros soltos na raiz
+### E. Ficheiros soltos na raiz **[PARCIAL: só `scripts/soup_debug.html` saiu, em `1e52c53`; o resto mantém-se à espera de confirmação do Pedro]**
 | Ficheiro/pasta | O que é | Referenciado? | Veredicto |
 |---|---|---|---|
 | `info-faq`, `info-faq-proposta`, `info-importação`, `info-importação 2`, `info-legalização`, `info-metricas`, `info-transportes.md`, `info-venda` | Notas de texto (3 a 4 KB cada) de conteúdo/briefing; nomes com acentos e espaço | Não | Mover para `docs/` ou apagar; risco baixo, confiança média (podem ser a única cópia do briefing de conteúdo, confirmar com o Pedro) |
@@ -103,6 +123,8 @@ Evidência principal: dos 598 nomes de rota, estes controllers **não têm nenhu
 Estes são o que o enunciado chamava V1: `VehicleController`, `ExpenseController`, `_MenuController`, `_Menu.php` confirmados sem uso. **`ProposalController` NÃO está sem uso**: serve a página pública `proposta/{codigo}` (`detail`), o pedido de cotação alternativa e a aceitação (`accept`). O mesmo para `ConvertedProposalController` (`detailTimeline`, `updateStatus`) e `ClientController` (só `contractService`).
 
 ### Métodos mortos em controllers vivos
+
+**[PARCIAL]** `ProposalController::downloadPdf` foi removido em `1e52c53` (com o `use` do Browsershot). Os restantes métodos sem rota continuam, e a limpeza de V1 está em curso noutro trabalho.
 - `ProposalController`: sem rota, `index, create, getDataFromUrl, store, edit, updateStatus, update, destroy, generatePdf, downloadPdf, duplicate, sentWhatsapp, create_by_form` (restam `detail`, `requestAlternativeQuote`, `accept`, `sendAcceptanceEmail`). Em vez de apagar o ficheiro de 987 linhas, esvaziá-lo. `getDataFromUrl` executa `scripts/process_link.py` e `downloadPdf` usa Browsershot contra `127.0.0.1:8000` (ambos código morto com risco: execução de comandos).
 - `ClientController`: `index, create, store, show, edit, update, destroy, generateContractPdf` sem rota (resta `contractService`).
 - `ConvertedProposalController`: `index, edit, update` sem rota.
@@ -150,21 +172,21 @@ Medido: `public/img` 12 MB, `public/vendor` 2,7 MB, `public/images` 1,8 MB, `pub
 
 ## 7. Dependências
 
-### I. Composer (`composer.json`; não alterei nada)
+### I. Composer (`composer.json`) **[PARCIAL, ver coluna Veredicto/Estado]**
 | Pacote | Uso encontrado | Veredicto |
 |---|---|---|
-| `barryvdh/laravel-snappy` (+ `config/snappy.php`) | só config e cache de pacotes; nenhum `Snappy::` ou `SnappyPdf` em `app` | Remover pacote e config; baixo, confiança média-alta. Precisaria de `wkhtmltopdf` no servidor, que provavelmente nem existe |
-| `ezyang/htmlpurifier` (2,1 MB) | só em `proposals/Old_pdf.blade.php` (view órfã) | Remover com a view; baixo/média. Verificar `RichText` (não usa o Purifier) |
-| `devmarketer/easynav` | `Nav::isRoute` só em `layouts/admin` e `about` (V1) | Remover com o layout V1; médio (dependente de G) |
-| `laravel/legacy-factories` | nenhum uso do helper `factory()` (só `::factory`) em `tests` e `database` | Remover; baixo/média-alta; correr os testes |
-| `spatie/browsershot` (+ `puppeteer` em `package.json`, 14 MB em `node_modules`) | só em `ProposalController::downloadPdf` (sem rota) | Remover depois de esvaziar o método; baixo/média-alta. O `puppeteer` não é usado por mais nada |
+| `barryvdh/laravel-snappy` (+ `config/snappy.php`) | só config e cache de pacotes; nenhum `Snappy::` ou `SnappyPdf` em `app` | **[FEITO `1e52c53`]** pacote e `config/snappy.php` removidos |
+| `ezyang/htmlpurifier` (2,1 MB) | só em `proposals/Old_pdf.blade.php` (view órfã) | **[MANTIDO, e agora tem uso]**: `RichText::sanitize()` passou a usá-lo (`86550ca`, SEG-006). Já não é candidato a remoção |
+| `devmarketer/easynav` | `Nav::isRoute` só em `layouts/admin` e `about` (V1) | **[MANTIDO]** depende da limpeza V1 (em curso) e de G |
+| `laravel/legacy-factories` | nenhum uso do helper `factory()` (só `::factory`) em `tests` e `database` | **[FEITO `1e52c53`]** removido |
+| `spatie/browsershot` (+ `puppeteer` em `package.json`, 14 MB em `node_modules`) | só em `ProposalController::downloadPdf` (sem rota) | **[PARCIAL `1e52c53`]** método e pacote Composer removidos; `puppeteer` continua em `package.json` (não foi tocado: o npm não foi mexido) |
 | `symfony/http-client`, `symfony/mailgun-mailer`, `symfony/postmark-mailer` | o `.env` usa `smtp`; configs `mailgun`/`postmark` existem mas nenhum mailer os usa; sem `HttpClient` no código | Provável remoção; **médio**: confirmar o mailer de produção (pode ser diferente do local) |
-| `composer.json` > `scripts.pre-update-cmd` | chama `Statamic\...\Composer\Scripts::preUpdateCmd` sem o pacote Statamic instalado | Remover; falha ou é ignorado em `composer update`; baixo/alta |
+| `composer.json` > `scripts.pre-update-cmd` | chama `Statamic\...\Composer\Scripts::preUpdateCmd` sem o pacote Statamic instalado | **[FEITO `1e52c53`]** removido |
 | `barryvdh/laravel-dompdf` + `dompdf/dompdf` direto | usado | Manter; `dompdf/dompdf` direto é redundante (já vem do barryvdh) |
 | `mpdf`, `openspout`, `intervention/image`, `laravel-sitemap`, `webpush`, `spatie/permission`, `unisharp/laravel-filemanager`, `symfony/yaml`, `guzzle` | usados | Manter |
 | `spatie/laravel-ignition` | só em `require-dev` | Manter |
 
-### npm (`package.json`)
+### npm (`package.json`) **[MANTIDO: nada foi alterado em `package.json`; `tom-select` e `puppeteer` continuam]**
 - `tom-select`: o código carrega-o por CDN (`jsdelivr`), nenhum `import` local; remover (baixo/alta).
 - `puppeteer`: ver Browsershot. `axios`, `lodash`, `vue-template-compiler`, `sass`, `sass-loader`, `resolve-url-loader`, `laravel-mix`: só alimentam `resources/js/app.js` (um `require('./bootstrap')`) e `resources/sass`; sem Vue em uso real (só `ExampleComponent.vue`). Toda a pipeline Mix pode sair com `layouts/app`. Ganho de manutenção (menos avisos de segurança do `npm audit`); `node_modules` (209 MB) não é versionado, por isso não há ganho no repositório.
 
@@ -178,7 +200,7 @@ O schedule está em `app/Console/Kernel.php` (o `bootstrap/app.php` liga esse ke
 
 ## 9. `scripts/` e `scarperAutoscout/`
 
-### J. `scripts/` (19 ficheiros versionados, 0,8 MB)
+### J. `scripts/` (19 ficheiros versionados, 0,8 MB) **[PARCIAL: `soup_debug.html` e a cópia `marcas_modelos_submodelos copy.txt` saíram em `1e52c53`; o resto mantém-se]**
 Scripts Python antigos (Selenium, scraping de Standvirtual/AutoScout, listas de marcas). Referenciados só por `AdSearchController` (`getFromStandVirtual.py`) e `ProposalController::getDataFromUrl` (`process_link.py`, método morto). O `scripts/readme` descreve passos manuais. `scripts/soup_debug.html` (636 KB) é um dump de depuração, sem uso: candidato claro (baixo/alta). `scripts/_testScript.py` (28 KB) e as listas `marcas*.txt` são de uso eventual. Se o Radar de preços (`scarperAutoscout/`) substituiu o `ad-searches`, todo `scripts/` pode sair com o `AdSearchController`; **médio** até confirmar se o Pedro ainda usa as `ad-searches`.
 
 ## 10. Plano sugerido por ordem de segurança
@@ -191,5 +213,7 @@ Scripts Python antigos (Selenium, scraping de Standvirtual/AutoScout, listas de 
 6. Esvaziar `ProposalController`, `ClientController`, `ConvertedProposalController` dos métodos sem rota.
 7. Remover dependências Composer/npm (`snappy`, `htmlpurifier`, `easynav`, `legacy-factories`, `browsershot`, `puppeteer`, `tom-select`, script Statamic); correr `composer update` num branch e os testes.
 8. Decidir com o Pedro: CMS V1 (`pages`, `menus`, `page-types`), `ad-searches`/`anuncios`, `scripts/`, mailer de produção, pipeline Mix.
+
+Estado do plano acima: passos 2 e 3 feitos em parte (`.DS_Store`, cópias, `.bak`, `soup_debug.html`, `users/` fora do índice; `AutoScoutSearch/`, `please` e notas da raiz mantidos), passo 7 feito em parte (`snappy`, `browsershot`, `legacy-factories`, script Statamic; `htmlpurifier` passou a ser usado), passos 1, 4, 6 e 8 por fazer e o 5 em curso (limpeza V1).
 
 Nada aqui implica apagar migrations históricas nem dados de `storage/app`.

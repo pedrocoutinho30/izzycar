@@ -11,6 +11,20 @@
 - **Limitações do método (heurístico):** (1) nomes genéricos (`name`, `status`, `type`, `notes`, `price`…) partilham-se entre tabelas; para estes a contagem restringe-se a ficheiros que referenciam o model/tabela ou a variáveis com o nome do model, e é aproximada; (2) nomes de coluna construídos dinamicamente (`$request->all()`, `array_keys`, `fill($data)`) e colunas lidas via `SELECT *`/`toArray()`/`toJson()` podem não deixar rasto textual; (3) `L`/`E` são contagens de linhas de código com padrão de leitura/escrita, não de execuções; (4) a coluna «Onde» resume categorias de ficheiros; (5) `.env` local usa `SESSION_DRIVER=file`, `CACHE_DRIVER=file`, `QUEUE_CONNECTION=sync` (só estes valores foram consultados; produção pode diferir).
 - **Classificações:** `Utilização confirmada` (leitura e escrita encontradas), `Apenas leitura`, `Apenas escrita`, `Sem referências encontradas` (apenas migrations; **não** significa que nunca é usado), `Potencialmente obsoleto` (tabela/campo legado sem referências activas), `Utilização desconhecida/externa` (framework, drivers ou escritores externos que a pesquisa estática não consegue provar).
 
+### Nota de revisão (2026-10-31): alterações de código posteriores à auditoria
+
+Nenhuma migration foi criada e o esquema não mudou (`git diff` de `database/` desde `00eb765` só apaga um `.DS_Store`); por isso o dicionário de tabelas e campos continua válido e não é preciso correr `php artisan migrate`. Mudou **o que se lê e escreve** em alguns campos, o que pode alterar a classificação do CSV `utilizacao-base-de-dados.csv` (não regenerado):
+
+- `clients.newsletter_consent`: o `subscribe` do rodapé deixou de o ligar (cria/mantém `false` e envia link de confirmação); passa a `true` só em `NewsletterController::confirm` (`86550ca`); `doSend` lê-o para recusar envios sem consentimento.
+- `expenses.vat_amount` e `expenses.amount_net`: as despesas criadas no separador da viatura passam a gravar IVA incluído no bruto (`ee9af9b`); os registos já gravados com a fórmula antiga **não** foram corrigidos (ver LOG-003).
+- `converted_proposals.proposal_id`: passa a ser posto a `null` quando uma convertida cancelada é substituída por uma nova aceitação da mesma cotação (`3bb96ac`); `ConvertedProposal::status` é lido com as duas grafias "Cancelada"/"Cancelado" normalizadas, sem alterar os dados.
+- `form_proposals`: o formulário público de importação deixou de gravar `created_by`, `origin` e `proposal_id` vindos do pedido, e só grava `angariador_code` se existir em `users.referral_code` (`9616cc9`).
+- `v3_vehicle_photos.path`: novos uploads ficam em WebP (se o GD suportar) com nome aleatório, redimensionados a 1920 px (`5d2a3be`).
+- `testimonials.google_review_id`: gravado por `firstOrCreate`; continua sem índice único (LOG-014).
+- `sales.v3_vehicle_id`: continua sem índice único (LOG-004 parcial); a venda é agora transacional.
+- Tabelas ligadas a controllers V1 apagados pela limpeza em curso (`ExpenseV2Controller`, `VehicleV2Controller`, `NewsV3Controller`, etc.): as "evidências" do CSV que citam esses ficheiros ficam desatualizadas quando a limpeza for concluída; reclassificar então.
+- Os números de `README.md`/secção 2 (88 tabelas, 1090 campos) não mudaram.
+
 ## 2. Resumo de cobertura e classificação
 
 | Classificação | Campos |
