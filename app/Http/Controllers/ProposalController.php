@@ -13,7 +13,6 @@ use App\Models\ConvertedProposalDocument;
 use App\Models\FormProposal;
 use App\Models\VehicleAttribute;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Spatie\Browsershot\Browsershot;
 use App\Models\ProposalAttributeValue;
 use Illuminate\Support\Facades\Mail;
 use App\Services\ProposalAcceptanceException;
@@ -699,21 +698,6 @@ class ProposalController extends Controller
             ->orderByRaw('price is null')
             ->orderBy('price')
             ->get();
-    }
-
-
-    public function downloadPdf()
-    {
-        $pdfPath = storage_path("app/proposal-te.pdf");
-        // Gerar o PDF usando Browsershot
-        // Certifique-se de que a URL corresponde à rota que gera o PDF
-        // Ajuste a URL conforme necessário para corresponder à sua rota
-        // Exemplo: http://127.0.0.1:8000/admin/proposals/70/download-pdf
-        Browsershot::url('http://127.0.0.1:8000/proposals/70/download-pdf') // URL da rota que retorna HTML
-            ->waitUntilNetworkIdle()
-            ->save($pdfPath);
-
-        return response()->download($pdfPath);
     }
 
 

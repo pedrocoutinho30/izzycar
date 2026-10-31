@@ -28,3 +28,7 @@ public
 
 # Resto de CMS antigo (contém hash de password)
 /users/
+
+# macOS
+.DS_Store
+**/.DS_Store

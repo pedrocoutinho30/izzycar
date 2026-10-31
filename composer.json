@@ -10,7 +10,6 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
-        "barryvdh/laravel-snappy": "^1.0",
         "devmarketer/easynav": "^1.0",
         "dompdf/dompdf": "^3.1",
         "ezyang/htmlpurifier": "^4.18",
@@ -18,12 +17,10 @@
         "intervention/image": "^3.11",
         "laravel-notification-channels/webpush": "^12.1",
         "laravel/framework": "^12.0",
-        "laravel/legacy-factories": "^1.4",
         "laravel/tinker": "^2.10.1",
         "laravel/ui": "^4.0",
         "mpdf/mpdf": "^8.2",
         "openspout/openspout": "^4.28",
-        "spatie/browsershot": "^5.0",
         "spatie/laravel-permission": "^6.21",
         "spatie/laravel-sitemap": "^7.3",
         "symfony/http-client": "^6.1",
@@ -67,9 +64,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "pre-update-cmd": [
-            "Statamic\\Console\\Composer\\Scripts::preUpdateCmd"
-        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
