@@ -64,11 +64,28 @@ class V3Vehicle extends Model
 
     // ── Reference generation ────────────────────────────────────────────────
 
+    /**
+     * Próxima referência do ano: maior sufixo existente + 1 (não count()+1, que
+     * colide depois de eliminar uma viatura intermédia). Se mesmo assim a
+     * referência já existir (pedidos simultâneos), avança até encontrar uma livre.
+     */
     public static function generateReference(): string
     {
-        $year  = now()->year;
-        $count = static::whereYear('created_at', $year)->count() + 1;
-        return 'V3-' . $year . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+        $year   = now()->year;
+        $prefix = 'V3-' . $year . '-';
+
+        $max = static::where('reference', 'like', $prefix . '%')
+            ->pluck('reference')
+            ->map(fn ($ref) => (int) substr($ref, strlen($prefix)))
+            ->max() ?? 0;
+
+        $next = $max + 1;
+        do {
+            $reference = $prefix . str_pad((string) $next, 3, '0', STR_PAD_LEFT);
+            $next++;
+        } while (static::where('reference', $reference)->exists());
+
+        return $reference;
     }
 
     // ── Relationships ───────────────────────────────────────────────────────

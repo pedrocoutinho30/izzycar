@@ -16,8 +16,10 @@ use App\Models\V3VehicleDocument;
 use App\Models\V3VehiclePhoto;
 use App\Models\VehicleAttribute;
 use App\Models\VehicleAttributeValue;
+use App\Services\MovementService;
 use App\Services\SaleCalculator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Support\VehicleCache;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -241,14 +243,16 @@ class V3VehicleController extends Controller
 
         $amountGross = (float) $validated['amount'];
         $vatRate     = (float) ($validated['vat_rate'] ?? 0);
-        $vatAmount   = round($amountGross * $vatRate / 100, 2);
-        $amountNet   = round($amountGross - $vatAmount, 2);
+
+        // IVA incluído no bruto: mesma fórmula do MovementService (fonte única).
+        $vat = ['amount' => $amountGross, 'vat_rate' => $vatRate];
+        app(MovementService::class)->computeVatFields($vat);
 
         Expense::create(array_merge($validated, [
             'v3_vehicle_id' => $vehicle->id,
-            'amount_gross'  => $amountGross,
-            'vat_amount'    => $vatAmount,
-            'amount_net'    => $amountNet,
+            'amount_gross'  => $vat['amount_gross'],
+            'vat_amount'    => $vat['vat_amount'],
+            'amount_net'    => $vat['amount_net'],
         ]));
 
         return back()->with('success', 'Despesa adicionada.')->with('return_tab', 'expenses');
@@ -488,49 +492,59 @@ class V3VehicleController extends Controller
 
     public function storeSale(Request $request, $id)
     {
-        $vehicle = V3Vehicle::with('expenses')->findOrFail($id);
-
-        if ($vehicle->sales()->exists()) {
-            return back()->with('error', 'Este veículo já tem uma venda registada.')
-                ->with('return_tab', 'sale');
-        }
-
         $validated = $request->validate([
             'sale_date'      => 'required|date',
             'sale_price'     => 'required|numeric|min:0',
-            'vat_type'       => 'required|string',
+            'vat_type'       => 'required|in:margem,geral_23,geral_13,geral_6,isento',
             'payment_method' => 'nullable|string',
             'client_id'      => 'nullable|exists:clients,id',
             'observation'    => 'nullable|string',
         ]);
 
-        $metrics = $this->calculateSaleMetrics(
-            $vehicle,
-            (float) $validated['sale_price'],
-            $validated['vat_type']
-        );
+        $registada = DB::transaction(function () use ($id, $validated) {
+            // Bloqueia a viatura: um segundo pedido (duplo clique) espera aqui
+            // e já encontra a venda registada.
+            $vehicle = V3Vehicle::with('expenses')->lockForUpdate()->findOrFail($id);
 
-        Sale::create([
-            'v3_vehicle_id'          => $vehicle->id,
-            'vehicle_id'             => null,
-            'client_id'              => $validated['client_id'] ?? null,
-            'sale_date'              => $validated['sale_date'],
-            'sale_price'             => $validated['sale_price'],
-            'vat_rate'               => $metrics['vat_rate'],
-            'payment_method'         => $validated['payment_method'] ?? null,
-            'observation'            => $validated['observation'] ?? null,
-            'gross_margin'           => $metrics['gross_margin'],
-            'net_margin'             => $metrics['net_margin'],
-            'vat_paid'               => $metrics['vat_paid'],
-            'vat_deducible_purchase' => $metrics['vat_recoverable'],
-            'vat_settle_sale'        => $metrics['vat_settle_sale'],
-            'totalCost'              => $metrics['total_cost'],
-            'totalExpenses'          => $metrics['expenses_total'],
-            'net_profitability'      => $metrics['net_profitability'],
-            'gross_profitability'    => $metrics['gross_profitability'],
-        ]);
+            if ($vehicle->sales()->exists()) {
+                return false;
+            }
 
-        $vehicle->update(['status' => 'vendido']);
+            $metrics = $this->calculateSaleMetrics(
+                $vehicle,
+                (float) $validated['sale_price'],
+                $validated['vat_type']
+            );
+
+            Sale::create([
+                'v3_vehicle_id'          => $vehicle->id,
+                'vehicle_id'             => null,
+                'client_id'              => $validated['client_id'] ?? null,
+                'sale_date'              => $validated['sale_date'],
+                'sale_price'             => $validated['sale_price'],
+                'vat_rate'               => $metrics['vat_rate'],
+                'payment_method'         => $validated['payment_method'] ?? null,
+                'observation'            => $validated['observation'] ?? null,
+                'gross_margin'           => $metrics['gross_margin'],
+                'net_margin'             => $metrics['net_margin'],
+                'vat_paid'               => $metrics['vat_paid'],
+                'vat_deducible_purchase' => $metrics['vat_recoverable'],
+                'vat_settle_sale'        => $metrics['vat_settle_sale'],
+                'totalCost'              => $metrics['total_cost'],
+                'totalExpenses'          => $metrics['expenses_total'],
+                'net_profitability'      => $metrics['net_profitability'],
+                'gross_profitability'    => $metrics['gross_profitability'],
+            ]);
+
+            $vehicle->update(['status' => 'vendido']);
+
+            return true;
+        });
+
+        if (! $registada) {
+            return back()->with('error', 'Este veículo já tem uma venda registada.')
+                ->with('return_tab', 'sale');
+        }
 
         return back()->with('success', 'Venda registada com sucesso.')->with('return_tab', 'sale');
     }
@@ -550,7 +564,7 @@ class V3VehicleController extends Controller
     {
         $request->validate([
             'sale_price'  => 'required|numeric|min:0',
-            'vat_type'    => 'required|string',
+            'vat_type'    => 'required|in:margem,geral_23,geral_13,geral_6,isento',
             'extra_costs' => 'nullable|numeric|min:0',
         ]);
 
