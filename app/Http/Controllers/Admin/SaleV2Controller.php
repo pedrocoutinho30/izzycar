@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\Vehicle;
 use App\Models\Client;
+use App\Models\V3Vehicle;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Expense;
 use App\Services\SaleCalculator;
@@ -43,6 +45,12 @@ class SaleV2Controller extends Controller
                         $q->where('reference', 'like', "%{$search}%")
                             ->orWhere('brand', 'like', "%{$search}%")
                             ->orWhere('model', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('v3Vehicle', function ($q) use ($search) {
+                        $q->where('reference', 'like', "%{$search}%")
+                            ->orWhere('brand', 'like', "%{$search}%")
+                            ->orWhere('model', 'like', "%{$search}%")
+                            ->orWhere('registration', 'like', "%{$search}%");
                     });
             });
         }
@@ -235,7 +243,17 @@ class SaleV2Controller extends Controller
     public function destroy($id)
     {
         $sale = Sale::findOrFail($id);
-        $sale->delete();
+
+        DB::transaction(function () use ($sale) {
+            $vehicle = $sale->v3_vehicle_id ? V3Vehicle::lockForUpdate()->find($sale->v3_vehicle_id) : null;
+            $sale->delete();
+
+            // Repõe a viatura em stock (como V3VehicleController::destroySale), só se estava
+            // vendida por esta venda e não tem outra venda.
+            if ($vehicle && $vehicle->status === 'vendido' && !$vehicle->sales()->exists()) {
+                $vehicle->update(['status' => 'em_stock']);
+            }
+        });
 
         return redirect()->route('admin.v2.sales.index')
             ->with('success', 'Venda eliminada com sucesso!');

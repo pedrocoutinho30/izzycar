@@ -158,7 +158,8 @@ class LegalizationController extends Controller
         }
 
         if ($wasCompleted) {
-            $completed = array_values(array_filter($completed, fn ($s) => $s !== $step));
+            // Regra N-1: ao desmarcar um passo, os posteriores deixam de poder estar concluídos
+            $completed = array_values(array_filter($completed, fn ($s) => $s < $step));
         } else {
             $completed[] = $step;
             sort($completed);

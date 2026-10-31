@@ -122,18 +122,14 @@ class V3VehicleVendasFotosDocumentosCoberturaTest extends TestCase
         $this->admin()->get(route('admin.v2.sales.index', ['payment_method' => 'dinheiro']))->assertOk()->assertSee('Saab 9-3')->assertDontSee('Volvo XC40');
     }
 
-    /**
-     * BUG conhecido (SaleV2Controller::index, ~linha 42): a pesquisa por viatura só olha para a relação
-     * legada `vehicle`, pelo que pesquisar a marca/referência de uma viatura V3 não devolve nada.
-     * O correto seria encontrar a venda. Documenta o comportamento atual.
-     */
-    public function test_sales_search_by_v3_vehicle_brand_finds_nothing_known_bug(): void
+    /** A pesquisa da listagem de vendas também procura na viatura V3 (marca, modelo, matrícula, referência). */
+    public function test_sales_search_by_v3_vehicle_brand_finds_sale(): void
     {
         $this->sell();
 
         $this->admin()->get(route('admin.v2.sales.index', ['search' => 'Volvo']))
             ->assertOk()
-            ->assertDontSee('Volvo XC40');
+            ->assertSee('Volvo XC40');
     }
 
     public function test_destroy_sale_restores_vehicle_to_stock_and_removes_sale(): void
@@ -159,18 +155,15 @@ class V3VehicleVendasFotosDocumentosCoberturaTest extends TestCase
         $this->assertSame('vendido', $this->vehicle->fresh()->status);
     }
 
-    /**
-     * BUG conhecido (SaleV2Controller::destroy, ~linha 235): eliminar a venda pela listagem não devolve
-     * a viatura V3 a stock (destroySale no V3VehicleController faz-o). A viatura fica "vendido" sem venda.
-     */
-    public function test_deleting_sale_from_list_leaves_vehicle_sold_known_bug(): void
+    /** Eliminar a venda pela listagem devolve a viatura V3 a stock, como destroySale. */
+    public function test_deleting_sale_from_list_restores_vehicle_to_stock(): void
     {
         $sale = $this->sell();
 
         $this->admin()->delete(route('admin.v2.sales.destroy', $sale->id))->assertRedirect(route('admin.v2.sales.index'));
 
         $this->assertNull(Sale::find($sale->id));
-        $this->assertSame('vendido', $this->vehicle->fresh()->status); // o correto seria 'em_stock'
+        $this->assertSame('em_stock', $this->vehicle->fresh()->status);
     }
 
     public function test_sale_without_price_is_rejected_and_zero_price_is_accepted(): void
@@ -299,20 +292,17 @@ class V3VehicleVendasFotosDocumentosCoberturaTest extends TestCase
         $this->assertTrue($b->fresh()->is_cover);
     }
 
-    /**
-     * BUG conhecido (V3VehicleController::setCoverPhoto, ~linha 373): não verifica que a foto pertence à
-     * viatura; com o id de uma foto de outra viatura (ou inexistente) todas as capas da viatura são
-     * limpas e fica sem capa. O correto seria 404 e manter a capa.
-     */
-    public function test_set_cover_with_foreign_photo_leaves_vehicle_without_cover_known_bug(): void
+    /** Foto de outra viatura (ou inexistente): 404 e a capa atual mantém-se. */
+    public function test_set_cover_with_foreign_photo_is_404_and_keeps_cover(): void
     {
         $a = $this->photo(['is_cover' => true]);
         $outro = V3Vehicle::create(['reference' => V3Vehicle::generateReference(), 'brand' => 'Saab', 'model' => '9-3']);
         $foreign = $this->photo([], $outro);
 
-        $this->admin()->post(route('admin.v3.vehicles.photos.cover', [$this->vehicle->id, $foreign->id]))->assertRedirect();
+        $this->admin()->post(route('admin.v3.vehicles.photos.cover', [$this->vehicle->id, $foreign->id]))->assertNotFound();
+        $this->admin()->post(route('admin.v3.vehicles.photos.cover', [$this->vehicle->id, 999999]))->assertNotFound();
 
-        $this->assertFalse($a->fresh()->is_cover); // o correto seria continuar capa
+        $this->assertTrue($a->fresh()->is_cover);
         $this->assertFalse($foreign->fresh()->is_cover);
     }
 
@@ -472,17 +462,15 @@ class V3VehicleVendasFotosDocumentosCoberturaTest extends TestCase
         $this->admin()->postJson($url, ['step' => 9])->assertStatus(422)->assertJsonValidationErrors('step');
     }
 
-    /**
-     * BUG conhecido (V3VehicleController::toggleLegalizationStep, ~linha 829): a regra N-1 só é verificada
-     * ao concluir; desmarcar um passo intermédio deixa os seguintes concluídos (ex.: [1,3]).
-     */
-    public function test_untoggling_intermediate_step_leaves_later_steps_done_known_bug(): void
+    /** Desmarcar um passo intermédio desmarca também os seguintes (regra N-1). */
+    public function test_untoggling_intermediate_step_clears_later_steps(): void
     {
         $leg = $this->legalization();
         $leg->update(['steps_completed' => [1, 2, 3]]);
 
         $this->admin()->postJson(route('admin.v3.vehicles.legalization.toggle-step', $this->vehicle->id), ['step' => 2])
-            ->assertOk()->assertJsonPath('completed', [1, 3]);
+            ->assertOk()->assertJsonPath('completed', [1]);
+        $this->assertSame([1], $leg->fresh()->steps_completed);
     }
 
     public function test_save_legalization_data_and_requires_existing_legalization(): void

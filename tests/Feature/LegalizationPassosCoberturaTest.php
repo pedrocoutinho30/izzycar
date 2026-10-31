@@ -93,16 +93,13 @@ class LegalizationPassosCoberturaTest extends TestCase
         $this->assertSame([1], $l->fresh()->steps_completed);
     }
 
-    /**
-     * BUG conhecido (LegalizationController::toggleStep, ~linha 130): a regra "N-1" só é validada ao
-     * concluir. Desmarcar um passo intermédio deixa os seguintes concluídos ([1,3]), um estado que o
-     * fluxo normal nunca produz (e o kanban recalcula como 1..N-1).
-     */
-    public function test_unchecking_intermediate_step_keeps_later_ones_known_bug(): void
+    /** Desmarcar um passo intermédio desmarca também os seguintes (regra N-1). */
+    public function test_unchecking_intermediate_step_clears_later_ones(): void
     {
         $l = $this->legalization(['steps_completed' => [1, 2, 3]]);
 
-        $this->toggle($l, 2)->assertOk()->assertJsonPath('completed', [1, 3]);
+        $this->toggle($l, 2)->assertOk()->assertJsonPath('completed', [1]);
+        $this->assertSame([1], $l->fresh()->steps_completed);
     }
 
     public function test_completing_step_five_creates_modelo9_task_once(): void

@@ -373,8 +373,13 @@ class V3VehicleController extends Controller
     public function setCoverPhoto($vehicleId, $photoId)
     {
         $vehicle = V3Vehicle::findOrFail($vehicleId);
-        V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->update(['is_cover' => false]);
-        V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->where('id', $photoId)->update(['is_cover' => true]);
+        // A foto tem de pertencer à viatura (404 caso contrário, sem tocar na capa atual)
+        $photo = V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->findOrFail($photoId);
+
+        DB::transaction(function () use ($vehicle, $photo) {
+            V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->update(['is_cover' => false]);
+            V3VehiclePhoto::where('v3_vehicle_id', $vehicle->id)->where('id', $photo->id)->update(['is_cover' => true]);
+        });
         $this->clearVehicleCache(); // updates em massa não passam pelos eventos do modelo
 
         return back()->with('return_tab', 'photos');
@@ -842,7 +847,8 @@ class V3VehicleController extends Controller
         }
 
         if ($wasDone) {
-            $completed = array_values(array_filter($completed, fn ($s) => $s !== $step));
+            // Regra N-1: ao desmarcar um passo, os posteriores deixam de poder estar concluídos
+            $completed = array_values(array_filter($completed, fn ($s) => $s < $step));
         } else {
             $completed[] = $step;
             sort($completed);
