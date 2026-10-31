@@ -80,7 +80,8 @@ class Proposal extends Model
 
     public function isAccepted(): bool
     {
-        return ConvertedProposal::where('proposal_id', $this->id)->exists();
+        // Uma convertida cancelada liberta a cotação (LOG-007): pode voltar a ser aceite.
+        return ConvertedProposal::where('proposal_id', $this->id)->notCancelled()->exists();
     }
 
     public function isRejected(): bool

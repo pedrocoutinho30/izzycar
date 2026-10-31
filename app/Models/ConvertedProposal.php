@@ -63,7 +63,22 @@ class ConvertedProposal extends Model
 
     public function isCancelled(): bool
     {
-        return in_array($this->status, self::CANCELLED_STATUSES, true);
+        return self::isCancelledStatus($this->status);
+    }
+
+    /** Aceita as duas grafias ("Cancelada" e "Cancelado"). */
+    public static function isCancelledStatus(?string $status): bool
+    {
+        return in_array($status, self::CANCELLED_STATUSES, true);
+    }
+
+    /**
+     * Normaliza só na leitura: qualquer grafia de cancelada passa a "Cancelada",
+     * sem tocar nos dados gravados (o enum antigo do sqlite só tem "Cancelado").
+     */
+    public static function normalizeStatus(?string $status): ?string
+    {
+        return self::isCancelledStatus($status) ? 'Cancelada' : $status;
     }
 
     protected $fillable = [

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Testimonial;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class SyncGoogleReviews extends Command
 {
@@ -38,6 +39,15 @@ class SyncGoogleReviews extends Command
     private string $cacheFile;
     private array  $cache = [];
 
+    /**
+     * Falhas ficam também no log: sob o agendador a consola não se vê.
+     * Só o motivo — nunca tokens, URLs completos nem conteúdo das reviews.
+     */
+    private function falha(string $motivo, array $contexto = []): void
+    {
+        Log::warning('Google Reviews: ' . $motivo, $contexto);
+    }
+
     // ── Entry point ───────────────────────────────────────────────────────────
 
     public function handle(): int
@@ -50,6 +60,7 @@ class SyncGoogleReviews extends Command
         $refreshToken = config('services.google.refresh_token');
 
         if (! $clientId || ! $clientSecret || ! $refreshToken) {
+            $this->falha('credenciais em falta.');
             $this->error('[Google] Credenciais em falta. Verifica GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET e GOOGLE_REFRESH_TOKEN no .env');
             return self::FAILURE;
         }
@@ -57,6 +68,7 @@ class SyncGoogleReviews extends Command
         // ── 1. Access token ───────────────────────────────────────────────────
         $accessToken = $this->getAccessToken($clientId, $clientSecret, $refreshToken);
         if (! $accessToken) {
+            $this->falha('não foi possível obter access token.');
             $this->error('[Google] Não foi possível obter access token.');
             return self::FAILURE;
         }
@@ -64,6 +76,7 @@ class SyncGoogleReviews extends Command
         // ── 2. Account ID (cached) ────────────────────────────────────────────
         $accountId = $this->getAccountId($accessToken);
         if (! $accountId) {
+            $this->falha('não foi possível obter accountId.');
             $this->error('[Google] Não foi possível obter accountId.');
             return self::FAILURE;
         }
@@ -71,6 +84,7 @@ class SyncGoogleReviews extends Command
         // ── 3. Location ID (cached) ───────────────────────────────────────────
         $locationId = $this->getLocationId($accessToken, $accountId);
         if (! $locationId) {
+            $this->falha('não foi possível obter locationId.');
             $this->error('[Google] Não foi possível obter locationId.');
             return self::FAILURE;
         }
@@ -78,6 +92,7 @@ class SyncGoogleReviews extends Command
         // ── 4. Reviews ────────────────────────────────────────────────────────
         $reviews = $this->fetchAllReviews($accessToken, $accountId, $locationId);
         if ($reviews === null) {
+            $this->falha('não foi possível obter as reviews.');
             return self::FAILURE;
         }
 
@@ -115,7 +130,8 @@ class SyncGoogleReviews extends Command
         $response = $this->curlPost(self::TOKEN_URL, $payload);
 
         if (! $response || empty($response['access_token'])) {
-            $this->error('[Google] Falha ao renovar token: ' . json_encode($response));
+            $this->falha('falha ao renovar token.');
+            $this->error('[Google] Falha ao renovar token.');
             return null;
         }
 
@@ -227,12 +243,6 @@ class SyncGoogleReviews extends Command
             $googleId = $review['reviewId'] ?? null;
             if (! $googleId) continue;
 
-            // Evita duplicados
-            if (Testimonial::where('google_review_id', $googleId)->exists()) {
-                $skipped++;
-                continue;
-            }
-
             $starKey = $review['starRating'] ?? 'STAR_RATING_UNSPECIFIED';
             $rating  = self::STAR_MAP[$starKey] ?? 0.0;
 
@@ -240,8 +250,9 @@ class SyncGoogleReviews extends Command
             $authorName = $review['reviewer']['displayName'] ?? 'Anónimo';
             $createTime = $review['createTime'] ?? null;
 
-            Testimonial::create([
-                'google_review_id' => $googleId,
+            // firstOrCreate: uma execução simultânea que crie a mesma review entretanto
+            // não duplica (sem índice único na tabela, a janela fica só muito mais curta).
+            $testimonial = Testimonial::firstOrCreate(['google_review_id' => $googleId], [
                 'name'             => $authorName,
                 'rating'           => $rating,
                 'comment'          => $comment,
@@ -250,7 +261,7 @@ class SyncGoogleReviews extends Command
                 'review_date'      => $createTime ? date('Y-m-d', strtotime($createTime)) : null,
             ]);
 
-            $imported++;
+            $testimonial->wasRecentlyCreated ? $imported++ : $skipped++;
         }
 
         return [$imported, $skipped];
@@ -280,6 +291,7 @@ class SyncGoogleReviews extends Command
         curl_close($ch);
 
         if ($curlError) {
+            $this->falha('erro de rede em GET.', ['erro' => $curlError]);
             $this->error("[cURL] Erro de rede em GET {$url}: {$curlError}");
             return null;
         }
@@ -294,23 +306,27 @@ class SyncGoogleReviews extends Command
                 sleep($delay);
                 return $this->curlGet($url, $accessToken, $attempt + 1);
             }
+            $this->falha('rate limit (429) persistente.', ['tentativas' => count(self::RETRY_DELAYS)]);
             $this->error('[Google] Rate limit persistente após ' . count(self::RETRY_DELAYS) . ' tentativas. Abandona.');
             return null;
         }
 
         // ── 401 Unauthorized ───────────────────────────────────────────────
         if ($httpStatus === 401) {
+            $this->falha('401 Unauthorized.');
             $this->error('[Google] 401 Unauthorized — token pode estar inválido ou revogado.');
             return null;
         }
 
         // ── 403 Forbidden ──────────────────────────────────────────────────
         if ($httpStatus === 403) {
+            $this->falha('403 Forbidden.');
             $this->error('[Google] 403 Forbidden — verifica permissões da conta de serviço e scopes OAuth.');
             return null;
         }
 
         if ($httpStatus < 200 || $httpStatus >= 300) {
+            $this->falha('resposta HTTP inesperada em GET.', ['http_status' => $httpStatus]);
             $this->error("[Google] HTTP {$httpStatus} em GET {$url}: " . $body);
             return null;
         }
@@ -339,11 +355,13 @@ class SyncGoogleReviews extends Command
         curl_close($ch);
 
         if ($curlError) {
+            $this->falha('erro de rede em POST.', ['erro' => $curlError]);
             $this->error("[cURL] Erro de rede em POST {$url}: {$curlError}");
             return null;
         }
 
         if ($httpStatus < 200 || $httpStatus >= 300) {
+            $this->falha('resposta HTTP inesperada em POST.', ['http_status' => $httpStatus]);
             $this->error("[Google] HTTP {$httpStatus} em POST {$url}: " . $body);
             return null;
         }

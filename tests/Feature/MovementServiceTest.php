@@ -228,13 +228,13 @@ class MovementServiceTest extends TestCase
         $this->assertSame([
             'Total Saídas' => '250,00€',
             'Total Entradas' => '1.000,00€',
-            // 15757.28 + 1000 - 200 - 50
-            'Saldo (c/ Pendentes)' => '16.507,28€',
+            // Abertura de 2026 = 15757.28 + 7000 (2025); depois + 1000 - 200 - 50 (LOG-008)
+            'Saldo (c/ Pendentes)' => '23.507,28€',
             // Só pagos: sem os 50 pendentes.
-            'Saldo Real (só Pagos)' => '16.557,28€',
+            'Saldo Real (só Pagos)' => '23.557,28€',
         ], $stats);
-        $this->assertEqualsWithDelta(16507.28, $r->viewData('currentSaldo'), 0.001);
-        $this->assertEqualsWithDelta(16557.28, $r->viewData('currentSaldoReal'), 0.001);
+        $this->assertEqualsWithDelta(23507.28, $r->viewData('currentSaldo'), 0.001);
+        $this->assertEqualsWithDelta(23557.28, $r->viewData('currentSaldoReal'), 0.001);
         $this->assertSame(15757.28, $r->viewData('initialBalance'));
         $this->assertSame([2026, 2025], collect($r->viewData('availableYears'))->map(fn ($y) => (int) $y)->all());
         $this->assertCount(3, $r->viewData('movements'));

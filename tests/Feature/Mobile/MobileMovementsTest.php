@@ -105,8 +105,8 @@ class MobileMovementsTest extends TestCase
             ->assertSee('Totais de 2026')
             ->assertSee('1.000,00 €')     // entradas
             ->assertSee('250,00 €')       // saídas
-            ->assertSee('16.507,28 €')    // saldo c/ pendentes
-            ->assertSee('16.557,28 €')    // saldo real
+            ->assertSee('23.507,28 €')    // saldo c/ pendentes (abertura de 2026 inclui os 7000 de 2025, LOG-008)
+            ->assertSee('23.557,28 €')    // saldo real
             ->assertSee('3 movimentos com estes filtros')
             ->assertDontSee('<table', false);
 

@@ -78,18 +78,21 @@ class MovementService
         return Expense::create($data);
     }
 
-    /** Atualiza um movimento manual (quem chama garante que não é automático). */
+    /**
+     * Atualiza um movimento manual (quem chama garante que não é automático).
+     * O comprovativo novo guarda-se primeiro, a BD atualiza numa transação e o
+     * antigo só se apaga depois do commit; se a gravação falhar, o novo é
+     * removido e o antigo fica intacto (LOG-017).
+     */
     public function update(Expense $movement, array $data, ?UploadedFile $attachment = null, bool $removeAttachment = false): Expense
     {
+        $previousPath = $movement->attachment_path;
+        $newPath = null;
+
         if ($attachment) {
-            if ($movement->attachment_path) {
-                PrivateFiles::apagar($movement->attachment_path);
-            }
-            $data['attachment_path'] = PrivateFiles::guardar($attachment, self::ATTACHMENT_FOLDER);
+            $newPath = PrivateFiles::guardar($attachment, self::ATTACHMENT_FOLDER);
+            $data['attachment_path'] = $newPath;
         } elseif ($removeAttachment) {
-            if ($movement->attachment_path) {
-                PrivateFiles::apagar($movement->attachment_path);
-            }
             $data['attachment_path'] = null;
         }
 
@@ -97,7 +100,19 @@ class MovementService
 
         $this->computeVatFields($data);
 
-        $movement->update($data);
+        try {
+            DB::transaction(fn () => $movement->update($data));
+        } catch (\Throwable $e) {
+            if ($newPath) {
+                PrivateFiles::apagar($newPath);
+            }
+
+            throw $e;
+        }
+
+        if ($previousPath && array_key_exists('attachment_path', $data) && $data['attachment_path'] !== $previousPath) {
+            PrivateFiles::apagar($previousPath);
+        }
 
         return $movement;
     }
@@ -105,11 +120,14 @@ class MovementService
     /** Elimina um movimento manual e o seu comprovativo. */
     public function delete(Expense $movement): void
     {
-        if ($movement->attachment_path) {
-            PrivateFiles::apagar($movement->attachment_path);
-        }
+        $path = $movement->attachment_path;
 
-        $movement->delete();
+        DB::transaction(fn () => $movement->delete());
+
+        // O comprovativo só se apaga depois de o movimento sair da BD.
+        if ($path) {
+            PrivateFiles::apagar($path);
+        }
     }
 
     /**
@@ -138,10 +156,15 @@ class MovementService
 
     /**
      * Totais e saldos da listagem. Os totais ficam no ano escolhido, exceto
-     * com datas (aí contam todos os anos, como sempre fez o desktop); os
-     * saldos partem de INITIAL_BALANCE e acumulam o ano (ou tudo, com "all").
+     * com datas (aí contam todos os anos, como sempre fez o desktop). Os
+     * saldos partem de INITIAL_BALANCE mais tudo o que aconteceu antes do ano
+     * escolhido (saldo de abertura do ano) e acumulam o ano (ou tudo, com "all").
      *
-     * @return array{totalExpenses: float, totalIncome: float, pending: float, saldo: float, saldoReal: float, runningBalances: array<int, float>, runningBalancesReal: array<int, ?float>}
+     * "pending" é o valor líquido dos pendentes (entradas menos saídas);
+     * pendingIncome e pendingExpenses trazem cada lado separado. As somas fazem-se
+     * em cêntimos inteiros para não acumular erro de float.
+     *
+     * @return array{totalExpenses: float, totalIncome: float, pending: float, pendingIncome: float, pendingExpenses: float, openingBalance: float, openingBalanceReal: float, saldo: float, saldoReal: float, runningBalances: array<int, float>, runningBalancesReal: array<int, ?float>}
      */
     public function summary(string $year, bool $hasDateFilter): array
     {
@@ -149,9 +172,20 @@ class MovementService
         if ($year !== 'all' && ! $hasDateFilter) {
             $statsBase->whereYear('expense_date', $year);
         }
-        $totalExpenses = (float) (clone $statsBase)->where('movement_type', 'expense')->sum('amount_gross');
-        $totalIncome   = (float) (clone $statsBase)->where('movement_type', 'income')->sum('amount_gross');
-        $pending       = (float) (clone $statsBase)->where('status', 'pending')->sum('amount_gross');
+        $totalExpenses  = $this->sumCents(clone $statsBase, 'expense');
+        $totalIncome    = $this->sumCents(clone $statsBase, 'income');
+        $pendingIncome  = $this->sumCents((clone $statsBase)->where('status', 'pending'), 'income');
+        $pendingExpense = $this->sumCents((clone $statsBase)->where('status', 'pending'), 'expense');
+
+        // Saldo de abertura do ano: o inicial mais todos os movimentos de anos anteriores.
+        $opening     = $this->toCents(self::INITIAL_BALANCE);
+        $openingReal = $opening;
+        if ($year !== 'all' && ctype_digit($year)) {
+            $before = fn () => Expense::query()->where('expense_date', '<', $year . '-01-01');
+            $opening     += $this->sumCents($before(), 'income') - $this->sumCents($before(), 'expense');
+            $openingReal += $this->sumCents($before()->where(fn ($q) => $q->where('status', '!=', 'pending')->orWhereNull('status')), 'income')
+                - $this->sumCents($before()->where(fn ($q) => $q->where('status', '!=', 'pending')->orWhereNull('status')), 'expense');
+        }
 
         // Load ALL year movements sorted ascending for cumulative balance calculation
         $allYearMovements = Expense::query()
@@ -162,11 +196,11 @@ class MovementService
 
         $runningBalances     = []; // inclui pendentes
         $runningBalancesReal = []; // só pagos
-        $runningBalance      = self::INITIAL_BALANCE;
-        $runningBalanceReal  = self::INITIAL_BALANCE;
+        $runningBalance      = $opening;
+        $runningBalanceReal  = $openingReal;
 
         foreach ($allYearMovements as $m) {
-            $amount = (float) ($m->amount_gross ?? $m->amount ?? 0);
+            $amount = $this->toCents($m->amount_gross ?? $m->amount ?? 0);
             $isPaid = $m->status !== 'pending';
 
             if ($m->movement_type === 'income') {
@@ -176,19 +210,41 @@ class MovementService
                 $runningBalance -= $amount;
                 if ($isPaid) $runningBalanceReal -= $amount;
             }
-            $runningBalances[$m->id]     = $runningBalance;
-            $runningBalancesReal[$m->id] = $isPaid ? $runningBalanceReal : null;
+            $runningBalances[$m->id]     = $this->fromCents($runningBalance);
+            $runningBalancesReal[$m->id] = $isPaid ? $this->fromCents($runningBalanceReal) : null;
         }
 
         return [
-            'totalExpenses' => $totalExpenses,
-            'totalIncome' => $totalIncome,
-            'pending' => $pending,
-            'saldo' => $runningBalance,
-            'saldoReal' => $runningBalanceReal,
+            'totalExpenses' => $this->fromCents($totalExpenses),
+            'totalIncome' => $this->fromCents($totalIncome),
+            'pending' => $this->fromCents($pendingIncome - $pendingExpense),
+            'pendingIncome' => $this->fromCents($pendingIncome),
+            'pendingExpenses' => $this->fromCents($pendingExpense),
+            'openingBalance' => $this->fromCents($opening),
+            'openingBalanceReal' => $this->fromCents($openingReal),
+            'saldo' => $this->fromCents($runningBalance),
+            'saldoReal' => $this->fromCents($runningBalanceReal),
             'runningBalances' => $runningBalances,
             'runningBalancesReal' => $runningBalancesReal,
         ];
+    }
+
+    private function fromCents(int $cents): float
+    {
+        return $cents / 100;
+    }
+
+    private function toCents(mixed $valor): int
+    {
+        return (int) round(((float) $valor) * 100);
+    }
+
+    /** Soma de amount_gross (ou amount) de um tipo de movimento, em cêntimos. */
+    private function sumCents(\Illuminate\Database\Eloquent\Builder $query, string $type): int
+    {
+        return $query->where('movement_type', $type)
+            ->get(['amount_gross', 'amount'])
+            ->sum(fn ($m) => $this->toCents($m->amount_gross ?? $m->amount ?? 0));
     }
 
     /** Anos com movimentos, do mais recente para o mais antigo (MySQL e sqlite). */

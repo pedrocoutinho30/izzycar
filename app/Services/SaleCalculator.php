@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
+
 /**
  * Single source of truth for sale margin calculations.
  * Used by both SaleV2Controller and V3VehicleController.
@@ -16,26 +19,37 @@ class SaleCalculator
      * @param  float    $purchasePrice   Net purchase price (sem IVA)
      * @param  float    $purchaseVatPaid VAT paid on purchase
      * @param  iterable $expenses        Expense objects with amount_gross (or amount) and vat_rate
+     * @param  float    $marginVatRate   Taxa usada para extrair o IVA no regime de margem (23 por omissão)
      * @return array
+     *
+     * @throws InvalidArgumentException se $vatType não for um dos valores conhecidos (antes era tratado como isento)
      */
     public static function compute(
         float    $salePrice,
         string   $vatType,
         float    $purchasePrice,
         float    $purchaseVatPaid,
-        iterable $expenses
+        iterable $expenses,
+        float    $marginVatRate = 23.0
     ): array {
-        $vatRateMap  = ['geral_23' => 23.0, 'geral_13' => 13.0, 'geral_6' => 6.0];
+        $vatRateMap = ['geral_23' => 23.0, 'geral_13' => 13.0, 'geral_6' => 6.0];
+
+        if ($vatType !== 'margem' && $vatType !== 'isento' && ! isset($vatRateMap[$vatType])) {
+            throw new InvalidArgumentException("Tipo de IVA desconhecido: «{$vatType}».");
+        }
+
         $vatRateVal  = $vatRateMap[$vatType] ?? 0.0;
         $vatRateSale = $vatRateVal / 100;
 
         // ── VENDA ────────────────────────────────────────────────────────
+        // Valores monetários arredondados a cêntimos em cada passo, para as
+        // parcelas somarem sempre o total.
         if ($vatType === 'margem') {
-            $sellVat  = max(0.0, ($salePrice - $purchasePrice) * 23.0 / 123.0);
-            $sellBase = $salePrice - $sellVat;
+            $sellVat  = round(max(0.0, ($salePrice - $purchasePrice) * $marginVatRate / (100 + $marginVatRate)), 2);
+            $sellBase = round($salePrice - $sellVat, 2);
         } else {
-            $sellBase = $vatRateSale > 0 ? $salePrice / (1 + $vatRateSale) : $salePrice;
-            $sellVat  = $salePrice - $sellBase;
+            $sellBase = $vatRateSale > 0 ? round($salePrice / (1 + $vatRateSale), 2) : round($salePrice, 2);
+            $sellVat  = round($salePrice - $sellBase, 2);
         }
 
         // ── DESPESAS ─────────────────────────────────────────────────────
@@ -46,8 +60,8 @@ class SaleCalculator
         foreach ($expenses as $expense) {
             $rate  = ((float) str_replace('%', '', $expense->vat_rate ?? '0')) / 100;
             $gross = (float) ($expense->amount_gross ?? $expense->amount ?? 0);
-            $base  = $rate > 0 ? $gross / (1 + $rate) : $gross;
-            $vat   = $gross - $base;
+            $base  = $rate > 0 ? round($gross / (1 + $rate), 2) : round($gross, 2);
+            $vat   = round($gross - $base, 2);
             $expenseBase        += $base;
             $expenseVat         += $vat;
             $totalExpensesGross += $gross;
@@ -90,12 +104,23 @@ class SaleCalculator
      */
     public static function normaliseVatType(?string $vatRate): string
     {
-        return match ((string) $vatRate) {
+        $normalised = match ((string) $vatRate) {
             '23'     => 'geral_23',
             '13'     => 'geral_13',
             '6'      => 'geral_6',
             'Margem' => 'margem',
-            default  => 'isento',
+            '', '0', 'Sem IVA', 'Isento', 'isento' => 'isento',
+            default  => null,
         };
+
+        // Valor que não se reconhece: mantém-se "isento" (as chamadas existentes
+        // não rebentam), mas fica registado para se detetar um IVA mal escrito.
+        if ($normalised === null) {
+            Log::warning('SaleCalculator: taxa de IVA desconhecida tratada como isento', ['vat_rate' => (string) $vatRate]);
+
+            return 'isento';
+        }
+
+        return $normalised;
     }
 }

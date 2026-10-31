@@ -6,8 +6,8 @@ use App\Models\Setting;
 
 /**
  * Divisão do serviço Izzycar em duas tranches, pelas percentagens das
- * Definições (init_payment na adjudicação, final_payment na entrega; 50/50
- * por omissão). É a mesma conta da página da cotação que o cliente vê.
+ * Definições (init_payment na adjudicação; a segunda tranche, na entrega, é o resto,
+ * por isso final_payment das Definições não conta; 50/50 por omissão). É a mesma conta da página da cotação que o cliente vê.
  */
 class ServiceTranches
 {
@@ -26,7 +26,9 @@ class ServiceTranches
         $settings ??= self::settings();
 
         $pct1 = self::percentagem($settings['init_payment'] ?? null) ?? 50.0;
-        $pct2 = self::percentagem($settings['final_payment'] ?? null) ?? (100.0 - $pct1);
+        // A tranche 2 é sempre o resto da 1 (ver abaixo), por isso pct2 = 100 - pct1,
+        // seja qual for o final_payment nas Definições (LOG-015).
+        $pct2 = round(100.0 - $pct1, 2);
 
         $tranche1 = round($total * $pct1 / 100, 2);
 

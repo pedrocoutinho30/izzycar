@@ -387,7 +387,8 @@ class MovementExportTest extends TestCase
         $this->assertSame(['Venda B', 'Compra A'], $r->viewData('movements')->pluck('title')->all());
         $this->assertSame('100,00€', $r->viewData('stats')[0]['value']);   // saídas
         $this->assertSame('1.000,00€', $r->viewData('stats')[1]['value']); // entradas
-        $this->assertSame(15757.28 + 1000 - 100, $r->viewData('currentSaldo'));
+        // Abertura de 2026 inclui a despesa antiga de 2025 (LOG-008): 15757.28 - 7 + 1000 - 100
+        $this->assertEqualsWithDelta(15757.28 - 7 + 1000 - 100, $r->viewData('currentSaldo'), 0.001);
 
         // year=all inclui 2025 nos totais e na lista
         $r = $this->actingAs($user)->get(route('admin.v2.movements.index', ['year' => 'all']))->assertOk();

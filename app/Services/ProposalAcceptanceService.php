@@ -53,6 +53,13 @@ class ProposalAcceptanceService
                     LeadActivity::log($client->id, 'Lead convertido em cliente', "Convertido automaticamente ao aceitar a cotação #{$proposal->id}.", 'bi-person-check-fill', 'success');
                 }
 
+                // O índice único em proposal_id impede uma nova convertida enquanto a
+                // cancelada anterior mantiver a ligação: desliga-a (continua no histórico
+                // do cliente, sem cotação) para a cotação poder voltar a ser aceite.
+                ConvertedProposal::where('proposal_id', $proposal->id)->get()
+                    ->filter(fn (ConvertedProposal $old) => $old->isCancelled())
+                    ->each(fn (ConvertedProposal $old) => $old->forceFill(['proposal_id' => null])->saveQuietly());
+
                 $proposal->status = 'Aprovada';
                 $proposal->save();
 
