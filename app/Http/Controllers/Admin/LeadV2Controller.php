@@ -71,7 +71,7 @@ class LeadV2Controller extends Controller
         $activeBase   = Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida']);
         $followupsHoje = Client::where('is_lead', true)
             ->whereNotNull('next_followup_at')
-            ->whereDate('next_followup_at', today())
+            ->whereBetween('next_followup_at', [today(), today()->endOfDay()])
             ->count();
         $followupsAtraso = Client::where('is_lead', true)
             ->whereNotNull('next_followup_at')

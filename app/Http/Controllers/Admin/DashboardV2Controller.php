@@ -32,6 +32,8 @@ use App\Models\Expense;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class DashboardV2Controller extends Controller
 {
@@ -44,26 +46,43 @@ class DashboardV2Controller extends Controller
         // ESTATÍSTICAS GERAIS
         // ============================================================
         
+        $inicioMes = now()->startOfMonth();
+        $fimMes = now()->endOfMonth();
+        $estadosLeadAtiva = ['nova', 'em_contacto', 'qualificada'];
+
         // Formulários de proposta pendentes (NOVOS - precisa atenção!)
         $newFormProposals = FormProposal::where('status', 'novo')
             ->orWhereNull('status')
             ->count();
 
-        // Propostas por estado
-        $proposalsPending = Proposal::where('status', 'Pendente')->count();
-        $proposalsApproved = Proposal::where('status', 'Aprovada')->count();
-        
-        // Clientes totais
-        $totalClients = Client::count();
-        $newClientsThisMonth = Client::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count();
+        // Propostas: pendentes e "sem resposta há mais de 7 dias" numa só query
+        $propostasAgg = Proposal::selectRaw(
+            "COALESCE(SUM(CASE WHEN status = 'Pendente' THEN 1 ELSE 0 END), 0) as pendentes,
+             COALESCE(SUM(CASE WHEN status = 'Sem resposta' AND created_at < ? THEN 1 ELSE 0 END), 0) as sem_resposta_antigas",
+            [now()->subDays(7)]
+        )->first();
+        $proposalsPending = (int) $propostasAgg->pendentes;
+        $proposalsNoResponse = (int) $propostasAgg->sem_resposta_antigas;
 
-        // Veículos
-        $totalVehicles = Vehicle::count();
-        $vehiclesAvailable = Vehicle::where('show_online', true)->count();
+        // Clientes: totais, novos este mês e leads activas numa só query
+        $placeholdersLead = implode(',', array_fill(0, count($estadosLeadAtiva), '?'));
+        $clientesAgg = Client::selectRaw(
+            "COUNT(*) as total,
+             COALESCE(SUM(CASE WHEN created_at BETWEEN ? AND ? THEN 1 ELSE 0 END), 0) as novos_mes,
+             COALESCE(SUM(CASE WHEN is_lead = 1 AND lead_status IN ({$placeholdersLead}) THEN 1 ELSE 0 END), 0) as leads_ativas",
+            array_merge([$inicioMes, $fimMes], $estadosLeadAtiva)
+        )->first();
+        $totalClients = (int) $clientesAgg->total;
+        $newClientsThisMonth = (int) $clientesAgg->novos_mes;
+        // Leads activas hoje (para o badge do menu)
+        $totalLeadsActivas = (int) $clientesAgg->leads_ativas;
 
-        // Vendas este mês
-        $salesThisMonth = Sale::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count();
-        $salesRevenueThisMonth = Sale::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->sum('sale_price');
+        // Vendas este mês (contagem e receita numa só query)
+        $vendasAgg = Sale::whereBetween('created_at', [$inicioMes, $fimMes])
+            ->selectRaw('COUNT(*) as total, COALESCE(SUM(sale_price), 0) as receita')
+            ->first();
+        $salesThisMonth = (int) $vendasAgg->total;
+        $salesRevenueThisMonth = (float) $vendasAgg->receita;
         // ============================================================
         // CARDS DE ESTATÍSTICAS
         // ============================================================
@@ -109,25 +128,38 @@ class DashboardV2Controller extends Controller
         // ============================================================
 
         // Leads activas sem qualquer actividade registada há mais de 3 dias
-        $leadsAtivas = Client::where('is_lead', true)
-            ->whereIn('lead_status', ['nova', 'em_contacto', 'qualificada'])
-            ->pluck('id');
+        $leadsSemActividadeQuery = fn () => Client::where('is_lead', true)
+            ->whereIn('lead_status', $estadosLeadAtiva)
+            ->whereNotExists(function ($q) {
+                $q->select(DB::raw(1))
+                    ->from('lead_activities')
+                    ->whereColumn('lead_activities.client_id', 'clients.id')
+                    ->where('lead_activities.created_at', '>=', now()->subDays(3));
+            });
 
-        $leadsComActividadeRecente = \App\Models\LeadActivity::whereIn('client_id', $leadsAtivas)
-            ->where('created_at', '>=', now()->subDays(3))
-            ->pluck('client_id')
-            ->unique();
+        $leadsSemActividadeCount = $leadsSemActividadeQuery()->count();
 
-        $leadsSemActividade = $leadsAtivas->diff($leadsComActividadeRecente);
-        $leadsSemActividadeCount = $leadsSemActividade->count();
+        // Leads sem actividade — lista para mostrar (máx 10: as 10 primeiras por id, mais recentes primeiro)
+        $leadsSemActividadeLista = $leadsSemActividadeQuery()
+            ->orderBy('id')
+            ->limit(10)
+            ->get()
+            ->sortByDesc('created_at')
+            ->values();
 
-        // Follow-ups em atraso
-        $followupsAtrasados = Client::where('is_lead', true)
+        // Follow-ups: atrasados, de hoje e de amanhã numa só query (intervalos em vez de whereDate)
+        $inicioHoje = today();
+        $fimAmanha = today()->addDay()->endOfDay();
+        $followups = Client::where('is_lead', true)
             ->whereNotNull('next_followup_at')
-            ->where('next_followup_at', '<', now())
+            ->where('next_followup_at', '<=', $fimAmanha)
             ->with('latestActivity')
             ->orderBy('next_followup_at')
             ->get();
+
+        $followupsAtrasados = $followups->filter(fn ($c) => $c->next_followup_at < now())->values();
+        $followupsHoje = $followups->filter(fn ($c) => $c->next_followup_at >= $inicioHoje && $c->next_followup_at <= today()->endOfDay())->values();
+        $followupsAmanha = $followups->filter(fn ($c) => $c->next_followup_at >= today()->addDay() && $c->next_followup_at <= $fimAmanha)->values();
 
         // Cotações pendentes ou sem resposta há mais de 5 dias
         $cotacoesSemResposta = Proposal::whereIn('status', ['Pendente', 'Sem resposta'])
@@ -143,29 +175,6 @@ class DashboardV2Controller extends Controller
                 $q->whereNull('asking_price')->orWhere('asking_price', 0);
             })
             ->count();
-
-        // Follow-ups de hoje e amanhã
-        $followupsHoje = Client::where('is_lead', true)
-            ->whereNotNull('next_followup_at')
-            ->whereDate('next_followup_at', today())
-            ->orderBy('next_followup_at')
-            ->get();
-
-        $followupsAmanha = Client::where('is_lead', true)
-            ->whereNotNull('next_followup_at')
-            ->whereDate('next_followup_at', today()->addDay())
-            ->orderBy('next_followup_at')
-            ->get();
-
-        // Leads activas hoje (para o badge do menu)
-        $totalLeadsActivas = Client::where('is_lead', true)
-            ->whereIn('lead_status', ['nova', 'em_contacto', 'qualificada'])
-            ->count();
-
-        // Leads sem actividade — lista para mostrar (máx 10)
-        $leadsSemActividadeLista = Client::whereIn('id', $leadsSemActividade->take(10))
-            ->orderBy('created_at', 'desc')
-            ->get();
 
         // ============================================================
         // ATIVIDADE RECENTE
@@ -191,15 +200,14 @@ class DashboardV2Controller extends Controller
         // ============================================================
         // GRÁFICO: Propostas por mês (últimos 6 meses)
         // ============================================================
-        $proposalsChart = [];
+        $mesesGrafico = [];
         for ($i = 5; $i >= 0; $i--) {
-            $month = now()->subMonths($i);
-            $proposalsChart[] = [
-                'month' => $month->format('M Y'),
-                'count' => Proposal::whereYear('created_at', $month->year)
-                    ->whereMonth('created_at', $month->month)
-                    ->count()
-            ];
+            $mesesGrafico[] = now()->startOfMonth()->subMonths($i);
+        }
+        $contagemPropostas = $this->monthlyCounts(Proposal::query(), $mesesGrafico);
+        $proposalsChart = [];
+        foreach ($mesesGrafico as $i => $month) {
+            $proposalsChart[] = ['month' => $month->format('M Y'), 'count' => $contagemPropostas[$i]];
         }
 
         // ============================================================
@@ -222,10 +230,6 @@ class DashboardV2Controller extends Controller
         }
 
         // Alerta: Propostas sem resposta
-        $proposalsNoResponse = Proposal::where('status', 'Sem resposta')
-            ->where('created_at', '<', now()->subDays(7))
-            ->count();
-        
         if ($proposalsNoResponse > 0) {
             $alerts[] = [
                 'type' => 'info',
@@ -326,38 +330,20 @@ class DashboardV2Controller extends Controller
         $end = Carbon::parse($endDate);
         
         $months = [];
-        $clients = [];
-        $proposals = [];
-        $costSimulators = [];
-        $convertedProposals = [];
+        $starts = [];
 
         $current = $start->copy()->startOfMonth();
         while ($current->lte($end->endOfMonth())) {
-            $monthLabel = $current->format('M Y');
-            $months[] = $monthLabel;
-
-            // Clientes
-            $clients[] = Client::whereYear('created_at', $current->year)
-                ->whereMonth('created_at', $current->month)
-                ->count();
-
-            // Propostas
-            $proposals[] = Proposal::whereYear('created_at', $current->year)
-                ->whereMonth('created_at', $current->month)
-                ->count();
-
-            // Simulações de Custo
-            $costSimulators[] = \App\Models\CostSimulator::whereYear('created_at', $current->year)
-                ->whereMonth('created_at', $current->month)
-                ->count();
-
-            // Propostas Convertidas
-            $convertedProposals[] = ConvertedProposal::notCancelled()->whereYear('created_at', $current->year)
-                ->whereMonth('created_at', $current->month)
-                ->count();
-
+            $months[] = $current->format('M Y');
+            $starts[] = $current->copy();
             $current->addMonth();
         }
+
+        // Uma query por modelo (contagens por mês em colunas) em vez de uma por mês
+        $clients = $this->monthlyCounts(Client::query(), $starts);
+        $proposals = $this->monthlyCounts(Proposal::query(), $starts);
+        $costSimulators = $this->monthlyCounts(\App\Models\CostSimulator::query(), $starts);
+        $convertedProposals = $this->monthlyCounts(ConvertedProposal::notCancelled(), $starts);
 
         return response()->json([
             'labels' => $months,
@@ -387,33 +373,12 @@ class DashboardV2Controller extends Controller
         $month1Label = $period1Start->format('M Y');
         $month2Label = $period2Start->format('M Y');
 
-        // Período 1
-        $clients1 = Client::whereYear('created_at', $period1Start->year)
-            ->whereMonth('created_at', $period1Start->month)
-            ->count();
-        $proposals1 = Proposal::whereYear('created_at', $period1Start->year)
-            ->whereMonth('created_at', $period1Start->month)
-            ->count();
-        $costSimulators1 = \App\Models\CostSimulator::whereYear('created_at', $period1Start->year)
-            ->whereMonth('created_at', $period1Start->month)
-            ->count();
-        $convertedProposals1 = ConvertedProposal::notCancelled()->whereYear('created_at', $period1Start->year)
-            ->whereMonth('created_at', $period1Start->month)
-            ->count();
-
-        // Período 2
-        $clients2 = Client::whereYear('created_at', $period2Start->year)
-            ->whereMonth('created_at', $period2Start->month)
-            ->count();
-        $proposals2 = Proposal::whereYear('created_at', $period2Start->year)
-            ->whereMonth('created_at', $period2Start->month)
-            ->count();
-        $costSimulators2 = \App\Models\CostSimulator::whereYear('created_at', $period2Start->year)
-            ->whereMonth('created_at', $period2Start->month)
-            ->count();
-        $convertedProposals2 = ConvertedProposal::notCancelled()->whereYear('created_at', $period2Start->year)
-            ->whereMonth('created_at', $period2Start->month)
-            ->count();
+        // Uma query por modelo para os dois meses (período 1 e 2)
+        $meses = [$period1Start->copy()->startOfMonth(), $period2Start->copy()->startOfMonth()];
+        [$clients1, $clients2] = $this->monthlyCounts(Client::query(), $meses);
+        [$proposals1, $proposals2] = $this->monthlyCounts(Proposal::query(), $meses);
+        [$costSimulators1, $costSimulators2] = $this->monthlyCounts(\App\Models\CostSimulator::query(), $meses);
+        [$convertedProposals1, $convertedProposals2] = $this->monthlyCounts(ConvertedProposal::notCancelled(), $meses);
 
         return response()->json([
             'labels' => [$month1Label, $month2Label],
@@ -434,5 +399,41 @@ class DashboardV2Controller extends Controller
                 ]
             ]
         ]);
+    }
+
+    /**
+     * Contagens de created_at por mês numa só query: uma coluna SUM(CASE ...) por mês, com
+     * intervalos [início do mês, início do mês seguinte[ (sargável, ao contrário de
+     * whereYear/whereMonth) e SQL portável (MySQL e sqlite). Devolve um array de inteiros
+     * na mesma ordem de $inicios (Carbon no 1.º dia de cada mês).
+     *
+     * @param  Builder  $query
+     * @param  array<int, Carbon>  $inicios
+     * @return array<int, int>
+     */
+    private function monthlyCounts($query, array $inicios): array
+    {
+        if ($inicios === []) {
+            return [];
+        }
+
+        $colunas = [];
+        $bindings = [];
+        foreach ($inicios as $i => $inicio) {
+            $colunas[] = "COALESCE(SUM(CASE WHEN created_at >= ? AND created_at < ? THEN 1 ELSE 0 END), 0) as m{$i}";
+            $bindings[] = $inicio->copy()->startOfMonth();
+            $bindings[] = $inicio->copy()->startOfMonth()->addMonth();
+        }
+
+        // Limita a leitura ao intervalo total pedido (usa índice em created_at, se existir)
+        $min = collect($inicios)->min()->copy()->startOfMonth();
+        $max = collect($inicios)->max()->copy()->startOfMonth()->addMonth();
+
+        $row = $query->where('created_at', '>=', $min)
+            ->where('created_at', '<', $max)
+            ->selectRaw(implode(', ', $colunas), $bindings)
+            ->first();
+
+        return array_map(fn ($i) => (int) $row->{"m{$i}"}, array_keys($inicios));
     }
 }

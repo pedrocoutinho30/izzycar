@@ -124,7 +124,7 @@ class ProposalV2Controller extends Controller
                               ->count();
 
         // Obter lista de clientes para filtro
-        $clients = Client::orderBy('name')->get();
+        $clients = Client::select('id', 'name')->orderBy('name')->get();
 
         // Calcular estatísticas para os cards do topo
         $stats = [
@@ -169,8 +169,8 @@ class ProposalV2Controller extends Controller
      */
     public function create()
     {
-        $clients = Client::where('is_lead', false)->orderBy('name')->get();
-        $leads   = Client::where('is_lead', true)->orderBy('name')->get();
+        $clients = Client::select('id', 'name', 'email')->where('is_lead', false)->orderBy('name')->get();
+        $leads   = Client::select('id', 'name', 'email')->where('is_lead', true)->orderBy('name')->get();
 
         // Obter marcas com modelos
         $brands = Brand::with(['models' => function ($query) {
@@ -235,8 +235,8 @@ class ProposalV2Controller extends Controller
         $groupOrder = AttributeGroup::orderBy('order')->get()->pluck('name')->toArray();
 
         return [
-            'clients' => Client::where('is_lead', false)->orderBy('name')->get(),
-            'leads' => Client::where('is_lead', true)->orderBy('name')->get(),
+            'clients' => Client::select('id', 'name', 'email')->where('is_lead', false)->orderBy('name')->get(),
+            'leads' => Client::select('id', 'name', 'email')->where('is_lead', true)->orderBy('name')->get(),
             'brands' => app(ProposalService::class)->catalog(),
             'attributes' => VehicleAttribute::orderBy('order')->get()
                 ->groupBy('attribute_group')
@@ -350,8 +350,8 @@ class ProposalV2Controller extends Controller
     {
         $proposal = Proposal::with('attributeValues')->findOrFail($id);
 
-        $clients = Client::where('is_lead', false)->orderBy('name')->get();
-        $leads   = Client::where('is_lead', true)->orderBy('name')->get();
+        $clients = Client::select('id', 'name', 'email')->where('is_lead', false)->orderBy('name')->get();
+        $leads   = Client::select('id', 'name', 'email')->where('is_lead', true)->orderBy('name')->get();
 
         // Obter marcas com modelos
         $brands = Brand::with(['models' => function ($query) {

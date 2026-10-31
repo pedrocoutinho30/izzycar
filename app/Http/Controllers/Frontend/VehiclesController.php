@@ -15,6 +15,41 @@ use App\Models\Partner;
 
 class VehiclesController extends Controller
 {
+    /** Filtros aceites na listagem pública (os únicos que entram na chave de cache). */
+    private const FILTERS = ['brand', 'model', 'year', 'fuel', 'price_max', 'km_max'];
+
+    /**
+     * Só as colunas que a listagem usa das fotos (sem legendas, timestamps, etc.), para a
+     * coleção em cache ser pequena. O que for a capa decide-se depois em keepOnlyCover().
+     */
+    private const COVER_PHOTO_RELATION = ['photos:id,v3_vehicle_id,path,is_cover,focal_x,focal_y,order_position'];
+
+    /** Hash estável dos filtros permitidos (ignora a ordem e valores vazios). */
+    private function filtersCacheHash(Request $request): string
+    {
+        $filters = [];
+        foreach (self::FILTERS as $name) {
+            $value = $request->input($name);
+            if (is_scalar($value) && trim((string) $value) !== '') {
+                $filters[$name] = trim((string) $value);
+            }
+        }
+
+        return md5(json_encode($filters));
+    }
+
+    /**
+     * Fica só com a foto que coverPhoto devolve (capa, ou a primeira por ordem se não houver capa)
+     * em cada viatura, para não guardar em cache todas as fotos. A listagem só mostra a capa.
+     */
+    private function keepOnlyCover($vehicles)
+    {
+        return $vehicles->each(function ($vehicle) {
+            $cover = $vehicle->coverPhoto;
+            $vehicle->setRelation('photos', $cover ? collect([$cover]) : collect());
+        });
+    }
+
 
     public function index()
     {
@@ -61,11 +96,11 @@ class VehiclesController extends Controller
     {
 
 
-        // Gerar chave única de cache a partir dos filtros da querystring
-        $cacheKey = VehicleCache::key('vehicles_' . md5(json_encode($request->all())));
+        // Chave de cache só com os filtros permitidos (utm, fbclid, page... não geram chaves novas)
+        $cacheKey = VehicleCache::key('vehicles_' . $this->filtersCacheHash($request));
         $vehicles = Cache::remember($cacheKey, 600, function () use ($request) {
             $query = V3Vehicle::query()
-                ->with('photos')
+                ->with(self::COVER_PHOTO_RELATION)
                 ->where('show_online', true); //->where('status', '!=', 'vendido')
 
             if ($request->brand) {
@@ -86,10 +121,10 @@ class VehiclesController extends Controller
             if ($request->filled('km_max')) {
                 $query->where('kilometers', '<=', (int) $request->km_max);
             }
-            return $query
+            return $this->keepOnlyCover($query
                 ->orderByRaw("CASE status WHEN 'em_stock' THEN 1 WHEN 'reservado' THEN 2 WHEN 'vendido' THEN 3 ELSE 4 END")
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->get());
         });
 
         return view('frontend.vehicles-list', compact('vehicles'));
@@ -98,14 +133,13 @@ class VehiclesController extends Controller
     public function filteredVehicles(Request $request)
     {
         // Gera chave única com base nos filtros aplicados
-        $cacheKey = VehicleCache::key('filtered_vehicles_' . md5(json_encode($request->all())));
+        $cacheKey = VehicleCache::key('filtered_vehicles_' . $this->filtersCacheHash($request));
 
         // Armazena no cache por 10 minutos (600 segundos)
         $vehicles = Cache::remember($cacheKey, 600, function () use ($request) {
             $query = V3Vehicle::query()
-                ->with('photos')
-                ->where('show_online', true)
-                ;
+                ->with(self::COVER_PHOTO_RELATION)
+                ->where('show_online', true);
 
             if ($request->filled('brand')) {
                 $query->where('brand', $request->brand);
@@ -126,11 +160,11 @@ class VehiclesController extends Controller
                 $query->where('kilometers', '<=', (int) $request->km_max);
             }
 
-            return $query
+            return $this->keepOnlyCover($query
                 ->orderByRaw("CASE status WHEN 'em_stock' THEN 1 WHEN 'reservado' THEN 2 WHEN 'vendido' THEN 3 ELSE 4 END")
                 ->orderBy('created_at', 'desc')
                 ->orderBy('id', 'desc')
-                ->get();
+                ->get());
         });
 
         return response()->json($vehicles->map(function ($v) {

@@ -16,6 +16,7 @@ use App\Models\V3VehicleDocument;
 use App\Models\V3VehiclePhoto;
 use App\Models\VehicleAttribute;
 use App\Models\VehicleAttributeValue;
+use App\Services\ImageOptimizerService;
 use App\Services\MovementService;
 use App\Services\SaleCalculator;
 use Illuminate\Http\Request;
@@ -323,7 +324,7 @@ class V3VehicleController extends Controller
     // PHOTOS
     // ═══════════════════════════════════════════════════
 
-    public function uploadPhoto(Request $request, $id)
+    public function uploadPhoto(Request $request, $id, ImageOptimizerService $optimizer)
     {
         $vehicle = V3Vehicle::findOrFail($id);
 
@@ -336,7 +337,8 @@ class V3VehicleController extends Controller
         $isFirst   = $vehicle->photos()->doesntExist();
 
         foreach ($request->file('fotos') as $file) {
-            $path = $file->store("v3-vehicles/{$vehicle->id}/photos", 'public');
+            // Redimensiona/comprime no upload (com fallback para o original).
+            $path = $optimizer->storeOptimized($file, "v3-vehicles/{$vehicle->id}/photos");
             V3VehiclePhoto::create([
                 'v3_vehicle_id'  => $vehicle->id,
                 'path'           => $path,
