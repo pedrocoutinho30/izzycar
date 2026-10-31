@@ -115,9 +115,15 @@ class NewsArticleController extends Controller
     public function deleteGalleryImage(Request $request, $id)
     {
         $article = NewsArticle::findOrFail($id);
-        $path    = $request->path;
+        $path    = (string) $request->input('path');
 
-        $gallery = array_values(array_filter($article->gallery ?? [], fn($g) => $g !== $path));
+        // Só ficheiros da galeria deste artigo, dentro de news/ e sem "..".
+        $ownGallery = $article->gallery ?? [];
+        if (!in_array($path, $ownGallery, true) || !str_starts_with($path, 'news/') || str_contains($path, '..')) {
+            return response()->json(['ok' => false], 422);
+        }
+
+        $gallery = array_values(array_filter($ownGallery, fn($g) => $g !== $path));
         Storage::disk('public')->delete($path);
         $article->update(['gallery' => $gallery]);
 

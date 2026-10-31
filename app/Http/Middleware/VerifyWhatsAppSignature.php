@@ -15,10 +15,19 @@ class VerifyWhatsAppSignature
 {
     public function handle(Request $request, Closure $next)
     {
+        $secret = (string) config('services.whatsapp.app_secret');
+
+        // Sem segredo configurado o HMAC seria calculável por qualquer pessoa: recusar sempre.
+        if ($secret === '') {
+            Log::error('WhatsApp webhook: WHATSAPP_APP_SECRET não está configurado; pedido recusado');
+
+            return response()->json(['error' => 'webhook not configured'], 403);
+        }
+
         $header = $request->header('X-Hub-Signature-256', '');
         $signature = str_starts_with($header, 'sha256=') ? substr($header, 7) : $header;
 
-        $expected = hash_hmac('sha256', $request->getContent(), (string) config('services.whatsapp.app_secret'));
+        $expected = hash_hmac('sha256', $request->getContent(), $secret);
 
         if (! $signature || ! hash_equals($expected, $signature)) {
             Log::warning('WhatsApp webhook: assinatura inválida', ['ip' => $request->ip()]);

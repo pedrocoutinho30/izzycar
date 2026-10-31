@@ -69,7 +69,7 @@ class SocialPostController extends Controller
         $post = RecommendationPost::findOrNew($request->input('id'));
 
         if ($request->hasFile('image')) {
-            if ($post->image) {
+            if ($post->image && $this->isOwnedPath($post->image)) {
                 Storage::disk('public')->delete($post->image);
             }
             $validated['image'] = $request->file('image')->store('recommendation-posts', 'public');
@@ -82,7 +82,13 @@ class SocialPostController extends Controller
         // "new:<índice>", este último referente à posição do ficheiro em
         // gallery_photos[]) — isto permite reordenar livremente fotos já
         // guardadas misturadas com fotos novas, sem perder a ordem escolhida.
-        $toRemove = array_filter(json_decode($request->input('remove_gallery_photos', '[]'), true) ?: []);
+        // Só se aceitam caminhos que já pertencem a este post (e dentro de recommendation-posts/):
+        // o cliente nunca escolhe que ficheiros do disco são apagados ou associados.
+        $ownPhotos = array_values(array_filter($post->gallery_photos ?? [], fn ($p) => $this->isOwnedPath($p)));
+        $toRemove = array_values(array_filter(
+            (array) (json_decode($request->input('remove_gallery_photos', '[]'), true) ?: []),
+            fn ($p) => is_string($p) && in_array($p, $ownPhotos, true)
+        ));
         foreach ($toRemove as $path) {
             Storage::disk('public')->delete($path);
         }
@@ -99,9 +105,12 @@ class SocialPostController extends Controller
         $order = json_decode($request->input('gallery_order', '[]'), true) ?: [];
         $galleryPhotos = [];
         foreach ($order as $token) {
+            if (!is_string($token)) {
+                continue;
+            }
             if (str_starts_with($token, 'existing:')) {
                 $path = substr($token, 9);
-                if (!in_array($path, $toRemove, true)) {
+                if (in_array($path, $ownPhotos, true) && !in_array($path, $toRemove, true)) {
                     $galleryPhotos[] = $path;
                 }
             } elseif (str_starts_with($token, 'new:')) {
@@ -124,13 +133,20 @@ class SocialPostController extends Controller
             ->with('success', $post->wasRecentlyCreated ? 'Post guardado com sucesso!' : 'Post atualizado com sucesso!');
     }
 
+    private function isOwnedPath(mixed $path): bool
+    {
+        return is_string($path) && str_starts_with($path, 'recommendation-posts/') && !str_contains($path, '..');
+    }
+
     public function destroy(RecommendationPost $post)
     {
-        if ($post->image) {
+        if ($post->image && $this->isOwnedPath($post->image)) {
             Storage::disk('public')->delete($post->image);
         }
         foreach ($post->gallery_photos ?? [] as $path) {
-            Storage::disk('public')->delete($path);
+            if ($this->isOwnedPath($path)) {
+                Storage::disk('public')->delete($path);
+            }
         }
         $post->delete();
 

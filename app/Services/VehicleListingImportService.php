@@ -17,13 +17,15 @@ class VehicleListingImportService
 {
     public function import(string $url): array
     {
-        $host = parse_url($url, PHP_URL_HOST) ?? '';
+        $parts = parse_url($url);
+        $host = strtolower($parts['host'] ?? '');
+        $scheme = strtolower($parts['scheme'] ?? '');
 
-        if (str_contains($host, 'autoscout24.')) {
+        if ($scheme === 'https' && $this->isAutoScout24Host($host)) {
             return $this->importFromAutoScout24($url);
         }
 
-        if (str_contains($host, 'mobile.de')) {
+        if (($host === 'mobile.de' || str_ends_with($host, '.mobile.de'))) {
             return [
                 'success' => false,
                 'supported' => false,
@@ -38,10 +40,19 @@ class VehicleListingImportService
         ];
     }
 
+    /**
+     * Host exato do AutoScout24 (autoscout24.<tld> ou www./subdomínio dele).
+     * Nada de str_contains: "autoscout24.evil.tld" não pode passar.
+     */
+    private function isAutoScout24Host(string $host): bool
+    {
+        return (bool) preg_match('/^(?:[a-z0-9-]+\.)?autoscout24\.(?:pt|es|de|fr|it|nl|be|at|ch|lu|pl|cz|com|co\.uk)$/', $host);
+    }
+
     private function importFromAutoScout24(string $url): array
     {
         try {
-            $client = new Client(['timeout' => 15]);
+            $client = new Client(['timeout' => 15, 'allow_redirects' => false]);
             $response = $client->get($url, [
                 'headers' => [
                     'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',

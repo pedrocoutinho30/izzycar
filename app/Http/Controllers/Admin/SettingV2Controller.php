@@ -71,7 +71,9 @@ class SettingV2Controller extends Controller
             'titulo' => 'required|string|max:255',
             'label' => 'required|string|max:255|unique:settings,label',
             'tipo' => 'required|string|in:text,number,boolean,image',
-            'valor' => 'nullable',
+            'valor' => $request->input('tipo') === 'image' && $request->hasFile('valor')
+                ? ['file', 'mimes:jpg,jpeg,png,webp,gif,ico', 'mimetypes:image/jpeg,image/png,image/webp,image/gif,image/x-icon,image/vnd.microsoft.icon', 'max:5120']
+                : ['nullable', 'string', 'max:65535'],
         ]);
 
         $data = [
@@ -84,8 +86,8 @@ class SettingV2Controller extends Controller
         // Upload de imagem se for o caso
         if ($request->tipo === 'image' && $request->hasFile('valor')) {
             $file = $request->file('valor');
-            $filename = $request->label . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('settings', $filename, 'public');
+            // Nome gerado (nunca o do cliente) e extensão decidida pelo servidor.
+            $path = $file->store('settings', 'public');
             $data['value'] = $path;
 
             if ($request->label === 'logo') {
@@ -113,7 +115,9 @@ class SettingV2Controller extends Controller
             'titulo' => 'required|string|max:255',
             'label' => 'required|string|max:255|unique:settings,label,' . $setting->id,
             'tipo' => 'required|string|in:text,number,boolean,image',
-            'valor' => 'nullable',
+            'valor' => $request->input('tipo') === 'image' && $request->hasFile('valor')
+                ? ['file', 'mimes:jpg,jpeg,png,webp,gif,ico', 'mimetypes:image/jpeg,image/png,image/webp,image/gif,image/x-icon,image/vnd.microsoft.icon', 'max:5120']
+                : ['nullable', 'string', 'max:65535'],
         ]);
 
         $data = [
@@ -126,13 +130,12 @@ class SettingV2Controller extends Controller
         // Upload de nova imagem
         if ($request->tipo === 'image' && $request->hasFile('valor')) {
             // Apagar imagem antiga
-            if ($setting->value && Storage::disk('public')->exists($setting->value)) {
+            if ($setting->value && str_starts_with($setting->value, 'settings/') && !str_contains($setting->value, '..') && Storage::disk('public')->exists($setting->value)) {
                 Storage::disk('public')->delete($setting->value);
             }
 
             $file = $request->file('valor');
-            $filename = $setting->label . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('settings', $filename, 'public');
+            $path = $file->store('settings', 'public');
             $data['value'] = $path;
 
             if ($setting->label === 'logo') {

@@ -172,6 +172,14 @@ class UserV2Controller extends Controller
         }
     }
 
+    /** Quem não é admin não pode alterar nem eliminar administradores. */
+    private function ensureCanManageUser(User $target): void
+    {
+        if ($target->hasRole('admin') && !auth()->user()?->hasRole('admin')) {
+            abort(403, 'Só um administrador pode alterar ou eliminar administradores.');
+        }
+    }
+
     /** Só quem gere utilizadores altera o acesso mobile, e nunca o próprio (exceto admin). */
     private function canManageMobileAccess(User $target): bool
     {
@@ -222,6 +230,7 @@ class UserV2Controller extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
+        $this->ensureCanManageUser($user);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -277,6 +286,7 @@ class UserV2Controller extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
+        $this->ensureCanManageUser($user);
 
         // Não permitir eliminar o próprio utilizador
         if ($user->id === auth()->id()) {

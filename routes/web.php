@@ -99,7 +99,7 @@ Route::post('/newsletter/subscribe', [App\Http\Controllers\Admin\NewsletterContr
     ->middleware(['throttle:5,1', 'antispam'])
     ->name('newsletter.subscribe');
 
-Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth', 'restrictAngariador']], function () {
     Lfm::routes();
 });
 
