@@ -91,7 +91,7 @@ class TradeInController extends Controller
             ]);
         }
 
-        LeadActivity::log($clientExist->id, 'Pedido de retoma submetido', 'Formulário de retoma preenchido em izzycar.pt.', 'bi-arrow-left-right', 'primary');
+        LeadActivity::log($clientExist->id, 'Pedido de retoma submetido', "{$validated['brand']} {$validated['model']} ({$validated['year']}), {$validated['km']} km. Formulário de retoma preenchido em izzycar.pt.", 'bi-arrow-left-right', 'primary');
 
         // Montar corpo do email
         $body = "Novo Pedido de Retoma\n\n";
@@ -128,10 +128,15 @@ class TradeInController extends Controller
         }
 
         // Enviar email
-        Mail::raw($body, function ($message) {
-            $message->to('geral@izzycar.pt')
-                ->subject('Novo Pedido de Retoma');
-        });
+        // A lead e a atividade já ficaram guardadas: uma falha de envio só fica no log.
+        try {
+            Mail::raw($body, function ($message) {
+                $message->to('geral@izzycar.pt')
+                    ->subject('Novo Pedido de Retoma');
+            });
+        } catch (\Throwable $e) {
+            \Log::error('Pedido de retoma: falha ao enviar email: ' . $e->getMessage(), ['client_id' => $clientExist->id]);
+        }
 
         return response()->json([
             'status' => 'success',

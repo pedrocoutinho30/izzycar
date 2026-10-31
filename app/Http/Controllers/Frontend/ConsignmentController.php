@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Services\PrivateFiles;
+use App\Models\Client;
 use App\Models\ConsignmentEvaluation;
+use App\Models\LeadActivity;
+use App\Services\ClientMatcher;
 use App\Models\Page;
 use App\Http\Controllers\Frontend\PageController;
 
@@ -73,7 +76,7 @@ class ConsignmentController extends Controller
                         $photoMeta[]   = $photo->getClientOriginalName() . ' (' . round($photo->getSize() / 1024) . ' KB)';
                     }
                 } catch (\Throwable $e) {
-                    \Log::warning('ConsignmentEvaluation photo skip: ' . $e->getMessage());
+                    \Log::warning('ConsignmentEvaluation photo skip: ' . get_class($e));
                 }
             }
 
@@ -95,8 +98,8 @@ class ConsignmentController extends Controller
             $body .= "  Matricula:      {$validated['plate']}\n";
             $body .= "  Combustivel:    {$validated['fuel']}\n";
             $body .= "  Transmissao:    {$validated['gearbox']}\n";
-            $body .= "  Potencia:       " . ($validated['power'] ? $validated['power'] . ' cv' : '-') . "\n";
-            $body .= "  Cilindrada:     " . ($validated['displacement'] ? $validated['displacement'] . ' cc' : '-') . "\n";
+            $body .= "  Potencia:       " . (!empty($validated['power']) ? $validated['power'] . ' cv' : '-') . "\n";
+            $body .= "  Cilindrada:     " . (!empty($validated['displacement']) ? $validated['displacement'] . ' cc' : '-') . "\n";
             $body .= "  Cor:            " . ($validated['color'] ?? '-') . "\n\n";
             $body .= "ESTADO\n";
             $body .= "  Estado geral:   {$validated['condition']}\n";
@@ -112,20 +115,11 @@ class ConsignmentController extends Controller
             $body .= "  Telemovel:      {$validated['phone']}\n";
             $body .= "  E-mail:         {$validated['email']}\n";
             $body .= "  Localizacao:    " . ($validated['location'] ?? '-') . "\n";
-            $body .= "  Valor esperado: " . ($validated['price_expectation'] ? number_format((int) $validated['price_expectation'], 0, ',', '.') . ' EUR' : '-') . "\n";
+            $body .= "  Valor esperado: " . (!empty($validated['price_expectation']) ? number_format((int) $validated['price_expectation'], 0, ',', '.') . ' EUR' : '-') . "\n";
 
             $subject = "Avaliacao Consignacao - {$validated['brand']} {$validated['model']} ({$ref})";
 
-            Mail::raw($body, function ($message) use ($subject, $storedPaths) {
-                $message->to('geral@izzycar.pt')->subject($subject);
-                foreach ($storedPaths as $path) {
-                    if ($absolutePath = PrivateFiles::caminhoAbsoluto($path)) {
-                        $message->attach($absolutePath);
-                    }
-                }
-            });
-
-            // Guarda na base de dados
+            // Guarda na base de dados (antes do email, para um erro de envio não perder o pedido)
             $relativePhotoPaths = $storedPaths;
 
             ConsignmentEvaluation::create([
@@ -156,8 +150,31 @@ class ConsignmentController extends Controller
                 'status'          => 'novo',
             ]);
 
+            // Cria/reaproveita a lead (mesma regra de duplicados dos outros formulários públicos)
+            // e deixa o pedido na timeline. Uma falha aqui não impede o resto do pedido.
+            try {
+                $this->registarLead($validated, $ref);
+            } catch (\Throwable $e) {
+                \Log::error('ConsignmentEvaluation lead: ' . $e->getMessage(), ['reference' => $ref]);
+            }
+
+            // O email é um aviso: o pedido já está guardado, por isso uma falha de envio só fica no log.
+            try {
+                Mail::raw($body, function ($message) use ($subject, $storedPaths) {
+                    $message->to('geral@izzycar.pt')->subject($subject);
+                    foreach ($storedPaths as $path) {
+                        if ($absolutePath = PrivateFiles::caminhoAbsoluto($path)) {
+                            $message->attach($absolutePath);
+                        }
+                    }
+                });
+            } catch (\Throwable $e) {
+                \Log::error('ConsignmentEvaluation email: ' . $e->getMessage(), ['reference' => $ref]);
+            }
+
         } catch (\Throwable $e) {
-            \Log::error('ConsignmentEvaluation: ' . $e->getMessage(), [
+            // Sem getMessage(): erros de BD/email trazem os dados do cliente na mensagem.
+            \Log::error('ConsignmentEvaluation: ' . get_class($e), [
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
@@ -168,6 +185,42 @@ class ConsignmentController extends Controller
         }
 
         return response()->json(['status' => 'success']);
+    }
+
+    /** Lead de consignação: reaproveita o cliente por email/telefone ou cria uma lead nova. */
+    private function registarLead(array $validated, string $ref): void
+    {
+        $matcher = app(ClientMatcher::class);
+        $match   = $matcher->find($validated['email'], $validated['phone']);
+
+        if ($match) {
+            $client = $match->client;
+            $matcher->complete($client, [
+                'name'                    => $validated['name'],
+                'email'                   => $validated['email'],
+                'phone'                   => $validated['phone'],
+                'data_processing_consent' => true,
+            ]);
+            $matcher->logMatch($match, $validated['name'], 'Pedido de consignação');
+        } else {
+            $client = Client::create([
+                'name'                    => $validated['name'],
+                'phone'                   => $validated['phone'],
+                'email'                   => $validated['email'],
+                'origin'                  => 'Consignação',
+                'is_lead'                 => true,
+                'lead_source'             => 'consignacao',
+                'data_processing_consent' => true,
+            ]);
+        }
+
+        LeadActivity::log(
+            $client->id,
+            'Pedido de avaliação para consignação submetido',
+            "{$validated['brand']} {$validated['model']} ({$validated['year']}), referência {$ref}.",
+            'bi-car-front-fill',
+            'primary'
+        );
     }
 
     public function getConsignmentPage()

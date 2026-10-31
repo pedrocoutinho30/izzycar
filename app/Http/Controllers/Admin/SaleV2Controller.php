@@ -110,6 +110,16 @@ class SaleV2Controller extends Controller
      */
     public function create()
     {
+        // O registo de vendas vive no separador "Venda" da viatura V3 (V3VehicleController::storeSale,
+        // com transação de stock, movimentos e SaleCalculator). Este formulário só serve vendas de
+        // Vehicle V1 (legado) e deixou de ser o caminho normal: encaminha-se para a lista de viaturas
+        // em stock, onde se escolhe a viatura e se abre o separador Venda.
+        if (! request()->boolean('legacy')) {
+            return redirect()
+                ->route('admin.v3.vehicles.index', ['status' => 'em_stock'])
+                ->with('success', 'Para registar uma venda, escolha a viatura e abra o separador "Venda".');
+        }
+
         // Apenas veículos que não foram vendidos
         $vehicles = Vehicle::doesntHave('sale')
             ->select('id', 'reference', 'brand', 'model', 'year')
@@ -159,6 +169,13 @@ class SaleV2Controller extends Controller
     public function edit($id)
     {
         $sale = Sale::with(['vehicle', 'client'])->findOrFail($id);
+
+        // Vendas de viaturas V3 editam-se no separador Venda da própria viatura.
+        if ($sale->v3_vehicle_id) {
+            return redirect()
+                ->route('admin.v3.vehicles.edit', $sale->v3_vehicle_id)
+                ->with('return_tab', 'sale');
+        }
 
         // Veículos disponíveis (incluindo o da venda atual)
         $vehicles = Vehicle::where(function ($query) use ($sale) {

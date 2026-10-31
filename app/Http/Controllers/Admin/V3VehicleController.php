@@ -850,6 +850,11 @@ class V3VehicleController extends Controller
 
         $legalization->update(['steps_completed' => $completed]);
 
+        // Ao concluir o passo 5 cria a tarefa do Modelo 9 IMT (idempotente), como no processo de legalização
+        if ($step === 5 && !$wasDone) {
+            app(\App\Services\LegalizationTaskService::class)->ensureModelo9Task($legalization);
+        }
+
         return response()->json([
             'completed' => $completed,
             'progress'  => $legalization->progressPercent(),

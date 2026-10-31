@@ -14,7 +14,7 @@
     'subtitle' => 'Detalhe do cliente',
     'extraActions' => [
         ['href' => route('admin.v2.proposals.create', ['client_id' => $client->id]), 'label' => 'Nova Cotação',    'icon' => 'bi-file-earmark-plus', 'class' => 'btn-secondary-modern'],
-        ['href' => route('admin.v2.sales.create',     ['client_id' => $client->id]), 'label' => 'Registar Venda', 'icon' => 'bi-cash-coin',         'class' => 'btn-secondary-modern'],
+        ['href' => route('admin.v2.sales.create'), 'label' => 'Registar Venda', 'icon' => 'bi-cash-coin',         'class' => 'btn-secondary-modern'],
     ],
     'actionHref'  => route('admin.v2.clients.edit', $client->id),
     'actionLabel' => 'Editar Cliente',

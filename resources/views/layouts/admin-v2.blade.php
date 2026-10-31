@@ -969,6 +969,16 @@
         <nav class="sidebar-nav">
         @if(!auth()->user()->isAngariadorOnly())
             @php
+                // Contadores dos badges do menu (lateral e inferior mobile): cada um calcula-se no
+                // máximo uma vez por pedido e só se o item do menu for mesmo desenhado.
+                $navBadgeCache = [];
+                $navBadge = function (string $key) use (&$navBadgeCache) {
+                    return $navBadgeCache[$key] ??= match ($key) {
+                        'leads'       => \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(),
+                        'proposals'   => \App\Models\Proposal::where('status', 'Pendente')->count(),
+                        'simulations' => \App\Models\CostSimulator::where('read', 0)->count(),
+                    };
+                };
                 $navGroups = [
                     'funil' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.form-proposals.*', 'admin.v2.proposals.*', 'admin.v2.converted-proposals.*', 'admin.v2.clients.*', 'admin.v2.cost-simulators.*'],
                     'operacoes' => ['admin.v3.vehicles.*', 'admin.v3.inspections.*', 'admin.legalizations.*', 'admin.transport-quotes.*', 'admin.v2.sales.*', 'admin.v2.movements.*', 'admin.v2.expenses.*', 'admin.tasks.*'],
@@ -1006,7 +1016,7 @@
                     <a href="{{ route('admin.v2.leads.index') }}" class="nav-link {{ request()->routeIs('admin.v2.leads.*') ? 'active' : '' }}">
                         <i class="bi bi-funnel"></i>
                         <span>Leads</span>
-                        @php $leadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
+                        @php $leadsCount = $navBadge('leads'); @endphp
                         <span class="nav-badge" id="leads-nav-badge" {{ $leadsCount === 0 ? 'style=display:none' : '' }}>{{ $leadsCount }}</span>
                     </a>
                 </div>
@@ -1024,7 +1034,7 @@
                     <a href="{{ route('admin.v2.proposals.index') }}" class="nav-link {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-text"></i>
                         <span>Cotações</span>
-                        @php $pendingCount = \App\Models\Proposal::where('status', 'Pendente')->count(); @endphp
+                        @php $pendingCount = $navBadge('proposals'); @endphp
                         @if($pendingCount > 0)
                         <span class="nav-badge">{{ $pendingCount }}</span>
                         @endif
@@ -1044,7 +1054,7 @@
                     <a href="{{ route('admin.v2.cost-simulators.index') }}" class="nav-link {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
                         <i class="bi bi-currency-dollar"></i>
                         <span>Simulador Custos</span>
-                        @php $newSimulationsCount = \App\Models\CostSimulator::where('read', 0)->count(); @endphp
+                        @php $newSimulationsCount = $navBadge('simulations'); @endphp
                         @if($newSimulationsCount > 0)
                         <span class="nav-badge">{{ $newSimulationsCount }}</span>
                         @endif
@@ -1464,7 +1474,7 @@
                 <a href="{{ route('admin.v2.leads.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.leads.*') ? 'active' : '' }}">
                     <i class="bi bi-funnel"></i>
                     <span>Leads</span>
-                    @php $mLeadsCount = \App\Models\Client::where('is_lead', true)->whereNotIn('lead_status', ['fria', 'perdida'])->count(); @endphp
+                    @php $mLeadsCount = $navBadge('leads'); @endphp
                     @if($mLeadsCount > 0)<span class="abn-badge">{{ $mLeadsCount }}</span>@endif
                 </a>
                 @endcanroute
@@ -1478,7 +1488,7 @@
                 <a href="{{ route('admin.v2.proposals.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.proposals.*') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text"></i>
                     <span>Cotações</span>
-                    @php $mPendingCount = \App\Models\Proposal::where('status', 'Pendente')->count(); @endphp
+                    @php $mPendingCount = $navBadge('proposals'); @endphp
                     @if($mPendingCount > 0)<span class="abn-badge">{{ $mPendingCount }}</span>@endif
                 </a>
                 @endcanroute
@@ -1492,7 +1502,7 @@
                 <a href="{{ route('admin.v2.cost-simulators.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.cost-simulators.*') ? 'active' : '' }}">
                     <i class="bi bi-currency-dollar"></i>
                     <span>Simulador Custos</span>
-                    @php $mNewSimulationsCount = \App\Models\CostSimulator::where('read', 0)->count(); @endphp
+                    @php $mNewSimulationsCount = $navBadge('simulations'); @endphp
                     @if($mNewSimulationsCount > 0)<span class="abn-badge">{{ $mNewSimulationsCount }}</span>@endif
                 </a>
                 @endcanroute

@@ -169,8 +169,7 @@ class LegalizationController extends Controller
         // Ao concluir o passo 5 cria automaticamente a tarefa de entrega do Modelo 9 IMT
         $taskCreated = false;
         if ($step === 5 && !$wasCompleted) {
-            $this->createModelo9Task($legalization);
-            $taskCreated = true;
+            $taskCreated = $this->createModelo9Task($legalization);
         }
 
         return response()->json([
@@ -197,8 +196,7 @@ class LegalizationController extends Controller
         // Avançar para além do passo 5 conclui-o: mesma tarefa que ao marcá-lo à mão.
         $taskCreated = false;
         if (in_array(5, $completed) && !in_array(5, $before)) {
-            $this->createModelo9Task($legalization);
-            $taskCreated = true;
+            $taskCreated = $this->createModelo9Task($legalization);
         }
 
         return response()->json([
@@ -209,21 +207,10 @@ class LegalizationController extends Controller
         ]);
     }
 
-    private function createModelo9Task(Legalization $legalization): void
+    /** Cria a tarefa do Modelo 9 se ainda não houver uma em aberto; devolve se criou. */
+    private function createModelo9Task(Legalization $legalization): bool
     {
-        $legalization->loadMissing('client');
-
-        $clienteNome = $legalization->client?->name ?? 'Cliente sem nome';
-        $matricula   = $legalization->matricula ?: 'matrícula não registada';
-        $veiculo     = trim($legalization->marca . ' ' . $legalization->modelo);
-
-        \App\Models\Task::create([
-            'title'         => 'Entregar Modelo 9 IMT — ' . $veiculo,
-            'description'   => "Entregar o Modelo 9 no IMT referente ao processo de legalização #{$legalization->id} do veículo {$veiculo} ({$matricula}), do cliente {$clienteNome}.",
-            'due_date'      => now()->addDays(30)->toDateString(),
-            'reminder_date' => now()->addDays(15)->toDateString(),
-            'status'        => 'pendente',
-        ]);
+        return app(\App\Services\LegalizationTaskService::class)->ensureModelo9Task($legalization) !== null;
     }
 
     // ---------------------------------------------------------------
