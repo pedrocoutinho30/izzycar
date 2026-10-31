@@ -55,15 +55,15 @@ class DashboardV2Controller extends Controller
         
         // Clientes totais
         $totalClients = Client::count();
-        $newClientsThisMonth = Client::whereMonth('created_at', now()->month)->count();
+        $newClientsThisMonth = Client::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count();
 
         // Veículos
         $totalVehicles = Vehicle::count();
         $vehiclesAvailable = Vehicle::where('show_online', true)->count();
 
         // Vendas este mês
-        $salesThisMonth = Sale::whereMonth('created_at', now()->month)->count();
-        $salesRevenueThisMonth = Sale::whereMonth('created_at', now()->month)->sum('sale_price');
+        $salesThisMonth = Sale::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count();
+        $salesRevenueThisMonth = Sale::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->sum('sale_price');
         // ============================================================
         // CARDS DE ESTATÍSTICAS
         // ============================================================
