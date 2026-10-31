@@ -47,8 +47,7 @@ class ClassifyRadarListingTrims extends Command
             RadarListing::where('radar_search_id', $searchId)
                 ->whereNull('trim_classified_at')
                 ->whereNull('removed_at')
-                ->orderBy('id')
-                ->chunk(self::BATCH_SIZE, function ($batch) use ($ai, $search, &$processed, $limit) {
+                ->chunkById(self::BATCH_SIZE, function ($batch) use ($ai, $search, &$processed, $limit) {
                     if ($processed >= $limit) {
                         return false;
                     }
@@ -71,7 +70,7 @@ class ClassifyRadarListingTrims extends Command
 
                     $processed += $batch->count();
                     $this->info("[{$search->name}] classificados {$batch->count()} anúncios (total: {$processed}).");
-                });
+                }, 'id');
         }
 
         $this->info("Concluído. {$processed} anúncios classificados.");

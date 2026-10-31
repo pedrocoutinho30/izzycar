@@ -71,7 +71,7 @@ class ConvertedProposalService
         $client = Client::find($convertedProposal->client_id);
         if ($notify && $client && filled($client->email)) {
             try {
-                Mail::to($client->email)->bcc('izzycarpt@gmail.com')->send(
+                Mail::to($client->email)->bcc(config('mail.bcc_address'))->send(
                     new ProposalStatusUpdatedMail($convertedProposal, $oldStatus, $status, $client->name, $convertedProposal->matricula_destino)
                 );
                 $notified = true;

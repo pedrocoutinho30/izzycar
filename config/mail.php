@@ -82,6 +82,11 @@ return [
     |
     */
 
+    /*
+    | Cópia oculta (BCC) das notificações de estado das cotações convertidas.
+    */
+    'bcc_address' => env('MAIL_BCC_ADDRESS', 'izzycarpt@gmail.com'),
+
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
