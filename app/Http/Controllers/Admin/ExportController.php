@@ -158,7 +158,7 @@ class ExportController extends Controller
     private function csvRow(array $fields): void
     {
         $out = fopen('php://output', 'w');
-        fputcsv($out, $fields, ';');
+        fputcsv($out, \App\Support\CsvSanitizer::row($fields), ';');
         fclose($out);
     }
 }

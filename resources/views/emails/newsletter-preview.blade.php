@@ -690,7 +690,7 @@
                 <a href="https://izzycar.pt">Home</a> •
                 <a href="https://izzycar.pt/importacao">Importação</a> •
                 <a href="https://izzycar.pt/legalizacao">Legalização</a> •
-                <a href="{{ route('newsletter.unsubscribe') }}?email={{ $previewClient['email']  }}&name={{ $previewClient['name']  }}">Cancelar subscrição</a>
+                <a href="{{ \App\Support\NewsletterLinks::unsubscribe($previewClient['email'] ?? '') }}">Cancelar subscrição</a>
             </div>
 
             <div style="margin-top: 20px; font-size: 12px; color: rgba(255,255,255,0.5);">

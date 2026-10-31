@@ -3,54 +3,54 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Mail\NewsletterMail;
+use App\Mail\NewsletterConfirmation;
 use App\Mail\NewsletterUnsubscribeNotification;
 use App\Models\Client;
-use App\Models\NewsletterOffer;
+use App\Services\ClientMatcher;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 class NewsletterController extends Controller
 {
+    /**
+     * Cancelamento: só com URL assinada (os links dos emails já o são).
+     * Um link sem assinatura válida (emails antigos ou email escrito à mão)
+     * não altera nada: mostra uma página 403 a explicar como proceder.
+     */
     public function unsubscribe(Request $request)
     {
-        $data = $request->validate([
-            'email' => ['nullable', 'email'],
-            'name'  => ['nullable', 'string', 'max:255'],
-        ]);
+        if (!$request->hasValidSignature()) {
+            return response()->view('newsletter.mensagem', [
+                'titulo'   => 'Link inválido',
+                'mensagem' => 'Este link de cancelamento não é válido ou foi alterado. Use o link "Deixar de subscrever" do email mais recente que recebeu ou escreva-nos para ' . (config('mail.from.address') ?: 'geral@izzycar.pt') . ' e tratamos do pedido.',
+            ], 403);
+        }
 
-        $email = $data['email'] ?? null;
+        $email = app(ClientMatcher::class)->normalizeEmail($request->query('email'));
 
-        if ($email) {
+        if ($email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $client = Client::where('email', $email)->first();
 
-            if ($client) {
+            // Só avisa a administração (e só regista) quando o consentimento mudou de facto.
+            if ($client && $client->newsletter_consent) {
                 $client->update(['newsletter_consent' => false]);
-                Log::info('Newsletter consent atualizado para false', [
-                    'client_id' => $client->id,
-                    'email'     => $client->email,
-                ]);
-            }
+                Log::info('Newsletter consent atualizado para false', ['client_id' => $client->id]);
 
-            $adminEmail = config('mail.from.address');
+                $adminEmail = config('mail.from.address');
 
-            if (!empty($adminEmail)) {
-                try {
-                    Mail::to($adminEmail)->send(
-                        new NewsletterUnsubscribeNotification(
-                            $email,
-                            $client?->name ?? $data['name'] ?? 'N/A'
-                        )
-                    );
-                    Log::info('Email de notificação de unsubscribe enviado ao admin', ['email' => $email]);
-                } catch (\Exception $e) {
-                    Log::error('Erro ao enviar notificação de unsubscribe', [
-                        'error' => $e->getMessage(),
-                        'email' => $email,
-                    ]);
+                if (!empty($adminEmail)) {
+                    try {
+                        Mail::to($adminEmail)->send(
+                            new NewsletterUnsubscribeNotification($email, $client->name ?: 'N/A')
+                        );
+                    } catch (\Exception $e) {
+                        Log::error('Erro ao enviar notificação de unsubscribe', [
+                            'error'     => $e->getMessage(),
+                            'client_id' => $client->id,
+                        ]);
+                    }
                 }
             }
         }
@@ -58,6 +58,35 @@ class NewsletterController extends Controller
         return response()->view('newsletter.unsubscribe');
     }
 
+    /** Confirmação (double opt-in) a partir do link assinado enviado por email. */
+    public function confirm(Request $request, int $client)
+    {
+        if (!$request->hasValidSignature()) {
+            return response()->view('newsletter.mensagem', [
+                'titulo'   => 'Link inválido ou expirado',
+                'mensagem' => 'Este link de confirmação não é válido ou já expirou. Volte a subscrever a newsletter no site.',
+            ], 403);
+        }
+
+        $model = Client::find($client);
+
+        if ($model && !$model->newsletter_consent) {
+            $model->update(['newsletter_consent' => true]);
+            Log::info('Newsletter confirmada por email', ['client_id' => $model->id]);
+        }
+
+        return response()->view('newsletter.mensagem', [
+            'titulo'   => 'Subscrição confirmada',
+            'mensagem' => 'Obrigado! A sua subscrição da newsletter da Izzycar está confirmada.',
+        ]);
+    }
+
+    /**
+     * Subscrição do rodapé com confirmação por email. Nunca liga o consentimento
+     * aqui: cria o contacto sem consentimento (ou deixa o existente como está) e
+     * envia um link assinado. A resposta é sempre a mesma, para não revelar se o
+     * email já existe.
+     */
     public function subscribe(Request $request): JsonResponse
     {
         try {
@@ -72,23 +101,30 @@ class NewsletterController extends Controller
             ], 422);
         }
 
-        $client = app(\App\Services\ClientMatcher::class)->find($data['email'], null)?->client;
+        $client = app(ClientMatcher::class)->find($data['email'], null)?->client;
 
-        if ($client) {
-            $client->update(['newsletter_consent' => true]);
-        } else {
-            Client::create([
+        if (!$client) {
+            $client = Client::create([
                 'email'              => $data['email'],
                 'name'               => $data['name'] ?? '',
-                'newsletter_consent' => true,
+                'newsletter_consent' => false,
                 'origin'             => 'Subscrição Rodapé',
                 'is_lead'            => true,
                 'lead_source'        => 'newsletter_footer',
             ]);
         }
 
-        Log::info('Newsletter subscrita via rodapé', ['email' => $data['email']]);
+        // Quem já deu consentimento não recebe outro pedido.
+        if (!$client->newsletter_consent && $client->email) {
+            try {
+                Mail::to($client->email)->send(new NewsletterConfirmation((string) $client->name, $client->id));
+            } catch (\Exception $e) {
+                Log::error('Erro ao enviar confirmação de newsletter', ['client_id' => $client->id, 'error' => $e->getMessage()]);
+            }
+        }
 
-        return response()->json(['success' => true, 'message' => 'Subscrito com sucesso!']);
+        Log::info('Newsletter: pedido de subscrição via rodapé', ['client_id' => $client->id]);
+
+        return response()->json(['success' => true, 'message' => 'Enviámos-lhe um email para confirmar a subscrição.']);
     }
 }

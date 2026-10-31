@@ -139,6 +139,7 @@ class NewsletterManagementController extends Controller
 
         $clientIds = $request->input('client_ids');
         $clients   = Client::whereIn('id', $clientIds)->get()->keyBy('id');
+        $noConsent = 0;
 
         $sent    = 0;
         $skipped = 0;
@@ -147,6 +148,12 @@ class NewsletterManagementController extends Controller
         foreach ($clientIds as $clientId) {
             $client = $clients->get($clientId);
             if (!$client) {
+                continue;
+            }
+
+            // O consentimento valida-se no servidor (a lista do formulário não é de confiança).
+            if (!$client->newsletter_consent || !filter_var($client->email, FILTER_VALIDATE_EMAIL)) {
+                $noConsent++;
                 continue;
             }
 
@@ -175,16 +182,19 @@ class NewsletterManagementController extends Controller
                 );
 
                 $sent++;
-                Log::info("Newsletter #{$id} enviada para {$client->email}");
+                Log::info("Newsletter #{$id} enviada ao cliente #{$client->id}");
             } catch (\Exception $e) {
                 $errors++;
-                Log::error("Erro ao enviar newsletter #{$id} para {$client->email}: " . $e->getMessage());
+                Log::error("Erro ao enviar newsletter #{$id} ao cliente #{$client->id}: " . $e->getMessage());
             }
         }
 
         $message = "Newsletter enviada com sucesso para {$sent} cliente(s).";
         if ($skipped > 0) {
             $message .= " {$skipped} cliente(s) ignorado(s) (já tinham recebido).";
+        }
+        if ($noConsent > 0) {
+            $message .= " {$noConsent} cliente(s) ignorado(s) (sem consentimento de newsletter ou sem email válido).";
         }
         if ($errors > 0) {
             $message .= " {$errors} erro(s) ao enviar.";

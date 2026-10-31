@@ -55,7 +55,7 @@ class RichTextTest extends TestCase
     {
         $html = '<p>Olá <span style="color: ' . $color . ';">mundo</span></p>';
 
-        $this->assertSame('<p>Olá <span style="color: ' . self::GOLD . ';">mundo</span></p>', RichText::display($html));
+        $this->assertSame('<p>Olá <span style="color: ' . self::GOLD . ';">mundo</span></p>', RichText::recolor($html));
     }
 
     #[DataProvider('notReds')]
@@ -63,7 +63,7 @@ class RichTextTest extends TestCase
     {
         $html = '<span style="color: ' . $color . ';">x</span>';
 
-        $this->assertSame($html, RichText::display($html));
+        $this->assertSame($html, RichText::recolor($html));
     }
 
     public function test_so_a_cor_do_texto_e_trocada_e_o_resto_do_estilo_fica(): void
@@ -72,7 +72,7 @@ class RichTextTest extends TestCase
 
         $this->assertSame(
             '<span style="font-size:14px; color:' . self::GOLD . '; background-color:#990000; border-color: red; text-decoration-color:#900">x</span>',
-            RichText::display($html)
+            RichText::recolor($html)
         );
     }
 
@@ -80,11 +80,11 @@ class RichTextTest extends TestCase
     {
         $this->assertSame(
             '<b style="color : ' . self::GOLD . ' !important">x</b>',
-            RichText::display('<b style="color : #990000 !important">x</b>')
+            RichText::recolor('<b style="color : #990000 !important">x</b>')
         );
         $this->assertSame(
             '<b style="COLOR:' . self::GOLD . '">x</b>',
-            RichText::display('<b style="COLOR:#990000">x</b>')
+            RichText::recolor('<b style="COLOR:#990000">x</b>')
         );
     }
 
@@ -92,15 +92,15 @@ class RichTextTest extends TestCase
     {
         $this->assertSame(
             "<span style='color:" . self::GOLD . "'>x</span>",
-            RichText::display("<span style='color:#990000'>x</span>")
+            RichText::recolor("<span style='color:#990000'>x</span>")
         );
     }
 
     public function test_tag_font_usa_hex_literal_porque_o_atributo_nao_aceita_var(): void
     {
-        $this->assertSame('<font color="#92642D">x</font>', RichText::display('<font color="#990000">x</font>'));
-        $this->assertSame("<font face='Arial' color='#92642D'>x</font>", RichText::display("<font face='Arial' color='red'>x</font>"));
-        $this->assertSame('<font color="green">x</font>', RichText::display('<font color="green">x</font>'));
+        $this->assertSame('<font color="#92642D">x</font>', RichText::recolor('<font color="#990000">x</font>'));
+        $this->assertSame("<font face='Arial' color='#92642D'>x</font>", RichText::recolor("<font face='Arial' color='red'>x</font>"));
+        $this->assertSame('<font color="green">x</font>', RichText::recolor('<font color="green">x</font>'));
     }
 
     public function test_varios_vermelhos_e_outras_cores_no_mesmo_texto(): void
@@ -109,7 +109,7 @@ class RichTextTest extends TestCase
 
         $this->assertSame(
             '<p style="color:' . self::GOLD . '">a</p><p style="color:#2e7d32">b</p><span style="color: ' . self::GOLD . '">c</span>',
-            RichText::display($html)
+            RichText::recolor($html)
         );
     }
 
@@ -117,7 +117,7 @@ class RichTextTest extends TestCase
     {
         $html = '<p>Use color: #990000 para vermelho</p>';
 
-        $this->assertSame($html, RichText::display($html));
+        $this->assertSame($html, RichText::recolor($html));
     }
 
     public function test_vazio_e_nulo(): void

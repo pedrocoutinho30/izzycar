@@ -127,7 +127,12 @@ class PhaseThreeFunnelTest extends TestCase
 
         $this->postJson(route('newsletter.subscribe'), ['email' => 'MARIA@Example.com'])->assertOk();
 
+        // Double opt-in: encontra o cliente sem distinguir maiúsculas, mas só o link
+        // assinado enviado por email liga o consentimento.
         $this->assertSame(1, Client::count());
+        $this->assertFalse((bool) $client->fresh()->newsletter_consent);
+
+        $this->get(\App\Support\NewsletterLinks::confirm($client->id))->assertOk();
         $this->assertTrue((bool) $client->fresh()->newsletter_consent);
     }
 

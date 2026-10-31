@@ -93,7 +93,13 @@ Route::post('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegi
     ->name('public.angariador.register.store');
 
 Route::get('/newsletter/unsubscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'unsubscribe'])
+    ->middleware('throttle:10,1')
     ->name('newsletter.unsubscribe');
+
+Route::get('/newsletter/confirmar/{client}', [App\Http\Controllers\Admin\NewsletterController::class, 'confirm'])
+    ->whereNumber('client')
+    ->middleware('throttle:10,1')
+    ->name('newsletter.confirm');
 
 Route::post('/newsletter/subscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'subscribe'])
     ->middleware(['throttle:5,1', 'antispam'])

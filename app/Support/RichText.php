@@ -2,12 +2,20 @@
 
 namespace App\Support;
 
+use HTMLPurifier;
+use HTMLPurifier_Config;
+
 /**
  * Texto formatado que vem da base de dados (escrito no editor do backoffice) e
  * é impresso sem escape. O editor grava as cores dentro do próprio texto
  * (style="color: rgb(153, 0, 0)" ou <font color="#900">), o que ignora o CSS do
  * site. display() troca as cores vermelhas do texto pela cor de destaque (dourado)
  * ao mostrar a página, sem alterar o que está guardado.
+ *
+ * display() sanitiza primeiro o HTML com o HTMLPurifier (lista branca de tags e
+ * atributos de conteúdo editorial; sem script, handlers on*, javascript: nem
+ * iframes) e só depois recolore. Isto fecha o XSS armazenado (SEG-006).
+ * recolor() é só a troca de cores, sem sanitizar.
  *
  * Só toca na cor do TEXTO (propriedade color e <font color>): background-color,
  * border-color, etc. ficam como estão, tal como as cores que não são vermelhas.
@@ -26,10 +34,69 @@ final class RichText
         'lightcoral' => '#f08080', 'salmon' => '#fa8072', 'darksalmon' => '#e9967a',
     ];
 
+    private const ALLOWED_HTML = 'p,br,strong,b,em,i,u,s,sub,sup,span[style],div,'
+        . 'ul,ol,li,a[href|title|target|rel],h1,h2,h3,h4,h5,h6,img[src|alt|title|width|height],'
+        . 'blockquote,hr,font[color],table,thead,tbody,tr,th,td';
+
+    private static ?HTMLPurifier $purifier = null;
+
+    /** @var array<string, string> memória por pedido: o mesmo texto aparece em várias vistas. */
+    private static array $cache = [];
+
+    /** HTML seguro e com as cores de destaque trocadas. */
     public static function display(?string $html): string
     {
-        if ($html === null || $html === '' || stripos($html, 'color') === false) {
-            return (string) $html;
+        if ($html === null || $html === '') {
+            return '';
+        }
+
+        $key = md5($html);
+
+        return self::$cache[$key] ??= self::recolor(self::sanitize($html));
+    }
+
+    /** Sanitiza com o HTMLPurifier (lista branca). */
+    public static function sanitize(string $html): string
+    {
+        return self::purifier()->purify($html);
+    }
+
+    private static function purifier(): HTMLPurifier
+    {
+        if (self::$purifier) {
+            return self::$purifier;
+        }
+
+        // Cache de definições em storage/framework/cache (gravável); sem ele, o purifier segue sem cache.
+        $dir = dirname(__DIR__, 2) . '/storage/framework/cache/htmlpurifier';
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0775, true);
+        }
+
+        $config = HTMLPurifier_Config::createDefault();
+        $config->set('Core.Encoding', 'UTF-8');
+        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+        $config->set('HTML.Allowed', self::ALLOWED_HTML);
+        $config->set('CSS.AllowedProperties', ['color', 'background-color', 'font-size', 'font-weight', 'font-style', 'text-decoration', 'text-align']);
+        $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'mailto' => true, 'tel' => true]);
+        $config->set('Attr.AllowedFrameTargets', ['_blank']);
+        $config->set('Attr.AllowedRel', ['noopener', 'noreferrer', 'nofollow']);
+        $config->set('HTML.TargetNoopener', true);
+        $config->set('AutoFormat.RemoveEmpty', false);
+        if (is_dir($dir) && is_writable($dir)) {
+            $config->set('Cache.SerializerPath', $dir);
+        } else {
+            $config->set('Cache.DefinitionImpl', null);
+        }
+
+        return self::$purifier = new HTMLPurifier($config);
+    }
+
+    /** Troca as cores vermelhas do texto pela cor de destaque (não sanitiza). */
+    public static function recolor(string $html): string
+    {
+        if ($html === '' || stripos($html, 'color') === false) {
+            return $html;
         }
 
         // style="…color: X…" (aspas duplas ou simples).

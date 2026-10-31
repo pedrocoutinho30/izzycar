@@ -69,7 +69,7 @@
                             Recebeste este email porque subscreveste a newsletter da Izzycar.
                             @if(isset($email))
                                 <br>
-                                <a href="{{ route('newsletter.unsubscribe') }}?email={{ urlencode($email) }}&name={{ urlencode($name ?? '') }}" style="color:#92642D;text-decoration:underline;">
+                                <a href="{{ \App\Support\NewsletterLinks::unsubscribe($email) }}" style="color:#92642D;text-decoration:underline;">
                                     Deixar de subscrever
                                 </a>
                             @endif
