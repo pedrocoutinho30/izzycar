@@ -92,11 +92,21 @@ class FicheirosPrivadosTest extends TestCase
         $this->assertFalse(PrivateFiles::caminhoSeguro('a\\b'));
     }
 
-    public function test_old_file_on_public_disk_is_still_served(): void
+    public function test_old_file_on_public_disk_is_no_longer_served(): void
     {
+        // Sem fallback: um ficheiro ainda no disco público dá 404 até ser movido (files:move-to-private).
         Storage::disk('public')->put('movements/attachments/antigo.pdf', 'pdf antigo');
 
         $this->actingAs($this->backofficeUser('admin'))
+            ->get($this->url('movimentos', 'antigo.pdf'))
+            ->assertNotFound();
+
+        $this->assertNull(PrivateFiles::disco('movements/attachments/antigo.pdf'));
+        $this->assertNull(PrivateFiles::caminhoAbsoluto('movements/attachments/antigo.pdf'));
+
+        // Já movido para o privado, abre.
+        Storage::disk('local')->put('movements/attachments/antigo.pdf', 'pdf antigo');
+        $this->actingAs($this->backofficeUser('admin', ['email' => 'b@example.com']))
             ->get($this->url('movimentos', 'antigo.pdf'))
             ->assertOk();
 
@@ -105,6 +115,24 @@ class FicheirosPrivadosTest extends TestCase
             PrivateFiles::url('movements/attachments/antigo.pdf')
         );
         $this->assertNull(PrivateFiles::url('news/a.png'));
+    }
+
+    public function test_each_type_requires_access_to_its_owner_object_when_permissions_are_enforced(): void
+    {
+        Storage::disk('local')->put('expenses/attachments/d.pdf', 'pdf');
+        Storage::disk('local')->put('comissoes/comprovativos/c.pdf', 'pdf');
+        $cms = $this->backofficeUser('cms');
+
+        // Com PERMISSIONS_ENFORCE desligado (omissão) só regista no log: continua a abrir.
+        config(['permissions.enforce' => false]);
+        $this->actingAs($cms)->get($this->url('despesas', 'd.pdf'))->assertOk();
+
+        // Ligado, um perfil sem movimentos/comissões recebe 403.
+        config(['permissions.enforce' => true]);
+        $this->actingAs($cms)->get($this->url('despesas', 'd.pdf'))->assertForbidden();
+        $this->actingAs($cms)->get($this->url('comprovativos', 'c.pdf'))->assertForbidden();
+        $this->actingAs($this->backofficeUser('admin', ['email' => 'adm@example.com']))
+            ->get($this->url('despesas', 'd.pdf'))->assertOk();
     }
 
     public function test_private_copy_wins_over_the_public_one(): void

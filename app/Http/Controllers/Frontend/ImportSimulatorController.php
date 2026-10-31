@@ -96,6 +96,11 @@ class ImportSimulatorController extends Controller
         $isv = $taxa_aplicavel - $componente_cc_reduzido - $componente_ambiental_reduzido + $particulas - $reducao_particulas;
         if ($isv < 100) $isv = 100;
 
+        // Valores vindos do pedido público: escapados antes de entrarem no HTML guardado.
+        $cilindrada = e(is_scalar($cilindrada) ? (string) $cilindrada : '');
+        $co2 = e(is_scalar($co2) ? (string) $co2 : '');
+        $faixa = e(is_scalar($faixa) ? (string) $faixa : '');
+
         $html = "
         <table class='table table-bordered'>
             <tr><th colspan='3'>Tabela ISV aplicável: A</th></tr>

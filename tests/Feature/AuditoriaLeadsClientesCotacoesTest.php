@@ -162,6 +162,7 @@ class AuditoriaLeadsClientesCotacoesTest extends TestCase
     {
         return $overrides + [
             'name' => 'Maria Silva', 'phone' => '912 345 678', 'email' => 'maria@example.com',
+            '_form_started' => time() - 10, // anti-spam: o formulário real envia sempre a hora de abertura
             'buyer_type' => 'particular', 'payment_type' => 'pronto_pagamento', 'estimated_purchase_date' => 'imediato',
             'data_processing_consent' => '1', 'ad_option' => 'nao_sei', 'brand' => 'BMW', 'model' => 'i4',
             'submodel' => 'M50', 'year_min' => 2020, 'km_max' => '+200000', 'gearbox' => 'automatica',

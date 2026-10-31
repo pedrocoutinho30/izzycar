@@ -32,7 +32,8 @@ class NewsController extends Controller
 
     public function getNewsPageBySlug(string $slug)
     {
-        $news = NewsArticle::where('slug', $slug)->firstOrFail();
+        // Rascunhos não abrem ao público (404), mesmo com o slug certo.
+        $news = NewsArticle::published()->where('slug', $slug)->firstOrFail();
 
         $recentNews = NewsArticle::published()
             ->where('slug', '!=', $slug)

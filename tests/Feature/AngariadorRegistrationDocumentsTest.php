@@ -28,6 +28,7 @@ class AngariadorRegistrationDocumentsTest extends TestCase
     {
         return $extra + [
             'name' => 'Rita', 'last_name' => 'Costa', 'email' => 'rita@example.com', 'phone' => '912345678',
+            '_form_started' => time() - 10,
             'documento_frente' => UploadedFile::fake()->image('frente.jpg'),
             'documento_verso' => UploadedFile::fake()->create('verso.pdf', 200, 'application/pdf'),
         ];

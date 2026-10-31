@@ -25,9 +25,13 @@ Ficam **públicas** de propósito: fotos de viaturas à venda, notícias, logos,
 - Apagar: `PrivateFiles::apagar($caminho)` remove do disco privado e do público.
 - Anexos de email: `PrivateFiles::caminhoAbsoluto($caminho)` (usado no pedido de consignação).
 
-## Ficheiros antigos (fallback)
+## Ficheiros antigos (sem fallback)
 
-Os registos anteriores têm os ficheiros no disco `public`, com o mesmo caminho relativo. Enquanto não forem movidos, `PrivateFiles` procura primeiro no disco `local` e, se não existir, no `public`. Por isso a BD não muda e as views continuam a mostrar os ficheiros antigos, agora também pela rota autenticada.
+Já não há fallback de leitura para o disco `public`: um ficheiro que ainda esteja lá dá 404 na rota autenticada e `PrivateFiles::caminhoAbsoluto` devolve `null` (o anexo do email de consignação é omitido). **Antes de publicar este código, correr o passo 2 e 3 do Deploy**, senão os ficheiros antigos deixam de abrir. O comando `files:move-to-private` e `PrivateFiles::apagar` continuam a tocar no disco público.
+
+## Quem pode abrir
+
+A rota continua em `shared` (qualquer perfil de backoffice autenticado), mas o `PrivateFileController` exige a habilidade do objeto dono (`PrivateFiles::HABILIDADES`): retomas e consignação `form-proposals.view.all`, comprovativos `commissions.view.all`, despesas e movimentos `movements.view`. Como o resto do catálogo, com `PERMISSIONS_ENFORCE` desligado só regista no canal `permissions` (`would_block`); ligado, responde 403. Não se verifica o dono de cada ficheiro (retomas e consignação não têm um registo-dono simples), só o acesso ao objeto.
 
 ## Deploy
 

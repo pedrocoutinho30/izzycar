@@ -71,7 +71,7 @@ $faqGroups = [
             </h2>
             <div id="collapse-{{ $itemId }}" class="accordion-collapse collapse" data-bs-parent="#faq-{{ Str::slug($groupTitle) }}">
                 <div class="accordion-body">
-                    {!! $item['a'] !!}
+                    {!! \App\Support\RichText::display($item['a']) !!}
                 </div>
             </div>
         </div>

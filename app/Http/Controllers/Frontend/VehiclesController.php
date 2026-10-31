@@ -196,7 +196,11 @@ class VehiclesController extends Controller
     public function vehicleDetails($brand, $model, $id)
     {
 
-        $vehicle = V3Vehicle::with(['photos', 'attributeValues.attribute'])->where('reference', $id)->firstOrFail();
+        // Viaturas fora do site (show_online = false) não abrem ao público, nem pela referência.
+        $vehicle = V3Vehicle::with(['photos', 'attributeValues.attribute'])
+            ->where('show_online', true)
+            ->where('reference', $id)
+            ->firstOrFail();
         $attributes = [];
 
         $potencia = "";
@@ -282,7 +286,11 @@ class VehiclesController extends Controller
 
     public function vehicleStory($brand, $model, $id)
     {
-        $vehicle = V3Vehicle::with(['photos', 'attributeValues.attribute'])->where('reference', $id)->firstOrFail();
+        // Viaturas fora do site (show_online = false) não abrem ao público, nem pela referência.
+        $vehicle = V3Vehicle::with(['photos', 'attributeValues.attribute'])
+            ->where('show_online', true)
+            ->where('reference', $id)
+            ->firstOrFail();
 
         if (
             Str::slug($vehicle->brand ?? '') !== $brand ||

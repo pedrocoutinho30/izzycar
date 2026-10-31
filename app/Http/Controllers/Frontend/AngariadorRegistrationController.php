@@ -28,7 +28,7 @@ class AngariadorRegistrationController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|max:255',
             'phone' => 'required|string|max:30',
             'location' => 'nullable|string|max:255',
             'nif' => 'nullable|string|max:20',
@@ -47,6 +47,14 @@ class AngariadorRegistrationController extends Controller
             'documento_frente.uploaded' => 'Não foi possível carregar a frente do documento. Tente um ficheiro mais pequeno.',
             'documento_verso.uploaded' => 'Não foi possível carregar o verso do documento. Tente um ficheiro mais pequeno.',
         ]);
+
+        $mensagemOk = 'Candidatura enviada com sucesso! A nossa equipa vai analisar o seu registo e entrará em contacto em breve.';
+
+        // Resposta genérica: o formulário não revela se o email já tem conta
+        // (evita enumerar utilizadores). Não se cria nada nem se avisa a administração.
+        if (User::where('email', $validated['email'])->exists()) {
+            return redirect()->route('public.angariador.register')->with('success', $mensagemOk);
+        }
 
         $user = User::create([
             'name' => $validated['name'],
@@ -82,6 +90,6 @@ class AngariadorRegistrationController extends Controller
         );
 
         return redirect()->route('public.angariador.register')
-            ->with('success', 'Candidatura enviada com sucesso! A nossa equipa vai analisar o seu registo e entrará em contacto em breve.');
+            ->with('success', $mensagemOk);
     }
 }

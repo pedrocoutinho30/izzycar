@@ -112,7 +112,7 @@
         </div>
       </div>
       <div class="sr-isv-table">
-        {!! $tableIsv !!}
+        {!! \App\Support\IsvTable::sanitize($tableIsv) !!}
       </div>
     </div>
     @endif

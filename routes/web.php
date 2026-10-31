@@ -3,26 +3,15 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\PartnerController;
-use App\Http\Controllers\VehicleController;
-use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\SaleController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\AdSearchController;
-use App\Http\Controllers\VehicleAttributeController;
 use App\Http\Controllers\AnuncioController;
-use App\Http\Controllers\FrontendAnuncioController;
 use App\Http\Controllers\PageTypeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\MenuItemController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ConvertedProposalController;
 use App\Http\Controllers\Frontend\ImportController;
 use App\Http\Controllers\Frontend\ImportSimulatorController;
@@ -30,7 +19,6 @@ use App\Http\Controllers\CarAnalysisController;
 use App\Models\ConvertedProposal;
 use Sabberworm\CSS\Property\Import;
 use UniSharp\LaravelFilemanager\Lfm;
-use App\Http\Controllers\AttributeGroupController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -89,7 +77,7 @@ Route::get('/seja-angariador', [App\Http\Controllers\Frontend\AngariadorManualCo
 Route::get('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'create'])
     ->name('public.angariador.register');
 Route::post('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'store'])
-    ->middleware('throttle:5,1')
+    ->middleware(['throttle:5,1', 'antispam'])
     ->name('public.angariador.register.store');
 
 Route::get('/newsletter/unsubscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'unsubscribe'])

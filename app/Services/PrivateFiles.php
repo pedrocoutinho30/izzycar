@@ -11,10 +11,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * de consignação, comprovativos de comissões, anexos de despesas e movimentos).
  *
  * Ficam no disco privado ('local', fora de /storage) e só são servidos pela
- * rota autenticada admin.v2.files.show. Os ficheiros anteriores a esta
- * alteração estão no disco público: enquanto o comando files:move-to-private
- * não os mover, lê-se primeiro o disco privado e, se não existir, o público
- * (o caminho relativo guardado na BD é o mesmo nos dois discos).
+ * rota autenticada admin.v2.files.show, que só lê o disco privado. Os
+ * ficheiros anteriores a esta alteração estavam no disco público: têm de ser
+ * movidos com o comando files:move-to-private --apply (o único código que
+ * ainda lê o disco público; já não há fallback de leitura).
  *
  * Ver docs/ficheiros-privados.md.
  */
@@ -22,7 +22,7 @@ class PrivateFiles
 {
     public const DISCO_PRIVADO = 'local';
 
-    /** Disco onde estes ficheiros estavam antes (só leitura/compatibilidade). */
+    /** Disco onde estes ficheiros estavam antes (só o comando files:move-to-private e o apagar o usam). */
     public const DISCO_LEGADO = 'public';
 
     /** Tipo (segmento do URL) => pasta no disco. */
@@ -32,6 +32,18 @@ class PrivateFiles
         'comprovativos' => 'comissoes/comprovativos',
         'despesas' => 'expenses/attachments',
         'movimentos' => 'movements/attachments',
+    ];
+
+    /**
+     * Habilidade (catálogo de permissões) exigida para abrir cada tipo. Os
+     * objetos com âmbito pedem "todos" porque o ficheiro não é ligado ao dono.
+     */
+    public const HABILIDADES = [
+        'retomas' => 'form-proposals.view.all',
+        'consignacao' => 'form-proposals.view.all',
+        'comprovativos' => 'commissions.view.all',
+        'despesas' => 'movements.view',
+        'movimentos' => 'movements.view',
     ];
 
     /** Só estes tipos de ficheiro abrem no browser; o resto é descarregado. */
@@ -48,20 +60,14 @@ class PrivateFiles
         return $ficheiro->store($pasta, self::DISCO_PRIVADO);
     }
 
-    /** Disco onde o ficheiro existe (privado primeiro, depois o legado); null se não existir. */
+    /** Disco onde o ficheiro existe (só o privado: sem fallback para o público); null se não existir. */
     public static function disco(?string $caminho): ?string
     {
         if (! self::caminhoSeguro($caminho)) {
             return null;
         }
 
-        foreach ([self::DISCO_PRIVADO, self::DISCO_LEGADO] as $disco) {
-            if (Storage::disk($disco)->exists($caminho)) {
-                return $disco;
-            }
-        }
-
-        return null;
+        return Storage::disk(self::DISCO_PRIVADO)->exists($caminho) ? self::DISCO_PRIVADO : null;
     }
 
     public static function existe(?string $caminho): bool
