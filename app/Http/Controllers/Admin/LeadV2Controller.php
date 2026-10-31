@@ -34,6 +34,15 @@ class LeadV2Controller extends Controller
     {
         $data = $request->validate($this->leads->rules());
 
+        // clients.email é único na BD: um email repetido nunca se pode forçar
+        // (nem com confirm_duplicate), senão o insert rebentava com 500.
+        $clients = app(\App\Services\ClientService::class);
+        if ($existente = $clients->emailOwner($data['email'] ?? null)) {
+            return back()->withInput()
+                ->withErrors(['duplicate' => $clients->emailTakenMessage($existente, false)])
+                ->with('duplicate_email', true);
+        }
+
         if ($warning = app(\App\Services\ClientMatcher::class)->duplicateWarning($data['email'] ?? null, $data['phone'] ?? null, $request->boolean('confirm_duplicate'))) {
             return back()->withInput()->withErrors(['duplicate' => $warning['message']])->with('duplicate_url', $warning['url']);
         }

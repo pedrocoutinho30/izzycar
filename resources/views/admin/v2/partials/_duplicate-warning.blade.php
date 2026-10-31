@@ -9,9 +9,12 @@
             <a href="{{ session('duplicate_url') }}" target="_blank" rel="noopener">Abrir ficha</a>
         @endif
     </div>
+    {{-- Email repetido não se pode forçar (clients.email é único). --}}
+    @unless(session('duplicate_email'))
     <div class="form-check mb-0">
         <input class="form-check-input" type="checkbox" name="confirm_duplicate" value="1" id="confirmDuplicate">
         <label class="form-check-label" for="confirmDuplicate">É outra pessoa — criar mesmo assim</label>
     </div>
+    @endunless
 </div>
 @endif

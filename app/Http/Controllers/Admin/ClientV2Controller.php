@@ -64,6 +64,14 @@ class ClientV2Controller extends Controller
     {
         $validated = $request->validate($this->clients->rules());
 
+        // clients.email é único na BD: um email repetido nunca se pode forçar
+        // (nem com confirm_duplicate), senão o insert rebentava com 500.
+        if ($existente = $this->clients->emailOwner($validated['email'] ?? null)) {
+            return back()->withInput()
+                ->withErrors(['duplicate' => $this->clients->emailTakenMessage($existente, false)])
+                ->with('duplicate_email', true);
+        }
+
         if ($warning = $this->clients->duplicateWarning($validated, $request->boolean('confirm_duplicate'))) {
             return back()->withInput()->withErrors(['duplicate' => $warning['message']])->with('duplicate_url', $warning['url']);
         }
@@ -137,6 +145,11 @@ class ClientV2Controller extends Controller
         $client = Client::findOrFail($id);
 
         $validated = $request->validate($this->clients->rules());
+
+        // Mesmo email de outro registo = erro de validação, não 500 (clients.email é único).
+        if ($existente = $this->clients->emailOwner($validated['email'] ?? null, $client->id)) {
+            return back()->withInput()->withErrors(['email' => $this->clients->emailTakenMessage($existente, false)]);
+        }
 
         $this->clients->update($client, $validated);
 

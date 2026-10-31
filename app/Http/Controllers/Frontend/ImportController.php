@@ -61,16 +61,33 @@ class ImportController extends Controller
             'retoma_info'             => 'nullable|string|max:2000',
             'retoma_photos'           => 'nullable|array|max:10',
             'retoma_photos.*'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            // Preferências da viatura (ad_option = nao_sei)
+            'brand'                   => 'nullable|string|max:100',
+            'model'                   => 'nullable|string|max:100',
+            'submodel'                => 'nullable|string|max:100',
+            'fuel'                    => 'nullable|string|max:50',
+            'year_min'                => 'nullable|integer|min:1950|max:' . (date('Y') + 1),
+            'km_max'                  => ['nullable', 'regex:/^\+?[0-9]{1,7}$/'],
+            'color'                   => 'nullable|string|max:100',
+            'budget'                  => 'nullable|string|max:50',
+            'gearbox'                 => 'nullable|in:indiferente,automatica,manual',
+            'extras'                  => 'nullable|string|max:2000',
         ]);
 
-        // Aqui podes gravar na BD
-
-        $formPropposalData = $request->all();
+        // Só os campos validados e da lista abaixo chegam ao FormProposal: nada
+        // de $request->all() (created_by, proposal_id, origin, status... não
+        // podem vir do pedido; client_id, status, version e angariador_code são
+        // definidos mais abaixo pelo servidor).
+        $formPropposalData = collect($validated)->only([
+            'name', 'phone', 'email', 'source', 'message', 'buyer_type', 'payment_type',
+            'estimated_purchase_date', 'ad_option', 'ad_links',
+            'brand', 'model', 'submodel', 'fuel', 'year_min', 'km_max', 'color', 'budget', 'gearbox', 'extras',
+            'retoma_option', 'retoma_brand', 'retoma_model', 'retoma_year', 'retoma_km', 'retoma_fuel', 'retoma_info',
+        ])->all();
 
         // Fotos da retoma são processadas à parte e substituídas por um array
         // de caminhos guardados (o array de UploadedFile não pode ir para o
         // FormProposal::create() diretamente).
-        unset($formPropposalData['retoma_photos']);
         $retomaPhotoPaths = [];
         if ($request->hasFile('retoma_photos')) {
             $ref = 'RTM-' . strtoupper(substr(md5(microtime()), 0, 6));
@@ -97,8 +114,12 @@ class ImportController extends Controller
 
         $dataProcessingConsent = $request->boolean('data_processing_consent');
         $newsletterConsent = $request->boolean('newsletter_consent');
-        $angariadorCode = $request->filled('angariador') ? $request->input('angariador') : null;
-        $angariadorOwner = $angariadorCode ? User::where('referral_code', $angariadorCode)->first() : null;
+        // O código de angariador (?angariador=) é validado contra users.referral_code:
+        // um código que não existe é ignorado (não fica gravado nem atribui dono).
+        $angariadorOwner = !empty($validated['angariador'])
+            ? User::where('referral_code', $validated['angariador'])->first()
+            : null;
+        $angariadorCode = $angariadorOwner?->referral_code;
 
         // Regra única de duplicados (email OU telefone) — ver ClientMatcher.
         $matcher = app(ClientMatcher::class);
@@ -157,7 +178,7 @@ class ImportController extends Controller
         $formPropposalData['angariador_code'] = $angariadorCode;
         $formPropposalData['status'] = 'novo';
         $formPropposalData['version'] = $formPropposalData['submodel'] ?? null;
-        unset($formPropposalData['data_processing_consent'], $formPropposalData['newsletter_consent'], $formPropposalData['angariador']);
+        unset($formPropposalData['submodel']);
         //Guardar o formulário de proposta
         $proposal = FormProposal::create($formPropposalData);
         PushNotifier::notifyStaff(new NewFormProposalNotification($proposal));

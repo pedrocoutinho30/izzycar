@@ -6,6 +6,7 @@ use App\Mail\ProposalSentMail;
 use App\Models\AuditLog;
 use App\Models\LeadActivity;
 use App\Models\Proposal;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ProposalObserver
@@ -91,13 +92,17 @@ class ProposalObserver
 
         $owner = $client->owner;
 
+        // Primeiro o que é BD (timeline + follow-up) e só no fim os emails: uma
+        // falha de SMTP não pode deixar a cotação "Enviada" sem registo nem
+        // follow-up, nem rebentar a ação do utilizador com 500.
+        $emailsFalharam = [];
+        $enviar = [];
         if (! $proposal->skipSentEmails) {
             if ($client->email) {
-                Mail::to($client->email)->send(new ProposalSentMail($proposal, $url, false, self::FOLLOWUP_DAYS));
+                $enviar['cliente'] = [$client->email, false];
             }
-
             if ($owner && $owner->email) {
-                Mail::to($owner->email)->send(new ProposalSentMail($proposal, $url, true, self::FOLLOWUP_DAYS));
+                $enviar['angariador'] = [$owner->email, true];
             }
         }
 
@@ -125,6 +130,30 @@ class ProposalObserver
                 'Gerado ao enviar a cotação — confirmar se o cliente recebeu a proposta.',
                 'bi-alarm-fill',
                 'warning'
+            );
+        }
+
+        foreach ($enviar as $destinatario => [$email, $paraAngariador]) {
+            try {
+                Mail::to($email)->send(new ProposalSentMail($proposal, $url, $paraAngariador, self::FOLLOWUP_DAYS));
+            } catch (\Throwable $e) {
+                // Sem dados pessoais no log (o email do destinatário vem na mensagem da exceção).
+                Log::error('Falha ao enviar o email de cotação enviada.', [
+                    'proposal_id' => $proposal->id,
+                    'destinatario' => $destinatario,
+                    'exception' => get_class($e),
+                ]);
+                $emailsFalharam[] = $destinatario;
+            }
+        }
+
+        if ($emailsFalharam) {
+            LeadActivity::log(
+                $client->id,
+                "Falha ao enviar o email da cotação #{$proposal->id}",
+                'Não foi possível enviar o email a: ' . implode(', ', $emailsFalharam) . '. Partilhe o link da cotação por outro canal.',
+                'bi-exclamation-triangle-fill',
+                'danger'
             );
         }
     }

@@ -13,6 +13,7 @@ use App\Models\ProposalAttributeValue;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -236,43 +237,62 @@ class ProposalService
         $requestedStatus = $data['status'] ?? 'Pendente';
         $data['status'] = 'Pendente';
 
-        $proposal = Proposal::create($data);
+        // Todas as escritas de BD numa transação: uma falha a meio não deixa
+        // uma cotação órfã (sem pedido de origem, sem timeline). O estado final
+        // aplica-se depois, fora da transação (ProposalStatusNotAppliedException).
+        $proposal = null;
+        try {
+            DB::transaction(function () use (&$proposal, $data, $attributes, $image, $importOpportunity, $formProposalId, $by) {
+                $proposal = Proposal::create($data);
 
-        $this->saveAttributes($proposal, $attributes ?? []);
+                $this->saveAttributes($proposal, $attributes ?? []);
 
-        // Imagem enviada; sem upload, usa a foto da oportunidade
-        if ($image) {
-            $this->storeImage($proposal, $image);
-        } elseif ($importOpportunity && ($photo = $this->opportunities->photoAsUpload($importOpportunity))) {
-            $this->storeImage($proposal, $photo);
-        }
+                // Imagem enviada; sem upload, usa a foto da oportunidade
+                if ($image) {
+                    $this->storeImage($proposal, $image);
+                } elseif ($importOpportunity && ($photo = $this->opportunities->photoAsUpload($importOpportunity))) {
+                    $this->storeImage($proposal, $photo);
+                }
 
-        // Ligar ao pedido de origem. Vindo de uma oportunidade, o pedido pode
-        // ter várias cotações — mantém a primeira. O pedido fica "em análise";
-        // só passa a "convertido" quando uma cotação for aceite.
-        if ($formProposalId) {
-            $formProposal = FormProposal::find($formProposalId);
-            if ($formProposal) {
-                $formProposal->update([
-                    'proposal_id' => $importOpportunity && $formProposal->proposal_id ? $formProposal->proposal_id : $proposal->id,
-                    'status'      => in_array($formProposal->status, [null, 'novo'], true) ? 'em_analise' : $formProposal->status,
-                ]);
+                // Ligar ao pedido de origem. Vindo de uma oportunidade, o pedido pode
+                // ter várias cotações — mantém a primeira. O pedido fica "em análise";
+                // só passa a "convertido" quando uma cotação for aceite.
+                if ($formProposalId) {
+                    $formProposal = FormProposal::find($formProposalId);
+                    if ($formProposal) {
+                        $formProposal->update([
+                            'proposal_id' => $importOpportunity && $formProposal->proposal_id ? $formProposal->proposal_id : $proposal->id,
+                            'status'      => in_array($formProposal->status, [null, 'novo'], true) ? 'em_analise' : $formProposal->status,
+                        ]);
+                    }
+                }
+
+                if ($importOpportunity) {
+                    $this->opportunities->linkProposal($importOpportunity, $proposal, $by);
+                }
+
+                // Registar na timeline do cliente/lead
+                $vehicle = implode(' ', array_filter([$proposal->brand, $proposal->model, $proposal->version]));
+                LeadActivity::log(
+                    $proposal->client_id,
+                    "Cotação #{$proposal->id} criada" . ($vehicle ? " — {$vehicle}" : ''),
+                    $proposal->total_price ? "Valor total: " . number_format($proposal->total_price, 0, ',', '.') . " €." : '',
+                    'bi-file-earmark-text-fill',
+                    'primary'
+                );
+            });
+        } catch (\Throwable $e) {
+            // O rollback não apaga o ficheiro já gravado em disco.
+            if ($proposal?->images) {
+                $imagem = is_array($proposal->images) ? $proposal->images[0] : $proposal->images;
+                try {
+                    (new ImageOptimizerService())->deleteAllVariants($imagem);
+                } catch (\Throwable $limpeza) {
+                    report($limpeza);
+                }
             }
+            throw $e;
         }
-
-        if ($importOpportunity) {
-            $this->opportunities->linkProposal($importOpportunity, $proposal, $by);
-        }
-
-        // Registar na timeline do cliente/lead
-        $vehicle = implode(' ', array_filter([$proposal->brand, $proposal->model, $proposal->version]));
-        LeadActivity::log(
-            $proposal->client_id,
-            "Cotação #{$proposal->id} criada" . ($vehicle ? " — {$vehicle}" : ''),
-            $proposal->total_price ? "Valor total: " . number_format($proposal->total_price, 0, ',', '.') . " €." : '',
-            'bi-file-earmark-text-fill',
-            'primary'
-        );
 
         if ($requestedStatus !== 'Pendente') {
             try {
