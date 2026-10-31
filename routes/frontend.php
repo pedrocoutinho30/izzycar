@@ -43,15 +43,13 @@ Route::get('/extras', [ExtrasController::class, 'index'])->name('api.extras');
 Route::get('/brands-models', [BrandsModelsController::class, 'index'])->name('api.brands-models');
 
 Route::middleware(['blockInProd'])->group(function () {
-    Route::get('/sobre-nos', [PageController::class, 'aboutUs'])->name('frontend.about-us');
-    Route::get('/servicos', [PageController::class, 'services'])->name('frontend.services');
-    Route::get('/parceiros', [PageController::class, 'partners'])->name('frontend.partners');
-    Route::get('/contactos', [PageController::class, 'contact'])->name('frontend.contact');
-    Route::get('/politica-privacidade', [PageController::class, 'privacyPolicy'])->name('frontend.privacy-policy');
-    Route::get('/termos-condicoes', [PageController::class, 'termsConditions'])->name('frontend.terms-conditions');
-    Route::get('/cookies', [PageController::class, 'cookies'])->name('frontend.cookies');
-
-    Route::get('/brevemente', [PageController::class, 'comingSoon'])->name('frontend.coming-soon');
+    // /sobre-nos, /servicos e /parceiros apontavam para métodos inexistentes (500) e não há
+    // páginas nem links para elas: removidas (passam a 404). As páginas reais do site são
+    // legalização, importação, retomas, venda e consignação.
+    // /contactos, /cookies e /brevemente mantêm o URL e o nome da rota, mas apontam para o que existe.
+    Route::redirect('/contactos', '/formulario-importacao')->name('frontend.contact');
+    Route::redirect('/cookies', '/politica-privacidade')->name('frontend.cookies');
+    Route::view('/brevemente', 'frontend.coming-soon')->name('frontend.coming-soon');
 
     Route::get('/', [VehiclesController::class, 'index'])->name('frontend.home');
     Route::get('/viaturas', [VehiclesController::class, 'vehicles'])->name('vehicles.list');

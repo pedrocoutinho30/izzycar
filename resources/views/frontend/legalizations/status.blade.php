@@ -126,7 +126,7 @@
     @endif
 
     <p class="lzt-footer-note">
-      {{ __('legalization.footer_question') }} <a href="{{ route('frontend.contact') }}">{{ __('legalization.footer_contact') }}</a>.
+      {{ __('legalization.footer_question') }} <a href="{{ route('frontend.form-import') }}">{{ __('legalization.footer_contact') }}</a>.
     </p>
 
   </div>

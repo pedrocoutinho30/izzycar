@@ -29,8 +29,8 @@
 {
     "@@context": "https://schema.org",
     "@@type": "Article",
-    "headline": "{{ addslashes($articleTitle) }}",
-    "description": "{{ addslashes(strip_tags($news->seo_description ?: ($news->subtitle ?? ''))) }}",
+    "headline": {!! json_encode($articleTitle, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!},
+    "description": {!! json_encode(strip_tags($news->seo_description ?: ($news->subtitle ?? '')), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!},
     "image": {"@@type": "ImageObject", "url": "{{ $articleImg }}", "width": 1200, "height": 630},
     "datePublished": "{{ $articleDate }}",
     "dateModified": "{{ !empty($news->updated_at) ? \Carbon\Carbon::parse($news->updated_at)->toIso8601String() : $articleDate }}",
@@ -64,7 +64,7 @@
     "itemListElement": [
         {"@@type": "ListItem", "position": 1, "name": "Início", "item": "https://izzycar.pt"},
         {"@@type": "ListItem", "position": 2, "name": "Guias & Notícias", "item": "https://izzycar.pt/noticias"},
-        {"@@type": "ListItem", "position": 3, "name": "{{ addslashes($articleTitle) }}", "item": "{{ url()->current() }}"}
+        {"@@type": "ListItem", "position": 3, "name": {!! json_encode($articleTitle, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!}, "item": "{{ url()->current() }}"}
     ]
 }
 </script>
