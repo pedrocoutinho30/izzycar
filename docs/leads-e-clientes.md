@@ -9,7 +9,7 @@ Ambos vivem em `clients` (`app/Models/Client.php`). `is_lead` (boolean) distingu
 A conversão acontece em três sítios: `LeadV2Controller::convert` (manual), `ProposalAcceptanceService::accept` e `ProposalObserver::updated` (cotação passa a `Aprovada`). Os dois últimos escrevem ambos na timeline **(por confirmar se o log "Lead convertido" pode duplicar)**.
 
 - `lead_status`: `nova`, `em_contacto`, `qualificada`, `fria`, `perdida`. Só validado nas rotas de leads (sem enum nem constraint na BD). O kanban agrupa por `lead_status ?? 'nova'`. `qualificada` = lead que já está a receber cotações; conta como ativa e só a equipa a atribui (o angariador vê a coluna mas não pode mover leads para lá).
-- `lead_source`: texto livre. Valores usados: `manual`, `importacao`, `retoma`, `simulador`, `contacto`, `newsletter_footer`, `whatsapp`.
+- `lead_source`: texto livre. Valores usados: `manual`, `importacao`, `retoma`, `consignacao`, `simulador`, `contacto`, `newsletter_footer`, `whatsapp`. O formulário público de consignação (`ConsignmentController`) grava primeiro o `ConsignmentEvaluation` e depois cria ou reaproveita a lead (`ClientMatcher`, origem "Consignação") e deixa o pedido na timeline; o email à administração é só um aviso (falha fica no log).
 - `client_type`: `Particular` ou `Empresa` (sem regra de valores).
 - Dono: `owner_id` (User) e `angariador_code`. Seguimento: `next_followup_at`, `followup_note`.
 - Sem SoftDeletes: `destroy` apaga de vez.

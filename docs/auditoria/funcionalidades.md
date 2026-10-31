@@ -1,5 +1,5 @@
 # Inventário funcional
-> **Nota de revisão (2026-10-31):** este inventário descreve o código à data da auditoria. As afirmações que entretanto deixaram de ser verdade levam a marca **[Corrigido ...]** ou **[Parcial ...]** com o commit. A secção "Alterações após a auditoria" no fim resume tudo. Trabalhos ainda em curso (rascunhos de notícias, vendas V3 no menu, Modelo 9 duplicado, simulador de custos, consignação, limpeza V1, SEG-012/015/017) não estão marcados como feitos.
+> **Nota de revisão (2026-10-31):** este inventário descreve o código à data da auditoria. As afirmações que entretanto deixaram de ser verdade levam a marca **[Corrigido ...]** ou **[Parcial ...]** com o commit. A secção "Alterações após a auditoria" no fim resume tudo. Revisão final: os trabalhos que estavam em curso (rascunhos de notícias, vendas V3 no menu, Modelo 9 duplicado, consignação, limpeza V1, SEG-012/015/017) foram concluídos ou reclassificados (commits `68dbbe3`, `058e135`, `a33b12b`, `1bc16d9`, `2baf1d3`, `dd006d8`), por isso as marcas abaixo e a secção final foram atualizadas; fica por decidir o simulador de custos (300 contra 200). Suite: 1052 passam, 1 falha conhecida.
 
 
 Revisão estática. Parte 1: backoffice núcleo. Parte 2: site público, mobile, angariador, radar e restantes módulos.
@@ -391,15 +391,15 @@ Confirmado (`ProposalAcceptanceService.php:36-84`): transação com `lockForUpda
 - Documentos: um por tipo (substitui), disco `local`; download com verificação de pertença (`:265-269`).
 
 **Problemas.**
-- P10.1 (confirmado) **Lógica de passos duplicada com comportamentos diferentes.** `V3VehicleController::toggleLegalizationStep` (`:813-842`) repete a regra mas **não cria a tarefa do Modelo 9**; só `LegalizationController::toggleStep`/`move` a criam. Marcar o passo 5 pelo separador da viatura não gera a tarefa. Dois sítios para manter.
-- P10.2 (confirmado) A tarefa do Modelo 9 é criada de cada vez que o passo 5 passa de pendente a concluído: desmarcar e voltar a marcar cria uma tarefa **duplicada** (`:174-178`), sem ligação `legalization_id` à tarefa (só texto) (`:212-226`).
+- P10.1 **[Corrigido em `058e135`: o separador da viatura chama `LegalizationTaskService::ensureModelo9Task`; a regra N-1 ao desmarcar foi corrigida nos dois controllers em `2baf1d3`; a lógica continua em dois sítios]** (confirmado à data da auditoria) **Lógica de passos duplicada com comportamentos diferentes.** `V3VehicleController::toggleLegalizationStep` (`:813-842`) repete a regra mas **não cria a tarefa do Modelo 9**; só `LegalizationController::toggleStep`/`move` a criam. Marcar o passo 5 pelo separador da viatura não gera a tarefa. Dois sítios para manter.
+- P10.2 **[Corrigido em `058e135`: `ensureModelo9Task` é idempotente, não cria outra tarefa se já houver uma pendente ou em progresso para o mesmo processo; a tarefa ganhou `v3_vehicle_id`]** (confirmado à data da auditoria) A tarefa do Modelo 9 é criada de cada vez que o passo 5 passa de pendente a concluído: desmarcar e voltar a marcar cria uma tarefa **duplicada** (`:174-178`), sem ligação `legalization_id` à tarefa (só texto) (`:212-226`).
 - P10.3 (confirmado) `destroy` apaga os documentos do disco mas **não a fatura** (`invoice_path`) (`:494-505` vs `deleteInvoice` `:321-330`): ficheiro órfão.
 - P10.4 (confirmado) Ficheiros de legalização no separador V3 usam `Storage::` (disco por omissão), no `LegalizationController` usam `Storage::disk('local')`: se `FILESYSTEM_DISK` mudar, os dois separam-se (hipótese).
 - P10.5 (confirmado) O upload do separador V3 só aceita `DOCUMENTOS`, não os do regime especial (`V3VehicleController.php:849-853` vs `Legalization::DOCUMENTOS_REGIME_ESPECIAL`): documentos do regime especial só se carregam no ecrã dedicado (já descrito na doc).
 - P10.6 (confirmado) `createLegalization` na viatura e `ConvertedProposalService::createVehicleAndLegalization` criam legalizações por caminhos diferentes (um `Legalization::create`, outro `firstOrCreate`): o primeiro é idempotente por verificação `if ($vehicle->legalization)`, sem lock (`V3VehicleController.php:774-794`).
 
 **Testes.** `LegalizationKanbanTest` (move), `LegalizationExportTest`, `ProposalAcceptanceIdentificationTest` (Modelo 9), `LinkedMovementsTest`, `VehicleClientTest`, `PhaseTwoFunnelTest` (criação a partir da convertida).
-**Sem cobertura.** `toggleStep` (regra N-1) em qualquer dos dois sítios; criação/duplicação da tarefa; upload/download/eliminação de documentos e fatura; `Modelo 1460` e `1RA` (sem testes); `legalizations:send-tracking-emails`.
+**Sem cobertura (atualizado):** passos (regra N-1), tarefa do Modelo 9 e documentos já estão cobertos por `LegalizationPassosCoberturaTest` (`1bc16d9`); continuam sem testes `Modelo 1460` e `1RA` e `legalizations:send-tracking-emails`.
 
 ---
 
@@ -419,13 +419,13 @@ Confirmado (`ProposalAcceptanceService.php:36-84`): transação com `lockForUpda
 - A `Sale` guarda só `vat_rate` ('0' para `margem` e `isento`; `SaleCalculator.php:74`): **o tipo de IVA original perde-se** (não há coluna `vat_type`; `Sale.php:11-31`). Para `margem` o movimento de receita usa `vat_settle_sale` (IVA real da margem) para calcular a taxa implícita (`Expense.php:230-235`), o que dá uma taxa "estranha" (hipótese: aceitável, é contabilidade de margem).
 
 **Problemas.**
-- P11.1 (confirmado) **Dois sistemas de vendas em simultâneo.** O menu e a ficha do cliente levam a `admin.v2.sales.*`, que só cria vendas de `Vehicle` V1 (`SaleV2Controller::create` lista `Vehicle::doesntHave('sale')`, `:111-122`; `store` exige `vehicles,id`, `:127-155`) — o V1 que o `CLAUDE.md` manda não estender. Ou seja, **o botão "Vendas" do menu e "Registar venda" do cliente levam ao fluxo legado**, e o fluxo V3 vive escondido no separador da viatura. Provavelmente a UI induz em erro (**hipótese:** que a tabela `vehicles` esteja vazia em produção, não verificado).
+- P11.1 **[Corrigido em `058e135`: `SaleV2Controller::create` redireciona para as viaturas em stock (o formulário V1 só abre com `?legacy=1`), `edit` de uma venda V3 redireciona para o separador Venda da viatura e o botão "Registar venda" da ficha do cliente já não passa `client_id`; `2baf1d3` corrige apagar pela listagem e a pesquisa de vendas V3]** (confirmado à data da auditoria) **Dois sistemas de vendas em simultâneo.** O menu e a ficha do cliente levam a `admin.v2.sales.*`, que só cria vendas de `Vehicle` V1 (`SaleV2Controller::create` lista `Vehicle::doesntHave('sale')`, `:111-122`; `store` exige `vehicles,id`, `:127-155`) — o V1 que o `CLAUDE.md` manda não estender. Ou seja, **o botão "Vendas" do menu e "Registar venda" do cliente levam ao fluxo legado**, e o fluxo V3 vive escondido no separador da viatura. Provavelmente a UI induz em erro (**hipótese:** que a tabela `vehicles` esteja vazia em produção, não verificado).
 - P11.2 (confirmado) Nada impede vender uma viatura `is_imported` ou `reservado` (§1.3).
 - P11.3 (confirmado) A `Sale` por V3 nunca grava `has_trade_in`/`trade_in_*` (existem no modelo, `Sale.php:24-26`): a retoma na venda só existe no fluxo V1.
 - P11.4 (confirmado) `destroySale` repõe sempre `em_stock` (§9). Não há `unique(v3_vehicle_id)` em `sales` (a única barreira é a verificação aplicacional `:493`): duplo clique/corrida pode criar duas vendas. Hipótese de risco real baixo.
 - P11.5 (confirmado) `calculatePreview` aceita `extra_costs` com IVA 23% fixo (`:565-571`).
 
-**Testes.** Nenhum para vendas V3 nem `SaleCalculator`; `SaleV2Controller` sem testes (`grep` vazio).
+**Testes (atualizado).** `V3VehicleVendasFotosDocumentosCoberturaTest` (vendas V3, fotos, documentos), `V3VehicleFinanceFixesTest` e `SaleCalculatorTest`; `SaleV2Controller` coberto na listagem e na eliminação. Bug aberto: `storeSale` aceita `client_id` e `payment_method` vazios mas as colunas são `NOT NULL` (500; ver `problemas.md`).
 
 ---
 
@@ -480,11 +480,11 @@ Confirmado (`ProposalAcceptanceService.php:36-84`): transação com `lockForUpda
 
 | # | Item | Estado | Evidência |
 |---|---|---|---|
-| L1 | `ProposalController` V1: `store/update/destroy/generatePdf/duplicate/create_by_form/getDataFromUrl/index/create/edit/updateStatus…` | **Código morto** (sem rota). Só `detail`, `accept`, `requestAlternativeQuote` em uso | `routes/web.php:59-67`; `ProposalController.php:37-760` |
-| L2 | `ConvertedProposalController` V1: `index/edit/update` | Código morto; `updateStatus` e `detailTimeline` em uso | `ConvertedProposalController.php:15-82` vs `:84-126` |
-| L3 | `ClientController` V1 | Só `contractService` com rota, admin-only, sem link na UI V2 (link só na view V1 `clients/index.blade.php:50`) | `routes/web.php:178`; `config/permissions.php:265` |
+| L1 | `ProposalController` V1: `store/update/destroy/generatePdf/duplicate/create_by_form/getDataFromUrl/index/create/edit/updateStatus…` | **[REMOVIDO em `a33b12b`; o ficheiro passou de 717 para 262 linhas]** Código morto (sem rota). Só `detail`, `accept`, `requestAlternativeQuote` em uso | `routes/web.php:59-67`; `ProposalController.php:37-760` |
+| L2 | `ConvertedProposalController` V1: `index/edit/update` | **[REMOVIDO em `a33b12b`]** Código morto; `updateStatus` e `detailTimeline` em uso | `ConvertedProposalController.php:15-82` vs `:84-126` |
+| L3 | `ClientController` V1 | **[Métodos mortos removidos em `a33b12b`; as views `clients/index` e restantes saíram, fica `contract_service`]** Só `contractService` com rota, admin-only, sem link na UI V2 (link só na view V1 `clients/index.blade.php:50`) | `routes/web.php:178`; `config/permissions.php:265` |
 | L4 | `ExpenseV2Controller` | Código morto (0 referências) | `grep` |
-| L5 | `SaleV2Controller` + rotas `v2/sales` | **Vivo, mas só para `Vehicle` V1**; ligado no menu e no cliente | `routes/web.php:562-570`; `layouts/admin-v2.blade.php:1097-1101`; `clients/show.blade.php:17,506` |
+| L5 | `SaleV2Controller` + rotas `v2/sales` | **[Atualizado em `058e135`/`2baf1d3`: a listagem e a eliminação servem as vendas V3 e `create` redireciona para o fluxo V3]** Vivo, mas à data da auditoria só para `Vehicle` V1; ligado no menu e no cliente | `routes/web.php:562-570`; `layouts/admin-v2.blade.php:1097-1101`; `clients/show.blade.php:17,506` |
 | L6 | Rotas `v2/vehicles/*` | Redirecionam para V3 (comportamento desejado) | `routes/web.php:474-480` |
 | L7 | Exportações CSV (`ExportController`) vs XLSX (`ExportXlsxController`) para leads/clientes | **Duplicadas** (ambas na UI) | `routes/web.php:280-284` e `:292,312`; `leads/index.blade.php:32,38` |
 | L8 | `FinancialDashboardController::seedExisting` | Ferramenta de migração V1; não cobre V3 | `FinancialDashboardController.php:173-196` |
@@ -509,15 +509,15 @@ Confirmado (`ProposalAcceptanceService.php:36-84`): transação com `lockForUpda
 5. `ProposalObserver` envia emails síncronos sem try/catch: falha de SMTP dá 500 com o estado já gravado, e interrompe o `bulkUpdateStatus` (P7.1). **[Corrigido em `9616cc9` (sem fila).]**
 
 **Médios.**
-6. Menu "Vendas" e botão do cliente levam ao fluxo V1 (P11.1); vendas V3 só no separador.
+6. Menu "Vendas" e botão do cliente levam ao fluxo V1 (P11.1); vendas V3 só no separador. **[Corrigido em `058e135`.]**
 7. `generateReference()` por contagem + índice único (P9) e `convert` de inspeção sem lock. **[`generateReference` corrigido em `ee9af9b`; `convert` de inspeção sem lock mantém-se.]**
 8. Apagar viatura deixa movimentos de compra/venda órfãos (P9); apagar convertida/legalização/inspeção deixa ficheiros órfãos (§1, P10.3, §9).
-9. Legalização: passos duplicados em dois controllers; tarefa do Modelo 9 só num deles e duplicável (P10.1/P10.2).
+9. Legalização: passos duplicados em dois controllers; tarefa do Modelo 9 só num deles e duplicável (P10.1/P10.2). **[Corrigido em `058e135` e `2baf1d3`.]**
 10. `total_price` inexistente: CSV de cotações sem valor e atividade sem total (P7.2).
 11. ENUMs antigos nas migrations vs valores usados pelo código (P7.4, hipótese de drift em produção).
 12. `convertido` pode ser sobreposto por mudança manual do estado do pedido (P5.1); convertida `update` aceita estado livre e muda `proposal_id` (§8).
 13. Tranche 2 ignora a percentagem `final_payment` se não somar 100 (§7.1).
-14. Pré-leads e avaliações de consignação sem entrada no menu (§3, P5.5).
+14. Pré-leads e avaliações de consignação sem entrada no menu (§3, P5.5). **[A consignação passou a criar lead em `058e135`; o menu não mudou.]**
 
 **Baixos.** N+1 em `isCommissionOverdue` e página pública; `INITIAL_BALANCE` e e-mails fixos no código; código morto V1/V2 (§14); `AuditLog` duplica email/telefone (RGPD); selects com todos os clientes.
 
@@ -525,7 +525,7 @@ Confirmado (`ProposalAcceptanceService.php:36-84`): transação com `lockForUpda
 
 ## 16. Testes: mapa de cobertura (tests/)
 
-Suíte total: 14 299 linhas em `tests/` (Feature + Unit), sqlite em memória com `RefreshesDatabaseWithoutMysqlOnlyMigrations` (`tests/RefreshesDatabaseWithoutMysqlOnlyMigrations.php`).
+Suíte total à data da auditoria: 14 299 linhas em `tests/` (Feature + Unit); no fim são 1053 testes (1052 passam, 1 falha conhecida) e a tabela seguinte tem a atualização na última linha, sqlite em memória com `RefreshesDatabaseWithoutMysqlOnlyMigrations` (`tests/RefreshesDatabaseWithoutMysqlOnlyMigrations.php`).
 
 | Área | Cobertura | Principais ficheiros |
 |---|---|---|
@@ -538,7 +538,9 @@ Suíte total: 14 299 linhas em `tests/` (Feature + Unit), sqlite em memória com
 | Movimentos | Boa no serviço e mobile | `MovementServiceTest`, `Mobile/MobileMovementsTest`, `LinkedMovementsTest` |
 | Vendedores | Muito boa | `SellerTest`, `SellerBrandsTest`, `SellerDuplicateDetectionTest` |
 | Mobile | Boa (cada módulo tem teste) | `tests/Feature/Mobile/*` |
-| **Sem testes** | Vendas V3 e `SaleCalculator`; **inspeções**; fotos/documentos de viaturas; anúncio OpenAI; passos de legalização (regra N-1) e documentos; Modelo 1460/1RA; dashboard financeiro; fornecedores e parceiros (CRUD); carros candidatos; transportes; `commissions:overdue-alert`; `legalizations:send-tracking-emails`; eliminações de lead/cliente/cotação/viatura | — |
+| **Sem testes (à data da auditoria)** | Vendas V3 e `SaleCalculator`; **inspeções**; fotos/documentos de viaturas; anúncio OpenAI; passos de legalização (regra N-1) e documentos; Modelo 1460/1RA; dashboard financeiro; fornecedores e parceiros (CRUD); carros candidatos; transportes; `commissions:overdue-alert`; `legalizations:send-tracking-emails`; eliminações de lead/cliente/cotação/viatura | — |
+| **Cobertos depois (`1bc16d9`, `2baf1d3`, `dd006d8`)** | Inspeções; vendas V3 e `SaleCalculator`; fotos e documentos de viaturas; passos de legalização e tarefa do Modelo 9; dashboard financeiro, fornecedores e parceiros; transportes; radar (listagem e comandos); comparador; notícias, testemunhos, impersonation e acessos; webhook, sitemap e estado público | `VehicleInspectionCoberturaTest`, `V3VehicleVendasFotosDocumentosCoberturaTest`, `LegalizationPassosCoberturaTest`, `FinanceiroFornecedoresParceirosCoberturaTest`, `RadarTransportesComparadorCoberturaTest`, `ConteudoEAcessosAdminCoberturaTest`, `WebhookSitemapEstadoPublicoCoberturaTest` |
+| **Ainda sem testes** | `store/update/run/destroy` do radar; comparador com chave da OpenAI; geocode dos transportes; crop e restore de fotos; relatórios `reports:*`; anúncio OpenAI; carros candidatos; `legalizations:send-tracking-emails`; Modelo 1460/1RA; eliminações de lead/cliente/cotação | — |
 
 ---
 
@@ -591,7 +593,7 @@ Documentação de domínio já existente e que não se repete aqui: `docs/funil-
 | 4 | Alta | Definições: upload de imagem sem validação de tipo/extensão (`SettingV2Controller.php:85-88, 127-135`), guardado em `storage/public` com a extensão indicada pelo cliente. | Confirmado (execução de PHP: hipótese) **[Corrigido em `00eb765`: `mimes`, `mimetypes`, 5 MB e nome gerado]** |
 | 5 | Média | `PERMISSIONS_ENFORCE=false` por omissão (`config/permissions.php`): se produção não o definir a `true`, qualquer conta de backoffice com perfil acede a tudo o que o middleware só regista. | Hipótese (valor em produção desconhecido) **[Aberto]** |
 | 6 | Média | Gravação de ficheiros por caminho do cliente: `NewsArticleController::deleteGalleryImage` (`:118-121`) e `SocialPostController::store` (`remove_gallery_photos`, `existing:<path>`) apagam qualquer ficheiro do disco `public`. | Confirmado **[Corrigido em `00eb765`: só caminhos da própria galeria]** |
-| 7 | Média | Notícias por slug devolvem rascunhos (`NewsController.php:35`, sem `published()`); viaturas por referência devolvem `show_online=false` (`VehiclesController.php:165`). | Confirmado **[Em curso (vazamento de rascunhos, noutro trabalho)]** |
+| 7 | Média | Notícias por slug devolvem rascunhos (`NewsController.php:35`, sem `published()`); viaturas por referência devolvem `show_online=false` (`VehiclesController.php:165`). | Confirmado **[Corrigido em `68dbbe3`: `NewsController` usa `published()` e `VehiclesController::vehicleDetails`/`vehicleStory` exigem `show_online`; ambos dão 404]** |
 | 8 | Média | `AuthorizeResource`/`RestrictAngariadorArea`: o fluxo "esqueci-me da password" do Laravel UI faz login automático após o reset e não passa por `LoginController::authenticated` (que bloqueia contas pendentes/rejeitadas). | Hipótese (comportamento do trait; não houve execução) |
 | 9 | Média | Lembretes: `leads:followup-reminder` soma 60 minutos fixos (`SendFollowupReminder.php:15-16`) e `APP_TIMEZONE` omite para `UTC`; relatórios/lembretes usam `env()` fora de `config/` (devolve `null` com `config:cache`, caindo para `geral@izzycar.com`, domínio diferente do `.pt` usado nos restantes mails). | Hipótese **[Parcial: `+60 min` removido em `7e991a7`; `APP_TIMEZONE` e `env()` fora de `config/` continuam por resolver]** |
 | 10 | Média | Cobertura de testes inexistente em: radar, newsletter, notícias, testemunhos, sitemap, posts sociais, comparador, transportes, reports, impersonation, push, modo de manutenção, estado público de legalização, comandos agendados. | Confirmado **[Parcial: comandos agendados e newsletter passaram a ter testes]** |
@@ -623,7 +625,7 @@ Documentação de domínio já existente e que não se repete aqui: `docs/funil-
 - **Técnica:** cache de 600 s por conjunto de filtros com versão global (`VehicleCache::key/flush`, `VehicleCache.php:16-24`). Ordenação por estado via `orderByRaw("CASE status ...")` (`:30,90,130`).
 - **Regras:** só `show_online=true` entra nas listagens; estado `vendido` continua visível; ordem em_stock, reservado, vendido.
 - **Problemas:**
-  - [Confirmado] `vehicleDetails` não filtra `show_online` nem estado (`:165`): viaturas ocultas ficam acessíveis por URL direto a quem adivinhar a referência (referências sequenciais prováveis).
+  - [Confirmado à data da auditoria] `vehicleDetails` não filtrava `show_online` nem estado (`:165`): viaturas ocultas ficavam acessíveis por URL direto a quem adivinhasse a referência. **[Corrigido em `68dbbe3`: `show_online = true` obrigatório em `vehicleDetails` e `vehicleStory` (404 caso contrário); as vendidas e reservadas continuam visíveis.]**
   - [Confirmado] Chave de cache construída com `md5(json_encode($request->all()))` (`:65,101`): cada combinação de querystring cria uma entrada nova (qualquer parâmetro extra também). Com driver `file` pode acumular ficheiros em `storage/framework/cache` (**[Hipótese]** quanto ao volume). **[Corrigido em `5d2a3be`: a chave só usa os filtros permitidos.]**
   - [Confirmado] `FIELD(status, ...)` em MySQL na secção de "últimas viaturas" do detalhe (`:242`): só MySQL, sem emulação em testes (a regra do projeto pede emulação).
   - [Confirmado] `vehicleDetails` carrega `$last_vehicles` sem cache e inclui vendidas (`:240-243`).
@@ -653,7 +655,7 @@ Documentação de domínio já existente e que não se repete aqui: `docs/funil-
 
 - **Retomas:** `GET/POST /retomas` (`TradeInController.php:57-141`). **[Confirmado]** O pedido cria/atualiza a lead e uma `LeadActivity`, mas os dados da viatura (marca, modelo, ano, km, extras, mensagem) só vão por email interno (`:99-134`): **não são guardados na base de dados**. Quem perder o email perde o pedido. Telefone só `string|max:50` sem normalização (`:61`).
 - **Venda:** `GET /venda` usa `SellingController` e reutiliza `frontend.legalization` (`SellingController.php:38`). **[Confirmado]** Vista partilhada com a legalização (conteúdo diferente por slug `venda-automovel`).
-- **Consignação:** `GET /consignacao`, `GET/POST /consignacao/avaliacao` (`ConsignmentController.php:20-172`). Valida tipo real das fotos, até 10 fotos de 5 MB, guarda em disco privado e cria `ConsignmentEvaluation` com referência `CSG-xxxxxx`; **[Confirmado]** a gravação em BD fica depois do envio do mail e dentro do mesmo `try`: se o mail falhar, nada é guardado (`:119-148`); a lead/cliente não é criada (não passa por `ClientMatcher`), logo o pedido de consignação fica fora do funil de leads. Referência `md5(microtime())` truncada a 6 hex: colisões possíveis (`:76`, 16^6).
+- **Consignação:** `GET /consignacao`, `GET/POST /consignacao/avaliacao` (`ConsignmentController.php:20-172`). Valida tipo real das fotos, até 10 fotos de 5 MB, guarda em disco privado e cria `ConsignmentEvaluation` com referência `CSG-xxxxxx`; **[Confirmado à data da auditoria; Corrigido em `058e135`]** a gravação em BD ficava depois do envio do mail e dentro do mesmo `try`, e a lead não era criada. Agora o `ConsignmentEvaluation` grava-se antes do email (uma falha de envio só fica no log), a lead é criada ou reaproveitada por email e telefone (`ClientMatcher`, origem `Consignação`, `lead_source` `consignacao`) e o pedido fica na timeline do cliente. Referência `md5(microtime())` truncada a 6 hex: colisões possíveis (`:76`, 16^6).
 - **Contacto sobre uma viatura:** `POST /contact/vehicle` (`ContactController@send`). Cria lead (`lead_source='contacto'`), `LeadActivity` e envia mail; `url` aceita qualquer URL válido e fica guardado na atividade (`ContactController.php:21-62`). **[Confirmado]** Não há notificação push à equipa neste fluxo (as outras fontes chamam `PushNotifier`).
 - **Testes:** `FormulariosPublicosLimitesTest` (limite de pedidos, consignação ignora ficheiros não imagem), `FicheirosPrivadosTest`. **Sem cobertura:** retomas, contacto de viatura, venda, vista de consignação.
 
@@ -688,10 +690,10 @@ Documentação de domínio já existente e que não se repete aqui: `docs/funil-
 - **Tabelas:** `news_articles` (`NewsArticle`, scope `published` = status `Publicado`, `NewsArticle.php:19-22`).
 - **Técnica:** SEO manual como objeto `$seo` (`NewsController.php:16-28`) com URLs de imagem fixas `https://izzycar.pt/storage/...`; JSON-LD `Blog`, `ItemList`, `BreadcrumbList` (listagem) e `Article` (detalhe).
 - **Problemas:**
-  - [Confirmado] `getNewsPageBySlug` não usa `published()` (`NewsController.php:35`): rascunhos acessíveis por slug (o BO gera slug no `store`, mesmo em rascunho).
+  - [Confirmado à data da auditoria] `getNewsPageBySlug` não usava `published()`: rascunhos acessíveis por slug. **[Corrigido em `68dbbe3`: 404 para rascunhos.]**
   - [Confirmado] JSON-LD do artigo com `addslashes()` em vez de `json_encode` (`news-details.blade.php:32,33,67`): um apóstrofo no título vira `\'`, que **não é JSON válido**; o validador do Google ignora o bloco inteiro. Títulos pt com apóstrofo são frequentes. **[Corrigido em `73f68de`: `json_encode` com `JSON_HEX_TAG`/`JSON_HEX_AMP`.]**
   - [Confirmado] Conteúdo HTML do editor impresso com `{!! RichText::display(...) !!}` sem sanitização (`news-details.blade.php:113,138,168`); XSS armazenado possível por quem edita notícias (utilizadores de confiança; **[Hipótese]** de risco real).
-  - [Confirmado] Sitemap só inclui `published()` (`GenerateSitemap.php:133`), mas o detalhe serve rascunhos.
+  - [Confirmado] Sitemap só inclui `published()` (`GenerateSitemap.php:133`); desde `68dbbe3` o detalhe também só serve publicadas.
   - [Confirmado] `NewsV3Controller` (217 linhas) sem rota: código morto.
 - **Testes:** nenhum (só `PermissionManagementTest` menciona rotas). **Sem cobertura:** listagem, slug, rascunho, JSON-LD.
 
@@ -779,7 +781,7 @@ Documentação de domínio já existente e que não se repete aqui: `docs/funil-
 - **Rotas públicas:** `/seja-angariador` (landing), `GET/POST /registo-angariador` (`throttle:5,1`), `/manual-angariador` (`auth`). Ficheiros: `Frontend/AngariadorRegistrationController.php`, `AngariadorManualController.php`, vistas `resources/views/public/*`.
 - **Fluxo:** o registo cria `User` com `status='pendente'`, password aleatória e perfil `angariador` (`AngariadorRegistrationController.php:51-65`), guarda frente e verso do documento de identificação em disco privado (`AngariadorIdentityDocuments`), e envia email de revisão (`:67-84`). Aprovação em `AngariadorAdminController::approve` (`:50-66`): `status='aprovado'`, gera `referral_code` e comissão fixa de 100 EUR por omissão e envia o email "definir password" (broker `setup`). Rejeição apaga o documento (`:68-78`). O `LoginController::authenticated` bloqueia contas não aprovadas (`LoginController.php:58-68`).
 - **Problemas:**
-  - [Confirmado] Sem `antispam` nem honeypot no registo (`web.php:91-93`, só `throttle:5,1`); cada candidatura cria um `User` e guarda ficheiros privados (5 MB cada).
+  - [Confirmado à data da auditoria; Corrigido em `68dbbe3`] Sem `antispam` nem honeypot no registo: o POST passou a ter `antispam` e o formulário inclui o `_honeypot`; a resposta é sempre a mesma, exista ou não o email. Cada candidatura nova cria um `User` e guarda ficheiros privados (5 MB cada).
   - [Confirmado] NIF e IBAN guardados em claro na tabela `users` (`User.php:22-27` sem cast `encrypted`).
   - [Confirmado] Existe também ficheiro `users/<email>.yaml` versionado em git na raiz com um campo `password_hash` (129 bytes; **não se leu o valor**): resíduo de ferramenta externa; deve ser removido do repositório e a password associada trocada se for real. Mesma raiz tem ficheiros sem extensão rastreados (`please`, `retomas`, `plataforma vendas`, `info-faq`, `info-metricas`), CSV (`AutoScoutSearch/*.csv`) e PDFs de modelos. **[Parcial: o ficheiro saiu do índice (`00eb765`) e está ignorado (`73df400`); o hash continua no histórico git. Os restantes ficheiros da raiz continuam rastreados.]**
   - [Hipótese] O fluxo "esqueci-me da password" (Laravel UI, `ForgotPasswordController`/`ResetPasswordController`) faz login automático ao terminar o reset e não chama `authenticated()`; uma conta `pendente` ou `rejeitado` poderia pedir reset e entrar. O `ResetPasswordController.php` não sobrepõe `resetPassword`/`sendResetResponse`. Verificar em ambiente descartável.
@@ -1072,7 +1074,7 @@ Cenários sem cobertura (prioridade para correções):
 
 ## 17. Recomendações priorizadas (para decisão do Pedro; nada foi alterado)
 
-**Estado das recomendações (revisão de 2026-10-31):** 1 feita (`73f68de`); 2 feita (`86550ca`; falta `newsletter_consent_at`); 3 feita só para admins (`00eb765`; `roles.update` e `referral_code` por verificar); 4 e 5 feitas (`00eb765`); 6 aberta; 7 em parte (JSON-LD feito em `73f68de`; rascunhos de notícias em curso noutro trabalho); 8 em curso (simulador de custos); 9 aberta (fila e `admin_address`); 10 em parte (`+60 min` removido e `withoutOverlapping` feito em `7e991a7`; `APP_TIMEZONE` aberto); 11 aberta; 12 em parte (`1e52c53`; controllers mortos em curso).
+**Estado das recomendações (revisão de 2026-10-31):** 1 feita (`73f68de`); 2 feita (`86550ca`; falta `newsletter_consent_at`); 3 feita só para admins (`00eb765`; `roles.update` e `referral_code` por verificar); 4 e 5 feitas (`00eb765`); 6 aberta; 7 feita (JSON-LD em `73f68de`; rascunhos de notícias e viaturas offline em 404 em `68dbbe3`); 8 aberta (simulador de custos: `+ 300` no cálculo contra `+ 200` no resultado, e `Setting::...->first()->value` sem guarda; decisão do Pedro); 9 aberta (fila e `admin_address`; os formulários de retoma e consignação já gravam antes de enviar e tratam a falha do email, `058e135`); 10 em parte (`+60 min` removido e `withoutOverlapping` feito em `7e991a7`; `APP_TIMEZONE` aberto); 11 aberta; 12 feita em grande parte (`1e52c53`, `a33b12b`; ficam os ficheiros da raiz por decidir).
 
 
 1. Corrigir ou remover as rotas de páginas ausentes (`/contactos` e a rota `frontend.contact`) e as duplicações de privacidade/termos.
@@ -1120,8 +1122,14 @@ Commits com impacto neste inventário (do mais antigo para o mais recente):
 | `86550ca` | CSV sem fórmulas (`CsvSanitizer`); newsletter com link de cancelamento assinado, double opt-in (`newsletter.confirm`) e validação de consentimento no envio; `RichText::display` sanitiza com HTMLPurifier |
 | `5d2a3be` | Listagem pública com chave de cache só de filtros permitidos e só a foto de capa; upload de fotos V3 otimizado; dashboard com menos queries (41 para 26 medido em teste); selects de clientes das cotações só com `id`, `name`, `email` |
 | `1e52c53` | Removidas 20 views `copy`/`.bak`, 13 `.DS_Store`, `scripts/soup_debug.html`, `ProposalController::downloadPdf`, `config/snappy.php` e os pacotes `laravel-snappy`, `browsershot`, `legacy-factories` |
+| `68dbbe3` | Anti-spam com tempo obrigatório, limites por hora (30 por IP, 5 por email e rota) e `antispam` no registo de angariador (resposta genérica); ficheiros privados só no disco privado e com habilidade por tipo (com `PERMISSIONS_ENFORCE` desligado só regista no log); notícias em rascunho e viaturas com `show_online = false` dão 404; tabela do ISV do simulador e FAQ do manual sanitizados; `PageContentController` validado |
+| `058e135` | `SaleV2Controller::create` redireciona para as viaturas em stock e as vendas V3 editam-se no separador Venda (as vendas V3 passam a ser o fluxo por omissão); tarefa do Modelo 9 idempotente e também criada pelo separador da viatura (`LegalizationTaskService`); consignação grava o pedido antes do email e cria ou reaproveita a lead; email da retoma e da consignação em `try/catch`; badges do menu calculados uma vez por pedido |
+| `a33b12b` | Removidos 20 controllers, 2 models e 47 views V1 (72 ficheiros, 10 465 linhas); `ProposalController`, `ClientController` e `ConvertedProposalController` ficam só com os métodos com rota |
+| `1bc16d9` | Testes de cobertura: inspeções, vendas V3, legalização (passos e Modelo 9), financeiro, fornecedores e parceiros, radar, transportes, comparador, notícias, testemunhos, impersonation, webhook, sitemap e estado público |
+| `2baf1d3` | Capa de foto só de fotos da própria viatura; apagar venda pela listagem repõe a viatura em stock; pesquisa de vendas inclui viaturas V3; regra N-1 ao desmarcar passos de legalização |
+| `dd006d8` | Inspeções concluídas ou convertidas só de leitura; resumo da inspeção recalculado com as entradas atuais; template por omissão criado se faltar; verificação do webhook recusa token vazio |
 | `3bb96ac` | Cotação convertida cancelada liberta a cotação (pode voltar a ser aceite); saldos de movimentos com saldo de abertura do ano, pendentes separados e somas em cêntimos; comprovativos de movimentos só se apagam depois do commit; merge de clientes com contagens dentro da transação; `SaleCalculator` com arredondamento por passo e exceção para IVA desconhecido; `ServiceTranches` com `pct2 = 100 - pct1`; geocoding e Google Reviews com log de falhas |
 
-**Em curso (não considerar feito):** SEG-012 (anti-spam), SEG-015 (ficheiros privados), SEG-017 (dados pessoais em logs), vazamento de rascunhos de notícias, vendas V3 no menu, Modelo 9 duplicado, simulador de custos, consignação, queries do layout, limpeza V1, testes novos.
+**Antes em curso, agora fechado:** SEG-012, rascunhos de notícias, vendas V3 no menu, Modelo 9 duplicado, consignação, queries do layout, limpeza V1 e testes novos. **Parciais:** SEG-015 (falta o `files:move-to-private --apply` em produção) e SEG-017. **Por decidir:** simulador de custos (300 contra 200).
 
-**Continua válido como no inventário:** `PERMISSIONS_ENFORCE` desligado, fila `sync`, `APP_TIMEZONE` por omissão `UTC`, FKs em falta e eliminação de cliente/viatura com órfãos, CSP em report-only, `PageContentController` com `$request->all()`, SVG em ofertas da newsletter e em `PageController`.
+**Continua válido como no inventário:** `PERMISSIONS_ENFORCE` desligado, fila `sync`, `APP_TIMEZONE` por omissão `UTC`, FKs em falta e eliminação de cliente/viatura com órfãos, CSP em report-only, SVG em ofertas da newsletter e em `PageController`, simulador de custos com `+ 300` e `+ 200` diferentes. (`PageContentController` já valida os campos, `68dbbe3`.)

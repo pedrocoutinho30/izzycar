@@ -1,22 +1,24 @@
 # Problemas encontrados
 
-Revisão estática (ver README). Parte A: segurança e autorização (SEG-xxx). Parte B: lógica, dados e integrações (LOG-xxx). Testes existentes correram em sqlite em memória: 764 passaram, 1 falhou (ExampleTest, já conhecido).
+Revisão estática (ver README). Parte A: segurança e autorização (SEG-xxx). Parte B: lógica, dados e integrações (LOG-xxx). Testes existentes correram em sqlite em memória: 764 passaram, 1 falhou (ExampleTest, já conhecido); no fim das correções são 1052 a passar e 1 falha (a mesma).
 
-## Estado actual das correções (revisão de 2026-10-31)
+## Estado final das correções (revisão final de 2026-10-31)
 
-O texto de cada achado descreve o código **à data da auditoria**; cada um ganhou uma linha `Estado:` logo a seguir ao título, com o commit e o que falta. Fontes: `git log` desde `00eb765` (os commits `00eb765` a `73df400` foram feitos antes do commit dos documentos `f9f85fd`, que por isso os apanhou ainda por corrigir; `86550ca` a `3bb96ac` vieram depois). A suite passou de 764 para 872 testes passados, com a mesma falha conhecida (`ExampleTest`).
+O texto de cada achado descreve o código **à data da auditoria**; cada um tem uma linha `Estado:` logo a seguir ao título, com o commit e o que falta. Fontes: `git log` desde `00eb765` até `dd006d8` e leitura do código. A suite passou de 764 para **1052 testes a passar**, com a mesma falha conhecida (`ExampleTest`): 1053 testes no total. Os três itens que a revisão anterior deixava "em curso" (SEG-012, SEG-015, SEG-017) foram fechados ou reclassificados abaixo.
 
 | Estado | Quantidade | Itens |
 |---|---|---|
-| Corrigido | 15 | SEG-003 (00eb765), SEG-004 (00eb765), SEG-009 (9616cc9), SEG-010 (73df400), SEG-011 (86550ca), SEG-013 (86550ca), LOG-001 (7e991a7), LOG-003 (ee9af9b), LOG-005 (ee9af9b), LOG-006 (9616cc9), LOG-008 (3bb96ac), LOG-010 (9616cc9), LOG-011 (7e991a7), LOG-015 (3bb96ac), LOG-017 (3bb96ac) |
-| Parcial | 13 | SEG-002, SEG-005, SEG-006, SEG-007, SEG-008, SEG-018, LOG-004, LOG-007, LOG-009, LOG-012, LOG-013, LOG-014, LOG-018 |
-| Em curso | 3 | SEG-012, SEG-015, SEG-017 |
-| Aberto | 5 | SEG-001, SEG-014, SEG-016, LOG-002, LOG-016 |
+| Corrigido | 17 | SEG-003 (00eb765, dd006d8), SEG-004 (00eb765), SEG-006 (86550ca, 73f68de, 68dbbe3), SEG-009 (9616cc9), SEG-010 (73df400), SEG-011 (86550ca), SEG-012 (68dbbe3), SEG-013 (86550ca), LOG-001 (7e991a7), LOG-003 (ee9af9b), LOG-005 (ee9af9b), LOG-006 (9616cc9), LOG-008 (3bb96ac), LOG-010 (9616cc9), LOG-011 (7e991a7), LOG-015 (3bb96ac), LOG-017 (3bb96ac) |
+| Parcial | 15 | SEG-002, SEG-005, SEG-007, SEG-008, SEG-015 (68dbbe3), SEG-017 (86550ca, 058e135), SEG-018 (1e52c53, a33b12b), LOG-004, LOG-007, LOG-009, LOG-012, LOG-013, LOG-014, LOG-016 (a33b12b), LOG-018 |
+| Em curso | 0 | (nenhum: o que estava "em curso" ficou feito ou parcial) |
+| Aberto | 4 | SEG-001, SEG-014, SEG-016, LOG-002 |
 | **Total** | **36** | |
 
-Itens marcados "Em curso" estão a ser tratados noutros trabalhos em paralelo e **não** devem ser lidos como feitos; serão atualizados no fim. Comparação por gravidade: das 2 altas de segurança, nenhuma está resolvida (SEG-001 aberto, SEG-002 parcial); das 2 altas de lógica, LOG-001 está corrigida e LOG-002 aberta.
+Comparação por gravidade: das 2 altas de segurança, nenhuma está resolvida (SEG-001 aberto, SEG-002 parcial); das 2 altas de lógica, LOG-001 está corrigida e LOG-002 aberta (depende do `APP_TIMEZONE` de produção). Dos 8 médios de segurança só SEG-005, SEG-007 e SEG-008 continuam parciais (SEG-003, 004, 006, 009, 010 corrigidos).
 
-Legenda de commits: `00eb765` webhook/SSRF/uploads/filemanager/admins; `73f68de` site público; `8da6d89` dashboard (mês com ano); `ee9af9b` IVA/venda/referência; `9616cc9` clientes/observer/importação; `7e991a7` agendador; `73df400` symfony/mime e `users/`; `86550ca` CSV/newsletter/HTML; `5d2a3be` desempenho; `1e52c53` limpeza; `3bb96ac` financeiro e integrações.
+Legenda de commits: `00eb765` webhook/SSRF/uploads/filemanager/admins; `73f68de` site público; `8da6d89` dashboard (mês com ano); `ee9af9b` IVA/venda/referência; `9616cc9` clientes/observer/importação; `7e991a7` agendador; `73df400` symfony/mime e `users/`; `86550ca` CSV/newsletter/HTML; `5d2a3be` desempenho; `1e52c53` limpeza; `3bb96ac` financeiro e integrações; `68dbbe3` segurança (ronda 3: anti-spam, ficheiros privados, rascunhos em 404, HTML sanitizado); `058e135` funil (vendas V3, Modelo 9, consignação, badges do menu); `a33b12b` remoção do código V1; `1bc16d9` testes de cobertura; `2baf1d3` viaturas (capa, venda, passos); `dd006d8` inspeções e webhook com token vazio.
+
+Os bugs encontrados pelos testes de cobertura estão numa secção própria no fim deste documento ("Bugs encontrados pelos testes de cobertura").
 
 
 ---
@@ -60,7 +62,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 ## Médias
 
 ### SEG-003 - Webhook WhatsApp: HMAC calculado com segredo vazio se `WHATSAPP_APP_SECRET` não estiver definido
-- **Estado:** Corrigido em `00eb765`. `VerifyWhatsAppSignature` recusa (403, com `Log::error`) se `WHATSAPP_APP_SECRET` estiver vazio. Falta apenas, e é menor, o `verify()` do `WhatsAppWebhookController` continuar a comparar `hub_verify_token` com `===` sem exigir token não vazio (`WhatsAppWebhookController.php:26`). Testes em `SegurancaCorrecoesTest`.
+- **Estado:** Corrigido em `00eb765` e `dd006d8`. `VerifyWhatsAppSignature` recusa (403, com `Log::error`) se `WHATSAPP_APP_SECRET` estiver vazio. O `verify()` do `WhatsAppWebhookController` deixou de aceitar `null === null`: só responde ao desafio se `WHATSAPP_VERIFY_TOKEN` for uma string não vazia e o `hub_verify_token` bater certo (`hash_equals`). Testes em `SegurancaCorrecoesTest` e `WebhookSitemapEstadoPublicoCoberturaTest`. **Falta no `.env` de produção:** definir `WHATSAPP_VERIFY_TOKEN` (sem ele, a verificação do webhook pela Meta é sempre recusada) e `WHATSAPP_APP_SECRET`.
 - **Gravidade:** média. **Confiança:** suspeito (depende do `.env` de produção, que não li).
 - **Evidência:** `app/Http/Middleware/VerifyWhatsAppSignature.php:20-24` (`hash_hmac('sha256', corpo, (string) config('services.whatsapp.app_secret'))` sem verificar que o segredo existe); `config/services.php:46-51`; `routes/api.php:34-39`; `.env.example` lista `WHATSAPP_APP_SECRET=` vazio.
 - **Cenário:** com segredo vazio, um atacante calcula `hash_hmac('sha256', $corpo, '')` e passa a assinatura. O endpoint `POST /api/whatsapp/webhook` cria `PreLead` (pendentes de aprovação) e escreve texto livre na BD.
@@ -91,7 +93,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Validar:** teste com endpoint `http://localhost` rejeitado. **Esforço:** baixo.
 
 ### SEG-006 - HTML sem sanitização em conteúdo do site (XSS armazenado) com CSP só em report-only
-- **Estado:** Parcial. `RichText::display()` passa a sanitizar com o HTMLPurifier (lista branca de tags/atributos, sem `script`, `on*`, `javascript:`), antes de recolorir (`86550ca`; testes `RichTextSanitizeTest`, `RichTextTest`). O JSON-LD das notícias deixou de usar `addslashes` (`73f68de`). Falta: `{!! $tableIsv !!}` em `cost-simulator/result.blade.php:115` continua sem sanitizar (origem `ImportSimulator`, por verificar), `{!! $item['a'] !!}` no manual, `PageContentController` continua com `PageContent::create($request->all())`, e a CSP continua só em report-only (SEG-016).
+- **Estado:** Corrigido (HTML). `RichText::display()` sanitiza com o HTMLPurifier (lista branca, sem `script`, `on*`, `javascript:`) antes de recolorir (`86550ca`; testes `RichTextSanitizeTest`, `RichTextTest`). O JSON-LD das notícias deixou de usar `addslashes` (`73f68de`). Em `68dbbe3`: `{!! $tableIsv !!}` passa por `App\Support\IsvTable::sanitize` (só tags de tabela, `class` e `colspan`) e o `ImportSimulatorController` escapa com `e()` os valores do pedido público antes de gerar o HTML guardado; o FAQ do manual passa por `RichText::display`; `PageContentController` valida `page_id`, `field_name` e `field_value` (`max:65000`) em vez de `$request->all()`. O que resta é a CSP em report-only, tratada em SEG-016.
 - **Gravidade:** média. **Confiança:** confirmado (padrão); exploração exige conta do backoffice com acesso a conteúdo (ou webhook, SEG-003).
 - **Evidência:** `app/Support/RichText.php` só troca cores, não sanitiza; usos de `{!! RichText::display(...) !!}` em `resources/views/frontend/news-details.blade.php:113,138,168`, `import.blade.php:259,295,391,466`, `legalization.blade.php:172,193`, `partials/vertical-tabs.blade.php:313`, `horizontal-tabs.blade.php:42`, `accordion-mobile.blade.php:149`; `{!! $item['a'] !!}` em `admin/v2/manual/faq.blade.php:74`; `{!! $tableIsv !!}` em `frontend/cost-simulator/result.blade.php:115` (HTML gerado e guardado em `cost_simulators.isv_table`, derivado de `ImportSimulator` com input público); `PageContentController.php:24,29` (`PageContent::create($request->all())`); `ezyang/htmlpurifier` está instalado mas não é usado (`grep Purifier app` vazio). CSP: `config/security.php:31-33` (`'unsafe-inline'`) e report-only (`docs/seguranca-csp.md`).
 - **Cenário:** um utilizador do backoffice (ou conta comprometida) grava `<script>`/`onerror=` num campo de notícia/página; corre no browser de todos os visitantes, e do admin quando pré-visualiza. Para `isv_table`, rever se algum campo do pedido público entra no HTML sem escape em `ImportSimulator::calcular`.
@@ -150,7 +152,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Correção:** prefixar com `'` (ou tabulação) qualquer valor de texto que comece por `= + - @` antes de escrever. **Validar:** teste unitário do helper. **Esforço:** baixo.
 
 ### SEG-012 - Anti-spam contornável e registo de angariador sem anti-spam
-- **Estado:** Em curso. A tratar noutro trabalho em paralelo; não está marcado como feito.
+- **Estado:** Corrigido em `68dbbe3` (sem CAPTCHA). `BlockSpamSubmissions` trata a ausência ou valor inválido de `_form_started` como suspeita (`missing_time`), sobe o mínimo para 3 s, recusa relógios forjados no futuro (`bad_time`) e limita por hora a 30 envios por IP (todos os formulários) e 5 por email e rota (a chave usa o hash do email; o log só tem rota, IP e motivo). `/registo-angariador` passou a usar `antispam` e o partial `_honeypot`, e responde sempre com a mesma mensagem de sucesso (já não há `unique:users,email` que permita enumerar emails; se o email já existe não se cria nada nem se avisa a administração). O CAPTCHA (Turnstile/hCaptcha) não foi acrescentado: fica como melhoria opcional.
 - **Gravidade:** baixa. **Confiança:** confirmado.
 - **Evidência:** `app/Http/Middleware/BlockSpamSubmissions.php:23-27` (o tempo mínimo só conta se `_form_started > 0`; omitir o campo ou o honeypot ignora a verificação); `routes/web.php:91-93` (`/registo-angariador` só com `throttle:5,1`, sem `antispam`, e a validação `unique:users,email` permite enumerar emails registados).
 - **Correção:** tratar ausência de `_form_started` como suspeita, juntar CAPTCHA (Turnstile/hCaptcha) aos formulários públicos e ao registo, resposta genérica no registo. **Esforço:** baixo/médio.
@@ -169,7 +171,7 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Correção:** `SESSION_SECURE_COOKIE=true`, considerar `SESSION_ENCRYPT=true`, definir `$proxies` (ou `'*'` se o hosting for sempre atrás de proxy) e verificar com `request()->ip()` em staging. **Esforço:** baixo. **Atenção:** testar login após alterar cookies seguros.
 
 ### SEG-015 - Ficheiros privados: leitura por qualquer perfil do backoffice e fallback para o disco público
-- **Estado:** Em curso. A tratar noutro trabalho em paralelo; não está marcado como feito. Continua pendente o `files:move-to-private --apply` em produção.
+- **Estado:** Parcial (`68dbbe3`). Feito: `PrivateFiles::disco()` só lê o disco privado (sem fallback para o público; só o comando `files:move-to-private` e o apagar ainda tocam no disco legado) e `PrivateFileController::show` exige a habilidade do tipo (`PrivateFiles::HABILIDADES`: retomas e consignação `form-proposals.view.all`, comprovativos `commissions.view.all`, despesas e movimentos `movements.view`). Como o resto do catálogo, com `PERMISSIONS_ENFORCE` desligado só regista `would_block` no canal `permissions`; ligado, responde 403. **Falta, antes de publicar este código:** correr `php artisan files:move-to-private --apply` em produção, porque sem fallback os ficheiros antigos que ainda estejam no disco público deixam de abrir pela rota privada (404), embora continuem acessíveis por `/storage/...`. Depende também de SEG-001.
 - **Gravidade:** baixa. **Confiança:** confirmado.
 - **Evidência:** `config/permissions.php` (`admin.v2.files.show` em `shared`); `app/Services/PrivateFiles.php:47-60` (`disco()` procura em `local` e depois em `public`); docs/ficheiros-privados.md (passo de `files:move-to-private --apply` por fazer em produção, não verificável daqui). O `PrivateFiles::resposta` em si está bem protegido (whitelist de tipos, `..` rejeitado, `realpath`, `nosniff`, `Cache-Control: private`); downloads de documentos de legalização/cotações convertidas verificam que o documento pertence ao pai.
 - **Cenário:** qualquer perfil não angariador (ex. "cms") lê fotos de retomas, comprovativos e anexos financeiros; enquanto o comando não for aplicado, os ficheiros antigos continuam em `/storage/...` com URL directo (nomes aleatórios de `store()`, mas sem autenticação).
@@ -183,13 +185,13 @@ Resumo de gravidades: 2 altas, 8 médias, 8 baixas (SEG-001 a SEG-018).
 - **Correção:** plano já descrito no doc (nonces, remover handlers `on*=`, passar a bloqueio). **Esforço:** alto (muitos scripts inline).
 
 ### SEG-017 - Registo de dados pessoais em logs
-- **Estado:** Em curso. A tratar noutro trabalho em paralelo; não está marcado como feito. O que já mudou de passagem em `86550ca`: os logs da newsletter (`NewsletterController`, `NewsletterManagementController`) passaram a registar `client_id` em vez do email. Mantém-se o nome e email no AuditLog de login/logout (`AppServiceProvider`).
+- **Estado:** Parcial. Em `86550ca` os logs da newsletter (`NewsletterController`, `NewsletterManagementController`) passaram a registar `client_id` em vez do email; em `058e135` o `ConsignmentController` deixou de registar `getMessage()` no erro geral (só a classe da exceção) e o aviso de falha de email da retoma regista `client_id`. Continuam: nome e email no AuditLog de login/logout (`AppServiceProvider.php:61,65`), `getMessage()` nos logs de erro de lead e email da consignação e do email da retoma (mensagens de SMTP/BD podem trazer o endereço) e a retenção dos logs por definir (`LOG_DAILY_DAYS`, decisão RGPD do Pedro).
 - **Gravidade:** baixa. **Confiança:** confirmado.
 - **Evidência:** `Admin/NewsletterController.php:34,48,90` (emails em `Log::info`), `Admin/NewsletterManagementController.php:178,181`, `AppServiceProvider.php:61,65` (nome+email no AuditLog de login/logout; aceitável como auditoria mas acessível a quem veja o log de auditoria). `storage/logs` está no `.gitignore`.
 - **Correção:** registar `client_id` em vez de email; definir retenção dos logs (`LOG_DAILY_DAYS`). **Esforço:** baixo.
 
 ### SEG-018 - Código legado/inactivo com superfície de ataque
-- **Estado:** Parcial. As cópias `* copy.php` e `*.php.bak` de `resources/views` foram removidas em `1e52c53` (20 views). Mantém-se `AdSearchController.php:421` com `dd()`, os controllers V1 (`PageContentController`, `SettingController`, `ProposalController`…) e a rota `ad-searches.*`. Rever na limpeza de V1 (em curso).
+- **Estado:** Parcial. As cópias `* copy.php` e `*.php.bak` de `resources/views` saíram em `1e52c53` (20 views) e os controllers V1 sem rota saíram em `a33b12b` (20 controllers e 47 views, ver `limpeza.md`: `SettingController` e restantes V1 com validação de SVG já não existem; `PageContentController` passou a validar). Mantém-se `AdSearchController.php:421` com `dd()` (e a rota `ad-searches.*`, só admin), `PageController.php:426` com `svg` e o CMS V1 de páginas/menus ligado por URL (decisão do Pedro).
 - **Gravidade:** baixa. **Confiança:** confirmado.
 - **Evidência:** `app/Http/Controllers/AdSearchController.php:421` (`dd()` com `getErrorOutput()` do processo Python, rota `ad-searches.*` ainda registada, só admin mas sem enforce, SEG-001); `PageContentController` (`$request->all()`), `SettingController`/`ProposalController` V1 com validação de SVG, `*.blade.php.bak` e vistas "copy" em `resources/views` (ficheiros com `{!! !!}` não usados); `Admin/RadarController::store` grava YAML em `scarperAutoscout/searches/` (nome validado por regex `^[a-z0-9]+(-[a-z0-9]+)*$`, sem traversal: bem), `AutoscoutScraperRunner` usa `escapeshellarg` (bem). Rota `POST v2/financial/seed` protegida por `role:admin` (bem). `CORS` `allowed_origins: ['*']` em `api/*` (endpoints só devolvem dados públicos de marcas/anos/extras).
 - **Correção:** apagar controllers/vistas V1 e `.bak` não usados (seguir a regra do CLAUDE.md de não manter V1), tirar `dd()`. **Esforço:** baixo.
@@ -306,7 +308,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 0,5 dia, mais reconciliação dos dados. Dependências: autorização do Pedro para corrigir dados em produção.
 
 ### LOG-004 — Registo de venda sem transação, duplo clique e `vat_type` livre
-- Estado: Parcial. Em `ee9af9b`: `storeSale` faz tudo numa `DB::transaction` com `lockForUpdate` na viatura (duplo clique deixa de duplicar), e `vat_type` é validado com `in:margem,geral_23,geral_13,geral_6,isento` em `storeSale` e `calculatePreview`. Falta: índice único em `sales.v3_vehicle_id` (exige migration e verificação de duplicados), `destroySale` continua a repor sempre `em_stock` (`V3VehicleController.php:560`) e o `vat_type` não é guardado na `Sale`.
+- Estado: Parcial. Em `ee9af9b`: `storeSale` faz tudo numa `DB::transaction` com `lockForUpdate` na viatura (duplo clique deixa de duplicar), e `vat_type` é validado com `in:margem,geral_23,geral_13,geral_6,isento` em `storeSale` e `calculatePreview`. Em `2baf1d3` o `SaleV2Controller::destroy` (apagar pela listagem) passou a repor a viatura V3 em `em_stock` numa transação, só se estava `vendido` e sem outra venda. Falta: índice único em `sales.v3_vehicle_id` (exige migration e verificação de duplicados), `V3VehicleController::destroySale` continua a repor sempre `em_stock` e o `vat_type` não é guardado na `Sale`. Em aberto também: a validação de `storeSale` marca `client_id` e `payment_method` como `nullable`, mas `sales.client_id` e `sales.payment_method` são `NOT NULL` no esquema (500 sem cliente ou forma de pagamento; ver a secção dos bugs dos testes de cobertura).
 - Gravidade: Média. Confiança: confirmado.
 - Evidência: `V3VehicleController.php:489-545`.
   - A verificação `$vehicle->sales()->exists()` e o `Sale::create` não estão numa transação.
@@ -479,9 +481,9 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 - Esforço: 15 minutos. Dependências: decisão sobre qual das duas definições manda.
 
 ### LOG-016 — Código V1 morto com `route()` para nomes inexistentes
-- Estado: Aberto. O código V1 morto e os `route()` inexistentes não foram tocados (a limpeza de V1 está em curso noutro trabalho). Só saíram em `1e52c53` as cópias e `.bak` de views, que também continham referências mortas. Os 111 nomes não resolvidos medidos na auditoria não foram recontados.
+- Estado: Parcial. A remoção do código V1 em `a33b12b` (ver `limpeza.md`) levou consigo quase todos os `route()` inexistentes. **Recontagem (2026-10-31, `route:list --json` com `DB_CONNECTION=sqlite DB_DATABASE=:memory:` contra `grep` dos `route('nome')` literais em `app/`, `resources/` e `routes/`):** 596 rotas, 567 nomes; 482 nomes literais usados; **10 não resolvem, contra 111 na auditoria**. Destes 10, 4 são falsos positivos do `grep` (`create` está num comentário de uso de `empty-state.blade.php:11`; `opportunity` e `tipo` são `$this->route('...')` em FormRequests; `pages.` é um prefixo concatenado em `PageController`). Ficam **6 reais**: `proposals.index` (`components/admin/filter-bar.blade.php:22`), `proposals.edit` e `proposals.destroy` (`components/admin/item-card.blade.php:22-23`), `vehicles.show` (`anuncios-frontend/index.blade.php:144`), `register` (`auth/register.blade.php:27`; o de `welcome.blade.php` está protegido por `Route::has`) e `verification.resend` (`auth/verify.blade.php:24`). Os componentes `filter-bar`, `item-card` e `empty-state` são usados em muitas listagens V2 (`settings`, `suppliers`, `sales`, `leads`, `roles`…); como as chamadas que existem passam valores explícitos, hoje não rebentam (não se verificou cada chamada). Falta: apagar ou corrigir esses 6 pontos e acrescentar o teste que percorre os `route('nome')` literais.
 - Gravidade: Baixa. Confiança: confirmado.
-- Evidência: o `route:list` tem 569 nomes. Do conjunto de `route('...')` usados em `app/` e `resources/` (574 nomes únicos), 111 não existem. Os não resolvidos vêm sobretudo de código V1 sem rota:
+- Evidência (à data da auditoria; recontagem no estado acima): o `route:list` tinha 569 nomes. Do conjunto de `route('...')` usados em `app/` e `resources/` (574 nomes únicos), 111 não existiam. Os não resolvidos vêm sobretudo de código V1 sem rota:
   - `app/Http/Controllers/UserController.php`, `RoleController.php`, `SettingController.php`, `ClientController.php`, `SupplierController.php`, `FormProposalController.php`, `ProposalController.php` e as vistas `resources/views/{users,roles,settings,clients,suppliers,proposals,form_proposal,converted_proposals}`.
   - `app/Http/Controllers/Admin/NewsV3Controller.php:83,112` (`admin.v3.news.edit`), `NewsletterOfferController.php:42` (`admin.v2.newsletter.index`) e as vistas `admin/v2/vehicles`, `admin/v2/newsletter` e `admin/v3/news`. As rotas ativas são `admin.news.*` e `admin.v2.newsletter-management.*`.
   - Componentes partilhados `components/admin/item-card.blade.php:22-23` (`proposals.edit`, `proposals.destroy`), `filter-bar.blade.php:22` (`proposals.index`) e `empty-state.blade.php:11` (`route('create')`, em comentário de uso).
@@ -523,7 +525,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 
 ## Resultado dos testes existentes
 
-**Atualização (2026-10-31, após as correções):** 872 testes passam e 1 falha (`ExampleTest`, a mesma, nunca escondida). O resultado abaixo é o da auditoria original.
+**Atualização final (2026-10-31, após as correções e os testes de cobertura):** `php artisan test` dá **1052 testes a passar e 1 a falhar** (1053 no total, 6855 asserções, cerca de 56 s); a falha é a mesma de sempre, `ExampleTest` (`GET /` sem o trait de BD), não escondida. O resultado abaixo é o da auditoria original.
 
 - Confirmado antes de correr: `phpunit.xml` usa `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`, `QUEUE_CONNECTION=sync`, `MAIL_MAILER=array`, `CACHE_DRIVER=array` e `SESSION_DRIVER=array`.
 - Comando: `php artisan test`. Duração: cerca de 40 s.
@@ -533,7 +535,7 @@ Data: 2026-10-31. Âmbito: só leitura. Nenhum código, `.env` ou dado foi alter
 
 ## Lacunas de cobertura de testes por módulo
 
-**Atualização:** a tabela abaixo mede a cobertura à data da auditoria. Entretanto foram acrescentados testes para `SaleCalculator` (`SaleCalculatorTest`), `ServiceTranches` (`ServiceTranchesTest`), `storeSale`/`storeExpense`/`generateReference` (`V3VehicleFinanceFixesTest`), comandos agendados (`ComandosAgendadosTest`), `ClientMergeService`, `GeocodingService`, `SyncGoogleReviews`, `MovementService::summary` multi-ano (`MovementServiceSummaryTest`), cotação cancelada (`ConvertedProposalCancelledReleaseTest`), segurança (`SegurancaCorrecoesTest`, `NewsletterSecurityTest`, `CsvSanitizerTest`, `RichTextSanitizeTest`), dashboard e cache pública. Sem teste continuam, entre outros, `ProposalAcceptanceService` (concorrência), relatórios `reports:*`, `RadarTrimPriceAiService`, `ClassifyRadarListingTrims` e o teste de `route('nome')` literais. Outros testes estão a ser escritos em paralelo.
+**Atualização final:** a tabela abaixo mede a cobertura à data da auditoria (765 testes). Entretanto foram acrescentados testes para `SaleCalculator` (`SaleCalculatorTest`), `ServiceTranches` (`ServiceTranchesTest`), `storeSale`/`storeExpense`/`generateReference` (`V3VehicleFinanceFixesTest`), comandos agendados (`ComandosAgendadosTest`), `ClientMergeService`, `GeocodingService`, `SyncGoogleReviews`, `MovementService::summary` multi-ano, cotação cancelada, segurança (`SegurancaCorrecoesTest`, `NewsletterSecurityTest`, `CsvSanitizerTest`, `RichTextSanitizeTest`), dashboard e cache pública, e, em `1bc16d9` (mais os testes que acompanharam os commits `2baf1d3` e `dd006d8`), sete ficheiros de cobertura: `VehicleInspectionCoberturaTest` (inspeções), `V3VehicleVendasFotosDocumentosCoberturaTest` (vendas V3, fotos, documentos), `LegalizationPassosCoberturaTest` (passos e Modelo 9), `FinanceiroFornecedoresParceirosCoberturaTest`, `RadarTransportesComparadorCoberturaTest`, `ConteudoEAcessosAdminCoberturaTest` (notícias, testemunhos, impersonation, acessos) e `WebhookSitemapEstadoPublicoCoberturaTest` (webhook, sitemap, 404 de rascunhos e viaturas offline). **Ainda sem teste:** `ProposalAcceptanceService` (concorrência), relatórios `reports:*`, `RadarTrimPriceAiService`, `ClassifyRadarListingTrims`, `store/update/run/destroy` do radar, comparador com chave da OpenAI, geocode dos transportes, crop/restore de fotos e o teste dos `route('nome')` literais.
 
 Contagem de ficheiros em `tests/` que mencionam cada símbolo (0 significa sem cobertura direta):
 
@@ -554,10 +556,44 @@ Contagem de ficheiros em `tests/` que mencionam cada símbolo (0 significa sem c
 
 ## Ordem de correção sugerida
 
-**Atualização:** feitos LOG-001, 003, 005, 006, 008, 010, 011, 015, 017 e parciais 004, 007, 009, 012, 013, 014, 018. Continuam por fazer, por esta ordem: LOG-002 (fuso, depende do `.env` de produção), restos de LOG-004 (índice único, `destroySale`), LOG-009 (`onOneServer`, relatórios), LOG-016 e a decisão de `mail.admin_address` (LOG-018).
+**Atualização final:** feitos LOG-001, 003, 005, 006, 008, 010, 011, 015, 017 e parciais 004, 007, 009, 012, 013, 014, 016, 018. Continuam por fazer, por esta ordem: LOG-002 (fuso, depende do `.env` de produção), restos de LOG-004 (índice único, `destroySale`, `NOT NULL` de `client_id`/`payment_method`), LOG-009 (`onOneServer`, relatórios), os 6 `route()` que sobram em LOG-016 e a decisão de `mail.admin_address` (LOG-018).
 
 1. LOG-002 e LOG-001 (fuso e lembretes), porque afetam o negócio todos os dias.
 2. LOG-004, LOG-005 e LOG-003 (vendas, referências e IVA), porque tocam em dinheiro e em erros 500.
 3. LOG-006, LOG-009 e LOG-010 (emails, agendador e transações).
 4. LOG-007 e LOG-008, depois de decisões de negócio.
 5. O resto (LOG-011 a LOG-018) como limpeza, com um teste novo por correção.
+
+
+---
+
+# Bugs encontrados pelos testes de cobertura
+
+Os testes de `1bc16d9` (e os que os acompanharam em `2baf1d3` e `dd006d8`) foram escritos para caracterizar o comportamento existente; onde o comportamento estava errado, ou se corrigiu o código ou o teste ficou a documentar o bug com o nome `..._known_bug`. Estado verificado no código a 2026-10-31.
+
+## Corrigidos
+
+| Bug | Onde | Correção |
+|---|---|---|
+| Definir como capa uma foto de **outra viatura** apagava a capa atual e deixava a viatura sem capa | `V3VehicleController::setCoverPhoto` | `2baf1d3`: a foto tem de pertencer à viatura (404 caso contrário, sem tocar na capa) e a troca corre numa transação |
+| Apagar uma venda pela **listagem de vendas** deixava a viatura V3 como `vendido` | `SaleV2Controller::destroy` | `2baf1d3`: repõe `em_stock` numa transação, só se a viatura estava vendida por esta venda e não tem outra |
+| A **pesquisa de vendas** só olhava para a viatura V1, por isso as vendas de viaturas V3 nunca apareciam | `SaleV2Controller::index` | `2baf1d3`: pesquisa também por referência, marca, modelo e matrícula da viatura V3 |
+| **Desmarcar um passo de legalização** deixava os passos seguintes concluídos | `LegalizationController::toggleStep` e `V3VehicleController::toggleLegalizationStep` | `2baf1d3`: regra N-1, desmarcar um passo desmarca os posteriores (nos dois controllers) |
+| **Resumo de inspeção atrasado** (`recalculate` usava a relação `entries` já carregada, antes de as entradas serem criadas ou alteradas) | `VehicleInspectionController::store/update` | `dd006d8`: `unsetRelation('entries')` antes de `recalculate` (a relação ficava em cache) |
+| **Inspeções concluídas ou convertidas editáveis** por `update`, upload, reordenação e apagar de media (só o `GET edit` era só de leitura) | `VehicleInspectionController` | `dd006d8`: `rejectIfReadOnly` devolve 422 (JSON) ou redireciona para o relatório |
+| **`verify()` do webhook WhatsApp com token vazio** aceitava `null === null` | `WhatsAppWebhookController::verify` | `dd006d8`: token não vazio e `hash_equals` (ver SEG-003) |
+| **`ensureDefaultTemplate` rebentava** quando nenhuma migration tinha criado o template por omissão | `VehicleInspectionService` | `dd006d8`: cria o template "Checklist Completa" (vazio) se não existir, sem tocar nos existentes |
+
+Corrigidos por trabalhos paralelos (achados da auditoria, não dos testes de cobertura): tarefa do Modelo 9 duplicada ao desmarcar e voltar a marcar o passo 5, e nunca criada pelo separador da viatura (`058e135`, `LegalizationTaskService::ensureModelo9Task`, idempotente); menu e ficha do cliente levavam ao registo de vendas V1 (`058e135`: `SaleV2Controller::create` redireciona para as viaturas em stock, `edit` de vendas V3 redireciona para o separador Venda); consignação sem lead e que perdia o pedido se o email falhasse (`058e135`); rascunhos de notícias e viaturas com `show_online = false` acessíveis por URL (`68dbbe3`, agora 404).
+
+## Abertos
+
+| Bug | Onde | Estado e o que falta |
+|---|---|---|
+| `suppliers`: o controller valida `type`, `contact_name` e `email` como `nullable` e o formulário oferece os tipos Stand, Transportadora, Leilão e Outro, mas a migration cria `type` como `ENUM('', 'Particular', 'Empresa') NOT NULL`, `contact_name` `NOT NULL` e `email` `NOT NULL UNIQUE`: só `company_name` dá 500 e os tipos do formulário também | `SupplierV2Controller::store/update`; `FinanceiroFornecedoresParceirosCoberturaTest::test_supplier_form_values_do_not_match_schema_known_bug` | **Aberto.** Depende de `SHOW CREATE TABLE suppliers` em produção: se funciona lá, a BD foi alterada fora das migrations (e é preciso uma migration que o reponha), senão corrige-se a validação ou o esquema |
+| `testimonials.comment` é `TEXT NOT NULL` mas o controller valida `comment` como `nullable` (o textarea não é obrigatório): testemunho só com estrelas dá 500 | `TestimonialController::store/update`; `ConteudoEAcessosAdminCoberturaTest::test_testimonial_without_comment_fails_with_500_known_bug` | **Aberto.** Decidir entre tornar a coluna `nullable` (migration, a correr em produção) ou exigir o comentário (422); confirmar com `SHOW CREATE TABLE testimonials` |
+| `sales.client_id` e `sales.payment_method` são `NOT NULL` (este último `ENUM('Financiamento','Pronto pagamento')`) mas `storeSale` valida ambos como `nullable` (`V3VehicleController.php:506-507`) e grava `?? null`: sem eles o pedido dá 500 e a transação reverte (a viatura fica em stock) | `V3VehicleController::storeSale`; `V3VehicleVendasFotosDocumentosCoberturaTest::test_sale_without_payment_method_or_client_fails_with_500_known_bug` | **Aberto.** Corrigir a validação (`required`, 422) ou o esquema, depois de `SHOW CREATE TABLE sales` em produção. Interage com LOG-004 |
+| Impersonation por perfil não admin com `PERMISSIONS_ENFORCE` desligado (`cms` consegue entrar como angariador apesar de a rota ser `admin_only`) | `ConteudoEAcessosAdminCoberturaTest::test_non_admin_can_impersonate_when_enforcement_is_off_known_bug` | **Aberto**, é SEG-001 (o teste ligado dá 403) |
+| Tarefa auto-atribuída notifica o próprio: o formulário desktop envia `user_id` como string e `TaskService::create` compara `$task->user_id !== $actorId` com tipos estritos | `TaskService.php:53`; `TaskDesktopTest::test_criar_auto_atribuida_notifica_o_proprio_bug_conhecido_do_desktop` | **Aberto** (anterior aos testes de cobertura; o teste documenta o comportamento atual e deve ser invertido ao corrigir) |
+
+`SaleV2Controller` já não tem os problemas listados nos achados originais de listagem e eliminação; continua por limpar o código comentado do controller (ver `limpeza.md`).

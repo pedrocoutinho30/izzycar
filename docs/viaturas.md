@@ -25,7 +25,7 @@ Ecrã de edição com separadores (`resources/views/admin/v3/vehicles/edit.blade
 - `savePurchase` valida o tipo de compra e que o contacto pertence ao vendedor, e chama `Expense::syncFromV3Vehicle`.
 - O separador **Legalização só aparece se `is_imported`**.
 - Despesas: separador "Despesas" lista e cria movimentos com `v3_vehicle_id`; mostra também os da legalização da viatura (só leitura).
-- Fotos: capa, ponto focal, recorte, restaurar, reordenar. Anúncio: `generate-ad` / `save-ad` (OpenAI). **(por confirmar o detalhe de fotos, equipamento e anúncio)**.
+- Fotos: capa (só uma foto da própria viatura pode ser capa: 404 caso contrário), ponto focal, recorte, restaurar, reordenar. Anúncio: `generate-ad` / `save-ad` (OpenAI). **(por confirmar o detalhe de fotos, equipamento e anúncio)**.
 
 ## Origem das viaturas
 
@@ -37,16 +37,16 @@ Ecrã de edição com separadores (`resources/views/admin/v3/vehicles/edit.blade
 
 - Uma por viatura (`v3_vehicle_id`); `createLegalization` copia cliente, marca, modelo, combustível (por omissão Gasolina) e matrícula, e é idempotente.
 - **7 passos** (`PASSOS`): homologação IMT (CHNAC), Inspeção B/Modelo 112, DAV nas Finanças, pagamento do ISV, chapas e seguro, entregar Modelo 9, registo na Conservatória.
-- `toggleLegalizationStep`: só marca o passo N se o N-1 está concluído (422 caso contrário); desmarcar não verifica os seguintes. Devolve o progresso (concluídos/7).
+- `toggleLegalizationStep`: só marca o passo N se o N-1 está concluído (422 caso contrário); desmarcar um passo desmarca também os seguintes (regra N-1, igual em `LegalizationController::toggleStep`). Devolve o progresso (concluídos/7). Ao concluir o passo 5 cria-se a tarefa "Entregar Modelo 9 IMT" (`LegalizationTaskService::ensureModelo9Task`, idempotente: não duplica se já houver uma pendente ou em progresso para o mesmo processo), tanto aqui como no kanban de legalizações.
 - **Documentos**: 10 tipos em `DOCUMENTOS`; o `regime_especial_isv` acrescenta CRESI, DVIDQ, CSTRI e MD1460. Upload pdf/jpg/png/webp, 10 MB, um documento por tipo (substitui). O upload do separador V3 só aceita `DOCUMENTOS`, **não** os do regime especial; esses editam-se em `Admin/LegalizationController` e `admin/v2/legalizations`.
 - Token público de 32 caracteres e `trackingUrl()` (`frontend.legalization.status`) para o cliente acompanhar. Comando `legalizations:send-tracking-emails` às 15:00.
 - A página da legalização mostra os movimentos com `legalization_id`.
 
 ## Venda
 
-- `Sale` (V3: `v3_vehicle_id`; `vehicle_id` é legado): uma venda por viatura. Registo no separador Venda (`storeSale`): calcula com `SaleCalculator::compute`, cria a `Sale` e passa a viatura a `vendido`. `destroySale` apaga a venda e repõe `em_stock` (mesmo que estivesse reservada).
+- `Sale` (V3: `v3_vehicle_id`; `vehicle_id` é legado): uma venda por viatura. Registo no separador Venda (`storeSale`): calcula com `SaleCalculator::compute`, cria a `Sale` e passa a viatura a `vendido`. `destroySale` apaga a venda e repõe `em_stock` (mesmo que estivesse reservada). Apagar pela listagem de vendas (`SaleV2Controller::destroy`) também repõe `em_stock`, só se a viatura estava `vendido` e não tem outra venda. Atenção: a validação marca `client_id` e `payment_method` como `nullable`, mas as colunas são `NOT NULL` (sem eles dá 500; bug aberto, ver `docs/auditoria/problemas.md`).
 - `SaleCalculator` (`app/Services/SaleCalculator.php`) é a fonte única das margens: `geral_23|13|6` (base = preço/(1+taxa)), `margem` (IVA = max(0,(venda−compra)×23/123)), `isento`. Não duplicar estes cálculos.
-- `SaleV2Controller` (`v2/sales`) só cria vendas de `Vehicle` V1; as V3 passam pelo separador Venda.
+- `SaleV2Controller` (`v2/sales`): a listagem (que pesquisa também por viatura V3) e a eliminação servem as vendas V3; `create` redireciona para as viaturas em stock (o formulário V1 só abre com `?legacy=1`) e `edit` de uma venda V3 redireciona para o separador Venda. O registo de vendas V3 faz-se sempre no separador Venda da viatura.
 - `SaleObserver` cria a receita `vehicle_sale` (movimento) ao guardar.
 
 ## Movimentos financeiros
@@ -58,11 +58,11 @@ Ecrã de edição com separadores (`resources/views/admin/v3/vehicles/edit.blade
 
 ## Site público (`Frontend/VehiclesController`, `routes/frontend.php`)
 
-- `/viaturas` (`vehicles.list`), `/viaturas-filtradas` (JSON dos filtros), `/viaturas/{brand}/{model}/{id}` (`vehicles.details`, por `reference`; 404 se os slugs de marca e modelo não coincidem).
+- `/viaturas` (`vehicles.list`), `/viaturas-filtradas` (JSON dos filtros), `/viaturas/{brand}/{model}/{id}` (`vehicles.details`, por `reference`; 404 se os slugs de marca e modelo não coincidem) e 404 também para viaturas com `show_online=false` (detalhe e história), mesmo com a referência certa. Notícias em rascunho dão igualmente 404 no site público.
 - **Duas queries**: `vehicles()` e `filteredVehicles()`; a listagem na página é alimentada pelo endpoint JSON. Mantê-las com a mesma ordenação (estado: em_stock, reservado, vendido; depois data). Em 2026-10 `vehicles()` ordena por `created_at` desc e `filteredVehicles()` ainda por `purchase_date`: confirmar com o Pedro qual é a intenção.
 - Mostra todas as viaturas com `show_online=true`, incluindo vendidas (o filtro `status != vendido` está comentado).
 - **Cache** de 10 min, com chaves versionadas por `App\Support\VehicleCache::key()` (`vehicles_*`, `filtered_vehicles_*`, home, filtros por marca/modelo/ano). Guardar ou apagar uma `V3Vehicle` ou uma foto (hooks `saved`/`deleted` dos modelos) chama `VehicleCache::flush()`, que invalida tudo; updates em massa não passam pelos eventos, por isso têm de chamar `flush()` à mão (como `setCoverPhoto` e `reorderPhotos`). Chaves novas devem usar `VehicleCache::key()`.
-- Views: `frontend/vehicles-list` (+ `-desktop`/`-mobile`) e `vehicles-detail` (+ `-desktop`/`-mobile`). Há ficheiros `.bak`, `copy` e `___` que são lixo; não editar.
+- Views: `frontend/vehicles-list` (+ `-desktop`/`-mobile`) e `vehicles-detail` (+ `-desktop`/`-mobile`). Os ficheiros `.bak` e `copy` foram removidos em `1e52c53`; restam alguns com prefixo `___` que são lixo; não editar.
 - **JSON-LD**: só se emite `Car` com `offers` se `status=em_stock` e `asking_price>0` (exigência do Google); reservada, vendida e sem preço ficam sem bloco de produto. `BreadcrumbList` em JSON-LD; sem microdata duplicado. O `seller` refere o `AutoDealer` do layout (`@id` `https://izzycar.pt/#autodealer`).
 - `VehicleCatalog` (marca → modelos) usa-se nas oportunidades e formulários; no `V3VehicleController` marca e modelo são texto livre.
 

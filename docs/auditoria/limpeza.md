@@ -1,6 +1,6 @@
 # Candidatos a limpeza — IzzyCar
 
-Auditoria só de leitura, feita a 2026-10-31 (o texto descreve o repositório à data da auditoria; as marcas **[FEITO]**, **[PARCIAL]**, **[MANTIDO]** e **[EM CURSO]** refletem o estado depois dos commits `00eb765`…`3bb96ac`); não houve ligação à base de dados remota (o `route:list` correu com sqlite em memória). Sem segredos nem dados pessoais neste documento.
+Auditoria só de leitura, feita a 2026-10-31 (o texto descreve o repositório à data da auditoria; as marcas **[FEITO]**, **[PARCIAL]** e **[MANTIDO]** refletem o estado final, depois dos commits `00eb765`…`dd006d8`; a remoção do código V1 foi feita em `a33b12b`); não houve ligação à base de dados remota (o `route:list` correu com sqlite em memória). Sem segredos nem dados pessoais neste documento.
 
 Convenções: **Risco** = probabilidade de partir algo ao eliminar. **Confiança** = confiança de que o candidato está mesmo sem uso. **Ganho** distingue armazenamento (A) de manutenção/desempenho (M).
 
@@ -13,9 +13,33 @@ Método: `route:list --json` (598 rotas) cruzado com ficheiros de `app/Http/Cont
 - `php artisan test` antes e depois; o `PermissionCatalogTest` falha se uma rota de `/gestao` ficar fora de `config/permissions.php` (e, ao apagar rotas, entradas órfãs no catálogo devem sair juntas).
 - Apagar em commits pequenos por grupo (um por secção abaixo) para ser fácil reverter com `git revert`.
 
-## Estado actual da limpeza (revisão de 2026-10-31)
+## Estado final da limpeza (revisão de 2026-10-31)
 
-O commit `1e52c53` (chore(limpeza)) removeu 40 ficheiros e dependências sem uso; `00eb765` tirou `users/*.yaml` do índice e `73df400` pôs `/users/` no `.gitignore`.
+O commit `1e52c53` (chore(limpeza)) removeu 40 ficheiros e dependências sem uso; `00eb765` tirou `users/*.yaml` do índice e `73df400` pôs `/users/` no `.gitignore`; **`a33b12b` (chore(limpeza): remover controllers, views e métodos V1 sem uso) apagou 69 ficheiros e reduziu 3 (72 ficheiros, 4 linhas acrescentadas e 10 465 removidas)**. Em `68dbbe3` saíram também os `use` de controllers V1 já apagados em `routes/web.php`. Os números abaixo foram confirmados com `git show --stat`, `--diff-filter=D` e `--numstat` desse commit.
+
+### Removido em `a33b12b`
+
+| Grupo | Ficheiros | Linhas |
+|---|---|---|
+| Controllers V1 e legado apagados | 20 | 2 467 |
+| Models sem uso (`_Menu`, `ProposedCar`) | 2 | 50 |
+| Views V1 apagadas | 47 | 7 052 |
+| Controllers reduzidos aos métodos com rota (`ProposalController` de 717 para 262 linhas, `ClientController` de 111 para 41, `ConvertedProposalController` de 72 para 55) | 3 | 896 (líquidas) |
+| **Total** | **72** (69 apagados e 3 reduzidos) | **10 465 removidas** |
+
+- Controllers apagados: `VehicleController`, `ExpenseController`, `SaleController`, `SupplierController`, `PartnerController`, `UserController`, `RoleController`, `PermissionController`, `SettingController`, `VehicleAttributeController`, `AttributeGroupController`, `FormProposalController`, `_MenuController`, `Admin/VehicleV2Controller`, `Admin/ExpenseV2Controller`, `Admin/NewsV3Controller`, `Admin/NewsletterOfferController`, `Frontend/AnuncioController`, `Auth/RegisterController`, `Auth/VerificationController`.
+- Views apagadas (47): as pastas V1 `vehicles`, `expenses`, `sales`, `suppliers`, `partners`, `settings`, `users`, `roles`, `permissions`, `vehicle_attributes`, `attribute-groups`, `form_proposal`, `_menus`, `clients` (exceto `contract_service`), `converted_proposals` (exceto `timeline`), quatro de `proposals` (`index`, `form`, `_pdf` e `Old_pdf`), `admin/v2/vehicles` (2), `admin/v2/newsletter` (2), `admin/v2/newsletter-management/index-old` e `admin/v3/news` (2).
+- Métodos sem rota removidos de `ProposalController` (ficam `detail`, `requestAlternativeQuote`, `accept` e `sendAcceptanceEmail`), de `ClientController` (fica `contractService`) e de `ConvertedProposalController` (ficam `updateStatus` e `detailTimeline`). Sai com isto o código que executava `scripts/process_link.py`.
+
+### O que fica, e porquê
+
+- `ProposalController`, `ClientController::contractService` e `ConvertedProposalController`: servem a página pública da cotação, a aceitação, a timeline e o contrato de serviço; têm rota.
+- `Vehicle`, `Expense`, `VehicleImage`, `VehicleDocument`, `Car`, `ModelCar`, `ModelYear`, `SubmodelCar` e os observers `VehicleObserver`/`ExpenseObserver`: ainda ligados (relações em `Sale`, `Legalization`, `FinancialMovement`, comando `import:car-data`, `routes/api.php`); só saem quando a migração para V3 e movimentos estiver fechada.
+- `SaleV2Controller` e as rotas `v2/sales`: vivos (a listagem e a eliminação servem as vendas V3; `create` redireciona para o fluxo V3). Ficam cerca de 200 linhas de código comentado.
+- CMS V1 de páginas, tipos de página e menus (`PageController`, `PageTypeController`, `PageContentController`, `MenuController`), `brands`, `anuncios` e `ad-searches` (`AdSearchController`, com um `dd()` na linha 421): continuam ligados por URL; decisão do Pedro (G).
+- `layouts/app`, `layouts/old_admin` e as views `welcome`, `home`, `auth/register`, `auth/verify`: sem uso real, mas não foram tocados (guardam os 2 `route()` inexistentes de LOG-016 que sobram em `auth/`).
+- Ficheiros da raiz (`info-*`, `retomas`, `plataforma vendas`, `please`, `server.php`, `AutoScoutSearch/*.csv`), `scripts/` e assets de `public/`: por decisão do Pedro e por causa da cópia separada de `public/`.
+- O PermissionCatalogTest continua verde: a remoção não deixou entradas órfãs no catálogo. Os `route()` que ficaram por resolver (6) estão em LOG-016 de `problemas.md`.
 
 | Candidato | Estado |
 |---|---|
@@ -25,7 +49,7 @@ O commit `1e52c53` (chore(limpeza)) removeu 40 ficheiros e dependências sem uso
 | `.DS_Store` | **Feito** (`1e52c53`): 13 ficheiros removidos do índice e `.DS_Store` no `.gitignore` |
 | D `users/*.yaml` | **Parcial**: fora do índice (`00eb765`) e ignorado (`73df400`); o hash continua no histórico git |
 | E ficheiros soltos na raiz | **Parcial**: `scripts/soup_debug.html` removido (`1e52c53`); mantidos `info-faq`, `info-faq-proposta`, `info-metricas`, `info-transportes.md`, `info-venda`, `plataforma vendas`, `retomas`, `please`, `server.php`, `AutoScoutSearch/*.csv` à espera de confirmação do Pedro (podem ser a única cópia dos briefings) |
-| F controllers/views V1 sem rota | **Em curso** noutro trabalho (limpeza V1) |
+| F controllers/views V1 sem rota | **Feito** (`a33b12b`): 20 controllers, 2 models e 47 views apagados, 3 controllers reduzidos |
 | G rotas V1 ainda ligadas | Mantido (decisão do Pedro) |
 | H assets de `public/` sem referência | Mantido: exige confirmar a cópia separada de `public/` no domínio |
 | I dependências | **Parcial** (`1e52c53`): removidos `barryvdh/laravel-snappy` (+ `config/snappy.php`), `spatie/browsershot`, `laravel/legacy-factories` e o script `pre-update-cmd` do Statamic; ver secção 7 |
@@ -42,7 +66,7 @@ O commit `1e52c53` (chore(limpeza)) removeu 40 ficheiros e dependências sem uso
 | C **[FEITO]** | Ficheiros `* copy.*` e `.bak` em `resources/views` (versionados) | baixo | alta | M | ~0,4 MB |
 | D **[PARCIAL]** | `users/*.yaml` (resto de Statamic, versionado, com hash de password) | baixo | alta | M + segurança | 4 KB |
 | E **[PARCIAL]** | Ficheiros soltos na raiz (`info-*`, `plataforma vendas`, `retomas`, `please`, `server.php`, `AutoScoutSearch/`) | baixo | alta/média | M | ~60 KB |
-| F **[EM CURSO]** | Controllers, modelos e views V1 sem rota | baixo-médio | alta | M | ~0,7 MB |
+| F **[FEITO `a33b12b`]** | Controllers, modelos e views V1 sem rota | baixo-médio | alta | M | ~0,7 MB |
 | G | Rotas e views V1 ainda ligadas (CMS de páginas/menus, `brands`, `anuncios`, `ad-searches`) | médio | média | M | ~0,2 MB |
 | H | Imagens `public/img/{1,2,3}.jpg` e outros assets sem referência | baixo | média-alta | A + desempenho | ~8 MB |
 | I **[PARCIAL]** | Dependências Composer sem uso (`snappy`, `htmlpurifier`, `easynav`, `legacy-factories`, scripts `Statamic`) | baixo-médio | média-alta | M | ~2,3 MB em `vendor/` |
@@ -124,7 +148,7 @@ Estes são o que o enunciado chamava V1: `VehicleController`, `ExpenseController
 
 ### Métodos mortos em controllers vivos
 
-**[PARCIAL]** `ProposalController::downloadPdf` foi removido em `1e52c53` (com o `use` do Browsershot). Os restantes métodos sem rota continuam, e a limpeza de V1 está em curso noutro trabalho.
+**[FEITO]** `ProposalController::downloadPdf` saiu em `1e52c53` e os restantes métodos sem rota de `ProposalController`, `ClientController` e `ConvertedProposalController` saíram em `a33b12b` (lista abaixo, a da auditoria, com os que já não existem).
 - `ProposalController`: sem rota, `index, create, getDataFromUrl, store, edit, updateStatus, update, destroy, generatePdf, downloadPdf, duplicate, sentWhatsapp, create_by_form` (restam `detail`, `requestAlternativeQuote`, `accept`, `sendAcceptanceEmail`). Em vez de apagar o ficheiro de 987 linhas, esvaziá-lo. `getDataFromUrl` executa `scripts/process_link.py` e `downloadPdf` usa Browsershot contra `127.0.0.1:8000` (ambos código morto com risco: execução de comandos).
 - `ClientController`: `index, create, store, show, edit, update, destroy, generateContractPdf` sem rota (resta `contractService`).
 - `ConvertedProposalController`: `index, edit, update` sem rota.
@@ -177,7 +201,7 @@ Medido: `public/img` 12 MB, `public/vendor` 2,7 MB, `public/images` 1,8 MB, `pub
 |---|---|---|
 | `barryvdh/laravel-snappy` (+ `config/snappy.php`) | só config e cache de pacotes; nenhum `Snappy::` ou `SnappyPdf` em `app` | **[FEITO `1e52c53`]** pacote e `config/snappy.php` removidos |
 | `ezyang/htmlpurifier` (2,1 MB) | só em `proposals/Old_pdf.blade.php` (view órfã) | **[MANTIDO, e agora tem uso]**: `RichText::sanitize()` passou a usá-lo (`86550ca`, SEG-006). Já não é candidato a remoção |
-| `devmarketer/easynav` | `Nav::isRoute` só em `layouts/admin` e `about` (V1) | **[MANTIDO]** depende da limpeza V1 (em curso) e de G |
+| `devmarketer/easynav` | `Nav::isRoute` só em `layouts/admin` e `about` (V1) | **[MANTIDO]** depende de G (CMS V1 e `layouts/admin` ainda em uso) |
 | `laravel/legacy-factories` | nenhum uso do helper `factory()` (só `::factory`) em `tests` e `database` | **[FEITO `1e52c53`]** removido |
 | `spatie/browsershot` (+ `puppeteer` em `package.json`, 14 MB em `node_modules`) | só em `ProposalController::downloadPdf` (sem rota) | **[PARCIAL `1e52c53`]** método e pacote Composer removidos; `puppeteer` continua em `package.json` (não foi tocado: o npm não foi mexido) |
 | `symfony/http-client`, `symfony/mailgun-mailer`, `symfony/postmark-mailer` | o `.env` usa `smtp`; configs `mailgun`/`postmark` existem mas nenhum mailer os usa; sem `HttpClient` no código | Provável remoção; **médio**: confirmar o mailer de produção (pode ser diferente do local) |
@@ -214,6 +238,6 @@ Scripts Python antigos (Selenium, scraping de Standvirtual/AutoScout, listas de 
 7. Remover dependências Composer/npm (`snappy`, `htmlpurifier`, `easynav`, `legacy-factories`, `browsershot`, `puppeteer`, `tom-select`, script Statamic); correr `composer update` num branch e os testes.
 8. Decidir com o Pedro: CMS V1 (`pages`, `menus`, `page-types`), `ad-searches`/`anuncios`, `scripts/`, mailer de produção, pipeline Mix.
 
-Estado do plano acima: passos 2 e 3 feitos em parte (`.DS_Store`, cópias, `.bak`, `soup_debug.html`, `users/` fora do índice; `AutoScoutSearch/`, `please` e notas da raiz mantidos), passo 7 feito em parte (`snappy`, `browsershot`, `legacy-factories`, script Statamic; `htmlpurifier` passou a ser usado), passos 1, 4, 6 e 8 por fazer e o 5 em curso (limpeza V1).
+Estado do plano acima: passos 2 e 3 feitos em parte (`.DS_Store`, cópias, `.bak`, `soup_debug.html`, `users/` fora do índice; `AutoScoutSearch/`, `please` e notas da raiz mantidos), passo 7 feito em parte (`snappy`, `browsershot`, `legacy-factories`, script Statamic; `htmlpurifier` passou a ser usado), passos 5 e 6 feitos em `a33b12b` (controllers, views, `_Menu`, `ProposedCar` e métodos mortos), passos 1, 4 e 8 por fazer.
 
 Nada aqui implica apagar migrations históricas nem dados de `storage/app`.

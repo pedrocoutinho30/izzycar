@@ -22,7 +22,7 @@ Nenhuma migration foi criada e o esquema não mudou (`git diff` de `database/` d
 - `v3_vehicle_photos.path`: novos uploads ficam em WebP (se o GD suportar) com nome aleatório, redimensionados a 1920 px (`5d2a3be`).
 - `testimonials.google_review_id`: gravado por `firstOrCreate`; continua sem índice único (LOG-014).
 - `sales.v3_vehicle_id`: continua sem índice único (LOG-004 parcial); a venda é agora transacional.
-- Tabelas ligadas a controllers V1 apagados pela limpeza em curso (`ExpenseV2Controller`, `VehicleV2Controller`, `NewsV3Controller`, etc.): as "evidências" do CSV que citam esses ficheiros ficam desatualizadas quando a limpeza for concluída; reclassificar então.
+- Tabelas ligadas a controllers V1 apagados pela limpeza V1 (`a33b12b`) (`ExpenseV2Controller`, `VehicleV2Controller`, `NewsV3Controller`, etc.): as "evidências" do CSV que citam esses ficheiros ficam desatualizadas quando a limpeza for concluída; reclassificar então.
 - Os números de `README.md`/secção 2 (88 tabelas, 1090 campos) não mudaram.
 
 ## 2. Resumo de cobertura e classificação
