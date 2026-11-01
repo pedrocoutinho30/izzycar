@@ -30,7 +30,7 @@ Quase tudo o que o código permitia corrigir sem decisões nem dados de produç�
 | 2.12 Retomas e consignação só por email | Corrigido (`058e135`: pedido gravado antes do email, consignação cria ou reaproveita a lead; retoma com a viatura na atividade) |
 | 2.13 Vendas V3 no menu | Corrigido (`058e135`: `sales.create` redireciona para as viaturas em stock, `edit` de vendas V3 para o separador Venda; `2baf1d3` apagar e pesquisar) |
 | 2.14 Restantes LOG/SEG baixos | Parcial (SEG-012 corrigido em `68dbbe3`; SEG-017 parcial; ver `problemas.md`) |
-| 2.15 Modelo 9 duplicado | Corrigido (`058e135`: `LegalizationTaskService::ensureModelo9Task`, idempotente, também no separador da viatura) |
+| 2.15 Modelo 9 duplicado | **Parcial, reabrir**: `058e135` tornou-o idempotente em pedidos sequenciais (também no separador da viatura), mas os testes em MySQL (FLX-008 em [fluxo-lead-entrega.md](fluxo-lead-entrega.md)) mostram duplicação com o passo 5 em paralelo e depois de a tarefa estar concluída ou cancelada |
 | 2.16 Rascunhos e viaturas offline por URL | Corrigido (`68dbbe3`: 404) |
 | 2.17 Bugs dos testes de cobertura | Corrigidos 8 (`2baf1d3`, `dd006d8`); abertos: `NOT NULL` vs validação em `suppliers`, `testimonials` e `sales`, auto-atribuição de tarefas (ver `problemas.md`) |
 | 3.1 Fila real | Aberto |

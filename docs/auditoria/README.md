@@ -58,6 +58,7 @@ Código PHP/Blade/JS do repositório, rotas, middleware, models, migrations, com
 | [otimizacoes.md](otimizacoes.md) | Base de dados, backend, front-end, plano de medição |
 | [limpeza.md](limpeza.md) | Candidatos a remoção com risco e verificações |
 | [plano-de-acao.md](plano-de-acao.md) | Plano faseado e priorizado; o que falta por decisão, migration, dados de produção ou pronto para fazer; notas de deploy |
+| [fluxo-lead-entrega.md](fluxo-lead-entrega.md) | Teste do percurso lead→entrega em MySQL real: estados, etapas, falhas e concorrência (FLX-001…023), guião manual e parecer |
 
 ## Histórico de revisões
 
