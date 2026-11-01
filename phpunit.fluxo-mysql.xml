@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Testes de integração em MySQL REAL local (base descartável izzycar_fluxo_teste).
+  Todas as variáveis são forçadas aqui para que nada venha do .env (produção).
+  Correr: vendor/bin/phpunit -c phpunit.fluxo-mysql.xml
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true">
+    <testsuites>
+        <testsuite name="FluxoMysql">
+            <directory suffix="Test.php">./tests/Fluxo</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <ini name="memory_limit" value="512M"/>
+        <server name="APP_ENV" value="testing" force="true"/>
+        <server name="APP_KEY" value="base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" force="true"/>
+        <server name="BCRYPT_ROUNDS" value="4" force="true"/>
+        <server name="CACHE_DRIVER" value="array" force="true"/>
+        <server name="CACHE_STORE" value="array" force="true"/>
+        <server name="DB_CONNECTION" value="mysql" force="true"/>
+        <server name="DB_URL" value="" force="true"/>
+        <server name="DB_HOST" value="127.0.0.1" force="true"/>
+        <server name="DB_PORT" value="3306" force="true"/>
+        <server name="DB_DATABASE" value="izzycar_fluxo_teste" force="true"/>
+        <server name="DB_USERNAME" value="root" force="true"/>
+        <server name="DB_PASSWORD" value="" force="true"/>
+        <server name="DB_SOCKET" value="" force="true"/>
+        <server name="MAIL_MAILER" value="array" force="true"/>
+        <server name="QUEUE_CONNECTION" value="sync" force="true"/>
+        <server name="SESSION_DRIVER" value="array" force="true"/>
+    </php>
+</phpunit>
