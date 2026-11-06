@@ -981,12 +981,12 @@
                 };
                 $navGroups = [
                     'funil' => ['admin.v2.leads.*', 'admin.v2.pre-leads.*', 'admin.v2.form-proposals.*', 'admin.v2.proposals.*', 'admin.v2.converted-proposals.*', 'admin.v2.clients.*', 'admin.v2.cost-simulators.*'],
-                    'operacoes' => ['admin.v3.vehicles.*', 'admin.v3.inspections.*', 'admin.legalizations.*', 'admin.transport-quotes.*', 'admin.v2.sales.*', 'admin.v2.movements.*', 'admin.v2.expenses.*', 'admin.tasks.*'],
+                    'operacoes' => ['admin.v3.vehicles.*', 'admin.v3.inspections.*', 'admin.legalizations.*', 'admin.transport-quotes.*', 'admin.v2.sales.*', 'admin.v2.movements.*', 'admin.v2.expenses.*', 'admin.v2.quick-entry.*', 'admin.tasks.*'],
                     'rede' => ['admin.v2.angariadores.*', 'admin.v2.sellers.*', 'admin.v2.suppliers.*', 'admin.v2.partners.*'],
                     'analise' => ['admin.v2.reports.*', 'calculator.profit', 'admin.v2.comparator.*', 'car-analysis.*', 'admin.v2.radar.*'],
                     'conteudo' => ['admin.news.*', 'admin.testimonials.*', 'admin.v2.newsletter-management.*', 'admin.v2.menus.*', 'admin.v2.social-posts.*'],
                     'config' => ['admin.v2.attribute-groups.*', 'admin.v2.vehicle-attributes.*', 'admin.v2.brands.*', 'admin.v2.settings.*'],
-                    'sistema' => ['admin.v2.users.*', 'admin.v2.audit-log', 'admin.v2.roles.*', 'admin.v2.permissions.*', 'admin.v2.manual'],
+                    'sistema' => ['admin.v2.users.*', 'admin.v2.audit-log', 'admin.v2.quick-entry-history.*', 'admin.v2.roles.*', 'admin.v2.permissions.*', 'admin.v2.manual'],
                 ];
                 $activeGroup = null;
                 foreach ($navGroups as $key => $patterns) {
@@ -1104,6 +1104,14 @@
                     </a>
                 </div>
                 @endcanroute
+                @canquickentry
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.quick-entry.index') }}" class="nav-link {{ request()->routeIs('admin.v2.quick-entry.*') ? 'active' : '' }}">
+                        <i class="bi bi-lightning-charge"></i>
+                        <span>Inserção rápida</span>
+                    </a>
+                </div>
+                @endcanquickentry
                 @canroute('admin.v2.sales.index')
                 <div class="nav-item">
                     <a href="{{ route('admin.v2.sales.index') }}" class="nav-link {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
@@ -1319,7 +1327,7 @@
             </div>
             @endcanroutes
 
-            @canroutes(['admin.v2.users.index', 'admin.v2.roles.index', 'admin.v2.permissions.index', 'admin.v2.audit-log', 'admin.v2.manual'])
+            @canroutes(['admin.v2.users.index', 'admin.v2.roles.index', 'admin.v2.permissions.index', 'admin.v2.audit-log', 'admin.v2.quick-entry-history.index', 'admin.v2.manual'])
             {{-- ═══════ SISTEMA ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupSistema" aria-expanded="{{ $activeGroup === 'sistema' ? 'true' : 'false' }}">
                 <span>Sistema</span>
@@ -1355,6 +1363,14 @@
                     <a href="{{ route('admin.v2.audit-log') }}" class="nav-link {{ request()->routeIs('admin.v2.audit-log') ? 'active' : '' }}">
                         <i class="bi bi-shield-check"></i>
                         <span>Log de Auditoria</span>
+                    </a>
+                </div>
+                @endcanroute
+                @canroute('admin.v2.quick-entry-history.index')
+                <div class="nav-item">
+                    <a href="{{ route('admin.v2.quick-entry-history.index') }}" class="nav-link {{ request()->routeIs('admin.v2.quick-entry-history.*') ? 'active' : '' }}">
+                        <i class="bi bi-lightning-charge"></i>
+                        <span>Histórico inserção rápida</span>
                     </a>
                 </div>
                 @endcanroute
@@ -1534,6 +1550,12 @@
                     <span>Movimentos</span>
                 </a>
                 @endcanroute
+                @canquickentry
+                <a href="{{ route('admin.v2.quick-entry.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.quick-entry.*') ? 'active' : '' }}">
+                    <i class="bi bi-lightning-charge"></i>
+                    <span>Inserção rápida</span>
+                </a>
+                @endcanquickentry
                 @canroute('admin.v2.sales.index')
                 <a href="{{ route('admin.v2.sales.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.sales.*') ? 'active' : '' }}">
                     <i class="bi bi-graph-up-arrow"></i>
@@ -1687,7 +1709,7 @@
                 @endcanroute
                 @endcanroutes
 
-                @canroutes(['admin.v2.users.index', 'admin.v2.roles.index', 'admin.v2.permissions.index', 'admin.v2.audit-log', 'admin.v2.manual'])
+                @canroutes(['admin.v2.users.index', 'admin.v2.roles.index', 'admin.v2.permissions.index', 'admin.v2.audit-log', 'admin.v2.quick-entry-history.index', 'admin.v2.manual'])
                 <div class="abn-sheet-section-title">Sistema</div>
                 @canroute('admin.v2.users.index')
                 <a href="{{ route('admin.v2.users.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.users.*') ? 'active' : '' }}">
@@ -1711,6 +1733,12 @@
                 <a href="{{ route('admin.v2.audit-log') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.audit-log') ? 'active' : '' }}">
                     <i class="bi bi-shield-check"></i>
                     <span>Log de Auditoria</span>
+                </a>
+                @endcanroute
+                @canroute('admin.v2.quick-entry-history.index')
+                <a href="{{ route('admin.v2.quick-entry-history.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.quick-entry-history.*') ? 'active' : '' }}">
+                    <i class="bi bi-lightning-charge"></i>
+                    <span>Histórico inserção rápida</span>
                 </a>
                 @endcanroute
                 @canroute('admin.v2.manual')

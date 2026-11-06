@@ -59,6 +59,8 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // @canroute('admin.v2.leads.index') — mostra links/menus só a quem pode abrir a rota.
+        // Inserção rápida: visível a quem pode criar movimentos ou clientes (o controller volta a verificar).
+        Blade::if('canquickentry', fn () => auth()->check() && (app(PermissionService::class)->allows(auth()->user(), 'movements', 'create') || app(PermissionService::class)->allows(auth()->user(), 'clients', 'create')));
         Blade::if('canroute', fn (string $name) => auth()->check() && app(PermissionService::class)->canAccessRoute(auth()->user(), $name));
         // @canroutes([...]) — grupos de menu: aparece se alguma das rotas for acessível.
         Blade::if('canroutes', fn (array $names) => auth()->check() && collect($names)->contains(fn ($name) => app(PermissionService::class)->canAccessRoute(auth()->user(), $name)));

@@ -133,6 +133,7 @@ return [
                     // Mobile: nomes explícitos (sem âmbito "próprios"; o controller verifica cada ação).
                     'admin.mobile.movements.index', 'admin.mobile.movements.show', 'admin.mobile.movements.create', 'admin.mobile.movements.store',
                     'admin.mobile.movements.edit', 'admin.mobile.movements.update', 'admin.mobile.movements.destroy']],
+                'quick-entry-history' => ['label' => 'Histórico da inserção rápida', 'actions' => ['view' => []], 'routes' => ['admin.v2.quick-entry-history.*']],
                 'sales' => ['label' => 'Vendas', 'routes' => ['admin.v2.sales.*']],
                 'inspections' => ['label' => 'Inspeções', 'routes' => ['admin.v3.inspections.*']],
                 'transports' => ['label' => 'Transportes', 'routes' => ['admin.transport-quotes.*']],
@@ -235,6 +236,9 @@ return [
         'admin.v2.search.results',
         // Idem no mobile (Mobile\SearchController: secção a secção e no âmbito de cada utilizador).
         'admin.mobile.search',
+        // Inserção rápida: o controller exige criar movimentos ou criar clientes, conforme o comando.
+        'admin.v2.quick-entry.*',
+        'admin.mobile.quick-entry.*',
         // Início mobile: as contagens de leads respeitam o âmbito (0 sem permissão de leads).
         'admin.mobile.dashboard',
         'admin.angariador.manual',

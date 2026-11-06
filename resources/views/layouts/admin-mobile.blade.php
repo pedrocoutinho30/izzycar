@@ -236,6 +236,11 @@
         <a href="{{ route('admin.mobile.search') }}" class="{{ request()->routeIs('admin.mobile.search') ? 'active' : '' }}">
             <i class="bi bi-search"></i><span>Pesquisa</span>
         </a>
+        @canquickentry
+        <a href="{{ route('admin.mobile.quick-entry.index') }}" class="{{ request()->routeIs('admin.mobile.quick-entry.*') ? 'active' : '' }}">
+            <i class="bi bi-lightning-charge"></i><span>Rápida</span>
+        </a>
+        @endcanquickentry
         <button type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMais" aria-controls="mobileMais">
             <i class="bi bi-three-dots"></i><span>Mais</span>
         </button>

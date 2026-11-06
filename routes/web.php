@@ -592,6 +592,18 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::delete('/{id}',    [App\Http\Controllers\Admin\MovementV2Controller::class, 'destroy'])->name('destroy');
     });
 
+    // ============================================================
+    // INSERÇÃO RÁPIDA (frase → proposta → confirmação). Interpretar não grava movimentos.
+    // ============================================================
+    Route::prefix('v2/quick-entry')->name('admin.v2.quick-entry.')->group(function () {
+        Route::get('/',                         [App\Http\Controllers\Admin\QuickEntryController::class, 'index'])->name('index');
+        Route::post('/interpretar',             [App\Http\Controllers\Admin\QuickEntryController::class, 'interpret'])->name('interpret');
+        Route::get('/{id}',                     [App\Http\Controllers\Admin\QuickEntryController::class, 'show'])->name('show')->whereNumber('id');
+        Route::post('/{id}/confirmar',          [App\Http\Controllers\Admin\QuickEntryController::class, 'confirm'])->name('confirm')->whereNumber('id');
+        Route::post('/{id}/cancelar',           [App\Http\Controllers\Admin\QuickEntryController::class, 'cancel'])->name('cancel')->whereNumber('id');
+    });
+    Route::get('v2/quick-entry-history', [App\Http\Controllers\Admin\QuickEntryHistoryController::class, 'index'])->name('admin.v2.quick-entry-history.index');
+
     // Backward compatibility – redirect old expense URLs to new movement URLs
     Route::prefix('v2/expenses')->name('admin.v2.expenses.')->group(function () {
         Route::get('/',           fn () => redirect()->route('admin.v2.movements.index'))->name('index');
@@ -752,6 +764,13 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::get('/movimentos/{id}/editar', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'edit'])->name('movements.edit')->whereNumber('id');
         Route::put('/movimentos/{id}', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'update'])->name('movements.update')->whereNumber('id');
         Route::delete('/movimentos/{id}', [App\Http\Controllers\Admin\Mobile\MovementController::class, 'destroy'])->name('movements.destroy')->whereNumber('id');
+
+        // Inserção rápida (frase → proposta → confirmação), mesmas regras do desktop.
+        Route::get('/insercao-rapida', [App\Http\Controllers\Admin\QuickEntryController::class, 'index'])->name('quick-entry.index');
+        Route::post('/insercao-rapida/interpretar', [App\Http\Controllers\Admin\QuickEntryController::class, 'interpret'])->name('quick-entry.interpret');
+        Route::get('/insercao-rapida/{id}', [App\Http\Controllers\Admin\QuickEntryController::class, 'show'])->name('quick-entry.show')->whereNumber('id');
+        Route::post('/insercao-rapida/{id}/confirmar', [App\Http\Controllers\Admin\QuickEntryController::class, 'confirm'])->name('quick-entry.confirm')->whereNumber('id');
+        Route::post('/insercao-rapida/{id}/cancelar', [App\Http\Controllers\Admin\QuickEntryController::class, 'cancel'])->name('quick-entry.cancel')->whereNumber('id');
 
         // Oportunidades de um pedido (scopeBindings: a oportunidade tem de ser do pedido).
         Route::prefix('/formularios/{formProposal}/oportunidades')->name('form-proposals.opportunities.')->scopeBindings()->group(function () {
