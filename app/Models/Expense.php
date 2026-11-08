@@ -52,6 +52,22 @@ class Expense extends Model
     // ── Filtros partilhados (listagem e exportação) ─────────────────────────
 
     /**
+     * Movimentos que contam para totais e saldos: sem os lançamentos do Vehicle
+     * legado (a compra é lançada pelo V3Vehicle, a fonte de verdade) e, com
+     * $semCancelados, sem os cancelados.
+     */
+    public function scopeContabilizaveis(Builder $query, bool $semCancelados = true): Builder
+    {
+        $query->where(fn ($q) => $q->whereNull('source_type')->orWhere('source_type', '!=', Vehicle::class));
+
+        if ($semCancelados) {
+            $query->where(fn ($q) => $q->whereNull('status')->orWhere('status', '!=', 'cancelled'));
+        }
+
+        return $query;
+    }
+
+    /**
      * Filtros da listagem de movimentos, usados também pela exportação XLSX.
      * Valores vazios não filtram. "year": omisso = ano corrente, "all" = sem
      * limite; só se aplica quando não há date_from/date_to.
@@ -61,6 +77,8 @@ class Expense extends Model
     public function scopeFiltrar(Builder $query, array $filters): Builder
     {
         $has = fn (string $key) => isset($filters[$key]) && is_scalar($filters[$key]) && $filters[$key] !== '';
+
+        $query->contabilizaveis(false);
 
         if (!$has('date_from') && !$has('date_to')) {
             $year = $has('year') ? (string) $filters['year'] : (string) now()->year;

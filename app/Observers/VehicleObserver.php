@@ -9,7 +9,8 @@ class VehicleObserver
 {
     public function saved(Vehicle $vehicle): void
     {
-        Expense::syncFromVehicle($vehicle);
+        // Legado: a compra de uma viatura é lançada pelo V3Vehicle (fonte de verdade).
+        // Lançar também a do Vehicle antigo duplicava a despesa e distorcia os saldos.
     }
 
     public function deleted(Vehicle $vehicle): void

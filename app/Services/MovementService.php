@@ -168,7 +168,7 @@ class MovementService
      */
     public function summary(string $year, bool $hasDateFilter): array
     {
-        $statsBase = Expense::query();
+        $statsBase = Expense::query()->contabilizaveis();
         if ($year !== 'all' && ! $hasDateFilter) {
             $statsBase->whereYear('expense_date', $year);
         }
@@ -181,7 +181,7 @@ class MovementService
         $opening     = $this->toCents(self::INITIAL_BALANCE);
         $openingReal = $opening;
         if ($year !== 'all' && ctype_digit($year)) {
-            $before = fn () => Expense::query()->where('expense_date', '<', $year . '-01-01');
+            $before = fn () => Expense::query()->contabilizaveis()->where('expense_date', '<', $year . '-01-01');
             $opening     += $this->sumCents($before(), 'income') - $this->sumCents($before(), 'expense');
             $openingReal += $this->sumCents($before()->where(fn ($q) => $q->where('status', '!=', 'pending')->orWhereNull('status')), 'income')
                 - $this->sumCents($before()->where(fn ($q) => $q->where('status', '!=', 'pending')->orWhereNull('status')), 'expense');
@@ -189,6 +189,7 @@ class MovementService
 
         // Load ALL year movements sorted ascending for cumulative balance calculation
         $allYearMovements = Expense::query()
+            ->contabilizaveis()
             ->when($year !== 'all', fn ($q) => $q->whereYear('expense_date', $year))
             ->orderBy('expense_date', 'asc')
             ->orderBy('created_at', 'asc')
