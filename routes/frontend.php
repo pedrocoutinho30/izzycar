@@ -29,7 +29,8 @@ use App\Http\Controllers\Api\BrandsModelsController;
 
 // quero redirecionar todas estas rotas para uma rota
 
-Route::post('/formulario-importacao', [ImportController::class, 'submitFormImport'])->middleware(['throttle:5,1', 'antispam'])->name('frontend.import-submit');
+// Sem throttle nem antispam por decisão do Pedro (um cliente não conseguia submeter); reavaliar depois.
+Route::post('/formulario-importacao', [ImportController::class, 'submitFormImport'])->name('frontend.import-submit');
 Route::get('/formulario-importacao', [ContactController::class, 'importForm'])->name('frontend.form-import');
 Route::get('/simulador-custos', [CostSimulatorController::class, 'index'])->name('frontend.cost-simulator');
 Route::post('/simulador-custos', [CostSimulatorController::class, 'calculate'])->middleware(['throttle:10,1', 'antispam'])->name('frontend.cost-simulator.calculate');

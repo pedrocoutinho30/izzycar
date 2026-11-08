@@ -46,26 +46,24 @@ class FormularioImportacaoRobustezTest extends TestCase
         $this->assertSame(1, FormProposal::where('email', 'maria@example.com')->count());
     }
 
-    public function test_bloqueio_de_robo_responde_com_o_formato_que_o_formulario_espera(): void
-    {
-        $this->postJson(route('frontend.import-submit'), $this->payload(['company_website' => 'http://spam']))
-            ->assertOk()->assertJsonPath('status', 'success');
-
-        $this->assertSame(0, FormProposal::count());
-    }
-
-    public function test_limite_por_email_avisa_a_pessoa_com_429_e_mensagem(): void
+    public function test_formulario_de_importacao_nao_tem_limites_nem_antispam(): void
     {
         Mail::fake();
         $chave = 'antispam:email:frontend.import-submit:' . sha1('maria@example.com');
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             RateLimiter::hit($chave, 3600);
         }
 
-        $this->postJson(route('frontend.import-submit'), $this->payload())
-            ->assertStatus(429)->assertJsonPath('status', 'error')
-            ->assertJsonPath('message', fn ($m) => str_contains($m, 'Aguarde'));
+        // Sem _form_started, com o campo-isco preenchido e depois de muitos pedidos: grava na mesma.
+        $this->postJson(route('frontend.import-submit'), $this->payload(['company_website' => 'x']) + [])
+            ->assertOk()->assertJsonPath('status', 'success');
+        $this->assertSame(1, FormProposal::where('email', 'maria@example.com')->count());
 
-        $this->assertSame(0, FormProposal::count());
+        for ($i = 0; $i < 8; $i++) {
+            $p = $this->payload(['email' => "pessoa{$i}@example.com", 'phone' => '91234567' . $i]);
+            unset($p['_form_started']);
+            $this->postJson(route('frontend.import-submit'), $p)->assertOk();
+        }
+        $this->assertSame(9, FormProposal::count());
     }
 }
