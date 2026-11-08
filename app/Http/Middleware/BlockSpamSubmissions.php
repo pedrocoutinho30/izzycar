@@ -24,7 +24,7 @@ class BlockSpamSubmissions
 
     /** Limites por hora: mesmo email na mesma rota e mesmo IP em todos os formulários. */
     private const MAX_POR_EMAIL = 5;
-    private const MAX_POR_IP = 30;
+    private const MAX_POR_IP = 60;
 
     public function handle(Request $request, Closure $next)
     {
@@ -38,8 +38,19 @@ class BlockSpamSubmissions
                 'reason' => $motivo,
             ]);
 
+            // Limites de pedidos: uma pessoa real também pode lá chegar (rede partilhada,
+            // vários envios seguidos), por isso recebe a verdade em vez de um falso sucesso.
+            if (in_array($motivo, ['ip_limit', 'email_limit'], true)) {
+                $aviso = 'Enviou muitos pedidos seguidos. Aguarde alguns minutos e tente novamente, ou contacte-nos por telefone.';
+
+                return $request->expectsJson()
+                    ? response()->json(['status' => 'error', 'message' => $aviso], 429)
+                    : back()->withErrors(['limite' => $aviso]);
+            }
+
+            // Robôs: resposta de sucesso (inclui "status", que o JS dos formulários espera).
             return $request->expectsJson()
-                ? response()->json(['success' => true, 'message' => 'Pedido enviado com sucesso!'])
+                ? response()->json(['success' => true, 'status' => 'success', 'message' => 'Pedido enviado com sucesso!'])
                 : back()->with('success', 'Pedido enviado com sucesso!');
         }
 

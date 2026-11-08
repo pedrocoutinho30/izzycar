@@ -610,8 +610,8 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       body: fd
     })
-    .then(r => r.json().then(data => ({ ok: r.ok, data })))
-    .then(({ ok, data }) => {
+    .then(r => r.json().catch(() => ({})).then(data => ({ ok: r.ok, status: r.status, data })))
+    .then(({ ok, status, data }) => {
       if (ok && data.status === 'success') {
         clearFieldErrors();
         form.reset();
@@ -633,6 +633,10 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
       console.error('Falha ao submeter o formulário de importação:', data);
+      const msg = errBox.querySelector('span');
+      msg.textContent = (status === 429)
+        ? 'Enviou demasiados pedidos seguidos. Aguarde um minuto e tente novamente.'
+        : 'Ocorreu um erro. Por favor tente novamente.';
       errBox.style.display = 'flex';
     })
     .catch(() => {

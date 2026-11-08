@@ -12,6 +12,7 @@ use App\Models\Client;
 use App\Services\ClientMatcher;
 use App\Services\PrivateFiles;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ImportFormConfirmationMail;
 use App\Mail\FinancingDocumentsMail;
@@ -183,14 +184,25 @@ class ImportController extends Controller
         $proposal = FormProposal::create($formPropposalData);
         PushNotifier::notifyStaff(new NewFormProposalNotification($proposal));
 
+        // Depois de gravar, uma falha de email (SMTP) não pode devolver erro ao
+        // visitante: o pedido já existe e voltar a submeter duplicaria a lead.
+        $enviar = function (callable $envio, string $descricao) use ($proposal) {
+            try {
+                $envio();
+            } catch (\Throwable $e) {
+                report($e);
+                Log::warning("Pedido de importação #{$proposal->id}: falhou o envio de {$descricao}.");
+            }
+        };
+
         // Enviar email de confirmação ao cliente
         if ($clientExist->email) {
-            Mail::to($clientExist->email)->send(new ImportFormConfirmationMail($proposal, $clientExist));
+            $enviar(fn () => Mail::to($clientExist->email)->send(new ImportFormConfirmationMail($proposal, $clientExist)), 'confirmação ao cliente');
 
             // Se optou por financiamento, envia também a documentação necessária
             // para o processo de crédito pessoal.
             if ($proposal->payment_type === 'financiamento') {
-                Mail::to($clientExist->email)->send(new FinancingDocumentsMail($proposal, $clientExist));
+                $enviar(fn () => Mail::to($clientExist->email)->send(new FinancingDocumentsMail($proposal, $clientExist)), 'documentação de financiamento');
             }
         }
 
@@ -217,7 +229,7 @@ class ImportController extends Controller
 
             $adminEmail = config('mail.admin_address', env('MAIL_FROM_ADDRESS', 'geral@izzycar.pt'));
 
-            Mail::raw(
+            $enviar(fn () => Mail::raw(
                 "Foi submetido um novo pedido de importação através do formulário por alguém que já existe nos registos (associado pelo {$clientMatch->byLabel()}).\n\n"
                     . "Cliente: {$clientExist->name} (#{$clientExist->id})\n"
                     . "Email: {$clientExist->email}\n"
@@ -227,7 +239,7 @@ class ImportController extends Controller
                     $message->to($adminEmail)
                         ->subject('Novo Pedido de Importação — Cliente Já Existente');
                 }
-            );
+            ), 'aviso de cliente existente');
         }
 
         // Montar corpo do email em texto
@@ -284,10 +296,10 @@ class ImportController extends Controller
 
 
         // Enviar email
-        Mail::raw($body, function ($message) {
+        $enviar(fn () => Mail::raw($body, function ($message) {
             $message->to('geral@izzycar.pt')
                 ->subject('Novo Pedido de Importação');
-        });
+        }), 'aviso à administração');
 
         return response()->json([
             'status' => 'success',
