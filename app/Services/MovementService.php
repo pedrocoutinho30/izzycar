@@ -24,7 +24,16 @@ use Illuminate\Support\Facades\DB;
  */
 class MovementService
 {
-    /** Saldo de abertura usado no cálculo dos saldos da listagem. */
+    /**
+     * Só contam e aparecem movimentos a partir desta data; o que é anterior
+     * fica na base de dados mas fora da listagem, dos totais e dos saldos.
+     */
+    public const DATA_INICIO = '2026-01-01';
+
+    /**
+     * Saldo de abertura (em DATA_INICIO): os saldos partem daqui e somam só os
+     * movimentos desde essa data.
+     */
     public const INITIAL_BALANCE = 15757.28;
 
     public const ATTACHMENT_FOLDER = 'movements/attachments';
@@ -257,6 +266,7 @@ class MovementService
 
         $years = Expense::selectRaw("{$yearExpr} as y")
             ->whereNotNull('expense_date')
+            ->where('expense_date', '>=', self::DATA_INICIO)
             ->groupBy('y')
             ->orderByDesc('y')
             ->pluck('y');

@@ -29,29 +29,24 @@ class MovementServiceSummaryTest extends TestCase
         ]);
     }
 
-    public function test_saldo_de_abertura_do_ano_inclui_os_anos_anteriores(): void
+    public function test_so_contam_movimentos_desde_a_data_de_inicio(): void
     {
         $this->mov(['movement_type' => 'income', 'amount_gross' => 1000, 'expense_date' => '2025-03-01']);
-        $this->mov(['movement_type' => 'expense', 'amount_gross' => 300, 'expense_date' => '2025-04-01']);
-        $this->mov(['movement_type' => 'expense', 'amount_gross' => 40, 'expense_date' => '2025-05-01', 'status' => 'pending']);
-        $this->mov(['movement_type' => 'income', 'amount_gross' => 500, 'expense_date' => '2026-02-01']);
+        $this->mov(['movement_type' => 'expense', 'amount_gross' => 300, 'expense_date' => '2025-12-31']);
+        $this->mov(['movement_type' => 'income', 'amount_gross' => 500, 'expense_date' => '2026-01-01']);
+        $this->mov(['movement_type' => 'expense', 'amount_gross' => 40, 'expense_date' => '2026-05-01', 'status' => 'pending']);
 
         $s = (new MovementService)->summary('2026', false);
 
-        // 15757.28 + 1000 - 300 - 40
-        $this->assertSame(16417.28, $s['openingBalance']);
-        // Sem o pendente de 2025
-        $this->assertSame(16457.28, $s['openingBalanceReal']);
-        $this->assertSame(16917.28, $s['saldo']);
-        $this->assertSame(16957.28, $s['saldoReal']);
+        // Anterior a 01/01/2026 fica de fora e o saldo parte do saldo de abertura.
+        $this->assertSame(15757.28, $s['openingBalance']);
+        $this->assertSame(500.0, $s['totalIncome']);
+        $this->assertSame(40.0, $s['totalExpenses']);
+        $this->assertSame(16217.28, $s['saldo']);
+        $this->assertSame(16257.28, $s['saldoReal']);
 
-        $s2025 = (new MovementService)->summary('2025', false);
-        $this->assertSame(15757.28, $s2025['openingBalance']);
-        $this->assertSame(16417.28, $s2025['saldo']);
-
-        $all = (new MovementService)->summary('all', false);
-        $this->assertSame(15757.28, $all['openingBalance']);
-        $this->assertSame(16917.28, $all['saldo']);
+        $this->assertSame(15757.28, (new MovementService)->summary('2025', false)['saldo']);
+        $this->assertSame(16217.28, (new MovementService)->summary('all', false)['saldo']);
     }
 
     public function test_pendente_separa_receitas_de_despesas(): void

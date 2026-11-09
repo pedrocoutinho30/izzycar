@@ -52,13 +52,14 @@ class Expense extends Model
     // ── Filtros partilhados (listagem e exportação) ─────────────────────────
 
     /**
-     * Movimentos que contam para totais e saldos: sem os lançamentos do Vehicle
-     * legado (a compra é lançada pelo V3Vehicle, a fonte de verdade) e, com
-     * $semCancelados, sem os cancelados.
+     * Movimentos que contam e aparecem: só desde MovementService::DATA_INICIO,
+     * sem os lançamentos do Vehicle legado (a compra é lançada pelo V3Vehicle,
+     * a fonte de verdade) e, com $semCancelados, sem os cancelados.
      */
     public function scopeContabilizaveis(Builder $query, bool $semCancelados = true): Builder
     {
-        $query->where(fn ($q) => $q->whereNull('source_type')->orWhere('source_type', '!=', Vehicle::class));
+        $query->where('expense_date', '>=', \App\Services\MovementService::DATA_INICIO)
+            ->where(fn ($q) => $q->whereNull('source_type')->orWhere('source_type', '!=', Vehicle::class));
 
         if ($semCancelados) {
             $query->where(fn ($q) => $q->whereNull('status')->orWhere('status', '!=', 'cancelled'));

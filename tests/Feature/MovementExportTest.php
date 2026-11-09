@@ -234,24 +234,25 @@ class MovementExportTest extends TestCase
         $this->mov('2024', '2024-03-01');
 
         $this->assertSame(['2026'], $this->titles($this->rows(['title'])));
-        $this->assertSame(['2025'], $this->titles($this->rows(['title'], ['year' => '2025'])));
-        $this->assertSame(['2026', '2025', '2024'], $this->titles($this->rows(['title'], ['year' => 'all'])));
+        // Anterior a 01/01/2026 não conta nem aparece (MovementService::DATA_INICIO).
+        $this->assertSame([], $this->titles($this->rows(['title'], ['year' => '2025'])));
+        $this->assertSame(['2026'], $this->titles($this->rows(['title'], ['year' => 'all'])));
 
         $user = $this->backofficeUser();
         $this->assertSame(['2026'], $this->titles($this->httpRows($this->actingAs($user)->get(route('admin.v2.movements.export', ['fields' => ['title']])))));
-        $this->assertCount(4, $this->httpRows($this->actingAs($user)->get(route('admin.v2.movements.export', ['fields' => ['title'], 'year' => 'all']))));
+        $this->assertCount(2, $this->httpRows($this->actingAs($user)->get(route('admin.v2.movements.export', ['fields' => ['title'], 'year' => 'all']))));
     }
 
     public function test_dates_override_the_year(): void
     {
         $this->mov('2026', '2026-03-01');
-        $this->mov('2025 dentro', '2025-03-05');
-        $this->mov('2025 fora', '2025-06-01');
+        $this->mov('Jan dentro', '2026-01-05');
+        $this->mov('Jun fora', '2026-06-01');
 
-        $titles = $this->titles($this->rows(['title'], ['date_from' => '2025-03-01', 'date_to' => '2025-03-31', 'year' => '2026']));
+        $titles = $this->titles($this->rows(['title'], ['date_from' => '2026-01-01', 'date_to' => '2026-01-31', 'year' => '2026']));
 
-        $this->assertSame(['2025 dentro'], $titles);
-        $this->assertSame(['2026', '2025 fora', '2025 dentro'], $this->titles($this->rows(['title'], ['date_from' => '2025-01-01'])));
+        $this->assertSame(['Jan dentro'], $titles);
+        $this->assertSame(['Jun fora', '2026', 'Jan dentro'], $this->titles($this->rows(['title'], ['date_from' => '2026-01-01'])));
     }
 
     public function test_filters_apply_to_all_pages(): void
@@ -387,19 +388,19 @@ class MovementExportTest extends TestCase
         $this->assertSame(['Venda B', 'Compra A'], $r->viewData('movements')->pluck('title')->all());
         $this->assertSame('100,00€', $r->viewData('stats')[0]['value']);   // saídas
         $this->assertSame('1.000,00€', $r->viewData('stats')[1]['value']); // entradas
-        // Abertura de 2026 inclui a despesa antiga de 2025 (LOG-008): 15757.28 - 7 + 1000 - 100
-        $this->assertEqualsWithDelta(15757.28 - 7 + 1000 - 100, $r->viewData('currentSaldo'), 0.001);
+        // Só contam movimentos desde 01/01/2026, sobre o saldo de abertura: 15757.28 + 1000 - 100
+        $this->assertEqualsWithDelta(15757.28 + 1000 - 100, $r->viewData('currentSaldo'), 0.001);
 
-        // year=all inclui 2025 nos totais e na lista
+        // year=all também não mostra o que é anterior a 2026
         $r = $this->actingAs($user)->get(route('admin.v2.movements.index', ['year' => 'all']))->assertOk();
-        $this->assertCount(3, $r->viewData('movements'));
-        $this->assertSame('107,00€', $r->viewData('stats')[0]['value']);
+        $this->assertCount(2, $r->viewData('movements'));
+        $this->assertSame('100,00€', $r->viewData('stats')[0]['value']);
 
         // com filtros
         $r = $this->actingAs($user)->get(route('admin.v2.movements.index', ['movement_type' => 'income', 'year' => 'all']))->assertOk();
         $this->assertSame(['Venda B'], $r->viewData('movements')->pluck('title')->all());
         $r = $this->actingAs($user)->get(route('admin.v2.movements.index', ['search' => 'Antiga', 'date_from' => '2025-01-01', 'date_to' => '2025-12-31']))->assertOk();
-        $this->assertSame(['Antiga'], $r->viewData('movements')->pluck('title')->all());
+        $this->assertSame([], $r->viewData('movements')->pluck('title')->all());
         // totais ignoram os filtros além do ano: 100 de saídas em 2026 mesmo com filtro de categoria
         $r = $this->actingAs($user)->get(route('admin.v2.movements.index', ['category' => 'vehicle_sale']))->assertOk();
         $this->assertSame('100,00€', $r->viewData('stats')[0]['value']);

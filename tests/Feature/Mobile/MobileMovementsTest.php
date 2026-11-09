@@ -105,16 +105,16 @@ class MobileMovementsTest extends TestCase
             ->assertSee('Totais de 2026')
             ->assertSee('1.000,00 €')     // entradas
             ->assertSee('250,00 €')       // saídas
-            ->assertSee('23.507,28 €')    // saldo c/ pendentes (abertura de 2026 inclui os 7000 de 2025, LOG-008)
-            ->assertSee('23.557,28 €')    // saldo real
+            ->assertSee('16.507,28 €')    // saldo c/ pendentes (15757.28 + só movimentos desde 01/01/2026)
+            ->assertSee('16.557,28 €')    // saldo real
             ->assertSee('3 movimentos com estes filtros')
             ->assertDontSee('<table', false);
 
-        $this->assertSame(['2026', '2025'], collect($r->viewData('availableYears'))->map(fn ($y) => (string) $y)->all());
+        $this->assertSame(['2026'], collect($r->viewData('availableYears'))->map(fn ($y) => (string) $y)->all());
 
-        // Desde o início.
+        // Desde o início: o que é anterior a 01/01/2026 continua a não aparecer.
         $this->get(route('admin.mobile.movements.index', ['year' => 'all']))
-            ->assertOk()->assertSee('Ano passado')->assertSee('Totais desde o início')->assertSee('8.000,00 €');
+            ->assertOk()->assertDontSee('Ano passado')->assertSee('Totais desde o início')->assertSee('1.000,00 €');
     }
 
     public function test_filtros_do_desktop(): void
@@ -139,8 +139,8 @@ class MobileMovementsTest extends TestCase
         $this->assertSame(['DeltaCliente'], $titulos(['client_id' => $client->id]));
         $this->assertSame(['BetaPendente'], $titulos(['search' => 'secreta']));
         $this->assertSame(['EpsilonAbril'], $titulos(['date_from' => '2026-04-01', 'date_to' => '2026-04-30']));
-        $this->assertSame(['ZetaAntigo'], $titulos(['year' => '2024']));
-        $this->assertCount(6, $titulos(['year' => 'all']));
+        $this->assertSame([], $titulos(['year' => '2024'])); // anterior a 01/01/2026: não aparece
+        $this->assertCount(5, $titulos(['year' => 'all']));
         // Valores desconhecidos não filtram (nem dão erro).
         $this->assertCount(5, $titulos(['movement_type' => 'transfer', 'category' => 'xyz', 'year' => 'abc', 'date_from' => '2026-13-45']));
 

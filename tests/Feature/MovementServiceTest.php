@@ -217,7 +217,7 @@ class MovementServiceTest extends TestCase
         $this->mov(['movement_type' => 'income', 'amount' => 1000, 'amount_gross' => 1000, 'expense_date' => '2026-03-01']);
         $this->mov(['movement_type' => 'expense', 'amount' => 200, 'amount_gross' => 200, 'expense_date' => '2026-04-01']);
         $this->mov(['movement_type' => 'expense', 'amount' => 50, 'amount_gross' => 50, 'expense_date' => '2026-04-02', 'status' => 'pending']);
-        // Outro ano: fora dos totais do ano corrente.
+        // Anterior a 2026: não conta nem aparece.
         $this->mov(['movement_type' => 'income', 'amount' => 7000, 'amount_gross' => 7000, 'expense_date' => '2025-06-01']);
 
         $user = $this->backofficeUser();
@@ -228,27 +228,27 @@ class MovementServiceTest extends TestCase
         $this->assertSame([
             'Total Saídas' => '250,00€',
             'Total Entradas' => '1.000,00€',
-            // Abertura de 2026 = 15757.28 + 7000 (2025); depois + 1000 - 200 - 50 (LOG-008)
-            'Saldo (c/ Pendentes)' => '23.507,28€',
+            // 15757.28 + só movimentos desde 01/01/2026: + 1000 - 200 - 50 (LOG-008)
+            'Saldo (c/ Pendentes)' => '16.507,28€',
             // Só pagos: sem os 50 pendentes.
-            'Saldo Real (só Pagos)' => '23.557,28€',
+            'Saldo Real (só Pagos)' => '16.557,28€',
         ], $stats);
-        $this->assertEqualsWithDelta(23507.28, $r->viewData('currentSaldo'), 0.001);
-        $this->assertEqualsWithDelta(23557.28, $r->viewData('currentSaldoReal'), 0.001);
+        $this->assertEqualsWithDelta(16507.28, $r->viewData('currentSaldo'), 0.001);
+        $this->assertEqualsWithDelta(16557.28, $r->viewData('currentSaldoReal'), 0.001);
         $this->assertSame(15757.28, $r->viewData('initialBalance'));
-        $this->assertSame([2026, 2025], collect($r->viewData('availableYears'))->map(fn ($y) => (int) $y)->all());
+        $this->assertSame([2026], collect($r->viewData('availableYears'))->map(fn ($y) => (int) $y)->all());
         $this->assertCount(3, $r->viewData('movements'));
 
         // Desde o início: tudo.
         $r = $this->actingAs($user)->get(route('admin.v2.movements.index', ['year' => 'all']))->assertOk();
         $stats = collect($r->viewData('stats'))->pluck('value', 'title')->all();
-        $this->assertSame('8.000,00€', $stats['Total Entradas']);
-        $this->assertSame('23.507,28€', $stats['Saldo (c/ Pendentes)']);
+        $this->assertSame('1.000,00€', $stats['Total Entradas']);
+        $this->assertSame('16.507,28€', $stats['Saldo (c/ Pendentes)']);
 
         // Com datas, os totais ignoram o ano (e os outros filtros), como hoje.
         $r = $this->actingAs($user)->get(route('admin.v2.movements.index', ['date_from' => '2026-04-01', 'date_to' => '2026-04-30', 'movement_type' => 'expense']))->assertOk();
         $stats = collect($r->viewData('stats'))->pluck('value', 'title')->all();
-        $this->assertSame('8.000,00€', $stats['Total Entradas']);
+        $this->assertSame('1.000,00€', $stats['Total Entradas']);
         $this->assertCount(2, $r->viewData('movements'));
     }
 
