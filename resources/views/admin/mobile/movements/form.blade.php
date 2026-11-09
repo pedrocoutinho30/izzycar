@@ -55,18 +55,13 @@
                 <label for="mov-category" class="form-label fw-semibold">Categoria</label>
                 <select id="mov-category" name="category" class="form-select @error('category') is-invalid @enderror">
                     <option value="">Selecione uma categoria...</option>
-                    @foreach(\App\Models\Expense::categories() as $opcao => $nome)
-                        <option value="{{ $opcao }}" @selected($valor('category') === $opcao)>{{ $nome }}</option>
-                    @endforeach
-                    @if($extra = $foraDaLista('category', \App\Models\Expense::categories()))
-                        <option value="{{ $extra }}" selected>{{ $extra }} (atual)</option>
-                    @endif
+                    @include('admin.partials._category-options', ['selected' => $valor('category')])
                 </select>
             </div>
 
-            {{-- Como no desktop: só aparece com a categoria Legalização (sem JS, fica sempre visível). --}}
+            {{-- Como no desktop: sempre visível, com qualquer categoria (como o veículo e o cliente). --}}
             <div id="mov-legalization-field">
-                <label for="mov-legalization" class="form-label fw-semibold">Legalização associada</label>
+                <label for="mov-legalization" class="form-label fw-semibold">Legalização (opcional)</label>
                 <select id="mov-legalization" name="legalization_id" class="form-select @error('legalization_id') is-invalid @enderror">
                     <option value="">Sem legalização associada</option>
                     @foreach($legalizations as $leg)
@@ -187,21 +182,3 @@
         <button type="submit" class="btn btn-primary btn-lg fw-semibold">{{ $editar ? 'Guardar alterações' : 'Criar movimento' }}</button>
     </form>
 @endsection
-
-@push('scripts')
-<script>
-    // Como no desktop: a legalização só aparece com a categoria "Legalização" e limpa-se ao esconder.
-    (function () {
-        const categoria = document.getElementById('mov-category');
-        const campo = document.getElementById('mov-legalization-field');
-        const legalizacao = document.getElementById('mov-legalization');
-        function alternar() {
-            const mostrar = categoria.value === 'legalization';
-            campo.hidden = !mostrar;
-            if (!mostrar) legalizacao.value = '';
-        }
-        categoria.addEventListener('change', alternar);
-        alternar();
-    })();
-</script>
-@endpush

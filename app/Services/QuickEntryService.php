@@ -175,7 +175,7 @@ class QuickEntryService
         $rules = $this->movements->rules(false);
         $rules['amount'] = ['required', 'regex:/^\d{1,9}(\.\d{1,2})?$/', 'gt:0'];
         $rules['movement_type'] = 'required|in:' . implode(',', array_keys(Expense::movementTypes()));
-        $rules['category'] = 'nullable|in:' . implode(',', array_keys(Expense::categories()));
+        $rules['category'] = ['nullable', $this->movements->categoryRule(fn () => $data['movement_type'] ?? null)];
         $rules['payment_method'] = 'nullable|in:' . implode(',', array_keys(Expense::paymentMethods()));
         $rules['status'] = 'required|in:' . implode(',', array_keys(Expense::statuses()));
         $rules['vat_rate'] = 'required|in:0,6,13,19,23,25';

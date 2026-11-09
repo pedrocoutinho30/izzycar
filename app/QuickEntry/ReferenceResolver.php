@@ -160,9 +160,17 @@ class ReferenceResolver
         $phrase = fn (string $text) => implode(' ', array_map($stem, array_filter(explode(' ', TextNormalizer::compare(str_replace('_', ' ', $text))))));
 
         $index = [];
-        foreach (Expense::categories() as $key => $label) {
+        foreach (Expense::selectableCategories() as $key => $label) {
             $index[$phrase($label)] = [$key, $label];
             $index[$phrase($key)] ??= [$key, $label];
+        }
+        // Nomes antigos de categorias que mudaram de nome continuam a ser entendidos.
+        foreach (['Compra de Veículo' => 'vehicle_purchase', 'Compra de Viatura' => 'vehicle_purchase', 'Venda de Veículo' => 'vehicle_sale',
+                  'Reparação' => 'repair', 'Serviço de Importação' => 'import_service'] as $antigo => $key) {
+            $label = Expense::selectableCategories()[$key] ?? null;
+            if ($label !== null) {
+                $index[$phrase($antigo)] ??= [$key, $label];
+            }
         }
 
         for ($used = count($tokens); $used >= 1; $used--) {

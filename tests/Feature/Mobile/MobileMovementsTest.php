@@ -254,7 +254,7 @@ class MobileMovementsTest extends TestCase
         $this->assertSame(Expense::class, $fm->movable_type);
         $this->assertSame($m->id, $fm->movable_id);
         $this->assertSame('expense', $fm->type);
-        $this->assertSame('Reparação', $fm->category);
+        $this->assertSame('Manutenção/Reparação', $fm->category);
         $this->assertSame('Pneus novos', $fm->description);
         $this->assertEquals(1200.50, $fm->amount_gross);
         $this->assertEquals(224.48, $fm->vat_amount);
@@ -564,5 +564,14 @@ class MobileMovementsTest extends TestCase
         }
 
         $this->assertSame('/gestao/mobile/movimentos/novo', route('admin.mobile.movements.create', [], false));
+    }
+
+    public function test_formulario_mobile_mostra_a_legalizacao_sempre(): void
+    {
+        $html = $this->actingAs($this->mobileUser())->get(route('admin.mobile.movements.create'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('name="legalization_id"', $html);
+        $this->assertStringContainsString('Legalização (opcional)', $html);
+        $this->assertStringNotContainsString("categoria.value === 'legalization'", $html); // já não depende da categoria
     }
 }

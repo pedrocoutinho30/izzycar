@@ -135,7 +135,7 @@ class FinancialMovement extends Model
             ?? ($expense->type ?? 'other');
 
         // Map to Portuguese label for the financial ledger
-        $categoryLabel = \App\Models\Expense::categories()[$category] ?? ucfirst($category);
+        $categoryLabel = \App\Models\Expense::categoryLabelFor($category, $movableType) ?? ucfirst($category);
 
         $description = $expense->title ?? $categoryLabel;
 

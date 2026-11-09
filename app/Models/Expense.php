@@ -122,26 +122,136 @@ class Expense extends Model
         ];
     }
 
-    public static function categories(): array
+    /**
+     * Categorias que se podem escolher num movimento novo, por tipo e agrupadas
+     * (as chaves são o que fica gravado em expenses.category). Despesas e receitas
+     * têm listas próprias; só "Honorários", "Comissão" e "Outros" servem as duas.
+     *
+     * @return array<string, array<string, array<string, string>>>  tipo => grupo => [chave => nome]
+     */
+    public static function categoryGroupsByType(): array
     {
         return [
-            'vehicle_purchase' => 'Compra de Veículo',
-            'vehicle_sale'     => 'Venda de Veículo',
-            'transport'        => 'Transporte',
-            'repair'           => 'Reparação',
-            'legalization'     => 'Legalização',
-            'insurance'        => 'Seguro',
-            'fuel'             => 'Combustível',
-            'marketing'        => 'Marketing',
-            'salary'           => 'Salário',
-            'rent'             => 'Renda',
-            'commission'       => 'Comissão',
-            'inspection'       => 'Inspeção',
-            'import_service'   => 'Serviço de Importação',
-            'tax'              => 'Imposto',
-            'office'           => 'Escritório',
-            'other'            => 'Outro',
+            'expense' => [
+                'Passos da importação' => [
+                    'import_inspection_pre' => 'Inspeção pré-compra',
+                    'vehicle_purchase'      => 'Compra do carro',
+                    'transport'             => 'Transporte',
+                    'import_isv'            => 'ISV',
+                    'import_ipo'            => 'IPO',
+                    'vehicle_washing'       => 'Lavagem',
+                    'import_plates'         => 'Matrícula',
+                    'import_imt'            => 'IMT',
+                    'import_registration'   => 'Registo automóvel',
+                ],
+                'Viaturas' => [
+                    'maintenance_scheduled' => 'Manutenção programada',
+                    'repair'                => 'Manutenção/Reparação',
+                    'insurance'             => 'Seguro',
+                    'fuel'                  => 'Combustível',
+                ],
+                'Empresa' => [
+                    'fees'             => 'Honorários',
+                    'marketing'        => 'Marketing',
+                    'salary'           => 'Salário',
+                    'rent'             => 'Renda',
+                    'commission'       => 'Comissão',
+                    'general_expenses' => 'Despesas gerais (telefone, luz, água…)',
+                ],
+                'Outros' => [
+                    'other' => 'Outros',
+                ],
+            ],
+            'income' => [
+                'Serviços' => [
+                    'import_service' => 'Serviço de Importação',
+                    'legalization'   => 'Serviço de legalização',
+                    'fees'           => 'Honorários',
+                ],
+                'Outras receitas' => [
+                    'vehicle_sale' => 'Venda de viatura',
+                    'commission'   => 'Comissão',
+                    'other'        => 'Outros',
+                ],
+            ],
         ];
+    }
+
+    /**
+     * Categorias antigas que já não se escolhem em movimentos novos mas continuam
+     * válidas nos que existem (listagem, filtros, edição sem as mudar).
+     *
+     * @return array<string, array<string, string>>  tipo => [chave => nome]
+     */
+    public static function legacyCategories(): array
+    {
+        return [
+            'expense' => [
+                'legalization' => 'Legalização',
+                'tax'          => 'Imposto',
+                'inspection'   => 'Inspeção',
+                'office'       => 'Escritório',
+            ],
+            'income' => [
+                'vehicle_purchase' => 'Compra do carro',
+                'transport'    => 'Transporte',
+                'repair'       => 'Manutenção/Reparação',
+                'insurance'    => 'Seguro',
+                'fuel'         => 'Combustível',
+                'marketing'    => 'Marketing',
+                'salary'       => 'Salário',
+                'rent'         => 'Renda',
+                'tax'          => 'Imposto',
+                'inspection'   => 'Inspeção',
+                'office'       => 'Escritório',
+            ],
+        ];
+    }
+
+    /** Grupos escolhíveis para um tipo (despesa/receita); tipo desconhecido = vazio. */
+    public static function categoryGroups(string $type): array
+    {
+        return self::categoryGroupsByType()[$type] ?? [];
+    }
+
+    /** Categorias escolhíveis de um tipo, sem grupos. */
+    public static function categoriesFor(string $type): array
+    {
+        $groups = self::categoryGroups($type);
+
+        return $groups ? array_merge(...array_values($groups)) : [];
+    }
+
+    /** Escolhíveis nalgum tipo (inserção rápida, filtros): chave => nome. */
+    public static function selectableCategories(): array
+    {
+        return self::categoriesFor('expense') + self::categoriesFor('income');
+    }
+
+    /** Todas as categorias conhecidas, escolhíveis ou antigas (filtros, validação de leitura). */
+    public static function categories(): array
+    {
+        return self::selectableCategories()
+            + (self::legacyCategories()['expense'] ?? [])
+            + (self::legacyCategories()['income'] ?? []);
+    }
+
+    /** Nome de uma categoria, tendo em conta o tipo do movimento (ex.: "legalization"). */
+    public static function categoryLabelFor(?string $category, ?string $type = null): ?string
+    {
+        if ($category === null || $category === '') {
+            return null;
+        }
+
+        return ($type ? (self::categoriesFor($type)[$category] ?? self::legacyCategories()[$type][$category] ?? null) : null)
+            ?? self::categories()[$category]
+            ?? null;
+    }
+
+    /** A categoria pode ser escolhida num movimento deste tipo? */
+    public static function categoryAllowed(?string $category, ?string $type): bool
+    {
+        return $category === null || $category === '' || isset(self::categoriesFor((string) $type)[$category]);
     }
 
     public static function paymentMethods(): array
@@ -173,7 +283,7 @@ class Expense extends Model
 
     public function getCategoryLabelAttribute(): string
     {
-        return self::categories()[$this->category] ?? ($this->expense_category ?? '—');
+        return self::categoryLabelFor($this->category, $this->movement_type) ?? ($this->expense_category ?? '—');
     }
 
     public function getStatusLabelAttribute(): string

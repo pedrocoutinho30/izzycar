@@ -42,11 +42,11 @@ class MovementService
      * Regras de validação do formulário do desktop. Sem $withAttachment (mobile),
      * o comprovativo fica de fora: não se envia nem se remove por aqui.
      */
-    public function rules(bool $withAttachment = true): array
+    public function rules(bool $withAttachment = true, ?Expense $current = null): array
     {
         $rules = [
             'movement_type'   => 'required|in:expense,income',
-            'category'        => 'nullable|string|max:100',
+            'category'        => ['nullable', 'string', 'max:100', $this->categoryRule(fn () => request()->input('movement_type'), $current?->category)],
             'v3_vehicle_id'   => 'nullable|exists:v3_vehicles,id',
             'legalization_id' => 'nullable|exists:legalizations,id',
             'client_id'       => 'nullable|exists:clients,id',
@@ -67,6 +67,29 @@ class MovementService
         }
 
         return $rules;
+    }
+
+    /**
+     * A categoria tem de pertencer ao tipo do movimento (despesa/receita). Num movimento
+     * antigo mantém-se a que já tinha, mesmo que já não se escolha em movimentos novos.
+     *
+     * @param  \Closure(): mixed  $type  tipo do movimento no momento da validação
+     */
+    public function categoryRule(\Closure $type, ?string $atual = null): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail) use ($type, $atual) {
+            $tipo = $type();
+            $tipo = is_string($tipo) ? $tipo : null;
+
+            if ($tipo === null || ! isset(Expense::movementTypes()[$tipo])) {
+                return; // o tipo inválido já tem o seu próprio erro
+            }
+            if ($value === $atual || Expense::categoryAllowed(is_string($value) ? $value : null, $tipo)) {
+                return;
+            }
+
+            $fail('Esta categoria não se aplica a ' . ($tipo === 'income' ? 'receitas' : 'despesas') . '.');
+        };
     }
 
     public function isAutomatic(Expense $movement): bool

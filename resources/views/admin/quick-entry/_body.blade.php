@@ -152,9 +152,7 @@
                     <select id="qe-category" name="category" class="form-select {{ $mark('category') }} @error('category') is-invalid @enderror">
                         <option value="">{{ in_array('category', $unresolved, true) ? 'Escolha…' : '— Sem categoria —' }}</option>
                         @if(in_array('category', $unresolved, true))<option value="{{ $none }}" @selected(old('category') === $none)>Deixar em branco</option>@endif
-                        @foreach(\App\Models\Expense::categories() as $v => $l)
-                            <option value="{{ $v }}" @selected($current('category') === $v)>{{ $l }}</option>
-                        @endforeach
+                        @include('admin.partials._category-options', ['selected' => $current('category')])
                     </select>
                 </div>
 

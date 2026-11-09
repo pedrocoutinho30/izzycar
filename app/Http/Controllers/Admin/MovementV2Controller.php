@@ -130,7 +130,7 @@ class MovementV2Controller extends Controller
                 ->with('error', 'Este movimento foi gerado automaticamente e não pode ser editado aqui.');
         }
 
-        $validated = $request->validate($this->movements->rules());
+        $validated = $request->validate($this->movements->rules(true, $movement));
 
         $this->movements->update(
             $movement,

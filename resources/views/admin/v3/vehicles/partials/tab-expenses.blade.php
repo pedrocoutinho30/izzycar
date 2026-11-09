@@ -123,9 +123,7 @@
                 <label class="form-label small fw-semibold">Categoria</label>
                 <select name="category" class="form-select form-select-sm">
                     <option value="">— Sem categoria —</option>
-                    @foreach(\App\Models\Expense::categories() as $k => $l)
-                        <option value="{{ $k }}">{{ $l }}</option>
-                    @endforeach
+                    @include('admin.partials._category-options')
                 </select>
             </div>
             <div class="col-md-3">

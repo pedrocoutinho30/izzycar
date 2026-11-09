@@ -233,7 +233,7 @@ class V3VehicleController extends Controller
         $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'movement_type'  => 'required|in:' . implode(',', array_keys(Expense::movementTypes())),
-            'category'       => 'nullable|in:' . implode(',', array_keys(Expense::categories())),
+            'category'       => ['nullable', 'string', 'max:100', app(MovementService::class)->categoryRule(fn () => $request->input('movement_type'))],
             'amount'         => 'required|numeric|min:0',
             'vat_rate'       => 'nullable|numeric|min:0|max:100',
             'expense_date'   => 'required|date',

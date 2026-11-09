@@ -95,7 +95,7 @@ class MovementServiceTest extends TestCase
         $this->assertSame(Expense::class, $fm->movable_type);
         $this->assertSame($m->id, $fm->movable_id);
         $this->assertSame('expense', $fm->type);
-        $this->assertSame('Reparação', $fm->category);
+        $this->assertSame('Manutenção/Reparação', $fm->category);
         $this->assertSame('Pneus novos', $fm->description);
         $this->assertEquals(123, $fm->amount_gross);
         $this->assertEquals(23, $fm->vat_rate);

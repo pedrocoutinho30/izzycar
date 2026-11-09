@@ -48,11 +48,7 @@
                     <label class="form-label fw-semibold small">Categoria</label>
                     <select name="category" class="form-select">
                         <option value="">Todas</option>
-                        @foreach(\App\Models\Expense::categories() as $val => $label)
-                            <option value="{{ $val }}" {{ request('category') === $val ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
-                        @endforeach
+                        @include('admin.partials._category-options', ['selected' => request('category'), 'modo' => 'filtro'])
                     </select>
                 </div>
 

@@ -77,9 +77,7 @@
                 <label for="mov-category" class="form-label fw-semibold">Categoria</label>
                 <select id="mov-category" name="category" class="form-select">
                     <option value="">Todas</option>
-                    @foreach(\App\Models\Expense::categories() as $valor => $nome)
-                        <option value="{{ $valor }}" @selected($filters['category'] === $valor)>{{ $nome }}</option>
-                    @endforeach
+                    @include('admin.partials._category-options', ['selected' => $filters['category'], 'modo' => 'filtro'])
                 </select>
             </div>
             <div>

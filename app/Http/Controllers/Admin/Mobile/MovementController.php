@@ -180,7 +180,7 @@ class MovementController extends Controller
         abort_if($this->movements->isAutomatic($movement), 403, 'Este movimento foi gerado automaticamente e não pode ser editado aqui.');
 
         $this->normalizeDecimals($request);
-        $data = $request->validate($this->movements->rules(false));
+        $data = $request->validate($this->movements->rules(false, $movement));
 
         // O comprovativo existente mantém-se (gere-se no desktop).
         $this->movements->update($movement, $data);

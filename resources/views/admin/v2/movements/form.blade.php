@@ -69,40 +69,9 @@
                             <select name="category" id="category"
                                     class="form-select @error('category') is-invalid @enderror">
                                 <option value="">Selecione uma categoria...</option>
-                                @foreach(\App\Models\Expense::categories() as $val => $label)
-                                    <option value="{{ $val }}"
-                                        {{ old('category', $movement->category ?? '') === $val ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
-                                @endforeach
+                                @include('admin.partials._category-options', ['selected' => old('category', $movement->category ?? '')])
                             </select>
                             @error('category')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Campo condicional: Legalização associada (só aparece quando categoria = legalization) --}}
-                        <div class="col-12" id="legalization_field" style="display:none;">
-                            <label class="form-label fw-semibold">
-                                Legalização associada
-                                <span class="text-muted fw-normal">(opcional — para legalizações sem importação)</span>
-                            </label>
-                            <select name="legalization_id" id="legalization_id"
-                                    class="form-select @error('legalization_id') is-invalid @enderror">
-                                <option value="">Sem legalização associada</option>
-                                @foreach($legalizations as $leg)
-                                    @php
-                                        $legLabel = $leg->marca . ' ' . $leg->modelo;
-                                        if ($leg->matricula) $legLabel .= ' — ' . $leg->matricula;
-                                        if ($leg->client) $legLabel .= ' (' . $leg->client->name . ')';
-                                    @endphp
-                                    <option value="{{ $leg->id }}"
-                                        {{ old('legalization_id', $movement->legalization_id ?? '') == $leg->id ? 'selected' : '' }}>
-                                        #{{ $leg->id }} — {{ $legLabel }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('legalization_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -119,7 +88,7 @@
                 <div class="modern-card-body">
                     <div class="row g-3">
 
-                        <div class="col-12">
+                        <div class="col-md-8">
                             <label class="form-label required fw-semibold">Título / Descrição</label>
                             <input type="text" name="title"
                                    class="form-control @error('title') is-invalid @enderror"
@@ -129,9 +98,20 @@
                             @enderror
                         </div>
 
+                        <div class="col-md-4">
+                            <label class="form-label required fw-semibold">Data</label>
+                            <input type="date" name="expense_date"
+                                   class="form-control @error('expense_date') is-invalid @enderror"
+                                   value="{{ old('expense_date', isset($movement) ? $movement->expense_date?->format('Y-m-d') : date('Y-m-d')) }}"
+                                   required>
+                            @error('expense_date')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Veículo (Opcional)</label>
-                            <select name="v3_vehicle_id"
+                            <select name="v3_vehicle_id" id="v3_vehicle_id"
                                     class="form-select @error('v3_vehicle_id') is-invalid @enderror">
                                 <option value="">Sem veículo</option>
                                 @foreach($vehicles as $v)
@@ -141,11 +121,14 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @error('v3_vehicle_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Cliente (Opcional)</label>
-                            <select name="client_id"
+                            <select name="client_id" id="client_id"
                                     class="form-select @error('client_id') is-invalid @enderror">
                                 <option value="">Sem cliente</option>
                                 @foreach($clients as $c)
@@ -155,11 +138,36 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @error('client_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Legalização (Opcional)</label>
+                            <select name="legalization_id" id="legalization_id"
+                                    class="form-select @error('legalization_id') is-invalid @enderror">
+                                <option value="">Sem legalização</option>
+                                @foreach($legalizations as $leg)
+                                    @php
+                                        $legLabel = trim($leg->marca . ' ' . $leg->modelo);
+                                        if ($leg->matricula) $legLabel .= ' — ' . $leg->matricula;
+                                        if ($leg->client) $legLabel .= ' (' . $leg->client->name . ')';
+                                    @endphp
+                                    <option value="{{ $leg->id }}"
+                                        {{ old('legalization_id', $movement->legalization_id ?? '') == $leg->id ? 'selected' : '' }}>
+                                        #{{ $leg->id }} — {{ $legLabel }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('legalization_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Parceiro / Fornecedor</label>
-                            <select name="partner_id"
+                            <select name="partner_id" id="partner_id"
                                     class="form-select @error('partner_id') is-invalid @enderror">
                                 <option value="">Sem parceiro</option>
                                 @foreach($partners as $p)
@@ -171,77 +179,10 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label required fw-semibold">Data</label>
-                            <input type="date" name="expense_date"
-                                   class="form-control @error('expense_date') is-invalid @enderror"
-                                   value="{{ old('expense_date', isset($movement) ? $movement->expense_date?->format('Y-m-d') : date('Y-m-d')) }}"
-                                   required>
-                            @error('expense_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
                         <div class="col-12">
                             <label class="form-label fw-semibold">Observações</label>
                             <textarea name="observations" rows="3"
                                       class="form-control @error('observations') is-invalid @enderror">{{ old('observations', $movement->observations ?? '') }}</textarea>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-            {{-- VALORES --}}
-            <div class="modern-card mb-4">
-                <div class="modern-card-header">
-                    <h5 class="modern-card-title"><i class="bi bi-currency-euro me-2"></i>Valores</h5>
-                </div>
-                <div class="modern-card-body">
-                    <div class="row g-3">
-
-                        <div class="col-md-4">
-                            <label class="form-label required fw-semibold">Montante Bruto (€)</label>
-                            <input type="number" name="amount" id="amount"
-                                   class="form-control @error('amount') is-invalid @enderror"
-                                   value="{{ old('amount', $movement->amount ?? '') }}"
-                                   step="0.01" min="0" required>
-                            <small class="text-muted">Valor total com IVA incluído</small>
-                            @error('amount')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Taxa IVA (%)</label>
-                            <select name="vat_rate" id="vat_rate" class="form-select @error('vat_rate') is-invalid @enderror">
-                                <option value="0" {{ old('vat_rate', $movement->vat_rate ?? 23) == 0 ? 'selected' : '' }}>Sem IVA</option>
-                                <option value="6"  {{ old('vat_rate', $movement->vat_rate ?? 23) == 6  ? 'selected' : '' }}>6%</option>
-                                <option value="13" {{ old('vat_rate', $movement->vat_rate ?? 23) == 13 ? 'selected' : '' }}>13%</option>
-                                <option value="19" {{ old('vat_rate', $movement->vat_rate ?? 23) == 19 ? 'selected' : '' }}>19%</option>
-                                <option value="23" {{ old('vat_rate', $movement->vat_rate ?? 23) == 23 ? 'selected' : '' }}>23%</option>
-                                <option value="25" {{ old('vat_rate', $movement->vat_rate ?? 23) == 25 ? 'selected' : '' }}>25%</option>
-                            </select>
-                        </div>
-
-                        {{-- Live breakdown --}}
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Resumo</label>
-                            <div class="border rounded p-3 bg-light">
-                                <div class="d-flex justify-content-between small">
-                                    <span class="text-muted">Líquido (s/ IVA)</span>
-                                    <strong id="preview_net">€ 0,00</strong>
-                                </div>
-                                <div class="d-flex justify-content-between small mt-1">
-                                    <span class="text-muted">IVA</span>
-                                    <strong id="preview_vat" class="text-warning">€ 0,00</strong>
-                                </div>
-                                <hr class="my-2">
-                                <div class="d-flex justify-content-between small fw-bold">
-                                    <span>Total Bruto</span>
-                                    <strong id="preview_gross" class="text-primary">€ 0,00</strong>
-                                </div>
-                            </div>
                         </div>
 
                     </div>
@@ -326,7 +267,7 @@
                         </select>
                     </div>
 
-                    <div>
+                    <div class="mb-3">
                         <label class="form-label fw-semibold">Estado do Pagamento</label>
                         <select name="status" class="form-select">
                             @foreach(\App\Models\Expense::statuses() as $val => $label)
@@ -336,6 +277,50 @@
                                 </option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label required fw-semibold">Montante Bruto (€)</label>
+                        <input type="number" name="amount" id="amount"
+                               class="form-control @error('amount') is-invalid @enderror"
+                               value="{{ old('amount', $movement->amount ?? '') }}"
+                               step="0.01" min="0" required>
+                        <small class="text-muted">Valor total com IVA incluído</small>
+                        @error('amount')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Taxa IVA (%)</label>
+                        <select name="vat_rate" id="vat_rate" class="form-select @error('vat_rate') is-invalid @enderror">
+                            <option value="0" {{ old('vat_rate', $movement->vat_rate ?? 23) == 0 ? 'selected' : '' }}>Sem IVA</option>
+                            <option value="6"  {{ old('vat_rate', $movement->vat_rate ?? 23) == 6  ? 'selected' : '' }}>6%</option>
+                            <option value="13" {{ old('vat_rate', $movement->vat_rate ?? 23) == 13 ? 'selected' : '' }}>13%</option>
+                            <option value="19" {{ old('vat_rate', $movement->vat_rate ?? 23) == 19 ? 'selected' : '' }}>19%</option>
+                            <option value="23" {{ old('vat_rate', $movement->vat_rate ?? 23) == 23 ? 'selected' : '' }}>23%</option>
+                            <option value="25" {{ old('vat_rate', $movement->vat_rate ?? 23) == 25 ? 'selected' : '' }}>25%</option>
+                        </select>
+                    </div>
+
+                    {{-- Resumo em direto --}}
+                    <div>
+                        <label class="form-label fw-semibold">Resumo</label>
+                        <div class="border rounded p-3 bg-light">
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">Líquido (s/ IVA)</span>
+                                <strong id="preview_net">€ 0,00</strong>
+                            </div>
+                            <div class="d-flex justify-content-between small mt-1">
+                                <span class="text-muted">IVA</span>
+                                <strong id="preview_vat" class="text-warning">€ 0,00</strong>
+                            </div>
+                            <hr class="my-2">
+                            <div class="d-flex justify-content-between small fw-bold">
+                                <span>Total Bruto</span>
+                                <strong id="preview_gross" class="text-primary">€ 0,00</strong>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -376,28 +361,13 @@
     vatSelect.addEventListener('change', recalc);
     recalc();
 
-    // Mostrar/esconder campo de legalização consoante categoria
-    // (usamos a instância TomSelect para limpar o valor quando se esconde)
-    const categorySelect    = document.getElementById('category');
-    const legalizationField = document.getElementById('legalization_field');
-    let tsLegal             = null; // instância criada depois do Tom Select estar pronto
-
-    function toggleLegalizationField() {
-        const show = categorySelect.value === 'legalization';
-        legalizationField.style.display = show ? '' : 'none';
-        if (!show && tsLegal) tsLegal.clear();
-    }
-
-    categorySelect.addEventListener('change', toggleLegalizationField);
-    toggleLegalizationField();
-
     // Tom Select — selects com pesquisa
     const tsOpts = { plugins: ['dropdown_input'], maxOptions: 300, searchField: ['text'] };
 
     new TomSelect('#v3_vehicle_id', { ...tsOpts, placeholder: 'Pesquisar veículo...' });
     new TomSelect('#client_id',     { ...tsOpts, placeholder: 'Pesquisar cliente...' });
     new TomSelect('#partner_id',    { ...tsOpts, placeholder: 'Pesquisar parceiro...' });
-    tsLegal = new TomSelect('#legalization_id', { ...tsOpts, placeholder: 'Pesquisar legalização...' });
+    new TomSelect('#legalization_id', { ...tsOpts, placeholder: 'Pesquisar legalização...' });
 
     // Image preview
     document.getElementById('attachment').addEventListener('change', function () {
