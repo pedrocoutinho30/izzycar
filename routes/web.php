@@ -45,6 +45,10 @@ Route::post('csp-report', \App\Http\Controllers\CspReportController::class)
 
 // Route::get('proposta/{brand}/{model}/{version}/{id}', [ProposalController::class, 'detail'])->name('proposals.detail');
 Route::get('proposta/{proposal_code}', [ProposalController::class, 'detail'])->name('proposals.detail');
+// Foto da cotação em JPEG para a pré-visualização do link (og:image).
+Route::get('proposta/{proposal_code}/foto.jpg', [ProposalController::class, 'previewImage'])
+    ->middleware('throttle:60,1')
+    ->name('proposals.preview-image');
 // O cliente pede cotação de uma das "outras opções" da cotação (envia email à equipa).
 Route::post('proposta/{proposal_code}/opcoes/{opportunity}/pedir-cotacao', [ProposalController::class, 'requestAlternativeQuote'])
     ->middleware('throttle:10,1')

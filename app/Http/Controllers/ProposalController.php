@@ -14,6 +14,8 @@ use App\Services\ProposalAcceptanceService;
 use App\Mail\ProposalAcceptedMail;
 use App\Services\ContractService;
 use App\Models\AttributeGroup;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 /**
  * Páginas públicas da cotação: ver (`detail`), pedir cotação de uma opção
@@ -21,6 +23,32 @@ use App\Models\AttributeGroup;
  */
 class ProposalController extends Controller
 {
+    /**
+     * Foto da cotação em JPEG 1200x630 para a pré-visualização do link
+     * (WhatsApp, Facebook…): a imagem guardada é AVIF/WebP, que estas
+     * aplicações não mostram de forma fiável. Pública como a própria cotação
+     * (quem tem o código já vê a foto na página).
+     */
+    public function previewImage(string $proposal_code)
+    {
+        $proposal = Proposal::where('proposal_code', $proposal_code)->firstOrFail();
+
+        $canonical = is_array($proposal->images) ? ($proposal->images[0] ?? null) : $proposal->images;
+        // O caminho guardado é o AVIF "large"; a variante WebP está ao lado.
+        $origem = $canonical ? preg_replace('/\.avif$/', '.webp', $canonical) : null;
+        $disco = Storage::disk('public');
+        abort_unless($origem && $disco->exists($origem), 404);
+
+        try {
+            $jpeg = (new ImageManager(new Driver()))->read($disco->get($origem))->cover(1200, 630)->toJpeg(80)->toString();
+        } catch (\Throwable $e) {
+            report($e);
+            abort(404);
+        }
+
+        return response($jpeg, 200, ['Content-Type' => 'image/jpeg', 'Cache-Control' => 'public, max-age=86400']);
+    }
+
     public function detail($proposal_code)
     {
         $proposal = Proposal::where('proposal_code', $proposal_code)

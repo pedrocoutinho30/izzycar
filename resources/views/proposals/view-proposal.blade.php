@@ -30,6 +30,25 @@
 <?php $no_footer = true; ?>
 @section('robots', 'noindex, nofollow')
 @section('title', $proposal->brand . ' ' . $proposal->model . ' — Cotação de Importação')
+@section('meta_description', 'Cotação de importação personalizada — Izzycar')
+
+{{-- Pré-visualização do link (WhatsApp, Facebook…): foto da cotação em JPEG, ou o logótipo se não tiver. --}}
+@push('head')
+@php
+  $ogImagem = $proposal->images ? route('proposals.preview-image', $proposal->proposal_code) : asset('img/logo-simples.png');
+  $ogTitulo = trim($proposal->brand . ' ' . $proposal->model) . ' — Cotação de Importação';
+@endphp
+<meta property="og:title" content="{{ $ogTitulo }}">
+<meta property="og:description" content="Cotação de importação personalizada — Izzycar">
+<meta property="og:image" content="{{ $ogImagem }}">
+<meta property="og:image:secure_url" content="{{ $ogImagem }}">
+@if($proposal->images)
+<meta property="og:image:type" content="image/jpeg">
+@endif
+<meta property="og:url" content="{{ url()->current() }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ $ogImagem }}">
+@endpush
 
 @section('content')
 
