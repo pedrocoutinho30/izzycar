@@ -80,13 +80,14 @@ class AngariadorRegistrationDocumentsTest extends TestCase
         $this->assertSame(0, User::where('email', 'rita@example.com')->count());
     }
 
-    public function test_the_public_registration_is_rate_limited(): void
+    public function test_the_public_registration_has_no_rate_limit(): void
     {
         for ($i = 0; $i < 5; $i++) {
             $this->post(route('public.angariador.register.store'), []);
         }
 
-        $this->post(route('public.angariador.register.store'), [])->assertStatus(429);
+        // Sem limite por decisão do Pedro: nunca devolve 429.
+        $this->post(route('public.angariador.register.store'), [])->assertStatus(302);
     }
 
     public function test_admin_can_open_both_sides_and_guests_cannot(): void

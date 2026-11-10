@@ -53,6 +53,18 @@ class LoginController extends Controller
         ]);
     }
 
+    // Sem limite de tentativas de login por decisão do Pedro (angariadores bloqueados
+    // por excesso de pedidos); reavaliar depois.
+    protected function hasTooManyLoginAttempts(Request $request)
+    {
+        return false;
+    }
+
+    protected function incrementLoginAttempts(Request $request)
+    {
+        // sem limite: não regista tentativas
+    }
+
     protected function authenticated(Request $request, $user)
     {
         if (!$user->isApproved()) {

@@ -80,8 +80,8 @@ Route::get('/seja-angariador', [App\Http\Controllers\Frontend\AngariadorManualCo
 
 Route::get('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'create'])
     ->name('public.angariador.register');
+// Sem throttle nem antispam por decisão do Pedro (erros por excesso de pedidos); reavaliar depois.
 Route::post('/registo-angariador', [App\Http\Controllers\Frontend\AngariadorRegistrationController::class, 'store'])
-    ->middleware(['throttle:5,1', 'antispam'])
     ->name('public.angariador.register.store');
 
 Route::get('/newsletter/unsubscribe', [App\Http\Controllers\Admin\NewsletterController::class, 'unsubscribe'])
