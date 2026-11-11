@@ -19,6 +19,7 @@ enum LeadSource: string
     case Newsletter = 'newsletter_footer';
     case Contacto = 'contacto';
     case Recomendador = 'recomendador';
+    case EvExperience = 'EVEXPERIENCE';
 
     public function label(): string
     {
@@ -31,6 +32,7 @@ enum LeadSource: string
             self::Newsletter => 'Newsletter',
             self::Contacto => 'Contacto no site',
             self::Recomendador => 'Recomendador de viaturas',
+            self::EvExperience => 'EVEXPERIENCE',
         };
     }
 

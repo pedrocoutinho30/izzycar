@@ -72,7 +72,7 @@ class ExposicaoPublicaCorrecoesTest extends TestCase
         $this->assertSame(5, end($resultados));
     }
 
-    public function test_angariador_registration_requires_antispam_fields_and_does_not_reveal_existing_emails(): void
+    public function test_angariador_registration_does_not_reveal_existing_emails(): void
     {
         Storage::fake('local');
         Role::findOrCreate('angariador', 'web');
@@ -84,14 +84,7 @@ class ExposicaoPublicaCorrecoesTest extends TestCase
             'documento_verso' => UploadedFile::fake()->create('v.pdf', 100, 'application/pdf'),
         ];
 
-        // Sem _form_started: bloqueado em silêncio.
-        $this->post(route('public.angariador.register.store'), $dados())->assertSessionHas('success');
-        $this->assertSame(0, User::where('email', 'nova@example.com')->count());
-
-        // Honeypot preenchido: idem.
-        $this->post(route('public.angariador.register.store'), $dados(['_form_started' => time() - 10, BlockSpamSubmissions::FIELD => 'x']))
-            ->assertSessionHas('success');
-        $this->assertSame(0, User::where('email', 'nova@example.com')->count());
+        // Sem antispam nesta rota (decisão do Pedro): os campos _form_started e honeypot já não bloqueiam.
 
         // Email já registado: mesma resposta de sucesso, sem erro de validação e sem novo utilizador.
         $this->post(route('public.angariador.register.store'), $dados(['_form_started' => time() - 10, 'email' => 'existe@example.com']))

@@ -63,6 +63,7 @@
                 'whatsapp' => 'WhatsApp',
                 'newsletter_footer' => 'Newsletter',
                 'contacto' => 'Contacto no site',
+                'EVEXPERIENCE' => 'EVEXPERIENCE',
             ]
         ],
         [
@@ -108,6 +109,7 @@
             'whatsapp'   => ['label' => 'WhatsApp', 'color' => 'success'],
             'newsletter_footer' => ['label' => 'Newsletter', 'color' => 'info'],
             'contacto'   => ['label' => 'Contacto', 'color' => 'primary'],
+            'EVEXPERIENCE' => ['label' => 'EVEXPERIENCE', 'color' => 'success'],
         ];
         $src = $sourceLabels[$lead->lead_source] ?? ['label' => 'Outro', 'color' => 'secondary'];
         $statusLabels = [

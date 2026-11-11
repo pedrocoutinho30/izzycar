@@ -208,6 +208,7 @@
                         'whatsapp'   => 'WhatsApp',
                         'newsletter_footer' => 'Newsletter',
                         'contacto'   => 'Contacto no site',
+                        'EVEXPERIENCE' => 'EVEXPERIENCE',
                     ];
                 @endphp
                 <div class="lil-row">

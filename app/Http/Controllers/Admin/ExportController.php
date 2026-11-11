@@ -35,6 +35,7 @@ class ExportController extends Controller
             'whatsapp'   => 'WhatsApp',
             'newsletter_footer' => 'Newsletter',
             'contacto'   => 'Contacto no site',
+            'EVEXPERIENCE' => 'EVEXPERIENCE',
         ];
         $statusLabels = [
             'nova'        => 'Nova',
