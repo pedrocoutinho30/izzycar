@@ -50,4 +50,9 @@ return [
         'app_secret' => env('WHATSAPP_APP_SECRET'),
     ],
 
+    // Token do endpoint POST /api/lead (leads de sistemas externos).
+    'lead_api' => [
+        'token' => env('LEAD_API_TOKEN'),
+    ],
+
 ];

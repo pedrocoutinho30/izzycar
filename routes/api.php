@@ -39,3 +39,8 @@ Route::prefix('whatsapp')->middleware('throttle:whatsapp-webhook')->group(functi
 });
 
 
+
+// Receção de leads de sistemas externos (EVEXPERIENCE…), protegida por token fixo.
+Route::post('/lead', [\App\Http\Controllers\Api\LeadApiController::class, 'store'])
+    ->middleware('leadApiToken')
+    ->name('api.lead.store');
