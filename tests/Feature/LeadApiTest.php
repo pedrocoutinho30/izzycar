@@ -65,4 +65,33 @@ class LeadApiTest extends TestCase
         $this->enviar(['name' => 'Ana', 'phone' => '+351 912 345 678'])->assertStatus(200)->assertJson(['created' => false]);
         $this->assertSame(1, Client::count());
     }
+
+    public function test_erros_de_validacao_sao_json_mesmo_sem_cabecalho_accept(): void
+    {
+        $r = $this->call('POST', '/api/lead', [], [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => 'Bearer segredo-de-teste'], json_encode(['phone' => '912345678']));
+        $r->assertStatus(422)->assertJsonValidationErrors('name');
+    }
+
+    public function test_campos_extra_como_url_sao_ignorados(): void
+    {
+        $this->enviar(['name' => 'Teste', 'phone' => '912345678', 'email' => 'teste@exemplo.com', 'source' => 'EVEXPERIENCE', 'url' => 'https://evexperience.test/'])
+            ->assertStatus(201);
+    }
+
+    public function test_envia_email_a_geral_so_para_leads_novas(): void
+    {
+        // Duas submissões do mesmo contacto: só a primeira (lead nova) envia email.
+        \Illuminate\Support\Facades\Mail::shouldReceive('raw')->once()->withArgs(fn ($corpo) => str_contains($corpo, 'Ana') && str_contains($corpo, 'EVEXPERIENCE'));
+
+        $this->enviar(['name' => 'Ana', 'phone' => '912345678', 'message' => 'Quero um EV'])->assertStatus(201);
+        $this->enviar(['name' => 'Ana', 'phone' => '912345678'])->assertStatus(200);
+    }
+
+    public function test_falha_no_email_nao_impede_guardar_a_lead(): void
+    {
+        \Illuminate\Support\Facades\Mail::shouldReceive('raw')->once()->andThrow(new \RuntimeException('smtp'));
+
+        $this->enviar(['name' => 'Ana', 'phone' => '912345678'])->assertStatus(201);
+        $this->assertSame(1, Client::count());
+    }
 }

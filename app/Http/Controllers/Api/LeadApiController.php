@@ -8,6 +8,8 @@ use App\Models\LeadActivity;
 use App\Services\ClientMatcher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Recebe leads de sistemas externos (ex.: EVEXPERIENCE) por POST /api/lead.
@@ -57,6 +59,22 @@ class LeadApiController extends Controller
             'bi-box-arrow-in-down',
             'primary'
         );
+
+        // Aviso à equipa só para leads novas; se o envio falhar a lead já está guardada.
+        if ($novo) {
+            try {
+                $corpo = "Nova lead recebida via API ({$origem}):\n\n"
+                    . "Nome: {$client->name}\n"
+                    . 'Telefone: ' . ($client->phone ?: '-') . "\n"
+                    . 'Email: ' . ($client->email ?: '-') . "\n"
+                    . 'Mensagem: ' . ($data['message'] ?? '-') . "\n"
+                    . 'Ficha: ' . route('admin.v2.leads.show', $client->id);
+                Mail::raw($corpo, fn ($mail) => $mail->to('geral@izzycar.pt')->subject("Nova lead ({$origem}) - Izzycar"));
+            } catch (\Throwable $e) {
+                report($e);
+                Log::warning("Lead API #{$client->id}: falhou o envio do email de aviso.");
+            }
+        }
 
         return response()->json(['status' => 'success', 'id' => $client->id, 'created' => $novo], $novo ? 201 : 200);
     }

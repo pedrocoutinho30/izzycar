@@ -21,6 +21,9 @@ class VerifyLeadApiToken
             return response()->json(['status' => 'error', 'message' => 'Não autorizado.'], 401);
         }
 
+        // Resposta sempre em JSON (422 nos erros), mesmo que o cliente não envie "Accept: application/json".
+        $request->headers->set('Accept', 'application/json');
+
         return $next($request);
     }
 }
