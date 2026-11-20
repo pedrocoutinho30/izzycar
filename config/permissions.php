@@ -182,6 +182,7 @@ return [
                 'newsletter' => ['label' => 'Newsletter', 'routes' => ['admin.v2.newsletter-management.*']],
                 'menus' => ['label' => 'Menus', 'routes' => ['admin.v2.menus.*']],
                 'social-posts' => ['label' => 'Criador de posts', 'routes' => ['admin.v2.social-posts.*']],
+                'marketing-posts' => ['label' => 'Marketing Studio', 'routes' => ['admin.marketing.*']],
             ],
         ],
 
@@ -309,6 +310,7 @@ return [
             'newsletter' => '*',
             'menus' => '*',
             'social-posts' => '*',
+            'marketing-posts' => '*',
         ],
     ],
 ];

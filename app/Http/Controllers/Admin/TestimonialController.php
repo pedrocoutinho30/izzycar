@@ -38,10 +38,12 @@ class TestimonialController extends Controller
             'comment'     => 'string|nullable',
             'origin'      => 'required|in:' . implode(',', array_keys(Testimonial::ORIGINS)),
             'published'   => 'sometimes|boolean',
+            'marketing_consent' => 'sometimes|boolean',
             'review_date' => 'nullable|date'
         ]);
 
         $data['published'] = $request->boolean('published');
+        $data['marketing_consent'] = $request->boolean('marketing_consent');
 
         Testimonial::create($data);
 
@@ -63,10 +65,12 @@ class TestimonialController extends Controller
             'comment'     => 'string|nullable',
             'origin'      => 'required|in:' . implode(',', array_keys(Testimonial::ORIGINS)),
             'published'   => 'sometimes|boolean',
+            'marketing_consent' => 'sometimes|boolean',
             'review_date' => 'nullable|date',
         ]);
 
         $data['published'] = $request->boolean('published');
+        $data['marketing_consent'] = $request->boolean('marketing_consent');
 
         $testimonial->update($data);
 

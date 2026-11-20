@@ -85,6 +85,12 @@
                         <label class="form-check-label fw-semibold" for="published">Publicado</label>
                         <div class="form-text">Testemunhos publicados ficam visíveis no site.</div>
                     </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="marketing_consent" id="marketing_consent" value="1"
+                               {{ (session()->hasOldInput() ? old('marketing_consent') : $testimonial->marketing_consent) ? 'checked' : '' }}>
+                        <label class="form-check-label fw-semibold" for="marketing_consent">Autoriza uso em publicações</label>
+                        <div class="form-text">O cliente autorizou usar este testemunho nas redes sociais (Marketing Studio). Só se marca com autorização real.</div>
+                    </div>
                     <hr>
                     <div class="text-muted small">
                         <i class="bi bi-clock me-1"></i> Criado em {{ $testimonial->created_at->format('d/m/Y H:i') }}

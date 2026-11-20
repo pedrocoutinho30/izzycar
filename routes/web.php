@@ -247,6 +247,34 @@ Route::prefix('gestao')->middleware(['auth', 'restrictAngariador', 'authorizeRes
         Route::delete('/{post}', [App\Http\Controllers\Admin\SocialPostController::class, 'destroy'])->name('destroy');
     });
 
+    // Marketing Studio: posts para redes sociais (viaturas, recomendações, serviços…).
+    Route::prefix('marketing')->name('admin.marketing.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\MarketingPostController::class, 'index'])->name('index');
+        Route::get('/calendario', [App\Http\Controllers\Admin\MarketingCalendarController::class, 'index'])->name('calendar');
+        Route::post('/plano-30-dias', [App\Http\Controllers\Admin\MarketingCalendarController::class, 'generatePlan'])->name('plan.generate');
+        Route::get('/dashboard', [App\Http\Controllers\Admin\MarketingDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/fotos/{photo}', [App\Http\Controllers\Admin\MarketingPhotoController::class, 'show'])->name('photos.show');
+        Route::get('/criar', [App\Http\Controllers\Admin\MarketingPostController::class, 'create'])->name('create');
+        Route::get('/criar/viatura', [App\Http\Controllers\Admin\MarketingPostController::class, 'createVehicle'])->name('vehicles.create');
+        Route::get('/criar/{type}', [App\Http\Controllers\Admin\MarketingContentController::class, 'create'])->whereIn('type', ['educativo', 'servico', 'importacao', 'testemunho'])->name('content.create');
+        Route::post('/criar/{type}', [App\Http\Controllers\Admin\MarketingContentController::class, 'store'])->whereIn('type', ['educativo', 'servico', 'importacao', 'testemunho'])->name('content.store');
+        Route::get('/recomendacao/criar', [App\Http\Controllers\Admin\MarketingRecommendationController::class, 'create'])->name('recommendations.create');
+        Route::post('/recomendacao', [App\Http\Controllers\Admin\MarketingRecommendationController::class, 'store'])->name('recommendations.store');
+        Route::post('/importar-recomendacoes', [App\Http\Controllers\Admin\MarketingRecommendationController::class, 'import'])->name('import-recommendations');
+        Route::get('/fotos-post/{post}/{index}', [App\Http\Controllers\Admin\MarketingPhotoController::class, 'post'])->whereNumber('index')->name('post-photos.show');
+        Route::get('/testemunhos/pesquisa', [App\Http\Controllers\Admin\MarketingContentController::class, 'searchTestimonials'])->name('testimonials.search');
+        Route::get('/viaturas/pesquisa', [App\Http\Controllers\Admin\MarketingPostController::class, 'searchVehicles'])->name('vehicles.search');
+        Route::post('/', [App\Http\Controllers\Admin\MarketingPostController::class, 'store'])->name('store');
+        Route::get('/{post}/editor', [App\Http\Controllers\Admin\MarketingPostController::class, 'editor'])->name('editor');
+        Route::post('/{post}/previsualizar', [App\Http\Controllers\Admin\MarketingPostController::class, 'preview'])->name('preview');
+        Route::put('/{post}', [App\Http\Controllers\Admin\MarketingPostController::class, 'update'])->name('update');
+        Route::post('/{post}/legenda', [App\Http\Controllers\Admin\MarketingCaptionController::class, 'generate'])->name('caption');
+        Route::post('/{post}/duplicar', [App\Http\Controllers\Admin\MarketingPostController::class, 'duplicate'])->name('duplicate');
+        Route::post('/{post}/atualizar-dados', [App\Http\Controllers\Admin\MarketingPostController::class, 'refresh'])->name('refresh');
+        Route::post('/{post}/publicado', [App\Http\Controllers\Admin\MarketingPostController::class, 'markPublished'])->name('mark-published');
+        Route::delete('/{post}', [App\Http\Controllers\Admin\MarketingPostController::class, 'destroy'])->name('destroy');
+    });
+
     Route::prefix('v2/proposals')->name('admin.v2.proposals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'index'])->name('index');
         Route::get('/kanban', [App\Http\Controllers\Admin\ProposalV2Controller::class, 'kanban'])->name('kanban');

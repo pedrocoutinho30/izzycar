@@ -10,6 +10,7 @@ Ler antes de mexer nestas áreas:
 - [docs/leads-e-clientes.md](docs/leads-e-clientes.md) — leads, clientes, duplicados, pedidos de formulário e oportunidades.
 - [docs/cotacoes.md](docs/cotacoes.md) — cotações, aceitação, contrato e cotações convertidas.
 - [docs/viaturas.md](docs/viaturas.md) — viaturas V3, legalização, venda e site público.
+- [docs/marketing-studio.md](docs/marketing-studio.md) — Marketing Studio: posts para redes sociais (viaturas, recomendações), templates, exportação.
 
 Há ainda `BACKOFFICE-V2-README.md` (componentes e layout do BO V2) e `TASKS_MODULE_README.md` (tarefas).
 

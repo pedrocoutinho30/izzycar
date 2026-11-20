@@ -20,6 +20,7 @@ class Testimonial extends Model
         'comment',
         'origin',
         'published',
+        'marketing_consent',
         'review_date',
         'google_review_id',
     ];
@@ -27,6 +28,7 @@ class Testimonial extends Model
     protected $casts = [
         'rating'      => 'float',
         'published'   => 'boolean',
+        'marketing_consent' => 'boolean',
         'review_date' => 'date',
     ];
 }

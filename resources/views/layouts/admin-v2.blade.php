@@ -1235,7 +1235,7 @@
             </div>
             @endcanroutes
 
-            @canroutes(['admin.news.index', 'admin.testimonials.index', 'admin.v2.newsletter-management.index', 'admin.v2.menus.index', 'admin.v2.social-posts.index'])
+            @canroutes(['admin.news.index', 'admin.testimonials.index', 'admin.v2.newsletter-management.index', 'admin.v2.menus.index', 'admin.v2.social-posts.index', 'admin.marketing.index'])
             {{-- ═══════ CONTEÚDO DO SITE ═══════ --}}
             <button type="button" class="nav-group" data-bs-toggle="collapse" data-bs-target="#navGroupConteudo" aria-expanded="{{ $activeGroup === 'conteudo' ? 'true' : 'false' }}">
                 <span>Conteúdo do Site</span>
@@ -1279,6 +1279,14 @@
                     <a href="{{ route('admin.v2.social-posts.index') }}" class="nav-link {{ request()->routeIs('admin.v2.social-posts.*') ? 'active' : '' }}">
                         <i class="bi bi-magic"></i>
                         <span>Criador de Posts</span>
+                    </a>
+                </div>
+                @endcanroute
+                @canroute('admin.marketing.index')
+                <div class="nav-item">
+                    <a href="{{ route('admin.marketing.index') }}" class="nav-link {{ request()->routeIs('admin.marketing.*') ? 'active' : '' }}">
+                        <i class="bi bi-stars"></i>
+                        <span>Marketing Studio</span>
                     </a>
                 </div>
                 @endcanroute
@@ -1614,6 +1622,12 @@
                     <span>Criador de Posts</span>
                 </a>
                 @endcanroute
+                @canroute('admin.marketing.index')
+                <a href="{{ route('admin.marketing.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.marketing.*') ? 'active' : '' }}">
+                    <i class="bi bi-stars"></i>
+                    <span>Marketing Studio</span>
+                </a>
+                @endcanroute
             </div>
 
             {{-- Análise & Ferramentas --}}
@@ -1647,7 +1661,7 @@
                 </a>
                 @endcanroute
 
-                @canroutes(['admin.news.index', 'admin.testimonials.index', 'admin.v2.newsletter-management.index', 'admin.v2.menus.index', 'admin.v2.social-posts.index'])
+                @canroutes(['admin.news.index', 'admin.testimonials.index', 'admin.v2.newsletter-management.index', 'admin.v2.menus.index', 'admin.v2.social-posts.index', 'admin.marketing.index'])
                 <div class="abn-sheet-section-title">Conteúdo do Site</div>
                 @canroute('admin.news.index')
                 <a href="{{ route('admin.news.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
@@ -1677,6 +1691,12 @@
                 <a href="{{ route('admin.v2.social-posts.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.v2.social-posts.*') ? 'active' : '' }}">
                     <i class="bi bi-magic"></i>
                     <span>Criador de Posts</span>
+                </a>
+                @endcanroute
+                @canroute('admin.marketing.index')
+                <a href="{{ route('admin.marketing.index') }}" class="abn-sheet-item {{ request()->routeIs('admin.marketing.*') ? 'active' : '' }}">
+                    <i class="bi bi-stars"></i>
+                    <span>Marketing Studio</span>
                 </a>
                 @endcanroute
                 @endcanroutes
